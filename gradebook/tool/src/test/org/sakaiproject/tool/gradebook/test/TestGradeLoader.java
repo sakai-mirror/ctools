@@ -1,6 +1,6 @@
 /**********************************************************************************
 *
-* $Id$
+* $Header: /cvs/sakai2/gradebook/tool/src/test/org/sakaiproject/tool/gradebook/test/TestGradeLoader.java,v 1.3 2005/05/26 18:04:55 josh.media.berkeley.edu Exp $
 *
 ***********************************************************************************
 *
@@ -40,7 +40,7 @@ import org.sakaiproject.tool.gradebook.facades.standalone.dataload.UserLoader;
  * @author <a href="mailto:jholtzman@berkeley.edu">Josh Holtzman </a>
  *
  */
-public class TestGradeLoader extends GradebookDbTestBase {
+public class TestGradeLoader extends GradebookLoaderTestBase {
 
 	public void testPopulate() throws Exception {
         List gradebooks = new ArrayList();
@@ -85,5 +85,5 @@ public class TestGradeLoader extends GradebookDbTestBase {
 	}
 }
 /**************************************************************************************************************************************************************************************************************************************************************
- * $Id$
+ * $Header: /cvs/sakai2/gradebook/tool/src/test/org/sakaiproject/tool/gradebook/test/TestGradeLoader.java,v 1.3 2005/05/26 18:04:55 josh.media.berkeley.edu Exp $
  *************************************************************************************************************************************************************************************************************************************************************/

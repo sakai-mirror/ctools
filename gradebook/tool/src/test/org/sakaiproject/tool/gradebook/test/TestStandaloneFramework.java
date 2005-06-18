@@ -1,6 +1,6 @@
 /**********************************************************************************
 *
-* $Id$
+* $Header: /cvs/sakai2/gradebook/tool/src/test/org/sakaiproject/tool/gradebook/test/TestStandaloneFramework.java,v 1.3 2005/05/26 18:04:55 josh.media.berkeley.edu Exp $
 *
 ***********************************************************************************
 *
@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.gradebook.facades.standalone.dataload.UserLoader;
 import org.sakaiproject.tool.gradebook.standalone.FrameworkManager;
 
-public class TestStandaloneFramework extends GradebookDbTestBase {
+public class TestStandaloneFramework extends GradebookTestBase {
 	private static final Log log = LogFactory.getLog(TestStandaloneFramework.class);
 	FrameworkManager frameworkManager;
 
@@ -63,5 +63,5 @@ public class TestStandaloneFramework extends GradebookDbTestBase {
 	}
 }
 /**************************************************************************************************************************************************************************************************************************************************************
- * $Id$
+ * $Header: /cvs/sakai2/gradebook/tool/src/test/org/sakaiproject/tool/gradebook/test/TestStandaloneFramework.java,v 1.3 2005/05/26 18:04:55 josh.media.berkeley.edu Exp $
  *************************************************************************************************************************************************************************************************************************************************************/

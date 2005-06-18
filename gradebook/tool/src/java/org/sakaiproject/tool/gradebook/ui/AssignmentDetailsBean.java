@@ -1,6 +1,6 @@
 /**********************************************************************************
 *
-* $Id$
+* $Header: /cvs/sakai2/gradebook/tool/src/java/org/sakaiproject/tool/gradebook/ui/AssignmentDetailsBean.java,v 1.4 2005/05/26 18:04:54 josh.media.berkeley.edu Exp $
 *
 ***********************************************************************************
 *
@@ -26,7 +26,6 @@ package org.sakaiproject.tool.gradebook.ui;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,12 +38,9 @@ import javax.faces.event.ActionEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.service.gradebook.shared.StaleObjectModificationException;
-import org.sakaiproject.service.gradebook.shared.UnknownUserException;
 import org.sakaiproject.tool.gradebook.AbstractGradeRecord;
 import org.sakaiproject.tool.gradebook.Assignment;
 import org.sakaiproject.tool.gradebook.AssignmentGradeRecord;
-import org.sakaiproject.tool.gradebook.GradingEvent;
-import org.sakaiproject.tool.gradebook.GradingEvents;
 import org.sakaiproject.tool.gradebook.facades.Enrollment;
 import org.sakaiproject.tool.gradebook.jsf.FacesUtil;
 
@@ -74,67 +70,13 @@ public class AssignmentDetailsBean extends EnrollmentTableBean {
 		private String studentUid;
 		private String sortName;	// Transient except for validation errors
 		private String displayUid;	// Transient except for validation errors
-        private List events;
 		public ScoreRow() {
 		}
-		public ScoreRow(Enrollment enrollment, List gradingEvents) {
+		public ScoreRow(Enrollment enrollment) {
 			studentUid = enrollment.getUser().getUserUid();
 			sortName = enrollment.getUser().getSortName();
 			displayUid = enrollment.getUser().getDisplayUid();
-            
-            events = new ArrayList();
-            for(Iterator iter = gradingEvents.iterator(); iter.hasNext();) {
-                GradingEvent gradingEvent = (GradingEvent)iter.next();
-                String graderName;
-                try {
-                    graderName = getCourseManagementService().getUser(gradingEvent.getGraderId()).getDisplayName();
-                } catch (UnknownUserException e) {
-                    logger.warn("Unable to find user with uid=" + gradingEvent.getGraderId());
-                    graderName = gradingEvent.getGraderId();
-                }
-                Event event = new Event(gradingEvent.getDateGraded(), gradingEvent.getGrade(),graderName);
-                events.add(event);
-            }
-            Collections.sort(events);
 		}
-        
-        public class Event implements Comparable, Serializable {
-            private Date date;
-            private String score;
-            private String graderName;
-
-            public Event(Date date, String score, String graderName) {
-                this.date = date;
-                this.score = score;
-                this.graderName = graderName;
-            }
-
-            public Date getDate() {
-                return date;
-            }
-            public void setDate(Date date) {
-                this.date = date;
-            }
-            public String getGraderName() {
-                return graderName;
-            }
-            public void setGraderName(String graderName) {
-                this.graderName = graderName;
-            }
-            public String getScore() {
-                return score;
-            }
-            public void setScore(String score) {
-                this.score = score;
-            }
-            /**
-             * @see java.lang.Comparable#compareTo(java.lang.Object)
-             */
-            public int compareTo(Object o) {
-                return this.date.compareTo(((Event)o).getDate());
-            }
-        }
-        
 		public String getStudentUid() {
 			return studentUid;
 		}
@@ -159,12 +101,6 @@ public class AssignmentDetailsBean extends EnrollmentTableBean {
 		public void setDisplayUid(String displayUid) {
 			this.displayUid = displayUid;
 		}
-        public List getEvents() {
-            return events;
-        }
-        public void setEvents(List events) {
-            this.events = events;
-        }
 	}
 
 	protected void init() {
@@ -248,16 +184,13 @@ public class AssignmentDetailsBean extends EnrollmentTableBean {
 					workingEnrollments = finalizeSortingAndPaging(workingEnrollments);
 				}
 
-                // Get all of the grading events for these enrollments on this assignment
-                GradingEvents allEvents = getGradeManager().getGradingEvents(assignment, workingEnrollments);
-                
                 for (Iterator iter = gradeRecords.iterator(); iter.hasNext(); ) {
 					AssignmentGradeRecord gradeRecord = (AssignmentGradeRecord)iter.next();
 					scores.put(gradeRecord.getStudentId(), gradeRecord.getPointsEarned());
 				}
 				for (Iterator iter = workingEnrollments.iterator(); iter.hasNext(); ) {
 					Enrollment enrollment = (Enrollment)iter.next();
-					scoreRows.add(new ScoreRow(enrollment, allEvents.getEvents(enrollment.getUser().getUserUid())));
+					scoreRows.add(new ScoreRow(enrollment));
 				}
 
 			} else {
@@ -426,5 +359,5 @@ public class AssignmentDetailsBean extends EnrollmentTableBean {
 }
 
 /**************************************************************************************************************************************************************************************************************************************************************
- * $Id$
+ * $Header: /cvs/sakai2/gradebook/tool/src/java/org/sakaiproject/tool/gradebook/ui/AssignmentDetailsBean.java,v 1.4 2005/05/26 18:04:54 josh.media.berkeley.edu Exp $
  *************************************************************************************************************************************************************************************************************************************************************/

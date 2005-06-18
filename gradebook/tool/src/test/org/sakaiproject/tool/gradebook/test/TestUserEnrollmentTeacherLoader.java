@@ -1,6 +1,6 @@
 /**********************************************************************************
 *
-* $Id$
+* $Header: /cvs/sakai2/gradebook/tool/src/test/org/sakaiproject/tool/gradebook/test/TestUserEnrollmentTeacherLoader.java,v 1.3 2005/05/26 18:04:55 josh.media.berkeley.edu Exp $
 *
 ***********************************************************************************
 *
@@ -35,7 +35,7 @@ import org.sakaiproject.tool.gradebook.facades.standalone.dataload.UserLoader;
  *
  * @author <a href="mailto:jholtzman@berkeley.edu">Josh Holtzman</a>
  */
-public class TestUserEnrollmentTeacherLoader extends GradebookDbTestBase {
+public class TestUserEnrollmentTeacherLoader extends GradebookLoaderTestBase {
     Log log = LogFactory.getLog(TestUserEnrollmentTeacherLoader.class);
 
     UserLoader userLoader;
@@ -70,5 +70,5 @@ public class TestUserEnrollmentTeacherLoader extends GradebookDbTestBase {
 }
 
 /**************************************************************************************************************************************************************************************************************************************************************
- * $Id$
+ * $Header: /cvs/sakai2/gradebook/tool/src/test/org/sakaiproject/tool/gradebook/test/TestUserEnrollmentTeacherLoader.java,v 1.3 2005/05/26 18:04:55 josh.media.berkeley.edu Exp $
  *************************************************************************************************************************************************************************************************************************************************************/

@@ -1,6 +1,6 @@
 /**********************************************************************************
 *
-* $Id$
+* $Header: /cvs/sakai2/gradebook/tool/src/java/org/sakaiproject/tool/gradebook/facades/sakai2impl/CourseManagementSakai2Impl.java,v 1.3 2005/05/26 17:33:43 josh.media.berkeley.edu Exp $
 *
 ***********************************************************************************
 *
@@ -36,12 +36,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.api.kernel.tool.Placement;
 import org.sakaiproject.api.kernel.tool.cover.ToolManager;
-import org.sakaiproject.exception.IdUnusedException;
-import org.sakaiproject.service.gradebook.shared.UnknownUserException;
 import org.sakaiproject.service.legacy.security.cover.SecurityService;
-import org.sakaiproject.service.legacy.user.cover.UserDirectoryService;
 import org.sakaiproject.tool.gradebook.facades.CourseManagement;
-import org.sakaiproject.tool.gradebook.facades.User;
 
 /**
  * Sakai2 implementation of the gradebook CourseManagement API
@@ -157,19 +153,7 @@ public class CourseManagementSakai2Impl implements CourseManagement {
         return "/gradebook/" + context + "/main";
     }
 
-    /**
-     * @see org.sakaiproject.tool.gradebook.facades.CourseManagement#getUser(java.lang.String)
-     */
-    public User getUser(String userUid) throws UnknownUserException {
-        try {
-            org.sakaiproject.service.legacy.user.User sakaiUser = UserDirectoryService.getUser(userUid);
-            return new UserSakai2Impl(sakaiUser);
-        } catch (IdUnusedException e) {
-            throw new UnknownUserException("Unknown uid: " + userUid);
-        }
-    }
-
 }
 /**************************************************************************************************************************************************************************************************************************************************************
- * $Id$
+ * $Header: /cvs/sakai2/gradebook/tool/src/java/org/sakaiproject/tool/gradebook/facades/sakai2impl/CourseManagementSakai2Impl.java,v 1.3 2005/05/26 17:33:43 josh.media.berkeley.edu Exp $
  *************************************************************************************************************************************************************************************************************************************************************/

@@ -1,6 +1,6 @@
 /**********************************************************************************
 *
-* $Id$
+* $Header: /cvs/sakai2/gradebook/component/src/java/org/sakaiproject/tool/gradebook/business/impl/GradeManagerHibernateImpl.java,v 1.6 2005/06/11 17:40:00 ray.media.berkeley.edu Exp $
 *
 ***********************************************************************************
 *
@@ -24,7 +24,6 @@
 
 package org.sakaiproject.tool.gradebook.business.impl;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -52,12 +51,10 @@ import org.sakaiproject.tool.gradebook.CourseGradeRecord;
 import org.sakaiproject.tool.gradebook.GradableObject;
 import org.sakaiproject.tool.gradebook.Gradebook;
 import org.sakaiproject.tool.gradebook.GradingEvent;
-import org.sakaiproject.tool.gradebook.GradingEvents;
 import org.sakaiproject.tool.gradebook.business.FacadeUtils;
 import org.sakaiproject.tool.gradebook.business.GradableObjectManager;
 import org.sakaiproject.tool.gradebook.business.GradeManager;
 import org.sakaiproject.tool.gradebook.facades.Authn;
-import org.sakaiproject.tool.gradebook.facades.Enrollment;
 import org.springframework.orm.hibernate.HibernateCallback;
 import org.springframework.orm.hibernate.support.HibernateDaoSupport;
 
@@ -470,43 +467,6 @@ public class GradeManagerHibernateImpl extends HibernateDaoSupport implements Gr
         }
     }
 
-    /**
-     * @see org.sakaiproject.tool.gradebook.business.GradeManager#getGradingEvents(org.sakaiproject.tool.gradebook.Gradebook, java.util.Collection)
-     */
-    public GradingEvents getGradingEvents(final GradableObject gradableObject, final Collection enrollments) {
-        
-        // Don't attempt to run the query if there are no enrollments
-        if(enrollments == null || enrollments.size() == 0) {
-            log.debug("No enrollments were specified.  Returning an empty GradingEvents object");
-            return new GradingEvents();
-        }
-        
-        HibernateCallback hc = new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                // Construct a set of student ids from the enrollments
-                Set studentIds = new HashSet();
-                for(Iterator iter = enrollments.iterator(); iter.hasNext();) {
-                    studentIds.add(((Enrollment)iter.next()).getUser().getUserUid());
-                }
-
-                Query q = session.createQuery("from GradingEvent as ge where ge.gradableObject=:go and ge.studentId in (:students)");
-                q.setParameter("go", gradableObject, Hibernate.entity(GradableObject.class));
-                q.setParameterList("students", studentIds);
-                return q.list();
-            }
-        };
-        
-        List list = (List)getHibernateTemplate().execute(hc);
-
-        GradingEvents events = new GradingEvents();
-        
-        for(Iterator iter = list.iterator(); iter.hasNext();) {
-            GradingEvent event = (GradingEvent)iter.next();
-            events.addEvent(event);
-        }
-        return events;
-    }
-
 	/**
 	 */
 	public void setGradableObjectManager(GradableObjectManager gradableObjectManager) {
@@ -521,5 +481,5 @@ public class GradeManagerHibernateImpl extends HibernateDaoSupport implements Gr
 
 }
 /**************************************************************************************************************************************************************************************************************************************************************
- * $Id$
+ * $Header: /cvs/sakai2/gradebook/component/src/java/org/sakaiproject/tool/gradebook/business/impl/GradeManagerHibernateImpl.java,v 1.6 2005/06/11 17:40:00 ray.media.berkeley.edu Exp $
  *************************************************************************************************************************************************************************************************************************************************************/

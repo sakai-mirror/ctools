@@ -1,6 +1,6 @@
 /**********************************************************************************
 *
-* $Id$
+* $Header: /cvs/sakai2/gradebook/component/src/java/org/sakaiproject/tool/gradebook/business/impl/GradableObjectManagerHibernateImpl.java,v 1.4 2005/06/11 17:40:00 ray.media.berkeley.edu Exp $
 *
 ***********************************************************************************
 *
@@ -362,5 +362,5 @@ public class GradableObjectManagerHibernateImpl extends HibernateDaoSupport
 
 }
 /**************************************************************************************************************************************************************************************************************************************************************
- * $Id$
+ * $Header: /cvs/sakai2/gradebook/component/src/java/org/sakaiproject/tool/gradebook/business/impl/GradableObjectManagerHibernateImpl.java,v 1.4 2005/06/11 17:40:00 ray.media.berkeley.edu Exp $
  *************************************************************************************************************************************************************************************************************************************************************/

@@ -1,6 +1,6 @@
 /**********************************************************************************
 *
-* $Id$
+* $Header: $
 *
 ***********************************************************************************
 *
@@ -21,53 +21,27 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 *
 **********************************************************************************/
-package org.sakaiproject.tool.gradebook;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package org.sakaiproject.tool.gradebook.test;
 
 /**
- * Represents the grading events for a group of students in a particular gradebook
+ * TODO Document org.sakaiproject.tool.gradebook.test.GradebookLoaderTestBase
  * 
  * @author <a href="mailto:jholtzman@berkeley.edu">Josh Holtzman</a>
  */
-public class GradingEvents {
-    protected Map studentsToEventsMap;
+public class GradebookLoaderTestBase extends GradebookTestBase {
 
-    public GradingEvents() {
-        studentsToEventsMap = new HashMap();
-    }
-    
     /**
-     * Returns a list of grading events, which may be empty if none exist.
+     * Always use the configured database, not the in-memory database, to load data
      * 
-     * @param studentId
-     * @return
+     * @see org.springframework.test.AbstractDependencyInjectionSpringContextTests#getConfigLocations()
      */
-    public List getEvents(String studentId) {
-        List gradingEvents = (List)studentsToEventsMap.get(studentId);
-        if(gradingEvents == null) {
-            return new ArrayList();
-        } else {
-            return gradingEvents;
-        }
+    protected String[] getConfigLocations() {
+        return new String[] {"components.xml", "components-test.xml", "hib.xml", "db.xml"};
     }
 
-    public void addEvent(GradingEvent event) {
-        String studentId = event.getStudentId();
-        List list = (List)studentsToEventsMap.get(studentId);
-        if(list == null) {
-            list = new ArrayList();
-            studentsToEventsMap.put(studentId, list);
-        }
-        list.add(event);
-    }
-    
 }
 
 
 /**********************************************************************************
- * $Id$
+ * $Header: $
  *********************************************************************************/

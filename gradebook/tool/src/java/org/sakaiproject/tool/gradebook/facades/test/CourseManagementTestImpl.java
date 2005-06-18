@@ -1,6 +1,6 @@
 /**********************************************************************************
 *
-* $Id$
+* $Header: /cvs/sakai2/gradebook/tool/src/java/org/sakaiproject/tool/gradebook/facades/test/CourseManagementTestImpl.java,v 1.5 2005/06/11 17:40:00 ray.media.berkeley.edu Exp $
 *
 ***********************************************************************************
 *
@@ -32,9 +32,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import org.sakaiproject.service.gradebook.shared.UnknownUserException;
 import org.sakaiproject.tool.gradebook.facades.CourseManagement;
-import org.sakaiproject.tool.gradebook.facades.User;
 import org.sakaiproject.tool.gradebook.facades.standalone.EnrollmentStandalone;
 import org.sakaiproject.tool.gradebook.facades.standalone.UserStandalone;
 
@@ -111,13 +109,7 @@ public class CourseManagementTestImpl implements CourseManagement {
 		// TODO Implement this.
 		return new ArrayList();
 	}
-
-    public User getUser(String userUid) throws UnknownUserException {
-        return new UserStandalone(userUid, "User", "User", "User");
-    }
-    
-    
 }
 /**************************************************************************************************************************************************************************************************************************************************************
- * $Id$
+ * $Header: /cvs/sakai2/gradebook/tool/src/java/org/sakaiproject/tool/gradebook/facades/test/CourseManagementTestImpl.java,v 1.5 2005/06/11 17:40:00 ray.media.berkeley.edu Exp $
  *************************************************************************************************************************************************************************************************************************************************************/
