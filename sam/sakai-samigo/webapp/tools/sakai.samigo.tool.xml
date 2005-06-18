@@ -3,7 +3,5 @@
   <tool id="sakai.samigo"
         title="Tests &amp; Quizzes"
         description="For creating and taking online tests and quizzes.">
-     <category name="course" />
-     <category name="project" />
   </tool>
 </registration>

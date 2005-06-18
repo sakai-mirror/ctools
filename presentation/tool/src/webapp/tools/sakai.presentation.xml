@@ -4,7 +4,5 @@
                         id="sakai.presentation"
                         title="Presentation"
                         description="Presentation tool.">
-                <category name="course" />
-                <category name="project" />
         </tool>
 </registration>

@@ -8,9 +8,6 @@
 			description="For posting and submitting assignment(s) online.">
 		<configuration name="withGrades" value="FALSE" />
 
-		<category name="course" />
-		<category name="project" />
-
 	</tool>
 
 </registration>
