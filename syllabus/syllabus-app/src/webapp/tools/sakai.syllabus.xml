@@ -4,9 +4,10 @@
 	<tool
 			id="sakai.syllabus"
 			title="Syllabus"
-			description="Syllabus tool for sakai.">
+			description="Syllabus tool.">
 			
 		<category name="course" />
 		<category name="project" />
 	</tool>	
 </registration>
+
