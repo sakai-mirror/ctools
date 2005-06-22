@@ -1,9 +1,9 @@
 body{width:100%;padding:0;font-family:Verdana,Geneva,Arial,Helvetica,sans-serif}
 /*GROUP 1 - top navigation*/
 /*iframe sizes for different states*/
-.sitenav-log{height:5em} /*user not logged in*/
-.sitenav-max{height:6em}  /*user logged in*/
-.sitenav-min{height:2.2em}  /*no logos or banners*/
+.sitenav-log{height:4.4em;} /*user not logged in*/
+.sitenav-max{height:6em;}  /*user logged in*/
+.sitenav-min{height:2.2em;}  /*no logos or banners*/
 /*container for the #tabNavigation ul*/
 .tabHolder{width:100%;height:auto;background:#2E3C52;padding:0}
 .tabHolder table{margin-bottom:0}
@@ -33,7 +33,7 @@ html>body #tabNavigation{margin:0 0 -1px 3px;}
 /*the tab*/
 #tabNavigation li{display:inline;line-height:.9em;}
 /*the current tab*/
-#tabNavigation .selectedTab a,#tabNavigation .selectedTab a:link,#tabNavigation .selectedTab a:visited,#tabNavigation .selectedTab a:hover{background:url(images/topright-curtab.gif) top left no-repeat #B8C2CE;color:#2E3C52;padding:3px 5px 5px 5px}
+#tabNavigation .selectedTab a,#tabNavigation .selectedTab a:link,#tabNavigation .selectedTab a:visited,#tabNavigation .selectedTab a:hover{background:url(images/topright-curtab.gif) top right no-repeat #B8C2CE;color:#2E3C52;padding:3px 5px 5px 5px}
 .workspace #tabNavigation .selectedTab a, .workspace #tabNavigation .selectedTab a:link, .workspace #tabNavigation .selectedTab a:visited, .workspace #tabNavigation .selectedTab a:hover{background:url(images/topright-curtab.gif) top right no-repeat #C2C2C2;color:#2E3C52;padding:3px 5px 5px 5px}
 .project #tabNavigation .selectedTab a, .project #tabNavigation .selectedTab a:link, .project #tabNavigation .selectedTab a:visited, .project #tabNavigation .selectedTab a:hover{background:url(images/topright-curtab.gif) top right no-repeat #C6BEAD;color:#2E3C52;padding:3px 5px 5px 5px}
 .course #tabNavigation .selectedTab a, .course #tabNavigation .selectedTab a:link, .course #tabNavigation .selectedTab a:visited,.course #tabNavigation .selectedTab a:hover{background:url(images/topright-curtab.gif) top right no-repeat #B8C2CE;color:#2E3C52;padding:3px 5px 5px 5px}
@@ -93,8 +93,8 @@ input{
 	padding:3px 3px 3px 20px}
 html #siteStatus/* */{background-position:3px center/* - adj for ie - */}
 
-#leftnavlozenge{width:11em;padding:0;margin-bottom:1em;margin-right:0em;margin-left:0px;font-size:70%;color:#293C52;clear:both;}
-#leftnavlozenge ul{list-style:none;margin:0;padding:0;border:none}
+#leftnavlozenge{width:11em;padding:0;margin-bottom:1em;margin-right:0em;margin-left:0px;font-size:70%;color:#293C52;clear:both;margin-top:0;}
+#leftnavlozenge ul{list-style:none;margin:0;padding:0;}
 #leftnavlozenge li{margin:0;width:auto}
 #leftnavlozenge li a:link, #leftnavlozenge li a{display:block;padding:5px 5px 5px 0.5em;text-decoration:none;width:100%;color:#2E3C52;}
 /*	adjust for moz + safari*/
@@ -112,7 +112,7 @@ html>body #presence{border-width:0 0 1px 0;border-style:solid;border-color: #B8C
 .portletTitleIframe{width:100% !important;margin:0 !important;height:1.3em;}
 .portletMainIframe{border:1px solid #B8C2CE;text-align:left;width:99%; margin-bottom:.5em;height:auto}
 /*GROUP 5:tableless layout*/
-#container{}
+#container{margin-top:0}
 #content{padding:.3em .3em .3em .3em;margin-left:8.5em;background-color:#fff}
 #sidebar{float:left;width:8.4em;line-height:17px;color:#293C52}
 #footer{background-color:#DDE3EB;color:#1A506A;font-size:xx-small;margin:0px;padding:0;width:auto;clear:both;top:0}
