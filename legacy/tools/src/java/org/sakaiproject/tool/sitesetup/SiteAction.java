@@ -1428,7 +1428,11 @@ public class SiteAction extends PagedResourceActionII
 				{
 					site = (Site) state.getAttribute(STATE_SITE_INSTANCE);
 					siteProperties = site.getProperties();
-					siteType = (String) state.getAttribute(STATE_SITE_TYPE);
+					siteType = site.getType();
+					if (siteType != null)
+					{
+						state.setAttribute(STATE_SITE_TYPE, siteType);
+					}
 					
 					boolean isMyWorkspace = false;
 					if (SiteService.isUserSite(site.getId()))
