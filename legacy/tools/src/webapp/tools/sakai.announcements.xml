@@ -14,6 +14,10 @@
 		<category name="project" />
 		<category name="myworkspace" />
 
+		<category name="GradToolsStudent" />
+		<category name="GradToolsRackham" />
+		<category name="GradToolsDepartment" />
+
 	</tool>
 
 </registration>

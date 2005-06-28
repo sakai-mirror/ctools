@@ -18,6 +18,10 @@
 		<category name="course" />
 		<category name="project" />
 
+		<category name="GradToolsStudent" />
+		<category name="GradToolsRackham" />
+		<category name="GradToolsDepartment" />
+
 	</tool>
 
 </registration>
