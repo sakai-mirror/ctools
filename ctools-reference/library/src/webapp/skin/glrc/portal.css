@@ -1,0 +1,424 @@
+body{
+	width: 100%;
+	padding: 0;
+	font-family: 'Trebuchet MS', Verdana, sans-serif;
+	background-color: #fff;
+	color: #00;
+}
+
+.siteNavBlock{
+}
+
+/*GROUP 1 - top navigation*/
+/*iframe sizes for different states*/
+.sitenav-log{
+	/*user not logged in*/
+	height: 3.5em;
+}
+
+.sitenav-max{
+	/*user logged in*/
+	height: 92px;
+}
+
+.sitenav-min{
+	/*no logos or banners*/
+	height: 2em;
+}
+
+/*container for the #tabNavigation ul*/
+.tabHolder{
+	width: 100%;
+	height: auto;
+	background: #c16700;
+	padding: .2em 0;
+}
+
+.tabHolder table{
+	margin-bottom: 0;
+}
+
+.tabHolder table td{
+	margin: 0;
+	padding: 0;
+}
+
+.tabHolder table td.tabCell{
+	padding: 0;
+}
+
+.tabHolder table td.selectCell{
+	text-align: left;
+	padding: 0 0 0 .3em;
+}
+
+.tabHolder table td.selectCell select{
+	display: inline;
+	font-size: .7em;
+	margin: 0 0 0 3px;
+	padding: 0;
+}
+
+.tabHolder table td.galleryLogin{
+	font-size: .7em;
+	padding-left: 5em;
+}
+
+.tabHolder table td.galleryLogin a, .tabHolder table td.mast-head-r a:visited {
+	color: #fff;
+}
+
+.tabHolder table td.galleryLogin a:hover{
+	color: #1997BB;
+	text-decoration: underline;
+}
+
+.skip {
+	display: inline;
+	position: absolute;
+	top: -999px;
+	left: -999px;
+	height: 0;
+	width:0;
+}
+
+#tabNavigation li h1 {
+	font-weight: normal !important;
+	display: inline;
+	color: red;
+}
+
+/*ul - the li are the tabs*/
+#tabNavigation{
+	white-space: nowrap;
+	list-style: none none none;
+	font-size: .8em;
+	margin: 0 0 -2px 3px;
+	padding: 4px 0;
+	width: 100%;
+}
+
+/*hacks for moz and saf*/	
+html>body #tabNavigation{
+	margin: 0 0 -1px 3px;
+}
+
+\head+body #tabNavigation{
+	margin: 0 0 -1px 3px;
+}
+
+/*displays a bar on bottom of tabs*/
+#tabBottom{
+	display: none;
+}
+
+/*the tab*/
+#tabNavigation li{
+	display: inline;
+	line-height: .9em;
+}
+
+/*the current tab*/
+#tabNavigation .selectedTab a,#tabNavigation .selectedTab a:link,#tabNavigation .selectedTab a:visited,
+	#tabNavigation .selectedTab a:hover{
+	color: #fff;
+	font-weight: bold;
+	text-decoration: underline;
+	padding: 3px 5px 5px 5px;
+	text-decoration: underline;
+}
+
+/*various hacks for this and that browser*/
+html>body #tabNavigation .selectedTab a,html>body #tabNavigation .selectedTab a:link,html>body #tabNavigation .selectedTab a:visited{
+	padding: 4px 5px 5px 5px;
+	margin: 0 0 -1px 3px;
+}
+
+\head+body #tabNavigation .selectedTab a,\head+body #tabNavigation .selectedTab a:link,\head+body #tabNavigation .selectedTab a:visited,\head+body #tabNavigation .selectedTab a:hover{
+	padding: 3px 5px 4px 5px;
+	margin: 0 0 -1px 3px;
+}
+
+/*the link inside the tab*/
+#tabNavigation a,#tabNavigation a:link,#tabNavigation a:visited{
+	color: #fff;
+	height: .8em;
+	margin: 0;
+	padding: 2px 6px;
+	text-decoration: none;
+	border-right: 1px solid #FFF;
+}
+
+/*various hacks for this and that browser*/
+html #tabNavigation a/* */,html #tabNavigation a:link/* */,html #tabNavigation a:visited/* */{
+	border-bottom: none;
+	height: auto;
+	margin: 0;
+}
+
+html>body #tabNavigation a,html>body #tabNavigation a:link,html>body #tabNavigation a:visited{
+	border-bottom: none;
+	padding: 4px 6px 4px 6px;
+}
+
+\head+body #tabNavigation a,\head+body #tabNavigation a:link,\head+body #tabNavigation a:visited{
+	padding: 3px 6px 3px 6px;
+}
+
+/*the hover for the tabs*/
+#tabNavigation a:hover{
+	color: #fff;
+	text-decoration: underline;
+}
+
+.fixTabsIE{
+	visibility: hidden;
+	display: none;
+	border-width: 0;
+}
+
+/*a convenience class - overrides the color in selected regions*/
+.divColor{
+	background-color: #FFF !important;
+}
+ 
+/*GROUP 2 - masthead - holds logos, banners, login form and links*/
+.mast-head{
+	width: 100%;
+	margin: 0;
+	font-size: .8em;
+	color: #084A87;
+/*#963#ccca66*/
+	background-color: #626;
+}
+
+.mast-head td.left{
+}
+
+.mast-head td.left img{
+}
+
+.mast-head td.middle{
+}
+
+.mast-head td.middle img{
+	display: none;
+}
+
+.mast-head td.right{
+	text-align: right;
+	white-space: nowrap;
+	padding-right: 15px;
+}
+
+.mast-head td.right img{
+	display: none;
+}
+
+.mast-head td.right a,.mast-head .right a:visited{
+	color: #fff;
+}
+
+.mast-head td.right a:hover{
+	color: #fff;
+	text-decoration: none;
+}
+
+/*since this skin is used as default - some definition for the login form elements*/
+input{
+	border: 1px solid #90A1C6;
+	background-color: #E9ECF3;
+	padding: 3px;
+	font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
+	color: #90A1C6;
+}
+
+.button{
+	border: 1px solid #90A1C6;
+	background-color: #E9ECF3;
+	margin-left: 1em;
+	padding: 1px;
+	color: #90A1C6;
+}
+
+/* GROUP 3 - tool menu  */
+#divLogo {
+	text-align: center;
+	margin: 1em 0;
+}
+
+#siteType {
+	display: none;
+}
+
+#siteStatus{
+	text-transform: capitalize;
+	background: url(images/warn.gif) 3px 3px no-repeat #fff;
+	border: 1px solid  #536377;
+	clear: both;
+	color: #1A506A;
+	font-size: x-small;
+	margin: 5px 2px 15px 2px;
+	padding: 3px 3px 3px 20px;
+}
+
+#leftnavlozenge{
+	width: 12em;
+	padding: 0;
+	margin-bottom: 1em;
+	margin-right: 0em;
+	margin-left: 0px;
+	font-size: 80%;
+	color: #000;
+	clear: both;
+	background: #FFF;
+}
+
+#leftnavlozenge ul{
+	list-style: none;
+	text-align: right;
+	margin: 0px 15px 0px 5px;
+	padding: 0;
+}
+
+#leftnavlozenge li{
+	margin: 0px;
+	border: 1px solid #fff;
+	width: auto;
+	color: #5A6D95;
+	background: #FFF;
+	padding: 0px;
+}
+
+#leftnavlozenge li a:link, #leftnavlozenge li a{
+	display: block;
+	text-decoration: none;
+	color: #0E0046;
+	padding: 2px 0px 2px 4px;
+}
+
+#leftnavlozenge li a.selected,#leftnavlozenge li a:hover{
+	display: block;
+	text-decoration: underline;
+	color: #0E0046;
+	padding: 2px 0px 2px 4px;
+}
+
+	
+#leftnavlozenge li a:hover {
+	display: block;
+	text-decoration: underline;
+	color: #0E0046;
+	padding: 2px 0px 2px 4px;
+}
+
+#pres_title {
+	font: normal normal 11px Arial, sans-serif;
+	color: #C16700;
+	border-bottom: 1px solid silver;
+	padding-left: 4px;
+	margin-left: .5em;
+	margin-right: 1em;
+	height: 22px;
+	text-transform: lowercase;
+}
+
+#presence {
+	background: #fff;
+	height: 100px !important;
+	padding: 4px 0px 0px 2px;
+	width: 7.9em;
+	margin: 0px 0px 0px 5px !important;
+}
+
+/* GROUP 4 - content and channels */
+	
+.portletTitleIframe{
+	margin: 0 !important;
+	height: 1.5em;
+	border-bottom: 0px solid #0e0046;
+}
+
+.portletTitleWrap{
+	width: 95.5%;
+	margin-top: 1em;
+}
+
+.portletMainWrap{
+	width: 94.5%;
+}
+
+.portletMainIframe{
+	text-align: left;
+	margin-bottom: .5em;
+	height: auto;
+	border: 1px solid #0E0046;
+}
+
+/*GROUP 5:tableless layout*/
+#container{
+	background: #FFF;
+}
+
+
+#content{
+	padding: 0 .3em .3em .3em;
+	margin-left: 9.8em;
+	background-color: #fff;
+}
+
+#sidebar{
+	float: left;
+	width: 9.4em;
+	line-height: 17px;
+	color: #000;
+	position: fixed;
+	top: 6em; 
+}
+
+#footer{
+	background-color: #c16700;
+	color: #000;
+	font-size: xx-small;
+	margin: 0px;
+	padding: 0;
+	width: auto;
+	clear: both;
+	top: 0;
+	border-top: 1px solid #fff;
+}
+
+.footerExtNav{
+	padding-top: .5em;
+	padding-bottom: .5em;
+}
+
+.footerExtNav a,.footerExtNav A:link,.footerExtNav A:visited{
+	color: #FFF;
+	text-decoration: none;
+	margin: 1em;
+}
+
+.footerExtNav a:hover{
+	color: #fff;
+	text-decoration: underline;
+	margin: 1em;
+}
+
+#footerInfo{
+	background-color: #FFF;
+	font-size: xx-small;
+	text-align: center;
+	clear: both;
+	padding-bottom: 1em;
+}
+
+#footerInfo img{
+	margin-top: .5em;
+	margin-bottom: .5em;
+}
+
+.sakaiCopyrightInfo{
+	color: #0e0046;
+}
+

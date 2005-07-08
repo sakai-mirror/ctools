@@ -1,8 +1,8 @@
 body{width:100%;padding:0;font-family:Verdana,Geneva,Arial,Helvetica,sans-serif}
 /*GROUP 1 - top navigation*/
 /*iframe sizes for different states*/
-.sitenav-log{height:4.4em;} /*user not logged in*/
-.sitenav-max{height:6em;}  /*user logged in*/
+.sitenav-log{height:85px;} /*user not logged in*/
+.sitenav-max{height:95px;}  /*user logged in*/
 .sitenav-min{height:2.2em;}  /*no logos or banners*/
 /*container for the #tabNavigation ul*/
 .tabHolder{width:100%;height:auto;background:#2E3C52;padding:0}
@@ -20,7 +20,7 @@ body{width:100%;padding:0;font-family:Verdana,Geneva,Arial,Helvetica,sans-serif}
 	white-space:nowrap;
 	list-style:none none none;
 	font-size:.8em;
-	margin:0 0 -2px 3px;
+	margin:0 0 0 3px;
 	padding:4px 0;
 	width:100%}
 /*hacks for moz and saf*/	
@@ -61,7 +61,7 @@ html>body #tabNavigation a,html>body #tabNavigation a:link,html>body #tabNavigat
 .course .divColor{background-color:#B8C2CE !important} 
 .project .divColor{background-color:#C6BEAD !important} 
 /*GROUP 2 - masthead - holds logos, banners, login form and links*/
-.mast-head{width:100%;background-color:#51698D;margin:0;font-size:.8em;color:#1997BB;}
+.mast-head{width:100%;background-color:#51698D;margin:0;font-size:.8em;color:#fff;}
 .mast-head td.left{width:80px}
 .mast-head td.middle{}
 .mast-head td.right{text-align:right;white-space:nowrap;padding:5px 15px 5px 5px}
@@ -69,17 +69,21 @@ html>body #tabNavigation a,html>body #tabNavigation a:link,html>body #tabNavigat
 .mast-head td.right a:hover{color:#fff;text-decoration:underline}
 /*since this skin is used as default - some definition for the login form elements*/
 input{
-	border:1px solid #1D97C2;
-	background-color:#E4F5FC;
+	border:1px solid #ccc;
+	background-color:#fff;
 	padding:3px;
 	font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
-	color:#1D97C2}
-.button{
-	border:1px solid #1D97C2;
-	background-color:#E4F5FC;
+	margin-left:.5em;	
+	color:#000}
+#submit{
+	border:1px solid  #51698D;
+	background-color:#eee;
 	margin-left:1em;
-	padding:1px;
-	color:#1D97C2}
+	font-size:.9em;
+	padding:2px;
+	color:#777}
+#submit:hover{	border:1px solid #eee;color:#000}
+
 /* GROUP 3 - tool menu  */
 
 #divLogo {text-align:center;margin-bottom:.5em}
