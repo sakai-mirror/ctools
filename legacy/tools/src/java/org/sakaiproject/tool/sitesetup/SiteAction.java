@@ -7831,8 +7831,10 @@ public class SiteAction extends PagedResourceActionII
 											{
 												DiscussionService.importResources(oSiteId, nSiteId, new Vector());
 											}
-											else if (toolId.equalsIgnoreCase("sakai.assignment"))
+											else if (toolId.equalsIgnoreCase("sakai.assignment") 
+													|| toolId.equalsIgnoreCase("sakai.assignment.grades"))
 											{
+												// for both Assignment with Grades tool and Assignment without Grades tool
 												AssignmentService.importResources(oSiteId, nSiteId, new Vector());
 											}
 											else if (toolId.equalsIgnoreCase("sakai.schedule"))
@@ -9779,8 +9781,10 @@ public class SiteAction extends PagedResourceActionII
 					{
 						DiscussionService.importResources(fromSiteId, toSiteId, new Vector());
 					}
-					else if (toolId.equalsIgnoreCase("sakai.assignment"))
+					else if (toolId.equalsIgnoreCase("sakai.assignment") 
+							|| toolId.equalsIgnoreCase("sakai.assignment.grades"))
 					{
+						// for both Assignment with Grades tool and Assignment without Grades tool
 						AssignmentService.importResources(fromSiteId, toSiteId, new Vector());
 					}
 					else if (toolId.equalsIgnoreCase("sakai.schedule"))

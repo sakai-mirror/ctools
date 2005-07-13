@@ -2902,6 +2902,7 @@ public abstract class BaseContentService implements ContentHostingService, Cache
 							p.addAll(oProperties);
 							// complete the edit
 							m_storage.commitCollection(edit);
+							((BaseCollectionEdit) edit).closeEdit();
 						}
 						catch (IdUsedException e) {}
 						catch (IdInvalidException e) {}
@@ -2924,6 +2925,7 @@ public abstract class BaseContentService implements ContentHostingService, Cache
 							p.addAll(oProperties);
 							// complete the edit
 							m_storage.commitResource(edit);
+							((BaseResourceEdit) edit).closeEdit();
 						}
 						catch (PermissionException e) {}
 						catch (IdUsedException e) {}
