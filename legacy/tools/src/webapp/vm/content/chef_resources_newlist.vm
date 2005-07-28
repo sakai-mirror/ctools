@@ -167,14 +167,20 @@
 						<div class="itemAction">
 							#set ($itemsOnLine = 0)
 							####### deal with Pasting copied items - 1
-							#if($copyFlag && $copyFlag.equals($TRUE) && $root.canAddItem())
+							#if(($!copyFlag.equals($TRUE) || $!cutFlag.equals($TRUE)) && $root.canAddItem())
 								#if ($itemsOnLine > 0)
 									|
 								#end
 								#set ($itemsOnLine = $itemsOnLine + 1)
-								<a href="#toolLink("ResourcesAction" "doPasteitem")&itemId=${validator.escapeUrl($copiedItem)}&collectionId=${validator.escapeUrl(${root.id})}" title="$tlang.getString('list.paste1')">
-									$tlang.getString("list.paste1")
-								</a>
+								#if ($!copyFlag.equals($TRUE))
+									<a href="#toolLink("ResourcesAction" "doPasteitem")&itemId=${validator.escapeUrl($copiedItem)}&collectionId=${validator.escapeUrl(${root.id})}" title="$tlang.getString('list.paste1')">
+										$tlang.getString("list.paste1")
+									</a>
+								#elseif ($!cutFlag.equals($TRUE))
+									<a href="#toolLink("ResourcesAction" "doPasteitem")&itemId=${validator.escapeUrl($cutItem)}&collectionId=${validator.escapeUrl(${root.id})}" title="$tlang.getString('list.paste3')">
+										$tlang.getString("list.paste3")
+									</a>
+								#end
 							#end
 							####### deal with editing/viewing file/folder information
 							#if ($atHome && !$atHome == $TRUE)
@@ -310,14 +316,20 @@
 							<div class="itemAction" style="margin-left:2.5em;">
 								#set ($itemsOnLine = 0)
 								####### deal with Pasting copied items  3
-								#if($copyFlag && $copyFlag.equals($TRUE) && $member.canAddItem())
+								#if(($!copyFlag.equals($TRUE) || $!cutFlag.equals($TRUE)) && $member.canAddItem())
 									#if ($itemsOnLine > 0)
 										|
 									#end
 									#set ($itemsOnLine = $itemsOnLine + 1)
-									<a href="#toolLink("ResourcesAction" "doPasteitem")&itemId=${validator.escapeUrl($copiedItem)}&collectionId=${validator.escapeUrl(${member.id})}" title="$tlang.getString('list.paste1')">
-										$tlang.getString("list.paste1")
-									</a>
+									#if ($!copyFlag.equals($TRUE))
+										<a href="#toolLink("ResourcesAction" "doPasteitem")&itemId=${validator.escapeUrl($copiedItem)}&collectionId=${validator.escapeUrl(${member.id})}" title="$tlang.getString('list.paste1')">
+											$tlang.getString("list.paste1")
+										</a>
+										#elseif ($!cutFlag.equals($TRUE))
+											<a href="#toolLink("ResourcesAction" "doPasteitem")&itemId=${validator.escapeUrl($cutItem)}&collectionId=${validator.escapeUrl(${member.id})}" title="$tlang.getString('list.paste3')">
+												$tlang.getString("list.paste3")
+											</a>
+										#end
 								#end
 								####### deal with editing/viewing file/folder information
 								#if ($member.canRevise())
@@ -423,8 +435,8 @@
 										|
 									#end
 									#set ($itemsOnLine = $itemsOnLine + 1)
-									<a href="#toolLink("ResourcesAction" "doCopyitem")&itemId=$validator.escapeUrl(${member.id})" title ="$tlang.getString('list.item')">
-										$tlang.getString("list.copy")
+									<a href="#toolLink("ResourcesAction" "doCutitem")&itemId=$validator.escapeUrl(${member.id})" title ="$tlang.getString('list.item')">
+										$tlang.getString("list.cut")
 									</a>
 								#end
 								####### deal with deleting item
@@ -450,9 +462,14 @@
 								#end
 							</div>
 						#end
-						#if($copyFlag && "${member.id}" == "$copiedItem")
+						#if($!copyFlag && "${member.id}" == "$copiedItem")
 							<div class="inlineAlert">
 								$tlang.getString("list.copied")
+							</div>
+						#end
+						#if($cutFlag && "${member.id}" == "$cutItem")
+							<div class="inlineAlert">
+								$tlang.getString("list.cutitem")
 							</div>
 						#end
 					</td>

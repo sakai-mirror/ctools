@@ -385,6 +385,9 @@ extends VelocityPortletPaneledAction
 
 	/** The cut item ids */
 	private static final String STATE_CUT_IDS = "resources.revise_cut_ids";
+	
+	/** The cut item id */
+	private static final String STATE_CUT_ID = "resources.revise_cut_id";
 
 	/************** the copied items context *****************************************/
 
@@ -718,11 +721,24 @@ extends VelocityPortletPaneledAction
 			contentService.checkCollection (collectionId);
 			context.put ("collectionFlag", Boolean.TRUE.toString());
 
-			String copyFlag = (String) state.getAttribute (STATE_COPY_FLAG);
-			context.put ("copyFlag", copyFlag);
-			if (copyFlag.equals (Boolean.TRUE.toString()))
+			if (state.getAttribute (STATE_COPY_FLAG) != null)
 			{
-				context.put ("copiedItem", state.getAttribute (STATE_COPIED_ID));
+				String copyFlag = (String) state.getAttribute (STATE_COPY_FLAG);
+				context.put ("copyFlag", copyFlag);
+				if (copyFlag.equals (Boolean.TRUE.toString()))
+				{
+					context.put ("copiedItem", state.getAttribute (STATE_COPIED_ID));
+				}
+			}
+			
+			if (state.getAttribute (STATE_CUT_FLAG) != null)
+			{
+				String cutFlag = (String) state.getAttribute (STATE_CUT_FLAG);
+				context.put ("cutFlag", cutFlag);
+				if (cutFlag.equals (Boolean.TRUE.toString()))
+				{
+					context.put ("cutItem", state.getAttribute (STATE_CUT_ID));
+				}
 			}
 
 			context.put("expandallflag", state.getAttribute(STATE_EXPAND_ALL_FLAG));
@@ -7759,6 +7775,62 @@ extends VelocityPortletPaneledAction
 		}	// if-else
 
 	}	// doCopyitem
+	
+	/**
+	* set the state name to be "copy" if any item has been selected for cutting
+	*/
+	public void doCutitem ( RunData data )
+	{
+		// get the state object
+		SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
+
+		String itemId = data.getParameters ().getString ("itemId");
+		
+		if (itemId == null)
+		{
+			// there is no resource selected, show the alert message to the user
+			addAlert(state, rb.getString("choosefile6"));
+			state.setAttribute (STATE_MODE, MODE_LIST);
+		}
+		else
+		{
+			try
+			{
+				ResourceProperties properties = ContentHostingService.getProperties (itemId);
+				if (properties.getProperty (ResourceProperties.PROP_IS_COLLECTION).equals (Boolean.TRUE.toString()))
+				{
+					String alert = (String) state.getAttribute(STATE_MESSAGE);
+					if (alert == null || ((alert != null) && (alert.indexOf(RESOURCE_INVALID_OPERATION_ON_COLLECTION_STRING) == -1)))
+					{
+						addAlert(state, RESOURCE_INVALID_OPERATION_ON_COLLECTION_STRING);
+					}
+				}
+				else
+				{
+					if (ContentHostingService.allowRemoveResource (itemId))
+					{
+						state.setAttribute (STATE_CUT_FLAG, Boolean.TRUE.toString());
+
+						state.setAttribute (STATE_CUT_ID, itemId);
+					}
+					else
+					{
+						addAlert(state, rb.getString("notpermis16") +" " + itemId);
+					}
+				}
+			}
+			catch (PermissionException e)
+			{
+				addAlert(state, rb.getString("notpermis15"));
+			}
+			catch (IdUnusedException e)
+			{
+				addAlert(state,RESOURCE_NOT_EXIST_STRING);
+			}	// try-catch
+			
+		}	// if-else
+
+	}	// doCutitem
 
 	/**
 	* Paste the previously copied item(s)
@@ -7771,8 +7843,20 @@ extends VelocityPortletPaneledAction
 
 		// get the copied item to be pasted
 		String itemId = params.getString("itemId");
-
+		
 		String collectionId = params.getString ("collectionId");
+		
+		boolean cut = false;
+		boolean cutPasteSameCollection = false;
+		if (state.getAttribute(STATE_CUT_FLAG) != null && ((String)state.getAttribute (STATE_CUT_FLAG)).equals (Boolean.TRUE.toString()))
+		{
+			cut = true;
+			// cut-paste to the same collection?
+			if (ContentHostingService.getContainingCollectionId(itemId).equals(collectionId))
+			{
+				cutPasteSameCollection = true;
+			}
+		}
 		
 		String originalDisplayName = NULL_STRING;
 
@@ -7795,13 +7879,8 @@ extends VelocityPortletPaneledAction
 				// paste the resource
 				ContentResource resource = ContentHostingService.getResource (itemId);
 				ResourceProperties p = ContentHostingService.getProperties(itemId);
-				String displayName = DUPLICATE_STRING + p.getProperty(ResourceProperties.PROP_DISPLAY_NAME);
+				String displayName = cut?p.getProperty(ResourceProperties.PROP_DISPLAY_NAME):DUPLICATE_STRING + p.getProperty(ResourceProperties.PROP_DISPLAY_NAME);
 				String id = collectionId + Validator.escapeResourceName(displayName);
-
-				// cut-paste to the same collection?
-				boolean cutPasteSameCollection = false;
-
-				int countNumber = 1;
 
 				ResourcePropertiesEdit resourceProperties = ContentHostingService.newResourceProperties ();
 
@@ -7822,27 +7901,59 @@ extends VelocityPortletPaneledAction
 						}
 					}
 				}
-				try
+				
+				if (!(cut && cutPasteSameCollection))
 				{
-					// paste the copied resource to the new collection
-					ContentResource newResource = ContentHostingService.addResource (id, resource.getContentType (), resource.getContent (), resourceProperties, NotificationService.NOTI_NONE);
+					// if cut and paste item into same collection, nothing needs to be changed.
+					// else we need to add the paste item
+					try
+					{
+						// paste the copied resource to the new collection
+						ContentResource newResource = ContentHostingService.addResource (id, resource.getContentType (), resource.getContent (), resourceProperties, NotificationService.NOTI_NONE);
+						
+						if (cut)
+						{
+							//	remove the cut item
+							try
+							{
+								ContentHostingService.removeResource (itemId);
+							}
+							catch (PermissionException ee)
+							{
+								addAlert(state, rb.getString("notpermis6") + " " + displayName + ". ");
+							}
+							catch (IdUnusedException ee)
+							{
+								addAlert(state,RESOURCE_NOT_EXIST_STRING + itemId + ".");
+							}
+							catch (TypeException ee)
+							{
+								addAlert(state, rb.getString("deleteres") + " " + displayName + " " + rb.getString("wrongtype"));
+							}	
+							catch (InUseException ee)
+							{
+								addAlert(state, rb.getString("deleteres") + " " + displayName + " " + rb.getString("locked"));
+							}// try - catch
+						}
+						
+					}
+					catch (InconsistentException e)
+					{
+						addAlert(state,RESOURCE_INVALID_TITLE_STRING);
+					}
+					catch (IdInvalidException e)
+					{
+						addAlert(state,rb.getString("title") + " " + e.getMessage ());
+					}
+					catch (OverQuotaException e)
+					{
+						addAlert(state, rb.getString("overquota"));
+					}
+					catch (IdUsedException e)
+					{
+						addAlert(state, rb.getString("notaddreso") + " " + id + rb.getString("used2"));
+					}	// try-catch
 				}
-				catch (InconsistentException e)
-				{
-					addAlert(state,RESOURCE_INVALID_TITLE_STRING);
-				}
-				catch (IdInvalidException e)
-				{
-					addAlert(state,rb.getString("title") + " " + e.getMessage ());
-				}
-				catch (OverQuotaException e)
-				{
-					addAlert(state, rb.getString("overquota"));
-				}
-				catch (IdUsedException e)
-				{
-					addAlert(state, rb.getString("notaddreso") + " " + id + rb.getString("used2"));
-				}	// try-catch
 
 			}	// if-else
 		}
@@ -7852,7 +7963,7 @@ extends VelocityPortletPaneledAction
 		}
 		catch (IdUnusedException e)
 		{
-			addAlert(state,RESOURCE_NOT_EXIST_STRING);
+			addAlert(state,RESOURCE_NOT_EXIST_STRING + itemId + ".");
 		}
 		catch (TypeException e)
 		{
@@ -7878,9 +7989,15 @@ extends VelocityPortletPaneledAction
 			}			
 
 			// reset the copy flag
-			if (((String)state.getAttribute (STATE_COPY_FLAG)).equals (Boolean.TRUE.toString()))
+			if (state.getAttribute (STATE_COPY_FLAG) != null && ((String)state.getAttribute (STATE_COPY_FLAG)).equals (Boolean.TRUE.toString()))
 			{
 				state.setAttribute (STATE_COPY_FLAG, Boolean.FALSE.toString());
+			}
+			
+			// reset the cut flag
+			if (state.getAttribute (STATE_CUT_FLAG) != null && ((String)state.getAttribute (STATE_CUT_FLAG)).equals (Boolean.TRUE.toString()))
+			{
+				state.setAttribute (STATE_CUT_FLAG, Boolean.FALSE.toString());
 			}
 		}
 
