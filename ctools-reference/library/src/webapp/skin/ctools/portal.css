@@ -125,3 +125,11 @@ html>body #presence{border-width:0 0 1px 0;border-style:solid;border-color: #B8C
 .footerExtNav a:hover{color:#1A506A;text-decoration:underline;margin:1em}
 #footerInfo{background-color:#FFF;font-size:xx-small;text-align:center;clear:both}
 #footerInfo img{margin-top:.5em;margin-bottom:.5em}
+.skip {
+	display: inline;
+	position: absolute;
+	top: -999px;
+	left: -999px;
+	height: 0;
+	width:0;
+}

@@ -483,7 +483,7 @@ extends VelocityPortletPaneledAction
 
 		String template = null;
 
-		// place if notification is enabled and current site is not of MyWorkspace type
+		// place if notification is enabled and current site is not of My Workspace type
 		boolean isUserSite = SiteService.isUserSite(PortalService.getCurrentSiteId());
 		context.put("notification", new Boolean(!isUserSite && notificationEnabled(state)));
 
@@ -3965,25 +3965,23 @@ extends VelocityPortletPaneledAction
 			{
 				item.setMetadata(new Hashtable());
 			}
-
 			// for collections only
 			if(item.isFolder())
 			{
 				// setup for quota - ADMIN only, collection only
 				if (SecurityService.isSuperUser())
 				{
+					
+					item.setCanSetQuota(true);
 					try
 					{
 						long quota = properties.getLongProperty(ResourceProperties.PROP_COLLECTION_BODY_QUOTA);
-						// context.put("hasQuota", Boolean.TRUE);
-						// context.put("quota", properties.getProperty(ResourceProperties.PROP_COLLECTION_BODY_QUOTA));
+						item.setHasQuota(true);
+						item.setQuota(Long.toString(quota));
 					}
 					catch (Exception any)
 					{
-						// context.put("hasQuota", Boolean.FALSE);
 					}
-
-					// context.put("setQuota", Boolean.TRUE);
 				}
 			}
 
@@ -4580,7 +4578,22 @@ extends VelocityPortletPaneledAction
 				}
 			}
 		}
-		else if(! item.isFolder())
+		else if(item.isFolder())
+		{
+			if(item.canSetQuota())
+			{
+				// read the quota fields
+				String setQuota = params.getString("setQuota");
+				boolean hasQuota = params.getBoolean("hasQuota");
+				item.setHasQuota(hasQuota);
+				if(hasQuota)
+				{
+					int q = params.getInt("quota");
+					item.setQuota(Integer.toString(q));
+				}
+			}
+		}
+		else
 		{
 			// check for copyright status
 			// check for copyright info
@@ -4752,8 +4765,7 @@ extends VelocityPortletPaneledAction
 		// read the quota fields
 		String setQuota = params.getString("setQuota");
 		String hasQuota = params.getString("hasQuota");
-		String quota = params.getString("quota");
-		
+		String quota = params.getString("quota");		
 
 		if(flow.equals("showMetadata"))
 		{
@@ -4846,16 +4858,14 @@ extends VelocityPortletPaneledAction
 				}	// the home collection's title is not modificable
 
 				pedit.addProperty (ResourceProperties.PROP_DESCRIPTION, item.getDescription());
-				
 				// deal with quota (collections only)
-				if ((cedit != null) && (setQuota != null))
+				if ((cedit != null) && item.canSetQuota())
 				{
-					if (hasQuota != null)
+					if (item.hasQuota())
 					{
 						// set the quota
-						pedit.addProperty(ResourceProperties.PROP_COLLECTION_BODY_QUOTA, quota);
+						pedit.addProperty(ResourceProperties.PROP_COLLECTION_BODY_QUOTA, item.getQuota());
 					}
-
 					else
 					{
 						// clear the quota
@@ -8732,6 +8742,8 @@ extends VelocityPortletPaneledAction
 			super(id, name, type);
 			m_contentHasChanged = false;
 			
+			m_hasQuota = false;
+			m_canSetQuota = false;
 		}
 		
 		/**

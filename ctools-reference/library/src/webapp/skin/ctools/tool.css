@@ -29,7 +29,7 @@ background:url(images/topleft-p-title.gif) top left no-repeat #52698C;
 height:16px;
 border-bottom:3px solid #52698C;
 }
-
+.toolTitle td.title h2{display:inline;color:#fff;font-size:1em;font-weight:bold}
 .toolTitle td.action{
 background:url(images/topright-p-title.gif) top right no-repeat #52698C;
 color:#FFF;
@@ -110,11 +110,11 @@ h5{font-size:100%;color:#52698C;font-weight:normal;margin:.5em 0;background-colo
 .chefButtonRow input.active:hover,.act input.active:hover{border-width:1px;border-color:silver gray gray silver ;border-style: solid}
 
 /*toolbar*/
-.chefToolBarWrap, .chefToolBarWrapForm  {background-color:#ffc;padding:.3em;margin:-.3em -2em;text-align:center;line-height:1.5em}
+.chefToolBarWrap, .chefToolBarWrapForm, {background-color:#ffc;padding:.3em;margin:-.3em -2em;text-align:left;line-height:1.5em;padding-left:1em}
 .navIntraTool a:link, .navIntraTool a, .chefToolBarWrap a:link, .chefToolBarWrap a, .chefToolBarWrapForm a, .chefToolBarWrapForm a:link  {border:none;text-decoration:underline;margin-right:1em}
 .navIntraTool a:hover,.chefToolBarWrap a:hover, .chefToolBarWrapForm a:hover {border:none;text-decoration:underline;color:#000}
 .navIntraTool a:visited, .chefToolBarWrap a:visited, .chefToolBarWrapForm a:visited {border:none;text-decoration:underline;background-color:transparent;color:#369}
-.navIntraTool {background-color:#ffb;padding:.3em;text-align:center;line-height:1.5em}
+.navIntraTool {background-color:#ffb;padding:.3em;text-align:left;line-height:1.5em;padding-left:1em}
 
 
 /*messages*/

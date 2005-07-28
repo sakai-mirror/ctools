@@ -156,14 +156,22 @@ public class SyllabusItemImpl implements SyllabusItem
    */
   public String getRedirectURL()
   {
-    return redirectURL;
+	  if(redirectURL != null && redirectURL.length()>1)
+	  {
+		  redirectURL = redirectURL.trim();
+	  }
+	  return redirectURL;
   }
   /**
    * @param redirectURL The redirectURL to set.
    */
   public void setRedirectURL(String redirectURL)
   {
-    this.redirectURL = redirectURL;
+	  if(redirectURL != null && redirectURL.length()>1)
+	  {
+		  redirectURL = redirectURL.trim();
+	  }
+      this.redirectURL = redirectURL ;
   }
   
   /**

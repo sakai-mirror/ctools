@@ -304,14 +304,6 @@ input{
 	padding: 2px 0px 2px 4px;
 }
 
-	
-#leftnavlozenge li a:hover {
-	display: block;
-	text-decoration: underline;
-	color: #0E0046;
-	padding: 2px 0px 2px 4px;
-}
-
 #pres_title {
 	font: normal normal 11px Arial, sans-serif;
 	color: #C16700;
@@ -372,8 +364,10 @@ input{
 	width: 9.4em;
 	line-height: 17px;
 	color: #000;
+/* use after Mac IE is no more  and IE 7 Win rules (gsilver)
 	position: fixed;
 	top: 6em; 
+*/	
 }
 
 #footer{
@@ -414,6 +408,7 @@ input{
 }
 
 #footerInfo img{
+	position:relative;
 	margin-top: .5em;
 	margin-bottom: .5em;
 }
