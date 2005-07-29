@@ -74,7 +74,7 @@
 	<a name="osx"></a>
 	<h4>$tlang.getString("dav.hd4")</h4>
 	<p>$tlang.getString("dav.graf40")</p>
-    <p>$tlang.getString("dav.graf41")</p>
+      <p>$tlang.getString("dav.graf41")</p>
 	<ol>
 		<li>$tlang.getString("dav.osx1")<br />
 			<a href="http://www.webdav.org/goliath/#download" target="_blank"><code>http://www.webdav.org/goliath/#download</code></a>
@@ -96,7 +96,7 @@
 		<li>$tlang.getString("dav.osx9")</li>
 	</ol>
 
-	<a name="osxx"></a>
+<a name="osxx"></a>
 	<h4>$tlang.getString("dav.hd5")</h4>
 	<p>$tlang.getString("dav.graf50")</p>
 	<ol>
