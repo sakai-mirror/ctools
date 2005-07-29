@@ -1,0 +1,200 @@
+body{width:100%;padding:0;font-family:Verdana,Geneva,Arial,Helvetica,sans-serif}
+/*body{width:100%;padding:0;font-family: 'Trebuchet MS', Verdana, sans-serif; background-color:#fff}*/
+.siteNavBlock{
+	background:#00338B;margin:0;border-bottom:5px solid #FFCC00;
+}
+/*GROUP 1 - top navigation*/
+/*iframe sizes for different states*/
+
+.sitenav-log{height:110px;} /*user not logged in - ie*/
+.sitenav-max{height:134px;}  /*user logged in*/
+.sitenav-min{height:2em}  /*no logos or banners*/
+/*container for the #tabNavigation ul*/
+.tabHolder{width:100%;height:auto;background:#2A5EAB;padding:.2em 0;margin:0;}
+.tabHolder table{margin-bottom:0;}
+.tabHolder table td{margin:0;padding:0;}
+.tabHolder table td.tabCell{padding:0}
+.tabHolder table td.selectCell{text-align:left;padding:0 0 0 .3em;}
+.tabHolder table td.selectCell select{display:inline;font-size:.7em;margin:0 0 0 3px;padding:0}
+.tabHolder table td.galleryLogin{font-size:.7em;padding-left:5em}
+.tabHolder table td.galleryLogin a, .tabHolder table td.mast-head-r a:visited  {color:#fff}
+.tabHolder table td.galleryLogin a:hover{color:#1997BB;text-decoration:underline}
+
+
+.skip  { 
+	display:inline; position:absolute; top:-999px;
+	left:-999px; height:0 
+}
+#tabNavigation li h1 {
+font-weight:normal !important;
+display:inline;
+color:red
+}
+/*ul - the li are the tabs*/
+#tabNavigation{
+	white-space:nowrap;
+	list-style:none none none;
+	font-size:.8em;
+	margin:0 0 -2px 3px;
+	padding:4px 0;
+	width:100%}
+/*hacks for moz and saf*/	
+html>body #tabNavigation{margin:0 0 -1px 3px;}
+\head+body #tabNavigation{margin:0 0 -1px 3px;}
+
+/*displays a bar on bottom of tabs*/
+
+#tabBottom{display:none}
+/*the tab*/
+#tabNavigation li{display:inline;line-height:.9em;}
+/*the current tab*/
+#tabNavigation .selectedTab a,#tabNavigation .selectedTab a:link,#tabNavigation .selectedTab a:visited,
+	#tabNavigation .selectedTab a:hover{
+	color:#fff;
+	font-weight: bold;
+	text-decoration: underline;
+	padding:3px 5px 5px 5px;
+	text-decoration: underline;
+}
+/*various hacks for this and that browser*/
+html>body #tabNavigation .selectedTab a,html>body #tabNavigation .selectedTab a:link,html>body #tabNavigation .selectedTab a:visited{padding:4px 5px 5px 5px;	margin:0 0 -1px 3px;}
+\head+body #tabNavigation .selectedTab a,\head+body #tabNavigation .selectedTab a:link,\head+body #tabNavigation .selectedTab a:visited,\head+body #tabNavigation .selectedTab a:hover{padding:3px 5px 4px 5px;	margin:0 0 -1px 3px;}
+/*the link inside the tab*/
+#tabNavigation a,#tabNavigation a:link,#tabNavigation a:visited{
+	color:#fff;
+	height:.8em;
+	margin:0;
+	padding:2px 6px;
+	text-decoration:none;
+	border-right: 1px solid #FFF;}
+/*various hacks for this and that browser*/
+html #tabNavigation a/* */,html #tabNavigation a:link/* */,html #tabNavigation a:visited/* */{border-bottom:none;height:auto;margin:0}
+html>body #tabNavigation a,html>body #tabNavigation a:link,html>body #tabNavigation a:visited{border-bottom:none;padding:4px 6px 4px 6px}
+\head+body #tabNavigation a,\head+body #tabNavigation a:link,\head+body #tabNavigation a:visited{padding:3px 6px 3px 6px}
+/*the hover for the tabs*/
+#tabNavigation a:hover{color:#fff;	text-decoration: underline;	
+	}
+.fixTabsIE{visibility:hidden;display:none;border-width:0}
+/*a convenience class - not used in these examples - overrides the color in selected regions*/
+.divColor{background-color:#FFF !important} 
+/*GROUP 2 - masthead - holds logos, banners, login form and links*/
+.mast-head{width:100%;margin:0;font-size:.8em;color:#fff;background-color:/*#963#ccca66*/#00338B}
+.mast-head td.left{width:0}
+.mast-head td.left img{display:none}
+.mast-head td.middle{}
+.mast-head td.middle img{}
+.mast-head td.right{text-align:right;white-space:nowrap;padding-top:0;padding-right:15px;vertical-align:top;margin-top:0}
+
+/*this skin is designed to be used with a login icon - with sakai.properties set to:
+login.icon=/library/skin/ctools-new/images/login.gif*/
+
+.mast-head td.right img{margin-top:0;border:0}
+.mast-head td.right a,.mast-head .right a:visited{color:#fff;margin-top:0}
+.mast-head td.right a:hover{color:#fff; text-decoration:none; }
+/*since this skin is used as default - some definition for the login form elements*/
+input{
+	border:1px solid #90A1C6;
+	background-color:#E9ECF3;
+	padding:3px;
+		margin-left:.5em;
+	font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+	color:#00338C}
+#submit{
+	border:1px solid #90A1C6;
+	background-color:#E9ECF3;
+	margin-left:1em;
+	color:#00338C}
+#submit:hover{
+	border:1px solid #90A1C6;
+	background-color:#fff;
+	margin-left:1em;
+	color:#00338C}	
+/* GROUP 3 - tool menu  */
+
+#divLogo {text-align:center;margin:1em 0}
+#siteType {display: none;}
+#siteStatus{text-transform:capitalize;	background:url(images/warn.gif) 3px 3px no-repeat #fff;
+	border:1px solid  #536377;
+	clear:both;
+	color:#1A506A;
+	font-size:x-small;
+	margin:5px 2px 15px 2px;
+	padding:3px 3px 3px 20px}
+html #siteStatus/* */{background-position:3px center/* - adj for ie - */}
+
+#leftnavlozenge{width:12em;padding:0;margin-bottom:1em;margin-right:0em;margin-left:0px;font-size:80%;color:#000;clear:both; background: #FFF;}
+#leftnavlozenge ul{list-style:none;
+text-align:right;
+	margin: 0px 15px 0px 5px;
+	padding:0;
+	}
+#leftnavlozenge li{margin:0px;border:1px solid #fff;
+	width:auto;
+	color: #5A6D95;
+	background: #FFF;
+	padding: 0px;
+	}
+#leftnavlozenge li a:link, #leftnavlozenge li a{
+	display: block;
+	text-decoration: none;
+/*	background: #F0F0F0 url(images/linkoff.gif) no-repeat right;*/
+	color: #0E0046;
+	padding: 2px 0px 2px 4px;
+	}
+#leftnavlozenge li a.selected,#leftnavlozenge li a:hover{
+	display: block;
+	text-decoration: underline;
+	/*background: #E7EAF1 url(images/linksel.gif) no-repeat right;*/
+	color: #0E0046;
+	padding: 2px 0px 2px 4px;
+	}
+	
+#leftnavlozenge li a:hover {
+	display: block;
+	text-decoration: underline;
+	color: #0E0046;
+	padding: 2px 0px 2px 4px;
+	}
+
+#pres_title {
+	font: normal normal 11px Arial, sans-serif;
+	color: #2A5EAB;
+	border-bottom:1px solid silver;
+	padding-left: 4px;
+	margin-left:.5em;
+	margin-right:1em;
+	height: 22px;
+	text-transform:  lowercase;
+	}
+#presence {
+	background: #fff;
+	height: 100px !important;
+	padding: 4px 0px 0px 2px;
+	width: 7.9em;
+	margin: 0px 0px 0px 5px !important;
+/*	border: 1px solid #90A1C6;*/
+	}
+
+/* GROUP 4 - content and channels */
+	
+.portletTitleIframe{margin:0 !important;height:1.8em;border-width:1px 1px 0 1px;border-color:#00338C; border-style: solid 
+	}
+.portletTitleWrap{width:95.5%;margin-top:1em;}
+.portletMainWrap{width:94.5%}
+.portletMainIframe{
+	text-align:left; margin-bottom:.5em;height:auto;border-width:0 1px 1px 1px;border-color:#00338C; border-style: solid }
+
+/*GROUP 5:tableless layout*/
+#container{ background: #FFF;}
+#content{padding:.3em .3em .3em .3em;margin-left:9.8em;background-color:#fff;}
+#sidebar{float:left;width:9.4em;line-height:17px;color:#000;
+/*	border-right: 1px solid #F0F0F0;*/
+	}
+#footer{background-color:#E6E6E6;color:#666;font-size:xx-small;margin:0px;padding:0;width:auto;clear:both;top:0;
+	border-top: 1px solid #fff;text-align:left !important}
+.footerExtNav{padding-top:.5em;padding-bottom:.5em}
+.footerExtNav a,.footerExtNav A:link,.footerExtNav A:visited{color:#666;text-decoration:none;margin:1em}
+.footerExtNav a:hover{color:#F00;text-decoration:underline;margin:1em}
+#footerInfo{background-color:#FFF;font-size:xx-small;text-align:center;clear:both;padding-bottom:1em}
+#footerInfo img{margin-top:.5em;margin-bottom:.5em}
+.sakaiCopyrightInfo{color:#0e0046;}

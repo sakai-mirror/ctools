@@ -29,7 +29,7 @@ background:url(images/topleft-p-title.gif) top left no-repeat #52698C;
 height:16px;
 border-bottom:3px solid #52698C;
 }
-.toolTitle td.title h2{display:inline;color:#fff;font-size:1em;font-weight:bold}
+.toolTitle td.title h2{display:inline;color:#fff;font-size:1em;font-weight:normal}
 .toolTitle td.action{
 background:url(images/topright-p-title.gif) top right no-repeat #52698C;
 color:#FFF;
@@ -37,10 +37,10 @@ padding:3px 4px 2px 2px;
 text-align:right;
 vertical-align:top
 }
-.toolTitle td.title img{margin:0;vertical-align: text-bottom;/*border:1px solid red;*/width:16px !important;}
+.toolTitle td.title img{margin:0;vertical-align: text-bottom;width:16px !important;}
 .toolTitle td.title a {background:url(images/reload.gif) top left no-repeat;}
 .toolTitle td.title a:hover{background:url(images/reload_h.gif) top left no-repeat;}
-.toolTitle td.action img{margin:0;vertical-align: text-bottom;/*border:1px solid red;*/width:16px !important;}
+.toolTitle td.action img{margin:0;vertical-align: text-bottom;width:16px !important;}
 .toolTitle td.action a {background:url(images/help.gif) top right no-repeat;}
 .toolTitle td.action a:hover{background:url(images/help_h.gif) top right no-repeat;}
 
@@ -111,7 +111,7 @@ h5{font-size:100%;color:#52698C;font-weight:normal;margin:.5em 0;background-colo
 
 /*toolbar*/
 .chefToolBarWrap, .chefToolBarWrapForm, {background-color:#ffc;padding:.3em;margin:-.3em -2em;text-align:left;line-height:1.5em;padding-left:1em}
-.navIntraTool a:link, .navIntraTool a, .chefToolBarWrap a:link, .chefToolBarWrap a, .chefToolBarWrapForm a, .chefToolBarWrapForm a:link  {border:none;text-decoration:underline;margin-right:1em}
+.navIntraTool a:link, .navIntraTool a, .chefToolBarWrap a:link, .chefToolBarWrap a, .chefToolBarWrapForm a, .chefToolBarWrapForm a:link  {border:none;text-decoration:undeline;margin-right:1em}
 .navIntraTool a:hover,.chefToolBarWrap a:hover, .chefToolBarWrapForm a:hover {border:none;text-decoration:underline;color:#000}
 .navIntraTool a:visited, .chefToolBarWrap a:visited, .chefToolBarWrapForm a:visited {border:none;text-decoration:underline;background-color:transparent;color:#369}
 .navIntraTool {background-color:#ffb;padding:.3em;text-align:left;line-height:1.5em;padding-left:1em}

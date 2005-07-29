@@ -890,8 +890,11 @@ public class BaseDbFlatStorage
 						String name = result.getString(1);
 						String value = result.getString(2);
 
-						// add to props
-						props.addProperty(name, value);
+						// add to props, if we got stuff from the fields
+						if ((name != null) && (value != null))
+						{
+							props.addProperty(name, value);
+						}
 
 						// nothing to return
 						return null;
@@ -936,8 +939,11 @@ public class BaseDbFlatStorage
 						String name = result.getString(1);
 						String value = result.getString(2);
 
-						// add to props
-						props.setProperty(name, value);
+						// add to props, if we got stuff from the fields
+						if ((name != null) && (value != null))
+						{
+							props.setProperty(name, value);
+						}
 
 						// nothing to return
 						return null;
@@ -1041,8 +1047,12 @@ public class BaseDbFlatStorage
 				{
 					fields[3] = extraId;
 				}
-	
-				m_sql.dbWrite(connection, statement, fields);
+
+				// dont write it if there's only an empty string for value
+				if (value.length() > 0)
+				{
+					m_sql.dbWrite(connection, statement, fields);
+				}
 			}
 			
 			// end the transaction
@@ -1148,8 +1158,12 @@ public class BaseDbFlatStorage
 				{
 					fields[3] = extraId;
 				}
-	
-				m_sql.dbWrite(connection, statement, fields);
+
+				// dont write it if there's only an empty string for value
+				if (value.length() > 0)
+				{
+					m_sql.dbWrite(connection, statement, fields);
+				}
 			}
 			
 			// end the transaction

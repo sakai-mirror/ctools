@@ -1,11 +1,13 @@
 body{width:100%;padding:0;font-family:Verdana,Geneva,Arial,Helvetica,sans-serif}
 /*GROUP 1 - top navigation*/
 /*iframe sizes for different states*/
-.sitenav-log{height:85px;} /*user not logged in*/
-.sitenav-max{height:95px;}  /*user logged in*/
+.sitenav-log{height:93px;} /*user not logged in*/
+html>body .sitenav-log{height:80px;} /*user not logged in Moz/Saf*/
+\head+body .sitenav-log{height:80px;} /*user not logged in Moz/Saf*/
+.sitenav-max{height:93px;}  /*user logged in*/
 .sitenav-min{height:2.2em;}  /*no logos or banners*/
 /*container for the #tabNavigation ul*/
-.tabHolder{width:100%;height:auto;background:#2E3C52;padding:0}
+.tabHolder{width:100%;height:auto;background:#2E3C52;padding:0;margin:0}
 .tabHolder table{margin-bottom:0}
 .tabHolder table td{margin:0;padding:0;}
 .tabHolder table td.tabCell{padding:0}
@@ -14,23 +16,25 @@ body{width:100%;padding:0;font-family:Verdana,Geneva,Arial,Helvetica,sans-serif}
 .tabHolder table td.galleryLogin{font-size:.8em;padding-left:2em}
 .tabHolder table td.galleryLogin a, .tabHolder table td.mast-head-r a:visited  {color:#fff}
 .tabHolder table td.galleryLogin a:hover{color:#1997BB;text-decoration:underline}
-
+.siteNavBlock{margin:0;padding:0}
 /*ul - the li are the tabs*/
 #tabNavigation{
 	white-space:nowrap;
 	list-style:none none none;
 	font-size:.8em;
-	margin:0 0 0 3px;
+	margin:0 0 0px 3px;
 	padding:4px 0;
-	width:100%}
+	width:100%
+}
 /*hacks for moz and saf*/	
 html>body #tabNavigation{margin:0 0 -1px 3px;}
 \head+body #tabNavigation{margin:0 0 -1px 3px;}
 
 /*displays a bar on bottom of tabs*/
 
-#tabBottom{color:#fff;font-size:.7em;text-align:right;padding:0;margin:0;clear:both}
+#tabBottom{color:#fff;font-size:.5em;text-align:right;padding:0;margin:0;}
 /*the tab*/
+html>body #tabBottom  {font-size:.7em;} /*for Moz*/
 #tabNavigation li{display:inline;line-height:.9em;}
 /*the current tab*/
 #tabNavigation .selectedTab a,#tabNavigation .selectedTab a:link,#tabNavigation .selectedTab a:visited,#tabNavigation .selectedTab a:hover{background:url(images/topright-curtab.gif) top right no-repeat #B8C2CE;color:#2E3C52;padding:3px 5px 5px 5px}
