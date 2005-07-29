@@ -183,7 +183,7 @@
 								#end
 							#end
 							####### deal with editing/viewing file/folder information
-							#if ($atHome && !$atHome == $TRUE)
+							##if ($atHome && !$atHome == $TRUE)
 								#if($root.canRevise())
 									#if ($itemsOnLine > 0)
 										|
@@ -201,7 +201,7 @@
 										$tlang.getString("list.props")
 									</a>
 								#end
-							#end
+							##end
 							####### deal with adding folder - 1
 							#if($root.canAddFolder())
 								#if ($itemsOnLine > 0)
@@ -435,9 +435,13 @@
 										|
 									#end
 									#set ($itemsOnLine = $itemsOnLine + 1)
-									<a href="#toolLink("ResourcesAction" "doCutitem")&itemId=$validator.escapeUrl(${member.id})" title ="$tlang.getString('list.item')">
+									#if($!cutFlag && "${member.id}" == "$cutItem")
 										$tlang.getString("list.cut")
-									</a>
+									#else
+										<a href="#toolLink("ResourcesAction" "doCutitem")&itemId=$validator.escapeUrl(${member.id})" title ="$tlang.getString('list.item')">
+											$tlang.getString("list.cut")
+										</a>
+									#end
 								#end
 								####### deal with deleting item
 								#if ($member.canDelete())

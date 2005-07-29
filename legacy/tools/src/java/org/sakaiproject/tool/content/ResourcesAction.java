@@ -455,6 +455,12 @@ extends VelocityPortletPaneledAction
 	private static final String COPYRIGHT_NEW_COPYRIGHT = rb.getString("cpright3");
 	private static final String COPYRIGHT_ALERT_URL = ServerConfigurationService.getAccessUrl() + COPYRIGHT_PATH;
 	
+	
+	private static final String TYPE_FOLDER = "folder";
+	private static final String TYPE_UPLOAD = "file";
+	private static final String TYPE_URL = "Url";
+	private static final String TYPE_FORM = "StructuredArtifact";
+	
 	/**
 	* Build the context for normal display
 	*/
@@ -3845,16 +3851,16 @@ extends VelocityPortletPaneledAction
 			boolean canDelete = ContentHostingService.allowRemoveResource(id);
 			boolean canRevise = ContentHostingService.allowUpdateResource(id);
 			boolean canCopy = ContentHostingService.allowGetCollection(id);
-			boolean isUrl = (ResourceProperties.TYPE_URL.equals(itemType));
+			//boolean isUrl = (ResourceProperties.TYPE_URL.equals(itemType));
 
 			item.setCanRead(canRead);
 			item.setCanRevise(canRevise);
 			item.setCanAddItem(canAddItem);
 			item.setCanAddFolder(canAddFolder);
 			item.setCanDelete(canDelete);
-			item.setIsUrl(isUrl);
+			//item.setIsUrl(isUrl);
 			
-			if(isUrl)
+			if(item.isUrl())
 			{
 				String url = new String(content);
 				item.setFilename(url);
@@ -3986,20 +3992,18 @@ extends VelocityPortletPaneledAction
 			if(item.isFolder())
 			{
 				// setup for quota - ADMIN only, collection only
-				if (SecurityService.isSuperUser())
+				if (SecurityService.isSuperUser() && ContentHostingService.getSiteCollection(ToolManager.getCurrentPlacement().getContext()).equals(item.getId()))
 				{
+					item.setCanSetQuota(true);
 					try
 					{
 						long quota = properties.getLongProperty(ResourceProperties.PROP_COLLECTION_BODY_QUOTA);
-						// context.put("hasQuota", Boolean.TRUE);
-						// context.put("quota", properties.getProperty(ResourceProperties.PROP_COLLECTION_BODY_QUOTA));
+						item.setHasQuota(true);
+						item.setQuota(Long.toString(quota));
 					}
 					catch (Exception any)
 					{
-						// context.put("hasQuota", Boolean.FALSE);
 					}
-
-					// context.put("setQuota", Boolean.TRUE);
 				}
 			}
 
@@ -4494,8 +4498,8 @@ extends VelocityPortletPaneledAction
 		String oldintent = (String) state.getAttribute(STATE_EDIT_INTENT);
 		boolean intent_has_changed = (item.isHtml() || item.isPlaintext()) && !intent.equals(oldintent);
 		
-		String name = params.getString("name");
-		if(name == null)
+		String name = StringUtil.trimToNull(params.getString("name"));
+		if(name == null && !ContentHostingService.getSiteCollection(ToolManager.getCurrentPlacement().getContext()).equals(item.getId()))
 		{
 			addAlert(state, rb.getString("titlenotnull"));
 		}
@@ -4596,8 +4600,23 @@ extends VelocityPortletPaneledAction
 				}
 			}
 		}
-		else if(! item.isFolder())
+		else if(item.isFolder())
 		{
+			if(item.canSetQuota())
+			{
+				// read the quota fields
+				String setQuota = params.getString("setQuota");
+				boolean hasQuota = params.getBoolean("hasQuota");
+				item.setHasQuota(hasQuota);
+				if(hasQuota)
+				{
+					int q = params.getInt("quota");
+					item.setQuota(Integer.toString(q));
+				}
+			}
+		}
+		else
+		{			
 			// check for copyright status
 			// check for copyright info
 			// check for copyright alert
@@ -4864,14 +4883,13 @@ extends VelocityPortletPaneledAction
 				pedit.addProperty (ResourceProperties.PROP_DESCRIPTION, item.getDescription());
 				
 				// deal with quota (collections only)
-				if ((cedit != null) && (setQuota != null))
+				if ((cedit != null) && item.canSetQuota())
 				{
-					if (hasQuota != null)
+					if (item.hasQuota())
 					{
 						// set the quota
-						pedit.addProperty(ResourceProperties.PROP_COLLECTION_BODY_QUOTA, quota);
+						pedit.addProperty(ResourceProperties.PROP_COLLECTION_BODY_QUOTA, item.getQuota());
 					}
-
 					else
 					{
 						// clear the quota
@@ -8488,6 +8506,14 @@ extends VelocityPortletPaneledAction
 		}
 		
 		/**
+		 * @param name
+		 */
+		public void setName(String name)
+		{
+			m_name = name;
+		}
+		
+		/**
 		 * @return
 		 */
 		public boolean canAddItem()
@@ -8826,11 +8852,13 @@ extends VelocityPortletPaneledAction
 	{
 		protected String m_copyrightStatus;
 		protected String m_copyrightInfo;
+		protected String m_formtype;
 		// protected boolean m_copyrightAlert;
 		protected boolean m_pubview;
 		protected boolean m_pubviewset;
 		protected String m_filename;
 		protected byte[] m_content;
+		protected String m_mimetype;
 		protected String m_description;
 		protected Map m_metadata;
 		protected boolean m_hasQuota;
@@ -8838,6 +8866,9 @@ extends VelocityPortletPaneledAction
 		protected String m_quota;
 		protected boolean m_isUrl;
 		protected boolean m_contentHasChanged;
+		protected int m_notification;
+		
+		protected Set m_metadataGroupsShowing;
 		
 		/**
 		 * @param id
@@ -8848,23 +8879,91 @@ extends VelocityPortletPaneledAction
 		{
 			super(id, name, type);
 			m_contentHasChanged = false;
-			
+			m_metadata = new Hashtable();
+			m_metadataGroupsShowing = new HashSet();
+			m_mimetype = type;
+			m_content = null;
+			m_notification = NotificationService.NOTI_OPTIONAL;
+			m_hasQuota = false;
+			m_canSetQuota = false;
+			m_formtype = "";
 		}
 		
 		/**
-		 * @param name
+		 * Show the indicated metadata group for the item 
+		 * @param group
 		 */
-		public void setName(String name)
+		public void showMetadataGroup(String group)
 		{
-			this.m_name = name;
+			m_metadataGroupsShowing.add(group);
 		}
 		
+		/**
+		 * Hide the indicated metadata group for the item
+		 * @param group
+		 */
+		public void hideMetadataGroup(String group)
+		{
+			m_metadataGroupsShowing.remove(group);
+			m_metadataGroupsShowing.remove(Validator.escapeUrl(group));
+		}
+		
+		/**
+		 * Query whether the indicated metadata group is showing for the item
+		 * @param group
+		 * @return true if the metadata group is showing, false otherwise
+		 */
+		public boolean isGroupShowing(String group)
+		{
+			return m_metadataGroupsShowing.contains(group) || m_metadataGroupsShowing.contains(Validator.escapeUrl(group));
+		}
+		
+		/**
+		 * @return
+		 */
+		public boolean isFileUpload() 
+		{
+			return !isFolder() && !isUrl() && !isHtml() && !isPlaintext() && !isStructuredArtifact();
+		}
+	
 		/**
 		 * @param type
 		 */
 		public void setType(String type)
 		{
-			this.m_type = type;
+			m_type = type;
+		}
+		
+		/**
+		 * @param mimetype
+		 */
+		public void setMimeType(String mimetype)
+		{
+			m_mimetype = mimetype;
+		}
+		
+		/**
+		 * @return
+		 */
+		public String getMimeType()
+		{
+			return m_mimetype;
+		}
+		
+		/**
+		 * @param formtype
+		 */
+		public void setFormtype(String formtype)
+		{
+			m_formtype = formtype;
+		}
+		
+		/**
+		 * @return
+		 */
+		public String getFormtype()
+		{
+			return m_formtype;
 		}
 		
 		/**
@@ -8877,7 +8976,7 @@ extends VelocityPortletPaneledAction
 		 * @param copyrightInfo The copyrightInfo to set.
 		 */
 		public void setCopyrightInfo(String copyrightInfo) {
-			this.m_copyrightInfo = copyrightInfo;
+			m_copyrightInfo = copyrightInfo;
 		}
 		/**
 		 * @return Returns the copyrightStatus.
@@ -8889,7 +8988,7 @@ extends VelocityPortletPaneledAction
 		 * @param copyrightStatus The copyrightStatus to set.
 		 */
 		public void setCopyrightStatus(String copyrightStatus) {
-			this.m_copyrightStatus = copyrightStatus;
+			m_copyrightStatus = copyrightStatus;
 		}
 		/**
 		 * @return Returns the description.
@@ -8901,7 +9000,7 @@ extends VelocityPortletPaneledAction
 		 * @param description The description to set.
 		 */
 		public void setDescription(String description) {
-			this.m_description = description;
+			m_description = description;
 		}
 		/**
 		 * @return Returns the filename.
@@ -8913,7 +9012,7 @@ extends VelocityPortletPaneledAction
 		 * @param filename The filename to set.
 		 */
 		public void setFilename(String filename) {
-			this.m_filename = filename;
+			m_filename = filename;
 		}
 		/**
 		 * @return Returns the metadata.
@@ -8925,7 +9024,7 @@ extends VelocityPortletPaneledAction
 		 * @param metadata The metadata to set.
 		 */
 		public void setMetadata(Map metadata) {
-			this.m_metadata = metadata;
+			m_metadata = metadata;
 		}
 		/**
 		 * @param name
@@ -8945,7 +9044,7 @@ extends VelocityPortletPaneledAction
 		 * @param pubview The pubview to set.
 		 */
 		public void setPubview(boolean pubview) {
-			this.m_pubview = pubview;
+			m_pubview = pubview;
 		}
 		/**
 		 * @return Returns the pubviewset.
@@ -8957,7 +9056,7 @@ extends VelocityPortletPaneledAction
 		 * @param pubviewset The pubviewset to set.
 		 */
 		public void setPubviewset(boolean pubviewset) {
-			this.m_pubviewset = pubviewset;
+			m_pubviewset = pubviewset;
 		}
 		/**
 		 * @return Returns the content.
@@ -8968,20 +9067,33 @@ extends VelocityPortletPaneledAction
 		/**
 		 * @return Returns the content as a String.
 		 */
-		public String getContentString() {
-			return new String( m_content );
+		public String getContentstring() 
+		{
+			String rv = "";
+			if(m_content != null && m_content.length > 0)
+			{
+				rv = new String( m_content );
+			}
+			return rv;
 		}
 		/**
 		 * @param content The content to set.
 		 */
 		public void setContent(byte[] content) {
-			this.m_content = content;
+			m_content = content;
 		}
 		/**
 		 * @param content The content to set.
 		 */
 		public void setContent(String content) {
-			this.m_content = content.getBytes();
+			try
+			{
+				m_content = content.getBytes("UTF-8");
+			}
+			catch(UnsupportedEncodingException e)
+			{
+				m_content = content.getBytes();
+			}
 		}
 		/**
 		 * @return Returns the canSetQuota.
@@ -8993,7 +9105,7 @@ extends VelocityPortletPaneledAction
 		 * @param canSetQuota The canSetQuota to set.
 		 */
 		public void setCanSetQuota(boolean canSetQuota) {
-			this.m_canSetQuota = canSetQuota;
+			m_canSetQuota = canSetQuota;
 		}
 		/**
 		 * @return Returns the hasQuota.
@@ -9005,7 +9117,7 @@ extends VelocityPortletPaneledAction
 		 * @param hasQuota The hasQuota to set.
 		 */
 		public void setHasQuota(boolean hasQuota) {
-			this.m_hasQuota = hasQuota;
+			m_hasQuota = hasQuota;
 		}
 		/**
 		 * @return Returns the quota.
@@ -9017,35 +9129,35 @@ extends VelocityPortletPaneledAction
 		 * @param quota The quota to set.
 		 */
 		public void setQuota(String quota) {
-			this.m_quota = quota;
+			m_quota = quota;
 		}
 		/**
 		 * @return true if content-type of item indicates it represents a URL, false otherwise
 		 */
 		public boolean isUrl()
 		{
-			return m_isUrl;
+			return TYPE_URL.equals(m_type) || ResourceProperties.TYPE_URL.equals(m_mimetype);
 		}
 		/**
-		 * @param isUrl True if item represents a stored URL, false otherwise.
+		 * @return true if content-type of item indicates it represents a URL, false otherwise
 		 */
-		public void setIsUrl(boolean isUrl)
+		public boolean isStructuredArtifact()
 		{
-			m_isUrl = isUrl;
+			return TYPE_FORM.equals(m_type);
 		}
 		/**
 		 * @return true if content-type of item is "text/text" (plain text), false otherwise
 		 */
 		public boolean isPlaintext()
 		{
-			return "text/text".equals(this.m_type) || "text/plain".equals(this.m_type);
+			return MIME_TYPE_DOCUMENT_PLAINTEXT.equals(m_mimetype) || MIME_TYPE_DOCUMENT_PLAINTEXT.equals(m_type);
 		}
 		/**
 		 * @return true if content-type of item is "text/html" (an html document), false otherwise
 		 */
 		public boolean isHtml()
 		{
-			return "text/html".equals(this.m_type);
+			return MIME_TYPE_DOCUMENT_HTML.equals(m_mimetype) || MIME_TYPE_DOCUMENT_HTML.equals(m_type);
 		}
 		
 		public boolean contentHasChanged()
@@ -9056,6 +9168,16 @@ extends VelocityPortletPaneledAction
 		public void setContentHasChanged(boolean changed)
 		{
 			m_contentHasChanged = changed;
+		}
+		
+		public void setNotification(int notification)
+		{
+			m_notification = notification;
+		}
+		
+		public int getNotification()
+		{
+			return m_notification;
 		}
 		
 	}	// inner class EditItem
