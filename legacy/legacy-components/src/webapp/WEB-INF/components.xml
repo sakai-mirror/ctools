@@ -153,6 +153,7 @@
 		<property name="threadLocalManager"><ref bean="org.sakaiproject.api.kernel.thread_local.ThreadLocalManager"/></property>
  		<property name="refresh"><value>60</value></property>
  		<property name="expired"><value>600</value></property>
+ 		<property name="ghostingPercent"><value>100</value></property>
  		<property name="autoDdl"><value>${auto.ddl}</value></property>
 	</bean>
 
@@ -577,6 +578,7 @@
 		<property name="logger"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property>
 		<property name="sqlService"><ref bean="org.sakaiproject.service.framework.sql.SqlService"/></property>
  		<property name="autoDdl"><value>${auto.ddl}</value></property>
+ 		<property name="cacheMinutes"><value>3</value></property>
 	</bean>
 
 	<bean id="org.sakaiproject.service.framework.sql.SqlService"
