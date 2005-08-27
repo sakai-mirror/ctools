@@ -52,7 +52,6 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.exception.ServerOverloadException;
-import org.sakaiproject.service.framework.current.cover.CurrentService;
 import org.sakaiproject.service.framework.session.cover.UsageSessionService;
 import org.sakaiproject.service.framework.sql.SqlReader;
 import org.sakaiproject.service.framework.sql.SqlService;
@@ -114,6 +113,25 @@ public class BasicSqlService implements SqlService
 		}
 
 		m_vendor = (value != null) ? value.toLowerCase() : null;
+	}
+
+	/** if true, debug each sql command with timing. */
+	protected boolean m_showSql = false;
+
+	/**
+	 * Configuration: to show each sql command in the logs or not.
+	 * 
+	 * @param value
+	 *        the showSql setting.
+	 */
+	public void setShowSql(String value)
+	{
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("setShowSql(String " + value + ")");
+		}
+
+		m_showSql = new Boolean(value).booleanValue();
 	}
 
 	/**********************************************************************************************************************************************************************************************************************************************************
@@ -323,7 +341,7 @@ public class BasicSqlService implements SqlService
 
 		try
 		{
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) start = System.currentTimeMillis();
+			if (m_showSql) start = System.currentTimeMillis();
 
 			// borrow a new connection if we are not provided with one to use
 			if (callerConn != null)
@@ -334,9 +352,9 @@ public class BasicSqlService implements SqlService
 			{
 				conn = borrowConnection();
 			}
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG)
+			if (m_showSql)
 				connectionTime = System.currentTimeMillis() - start;
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) start = System.currentTimeMillis();
+			if (m_showSql) start = System.currentTimeMillis();
 
 			pstmt = conn.prepareStatement(sql);
 
@@ -345,12 +363,12 @@ public class BasicSqlService implements SqlService
 
 			result = pstmt.executeQuery();
 
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) stmtTime = System.currentTimeMillis() - start;
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) start = System.currentTimeMillis();
+			if (m_showSql) stmtTime = System.currentTimeMillis() - start;
+			if (m_showSql) start = System.currentTimeMillis();
 
 			while (result.next())
 			{
-				if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) count++;
+				if (m_showSql) count++;
 
 				try
 				{
@@ -379,7 +397,7 @@ public class BasicSqlService implements SqlService
 		}
 		finally
 		{
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) resultsTime = System.currentTimeMillis() - start;
+			if (m_showSql) resultsTime = System.currentTimeMillis() - start;
 
 			try
 			{
@@ -407,9 +425,8 @@ public class BasicSqlService implements SqlService
 			}
 		}
 
-		if (org.sakaiproject.service.framework.current.CurrentService.DEBUG)
-			debug("Sql.dbRead: connection: " + connectionTime + " read: " + count + " sql: " + stmtTime + " process: "
-					+ resultsTime, sql, fields);
+		if (m_showSql)
+			debug("Sql.dbRead: time: " + connectionTime + " / " + stmtTime + " / " + resultsTime + " #: " + count, sql, fields);
 
 		return rv;
 
@@ -473,7 +490,7 @@ public class BasicSqlService implements SqlService
 
 		try
 		{
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) start = System.currentTimeMillis();
+			if (m_showSql) start = System.currentTimeMillis();
 			if (callerConn != null)
 			{
 				conn = callerConn;
@@ -482,9 +499,9 @@ public class BasicSqlService implements SqlService
 			{
 				conn = borrowConnection();
 			}
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG)
+			if (m_showSql)
 				connectionTime = System.currentTimeMillis() - start;
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) start = System.currentTimeMillis();
+			if (m_showSql) start = System.currentTimeMillis();
 
 			pstmt = conn.prepareStatement(sql);
 
@@ -500,7 +517,7 @@ public class BasicSqlService implements SqlService
 				int len = stream.read(value, index, value.length - index);
 				stream.close();
 				index += len;
-				if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) lenRead += len;
+				if (m_showSql) lenRead += len;
 			}
 		}
 		catch (Exception e)
@@ -535,9 +552,8 @@ public class BasicSqlService implements SqlService
 			}
 		}
 
-		if (org.sakaiproject.service.framework.current.CurrentService.DEBUG)
-			debug("sql read binary: len: " + lenRead + "  connection: " + connectionTime + "  statement: "
-					+ (System.currentTimeMillis() - start), sql, fields);
+		if (m_showSql)
+			debug("sql read binary: len: " + lenRead + "  time: " + connectionTime + " / " + (System.currentTimeMillis() - start), sql, fields);
 
 	} // dbReadBinary
 
@@ -580,7 +596,7 @@ public class BasicSqlService implements SqlService
 
 		try
 		{
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) start = System.currentTimeMillis();
+			if (m_showSql) start = System.currentTimeMillis();
 			if (!big)
 			{
 				conn = borrowConnection();
@@ -594,9 +610,9 @@ public class BasicSqlService implements SqlService
 					throw new ServerOverloadException(null);
 				}
 			}
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG)
+			if (m_showSql)
 				connectionTime = System.currentTimeMillis() - start;
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) start = System.currentTimeMillis();
+			if (m_showSql) start = System.currentTimeMillis();
 
 			pstmt = conn.prepareStatement(sql);
 
@@ -654,9 +670,8 @@ public class BasicSqlService implements SqlService
 			}
 		}
 
-		if (org.sakaiproject.service.framework.current.CurrentService.DEBUG)
-			debug("sql read binary: len: " + lenRead + "  connection: " + connectionTime + "  statement: "
-					+ (System.currentTimeMillis() - start), sql, fields);
+		if (m_showSql)
+			debug("sql read binary: len: " + lenRead + "  time: " + connectionTime + " / " + (System.currentTimeMillis() - start), sql, fields);
 
 		return rv;
 
@@ -745,9 +760,9 @@ public class BasicSqlService implements SqlService
 
 		try
 		{
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) start = System.currentTimeMillis();
+			if (m_showSql) start = System.currentTimeMillis();
 			conn = borrowConnection();
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG)
+			if (m_showSql)
 				connectionTime = System.currentTimeMillis() - start;
 
 			// make sure we do not have auto commit - will change and reset if needed
@@ -758,7 +773,7 @@ public class BasicSqlService implements SqlService
 				resetAutoCommit = true;
 			}
 
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) start = System.currentTimeMillis();
+			if (m_showSql) start = System.currentTimeMillis();
 			pstmt = conn.prepareStatement(sql);
 
 			// put in all the fields
@@ -811,9 +826,8 @@ public class BasicSqlService implements SqlService
 			}
 		}
 
-		if (org.sakaiproject.service.framework.current.CurrentService.DEBUG)
-			debug("sql write binary: len: " + len + "  connection: " + connectionTime + "  statement: "
-					+ (System.currentTimeMillis() - start), sql, fields);
+		if (m_showSql)
+			debug("sql write binary: len: " + len + "  time: " + connectionTime + " / " + (System.currentTimeMillis() - start), sql, fields);
 
 		return true;
 
@@ -969,9 +983,9 @@ public class BasicSqlService implements SqlService
 			}
 			else
 			{
-				if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) start = System.currentTimeMillis();
+				if (m_showSql) start = System.currentTimeMillis();
 				conn = borrowConnection();
-				if (org.sakaiproject.service.framework.current.CurrentService.DEBUG)
+				if (m_showSql)
 					connectionTime = System.currentTimeMillis() - start;
 
 				// make sure we have do not have auto commit - will change and reset if needed
@@ -983,7 +997,7 @@ public class BasicSqlService implements SqlService
 				}
 			}
 
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) start = System.currentTimeMillis();
+			if (m_showSql) start = System.currentTimeMillis();
 			pstmt = conn.prepareStatement(sql);
 
 			// put in all the fields
@@ -1010,7 +1024,7 @@ public class BasicSqlService implements SqlService
 		catch (SQLException e)
 		{
 			// this is likely due to a key constraint problem...
-			if ((!failQuiet) || (org.sakaiproject.service.framework.current.CurrentService.DEBUG))
+			if ((!failQuiet) || (m_showSql))
 			{
 				LOG.warn("Sql.dbWrite(): sql: " + sql + " binds: " + debugFields(fields) + " " + e);
 			}
@@ -1048,9 +1062,8 @@ public class BasicSqlService implements SqlService
 			}
 		}
 
-		if (org.sakaiproject.service.framework.current.CurrentService.DEBUG)
-			debug("Sql.dbWrite(): len: " + ((lastField != null) ? "" + lastField.length() : "null") + "  connection: "
-					+ connectionTime + "  statement: " + (System.currentTimeMillis() - start), sql, fields);
+		if (m_showSql)
+			debug("Sql.dbWrite(): len: " + ((lastField != null) ? "" + lastField.length() : "null") + "  time: " + connectionTime + " /  " + (System.currentTimeMillis() - start), sql, fields);
 
 		return true;
 
@@ -1096,11 +1109,11 @@ public class BasicSqlService implements SqlService
 
 		try
 		{
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) start = System.currentTimeMillis();
+			if (m_showSql) start = System.currentTimeMillis();
 			conn = borrowConnection();
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG)
+			if (m_showSql)
 				connectionTime = System.currentTimeMillis() - start;
-			if (org.sakaiproject.service.framework.current.CurrentService.DEBUG) start = System.currentTimeMillis();
+			if (m_showSql) start = System.currentTimeMillis();
 			stmt = conn.createStatement();
 			result = stmt.executeQuery(sql);
 			if (result.next())
@@ -1162,9 +1175,8 @@ public class BasicSqlService implements SqlService
 			}
 		}
 
-		if (org.sakaiproject.service.framework.current.CurrentService.DEBUG)
-			debug("sql dbReadBlobAndUpdate: len: " + lenRead + "  connection: " + connectionTime + "  statement: "
-					+ (System.currentTimeMillis() - start), sql, null);
+		if (m_showSql)
+			debug("sql dbReadBlobAndUpdate: len: " + lenRead + "  time: " + connectionTime + " / " + (System.currentTimeMillis() - start), sql, null);
 
 	} // dbReadBlobAndUpdate
 
@@ -1539,30 +1551,30 @@ public class BasicSqlService implements SqlService
 		// no error will mess us up!
 		try
 		{
-			StringBuffer buf = (StringBuffer) CurrentService.getInThread("DEBUG");
-			if (buf == null) return;
+			// StringBuffer buf = (StringBuffer) CurrentService.getInThread("DEBUG");
+			// if (buf == null) return;
+			StringBuffer buf = new StringBuffer(2048);
 
 			// skip some chatter
-			// /if (str.indexOf("SAKAI_CLUSTER") != -1) return;
-			// if (str.indexOf("CHEF_EVENT") != -1) return;
-			// if (str.indexOf("CHEF_SESSION") != -1) return;
-			// if (str.indexOf("CHEF_PRESENCE") != -1) return;
+			// if (str.indexOf("SAKAI_CLUSTER") != -1) return;
 			// if (str.indexOf("dual") != -1) return;
 
-			buf.append("\n\t");
+			// buf.append("\n\t");
 			buf.append(str);
 			buf.append(" binds: ");
 			buf.append(debugFields(fields));
-			buf.append("\n");
+			buf.append(" sql: ");
 			buf.append(sql);
 
-			// LOG.info(buf.toString());
+			LOG.info(buf.toString());
 		}
 		catch (Throwable ignore)
 		{
-			LOG.debug("Ignored Exception: " + ignore.getMessage(), ignore);
-			; // ignore exceptions
-		};
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug("Ignored Exception: " + ignore.getMessage(), ignore);
+			}
+		}
 	}
 
 	protected String debugFields(Object[] fields)
