@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.sakaiproject.service.framework.log.Logger;
-import org.sakaiproject.service.framework.memory.CacheRefresher;
 import org.sakaiproject.service.framework.memory.SiteCache;
 import org.sakaiproject.service.legacy.event.EventTrackingService;
 import org.sakaiproject.service.legacy.site.Site;
@@ -48,46 +47,22 @@ public class SiteCacheImpl extends MemCache implements SiteCache
 	/** Map of a tool id to a cached site's tool configuration instance. */
 	protected Map m_tools = new ConcurrentReaderHashMap();
 
-	/**
-	 * Construct the Cache.  No automatic refresh handling.
-	*/
-	public SiteCacheImpl(BasicMemoryService memoryService, EventTrackingService eventTrackingService, Logger logger)
-	{
-		super(memoryService, eventTrackingService, logger);
-		m_softRefs = false;
-	}
+	/** Map of a page id to a cached site's SitePage instance. */
+	protected Map m_pages = new ConcurrentReaderHashMap();
 
 	/**
-	 * Construct the Cache.  Attempts to keep complete on Event notification by
-	 * calling the refresher.
-	 * @param refresher The object that will handle refreshing of event notified modified or added entries.
-	 * @param pattern The "startsWith()" string for all resources that may be in this cache -
-	 * if null, don't watch events for updates.
+	 * Construct the Cache.  No automatic refresh: expire only, from time and events.
+	 * @param sleep The number of seconds to sleep between expiration checks.
+	 * @param pattern The "startsWith()" string for all resources that may be in this cache - if null, don't watch events for updates.
 	 */
 	public SiteCacheImpl(
 		BasicMemoryService memoryService,
 		EventTrackingService eventTrackingService,
 		Logger logger,
-		CacheRefresher refresher,
+		long sleep,
 		String pattern)
 	{
-		super(memoryService, eventTrackingService, logger, refresher, pattern);
-		m_softRefs = false;
-	}
-
-	/**
-	 * Construct the Cache.  Automatic refresh handling if refresher is not null.
-	 * @param refresher The object that will handle refreshing of expired entries.
-	 * @param sleep The number of seconds to sleep between expiration checks.
-	 */
-	public SiteCacheImpl(
-		BasicMemoryService memoryService,
-		EventTrackingService eventTrackingService,
-		Logger logger,
-		CacheRefresher refresher,
-		long sleep)
-	{
-		super(memoryService, eventTrackingService, logger, refresher, sleep);
+		super(memoryService, eventTrackingService, logger, sleep, pattern);
 		m_softRefs = false;
 	}
 
@@ -107,9 +82,15 @@ public class SiteCacheImpl extends MemCache implements SiteCache
 		if (payload instanceof Site)
 		{
 			Site site = (Site) payload;
+			
+			// get the pages and tools loaded efficiently
+			site.loadPagesTools();
+			
+			// add the pages and tools to the cache
 			for (Iterator pages = site.getPages().iterator(); pages.hasNext();)
 			{
 				SitePage page = (SitePage) pages.next();
+				m_pages.put(page.getId(), page);
 				for (Iterator tools = page.getTools().iterator(); tools.hasNext();)
 				{
 					ToolConfiguration tool = (ToolConfiguration) tools.next();
@@ -128,6 +109,9 @@ public class SiteCacheImpl extends MemCache implements SiteCache
 		
 		// clear the tool ids
 		m_tools.clear();
+		
+		// clear the pages
+		m_pages.clear();
 	}
 
 	/**
@@ -155,6 +139,7 @@ public class SiteCacheImpl extends MemCache implements SiteCache
 			for (Iterator pages = site.getPages().iterator(); pages.hasNext();)
 			{
 				SitePage page = (SitePage) pages.next();
+				m_pages.remove(page.getId());
 				for (Iterator tools = page.getTools().iterator(); tools.hasNext();)
 				{
 					ToolConfiguration tool = (ToolConfiguration) tools.next();
@@ -164,14 +149,19 @@ public class SiteCacheImpl extends MemCache implements SiteCache
 		}
 	}
 	
+	/**
+	 * @inheritDoc
+	 */
 	public ToolConfiguration getTool(String toolId)
 	{
 		return (ToolConfiguration) m_tools.get(toolId);
 	}
-}
 
-/**********************************************************************************
-*
-* $Header: /cvs/sakai2/legacy/component/src/java/org/sakaiproject/component/framework/memory/SiteCacheImpl.java,v 1.1 2005/04/05 19:21:13 ggolden.umich.edu Exp $
-*
-**********************************************************************************/
+	/**
+	 * @inheritDoc
+	 */
+	public SitePage getPage(String pageId)
+	{
+		return (SitePage) m_tools.get(pageId);
+	}
+}
