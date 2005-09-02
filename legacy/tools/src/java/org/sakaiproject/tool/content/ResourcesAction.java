@@ -8334,27 +8334,30 @@ extends VelocityPortletPaneledAction
 	*/
 	protected boolean getPubView(String ref)
 	{
-		// get the realm
-		try
-		{
-			Realm realm = RealmService.getRealm(ref);
+		boolean pubView = SecurityService.unlock(UserDirectoryService.getAnonymousUser(), ContentHostingService.EVENT_RESOURCE_READ, ref);
+		return pubView;
 
-			// if the realm has no anon role, no pub view
-			Role anon = realm.getRole(RealmService.ANON_ROLE);
-			if (anon == null)
-				return false;
-
-			// if the role doesn't have "content.read", no pub view
-			if (!anon.contains("content.read"))
-				return false;
-		}
-		catch (IdUnusedException e)
-		{
-			// if no realm, no pub view
-			return false;
-		}
-
-		return true;
+		// // get the realm
+		// try
+		// {
+			// Realm realm = RealmService.getRealm(ref);
+// 
+			// // if the realm has no anon role, no pub view
+			// Role anon = realm.getRole(RealmService.ANON_ROLE);
+			// if (anon == null)
+				// return false;
+// 
+			// // if the role doesn't have "content.read", no pub view
+			// if (!anon.contains("content.read"))
+				// return false;
+		// }
+		// catch (IdUnusedException e)
+		// {
+			// // if no realm, no pub view
+			// return false;
+		// }
+// 
+		// return true;
 
 	} // getPubView
 
@@ -8365,20 +8368,25 @@ extends VelocityPortletPaneledAction
 	*/
 	protected boolean getPubViewInheritance(String ref)
 	{
-		// make a reference, and get the relevant realm ids
-		Reference r = new Reference(ref);
-		List realms = r.getRealms();
-		for (Iterator iRealms = realms.iterator(); iRealms.hasNext();)
-		{
-			String realmId = (String) iRealms.next();
-			if (!realmId.equals(ref))
-			{
-				if (getPubView(realmId))
-					return true;
-			}
-		}
+		// check for pubview on the container
+		String containerRef = ContentHostingService.getContainingCollectionId(ref);
+		boolean pubView = SecurityService.unlock(UserDirectoryService.getAnonymousUser(), ContentHostingService.EVENT_RESOURCE_READ, containerRef);
+		return pubView;
 
-		return false;
+		// // make a reference, and get the relevant realm ids
+		// Reference r = new Reference(ref);
+		// List realms = r.getRealms();
+		// for (Iterator iRealms = realms.iterator(); iRealms.hasNext();)
+		// {
+			// String realmId = (String) iRealms.next();
+			// if (!realmId.equals(ref))
+			// {
+				// if (getPubView(realmId))
+					// return true;
+			// }
+		// }
+// 
+		// return false;
 
 	} // getPubViewInheritance
 	
