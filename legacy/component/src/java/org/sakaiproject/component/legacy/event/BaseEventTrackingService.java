@@ -36,6 +36,7 @@ import org.sakaiproject.service.framework.session.cover.UsageSessionService;
 import org.sakaiproject.service.legacy.event.Event;
 import org.sakaiproject.service.legacy.event.EventTrackingService;
 import org.sakaiproject.service.legacy.notification.NotificationService;
+import org.sakaiproject.service.legacy.time.Time;
 import org.sakaiproject.service.legacy.user.User;
 
 /**
@@ -346,6 +347,8 @@ public abstract class BaseEventTrackingService
 		/** The Event's notification priority. */
 		protected int m_priority = NotificationService.NOTI_OPTIONAL;
 
+		/** Event creation time. */
+		protected Time m_time = null;
 		/**
 		* Access the event id string
 		* @return The event id string.
