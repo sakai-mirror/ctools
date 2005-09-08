@@ -8368,6 +8368,9 @@ extends VelocityPortletPaneledAction
 	*/
 	protected boolean getPubViewInheritance(String ref)
 	{
+		// the root does not inherit... and makes a bad ref if we try to isolateContainingId()
+		if (ContentHostingService.isRootCollection(ref)) return false;
+
 		// check for pubview on the container
 		String containerRef = ContentHostingService.getContainingCollectionId(ref);
 		boolean pubView = SecurityService.unlock(UserDirectoryService.getAnonymousUser(), ContentHostingService.EVENT_RESOURCE_READ, containerRef);
