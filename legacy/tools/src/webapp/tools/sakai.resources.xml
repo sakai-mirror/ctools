@@ -7,9 +7,10 @@
 			title="Resources"
 			description="For posting documents, URLs to other websites, etc.">
 
-		<configuration name="resources_mode" value="resources" />
 		<configuration name="home" value="" />
 		<configuration name="optional_properties" value="true" />
+
+		<configuration name="resources_mode" value="resources" type="final" />
 
 		<category name="course" />
 		<category name="project" />

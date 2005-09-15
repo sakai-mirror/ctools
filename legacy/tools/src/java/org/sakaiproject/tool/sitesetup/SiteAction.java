@@ -4540,7 +4540,8 @@ public class SiteAction extends PagedResourceActionII
 		//store the manually requested sections in one site property
 		if ((providerCourseList == null) || (providerCourseList.size() == 0))
 		{
-			siteInfo.title = subjects.get(0) + " " + courses.get(0) + " " + sections.get(0);
+			String title = subjects.get(0) + " " + courses.get(0) + " " + sections.get(0);
+			siteInfo.title = appendTermInSiteTitle(state, title);
 		}
 		state.setAttribute(STATE_SITE_INFO, siteInfo);
 		
@@ -8412,7 +8413,7 @@ public class SiteAction extends PagedResourceActionII
 		{
 			removeSiteEditFromState(state);
 		}
-		if (requestClasses != null && requestClasses.size() > 0)
+		if (requestClasses != null && requestClasses.size() > 0 && state.getAttribute(STATE_MANUAL_ADD_COURSE_NUMBER) != null)
 		{
 			try
 			{
@@ -8804,6 +8805,7 @@ public class SiteAction extends PagedResourceActionII
 						{
 							member.setRole(r.getId());
 						}
+						participants.add(member);
 					}
 				}
 				
@@ -8833,8 +8835,6 @@ public class SiteAction extends PagedResourceActionII
 		{
 			Log.warn("chef", this + "  IdUnusedException " + realmId);
 		}
-		
-		participants.addAll(members);
 		
 		state.setAttribute(STATE_PARTICIPANT_LIST, participants);
 		
@@ -9050,11 +9050,10 @@ public class SiteAction extends PagedResourceActionII
 			
 				//Add worksite information tool
 				ToolConfiguration tool = page.addTool();
-				Tool reg = ToolManager.getTool("sakai.iframe");
+				Tool reg = ToolManager.getTool("sakai.iframe.site");
 				tool.setTool(reg);
 				tool.setTitle(rb.getString("java.workinfo"));
 				tool.setLayoutHints("0,0");
-				tool.getPlacementConfig().setProperty("special", "worksite");
 			}	
 				
 			if (!SiteService.isUserSite(site.getId()))
@@ -9696,10 +9695,9 @@ public class SiteAction extends PagedResourceActionII
 					
 					//Add worksite information tool
 					ToolConfiguration tool = page.addTool();
-					tool.setTool(ToolManager.getTool("sakai.iframe"));
+					tool.setTool(ToolManager.getTool("sakai.iframe.site"));
 					tool.setTitle(rb.getString("java.workinfo"));
 					tool.setLayoutHints("0,0");
-					tool.getPlacementConfig().setProperty("special", "worksite");
 
 					if (hasAnnouncement)
 					{
@@ -10604,22 +10602,7 @@ public class SiteAction extends PagedResourceActionII
 			tab.append(" ");
 			tab.append(fields[5]); //Section
 		
-			//append term information into the tab in order to differenciate same course taught in different terms
-			if (state.getAttribute(STATE_TERM_SELECTED) != null)
-			{
-				tab.append(" ");
-				Term t = (Term) state.getAttribute(STATE_TERM_SELECTED);
-				if (StringUtil.trimToNull(t.getListAbbreviation()) != null)
-				{
-					// use term abbreviation, if any
-					tab.append(t.getListAbbreviation());
-				}
-				else
-				{
-					// use term id
-					tab.append(t.getId());
-				}
-			}
+			return appendTermInSiteTitle(state, tab.toString());
 		}
 		catch (Exception e)
 		{
@@ -10630,6 +10613,27 @@ public class SiteAction extends PagedResourceActionII
 		return tab.toString();
 		
 	}//  getCourseTab
+	
+	private String appendTermInSiteTitle (SessionState state, String title)
+	{
+		//append term information into the tab in order to differenciate same course taught in different terms
+		if (state.getAttribute(STATE_TERM_SELECTED) != null)
+		{
+			Term t = (Term) state.getAttribute(STATE_TERM_SELECTED);
+			if (StringUtil.trimToNull(t.getListAbbreviation()) != null)
+			{
+				// use term abbreviation, if any
+				title = title.concat(" ").concat(t.getListAbbreviation());
+			}
+			else
+			{
+				// use term id
+				title = title.concat(" ").concat(t.getId());
+			}
+		}
+		return title;
+		
+	}	// appendTermInSiteTitle
 	
 	/**
 	* %%% legacy properties, to be cleaned up

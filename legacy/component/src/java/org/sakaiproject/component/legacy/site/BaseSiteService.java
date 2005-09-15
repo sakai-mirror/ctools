@@ -739,6 +739,30 @@ public abstract class BaseSiteService implements SiteService, StorageUser
 	} // cancelEdit
 
 	/**
+	 * Commit a change to the site's description and iconUrl, without reguard to locks.  Just blast it into storage.
+	 * @param siteId The site id to change.
+	 * @param description The new site description.
+	 * @param infoUrl The new site InfoUrl.
+	 * @throws IdUnUsedException if the siteId is not defined.
+	 * @throwsPermissionException if the user does not have permission to update the site.
+	 */
+	public void commitSiteInfo(String siteId, String description, String infoUrl) throws IdUnusedException, PermissionException
+	{
+		String ref = siteReference(siteId);
+
+		// check security (throws if not permitted)
+		unlock(SECURE_UPDATE_SITE, ref);
+
+		// check for existance
+		if (!m_storage.check(siteId))
+		{
+			throw new IdUnusedException(siteId);
+		}
+
+		m_storage.commitInfo(siteId, description, infoUrl);
+	}
+
+	/**
 	 * check permissions for addSite().
 	 * 
 	 * @param id
@@ -2334,7 +2358,14 @@ public abstract class BaseSiteService implements SiteService, StorageUser
 			m_skin = other.m_skin;
 			m_type = other.m_type;
 			m_pubView = other.m_pubView;
-			m_createdUserId = other.m_createdUserId;
+			if (exact)
+			{
+				m_createdUserId = other.m_createdUserId;
+			}
+			else
+			{
+				m_createdUserId = UserDirectoryService.getCurrentUser().getId();
+			}
 			m_lastModifiedUserId = other.m_lastModifiedUserId;
 			if (other.m_createdTime != null) m_createdTime = (Time) other.m_createdTime.clone();
 			if (other.m_lastModifiedTime != null) m_lastModifiedTime = (Time) other.m_lastModifiedTime.clone();
@@ -2563,6 +2594,8 @@ public abstract class BaseSiteService implements SiteService, StorageUser
 		 */
 		public String getInfoUrlFull()
 		{
+			if (m_info == null) return null;
+
 			return convertReferenceUrl(m_info);
 		}
 
@@ -4288,10 +4321,22 @@ public abstract class BaseSiteService implements SiteService, StorageUser
 		/**
 		 * Commit the changes and release the lock.
 		 * 
-		 * @param user
+		 * @param site
 		 *        The site to commit.
 		 */
 		public void commit(SiteEdit site);
+
+		/**
+		 * Commit the changes to the two info fields (description and infoUrl) - no lock involved.
+		 * 
+		 * @param siteId
+		 *        The site to commit.
+		 * @param description
+		 *        The new site description.
+		 * @param infoUrl
+		 *        The new site infoUrl.
+		 */
+		public void commitInfo(String siteId, String description, String infoUrl);
 
 		/**
 		 * Cancel the changes and release the lock.

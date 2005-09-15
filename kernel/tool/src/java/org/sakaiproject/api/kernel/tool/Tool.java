@@ -90,6 +90,20 @@ public interface Tool
 	Properties getRegisteredConfig();
 
 	/**
+	 * Access the configuration properties that may be configured (not the final ones) from registration for the tool.  Access is read only.
+	 * 
+	 * @return The read-only configuration properties from registration for the tool.
+	 */
+	Properties getMutableConfig();
+
+	/**
+	 * Access the configuration properties that are final ones, may not be configured, from registration for the tool.  Access is read only.
+	 * 
+	 * @return The read-only configuration properties from registration for the tool.
+	 */
+	Properties getFinalConfig();
+
+	/**
 	 * Access the keywords registered for this tool.   Access is read only.
 	 * 
 	 * @return The Set (String) of keywords registered for this tool.
@@ -125,7 +139,3 @@ public interface Tool
 	 */
 	AccessSecurity getAccessSecurity();
 }
-
-/**************************************************************************************************************************************************************************************************************************************************************
- * $Header: /cvs/sakai2/kernel/tool/src/java/org/sakaiproject/api/kernel/tool/Tool.java,v 1.16 2005/05/26 20:19:27 ggolden.umich.edu Exp $
- *************************************************************************************************************************************************************************************************************************************************************/

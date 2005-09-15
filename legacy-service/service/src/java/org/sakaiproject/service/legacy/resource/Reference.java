@@ -1,8 +1,7 @@
 /**********************************************************************************
- *
- * $Header: /cvs/sakai2/legacy-service/service/src/java/org/sakaiproject/service/legacy/resource/Reference.java,v 1.1 2005/05/12 15:45:32 ggolden.umich.edu Exp $
- *
- ***********************************************************************************
+ * $URL$
+ * $Id$
+ **********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005 The Regents of the University of Michigan, Trustees of Indiana University,
  *                  Board of Trustees of the Leland Stanford, Jr., University, and The MIT Corporation
@@ -76,10 +75,10 @@ public class Reference
 	protected String m_reference = null;
 
 	/** The reference type (a service name string). */
-	protected String m_type = null;
+	protected String m_type = "";
 
 	/** The reference sub-type. */
-	protected String m_subType = null;
+	protected String m_subType = "";
 
 	/** The reference primary id. */
 	protected String m_id = null;
@@ -146,6 +145,16 @@ public class Reference
 	public String getType()
 	{
 		return m_type;
+	}
+
+	/**
+	 * Check if the reference's type is known
+	 * 
+	 * @return true if known, false if not.
+	 */
+	public boolean isKnownType()
+	{
+		return m_type.length() > 0;
 	}
 
 	/**
@@ -1623,6 +1632,5 @@ public class Reference
 
 } // Reference
 
-/**************************************************************************************************************************************************************************************************************************************************************
- * $Header: /cvs/sakai2/legacy-service/service/src/java/org/sakaiproject/service/legacy/resource/Reference.java,v 1.1 2005/05/12 15:45:32 ggolden.umich.edu Exp $
- *************************************************************************************************************************************************************************************************************************************************************/
+
+

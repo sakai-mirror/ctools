@@ -43,6 +43,8 @@ import org.sakaiproject.api.app.dissertation.DissertationStepEdit;
 import org.sakaiproject.api.app.dissertation.StepStatus;
 import org.sakaiproject.api.app.dissertation.StepStatusEdit;
 import org.sakaiproject.api.app.dissertation.cover.DissertationService;
+import org.sakaiproject.api.kernel.session.cover.SessionManager;
+import org.sakaiproject.api.kernel.session.Session;
 import org.sakaiproject.api.kernel.tool.cover.ToolManager;
 import org.sakaiproject.cheftool.Context;
 import org.sakaiproject.cheftool.JetspeedRunData;
@@ -58,7 +60,6 @@ import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.service.framework.portal.cover.PortalService;
 import org.sakaiproject.service.framework.session.SessionState;
 import org.sakaiproject.service.framework.session.UsageSession;
-import org.sakaiproject.service.framework.session.cover.UsageSessionService;
 import org.sakaiproject.service.legacy.content.ContentResource;
 import org.sakaiproject.service.legacy.content.cover.ContentHostingService;
 import org.sakaiproject.service.legacy.site.Site;
@@ -367,6 +368,8 @@ public class DissertationAction
 	
 	/****************************** copy of checklist saved as ****************************/
 	private static final String SNAPSHOT_FILENAME = "checklist.html";
+	
+	/****************************** set/diff for execution time ****************************/
 	
 	/**
 	* Central place for dispatching the build routines based on the state name.
@@ -2587,7 +2590,7 @@ public class DissertationAction
 	{
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
 		ParameterParser params = data.getParameters();
-		
+
 		//get parameters
 		String option = params.getString("option");
 		if (option.equalsIgnoreCase("cancel"))
@@ -2774,7 +2777,10 @@ public class DissertationAction
 							
 							//reset the current session.inactive time periodically
 							if((count % 100) == 0)
-								session = UsageSessionService.setSessionActive(false);
+							{
+								Session session = SessionManager.getCurrentSession();
+								session.setActive();
+							}
 							
 							//log progress periodically
 							if((count % 500) == 0)
@@ -2824,7 +2830,10 @@ public class DissertationAction
 							
 							//reset the current session.inactive time periodically
 							if((count % 100) == 0)
-								session = UsageSessionService.setSessionActive(false);
+							{
+								Session session = SessionManager.getCurrentSession();
+								session.setActive();
+							}
 							
 							//log progress periodically
 							if((count % 500) == 0)
@@ -3018,7 +3027,7 @@ public class DissertationAction
 	{
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState(((JetspeedRunData)data).getJs_peid());
 		ParameterParser params = data.getParameters();
-		
+
 		//get parameters
 		if(params.getString("cancel") != null)
 		{
@@ -3173,7 +3182,10 @@ public class DissertationAction
 								
 								//reset session.inactive to keep session alive during long-running updates
 								if((count % 100) == 0)
-									session = UsageSessionService.setSessionActive(false);
+								{
+									Session session = SessionManager.getCurrentSession();
+									session.setActive();
+								}
 								
 								//periodically log progress for testing session is kept alive
 								if((count % 500) == 0)
@@ -3215,7 +3227,10 @@ public class DissertationAction
 							
 							//reset session.inactive to keep session alive during long-running updates
 							if((count % 100) == 0)
-								session = UsageSessionService.setSessionActive(false);
+							{
+								Session session = SessionManager.getCurrentSession();
+								session.setActive();
+							}
 							
 							//periodically log progress for testing session is kept alive
 							if((count % 500) == 0)
@@ -3251,7 +3266,7 @@ public class DissertationAction
 		
 		state.setAttribute(STATE_RETROACTIVE_CHANGE, new Boolean(false));
 		state.setAttribute(STATE_MODE, MODE_ADMIN_VIEW_CURRENT_DISSERTATION);
-
+		
 	}	//doUpdate_step_location
 
 
@@ -3404,7 +3419,7 @@ public class DissertationAction
 	{
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState(((JetspeedRunData)data).getJs_peid());
 		ParameterParser params = data.getParameters();
-		
+	
 		//get parameters
 		if(params.getString("cancel") != null)
 		{
@@ -3533,7 +3548,10 @@ public class DissertationAction
 							
 							//reset the current session.inactive time periodically
 							if((count % 100) == 0)
-								session = UsageSessionService.setSessionActive(false);
+							{
+								Session session = SessionManager.getCurrentSession();
+								session.setActive();
+							}
 							
 							//log progress periodically
 							if((count % 500) == 0)
@@ -3565,7 +3583,10 @@ public class DissertationAction
 							
 							//reset the current session.inactive time periodically
 							if((count % 100) == 0)
-								session = UsageSessionService.setSessionActive(false);
+							{
+								Session session = SessionManager.getCurrentSession();
+								session.setActive();
+							}
 							
 							//log progress periodically
 							if((count % 500) == 0)
@@ -3592,7 +3613,7 @@ public class DissertationAction
 		state.setAttribute(STATE_RETROACTIVE_CHANGE, new Boolean(false));
 		state.setAttribute(STATE_CURRENT_DISSERTATION_STEPS, getTemplateSteps(dissertation, state));
 		state.setAttribute(STATE_MODE, MODE_ADMIN_VIEW_CURRENT_DISSERTATION);
-		
+
 	}//doUpdate_step
 
 
@@ -3887,6 +3908,7 @@ public class DissertationAction
 	{
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
 		ParameterParser params = data.getParameters();
+
 		if(params.getString("cancel") != null)
 		{
 			state.setAttribute(STATE_MODE, MODE_ADMIN_VIEW_CURRENT_DISSERTATION);
@@ -4001,7 +4023,10 @@ public class DissertationAction
 						
 						//reset the current session.inactive time periodically
 						if((count % 100) == 0)
-							session = UsageSessionService.setSessionActive(false);
+						{
+							Session session = SessionManager.getCurrentSession();
+							session.setActive();
+						}
 						
 						//log progress periodically
 						if((count % 500) == 0)
