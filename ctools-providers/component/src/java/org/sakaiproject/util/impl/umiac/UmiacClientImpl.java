@@ -23,7 +23,7 @@
 **********************************************************************************/
 
 // package
-package org.sakaiproject.util;
+package org.sakaiproject.util.impl.umiac;
 
 // imports
 import java.io.BufferedReader;
@@ -36,13 +36,15 @@ import java.util.Vector;
 
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.service.framework.config.cover.ServerConfigurationService;
-import org.sakaiproject.service.framework.log.cover.Log;
-import org.sakaiproject.service.framework.log.cover.Logger;
+import org.sakaiproject.service.framework.log.Logger;
+//import org.sakaiproject.service.framework.log.cover.Log;
+//import org.sakaiproject.service.framework.log.cover.Logger;
 import org.sakaiproject.service.framework.memory.Cache;
 import org.sakaiproject.service.framework.memory.CacheRefresher;
 import org.sakaiproject.service.framework.memory.cover.MemoryService;
 import org.sakaiproject.service.legacy.event.Event;
 import org.sakaiproject.service.legacy.user.UserEdit;
+import org.sakaiproject.util.api.umiac.UmiacClient;
 import org.sakaiproject.util.java.StringUtil;
 
 /**
@@ -53,8 +55,8 @@ import org.sakaiproject.util.java.StringUtil;
  * @author University of Michigan, CHEF Software Development Team
  * @version $Revision$
  */
-public class UmiacClient
-	implements CacheRefresher
+public class UmiacClientImpl
+	implements CacheRefresher, UmiacClient
 {
 	/** Umiac's network port address. */
 	protected int m_port = -1;
@@ -68,18 +70,35 @@ public class UmiacClient
 	/** The one and only Umiac client. */
 	protected static UmiacClient M_instance = null;
 
-	/** Get the umiac client. */
-	public static UmiacClient getInstance()
-	{
-		if (M_instance == null) new UmiacClient();
-		return M_instance;
+	/** Dependency: logging service */
+	protected Logger m_logger = null;
 
-	}	// getInstance
+	/**
+	 * Dependency: logging service.
+	 * @param service The logging service.
+	 */
+	public void setLogger(Logger service)
+	{
+		m_logger = service;
+	}
+
+	public Logger getLogger()
+	{
+		return this.m_logger;
+	}
+	
+	/** Get the umiac client. */
+//	private static IUmiacClient getInstance()
+//	{
+//		if (M_instance == null) new UmiacClient();
+//		return M_instance;
+//
+//	}	// getInstance
 
 	/**
 	* Construct, using the default production UMIAC instance.
 	*/
-	protected UmiacClient()
+	protected UmiacClientImpl()
 	{
 		// get the umiac address and port from the configuration service
 		m_host = ServerConfigurationService.getString("umiac.address", null);
@@ -91,11 +110,12 @@ public class UmiacClient
 
 		if (m_host == null)
 		{
-			Log.warn("chef", this + " - no 'umiac.address' in configuration");
+			getLogger().warn(this + " - no 'umiac.address' in configuration");
+//			Log.warn("chef", this + " - no 'umiac.address' in configuration");
 		}
 		if (m_port == -1)
 		{
-			Log.warn("chef", this + " - no 'umiac.port' in configuration (or invalid integer)");
+			getLogger().warn(this + " - no 'umiac.port' in configuration (or invalid integer)");
 		}
 
 		// build a synchronized map for the call cache, automatiaclly checking for expiration every 15 mins.
@@ -109,6 +129,43 @@ public class UmiacClient
 	}	// UmiacClient
 
 	/**
+	 * Final initialization, once all dependencies are set.
+	 */
+	public void init()
+	{
+		try
+		{
+	//		if (Log.getLogger("chef").isDebugEnabled())
+			if (getLogger().isDebugEnabled())
+			{
+				getLogger().debug(this +".init()");
+			}
+		//	m_logger.info(this +".init()");
+		}
+		catch (Throwable t)
+		{
+			if (getLogger().isDebugEnabled())
+			{
+				getLogger().debug(this +".init(): ", t);
+			}
+		//	m_logger.warn(this +".init(): ", t);
+		}
+	}
+
+	/**
+	 * Final cleanup.
+	 */
+	public void destroy()
+	{
+		if (getLogger().isDebugEnabled())
+		{
+			getLogger().debug(this +".destroy()");
+		}
+	//	m_logger.info(this +".destroy()");
+	}
+
+	
+	/**
 	* finalize
 	*/
 	protected void finalize()
@@ -120,81 +177,53 @@ public class UmiacClient
 
 	}	// finalize
 
-	/**
-	* Sets the port for the target UMIAC server.
-	* @param port The UMIAC port.
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#setPort(int)
+	 */
 	public void setPort(int port)
 	{
 		m_port = port;
 
 	}	// setPort
 	
-	/**
-	* Gets the port for the target UMIAC server.
-	* @return The UMIAC port
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#getPort()
+	 */
 	public int getPort()
 	{
 		return m_port;
 
 	}	// getPort
 	
-	/**
-	* Sets the host name for the target UMIAC server.
-	* @param host The UMIAC host name.
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#setHost(java.lang.String)
+	 */
 	public void setHost(String host)
 	{
 		m_host = host;
 
 	}	// setHost
 	
-	/**
-	* Gets the host name for the target UMIAC server.
-	* @return The host name for UMIAC.
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#getHost()
+	 */
 	public String getHost()
 	{
 		return m_host;
 
 	}	// getHost
 
-	/**
-	* Get a name for a user by id, setting a first name and last name into the UserEdit.
-	* @param edit The UserEdit with the id to check, and to be filled in with the information found.
-	* @exception IdUnusedException If there is no user by this id.
-	*/
-	public void setUserNames(UserEdit edit)
-		throws IdUnusedException
-	{
-		String[] name = getUserName(edit.getId());
-		if (name == null)
-		{
-			throw new IdUnusedException(edit.getId());
-		}
-
-		edit.setLastName(name[2]);
-		edit.setFirstName(name[3]);
-
-	}	// setUserNames
-
-	/**
-	* See if a user by this id exists.
-	* @param id The user uniqname.
-	* @return true if a user by this id exists, false if not.
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#userExists(java.lang.String)
+	 */
 	public boolean userExists(String id)
 	{
 		return (getUserName(id) != null);
 	}
 
-	/**
-	* Get the names for this user.
-	* @param id The user uniqname.
-	* @return String[]: [0] sort name, [1] display name, [2] last name, and [3] first name,
-	* or null if the user does not exist.
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#getUserName(java.lang.String)
+	 */
 	public String[] getUserName(String id)
 	{
 		String command = "getSortName," + id;
@@ -255,12 +284,9 @@ public class UmiacClient
 
 	}	// getUserName
 
-	/**
-	* Get a name for a group (class) by id.
-	* @param id The group id.
-	* @return The group's full display name.
-	* @exception IdUnusedException If there is no group by this id.
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#getGroupName(java.lang.String)
+	 */
 	public String getGroupName(String id)
 		throws IdUnusedException
 	{
@@ -302,12 +328,9 @@ public class UmiacClient
 
 	}	// getGroupName
 
-	/**
-	* Get all the members of a group, by their group role
-	* @param id The group id.
-	* @return The group's full display name.
-	* @exception IdUnusedException If there is no group by this id.
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#getGroupRoles(java.lang.String)
+	 */
 	public Map getGroupRoles(String id)
 		throws IdUnusedException
 	{
@@ -357,11 +380,9 @@ public class UmiacClient
 
 	}	// getGroupRoles
 
-	/**
-	* Get all the external realm ids the user has a role in, and the role
-	* @param id The user id.
-	* @return A map of he realm id to the role for this user.
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#getUserSections(java.lang.String)
+	 */
 	public Map getUserSections(String id)
 	{
 		String command = "getUserSections," + id;
@@ -401,13 +422,27 @@ public class UmiacClient
 
 	}	// getUserSections
 
-	/**
-	* Get all the members of a group, by their group role.
-	* A group is defined by multiple external ids.
-	* @param id The group id.
-	* @return The group's full display name.
-	* @exception IdUnusedException If there is no group by this id.
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#setUserNames(org.sakaiproject.service.legacy.user.UserEdit)
+	 */
+	public void setUserNames(UserEdit edit)
+		throws IdUnusedException
+	{
+		String[] name = getUserName(edit.getId());
+		if (name == null)
+		{
+			throw new IdUnusedException(edit.getId());
+		}
+	
+		edit.setLastName(name[2]);
+		edit.setFirstName(name[3]);
+	
+	}	// setUserNames
+
+
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#getGroupRoles(java.lang.String[])
+	 */
 	public Map getGroupRoles(String[] id)
 		throws IdUnusedException
 	{
@@ -485,12 +520,9 @@ public class UmiacClient
 
 	}	// getGroupRoles
 	
-	/**
-	* Send a getClasslist command to UMIAC and return the resulting
-	* output as a Vector of String[] objects (one String[] per output line:
-	* sort_name|uniqname|umid|level (always "-")|credits|role|enrl_status
-	*
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#getClassList(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
 	public Vector getClassList (String year, String term, String campus, String subject, String course, String section)
 	{
 		String command = "getClasslist," + year + "," + term + "," + campus + "," + subject + "," + course + "," + section + "\n\n";
@@ -527,12 +559,9 @@ public class UmiacClient
 		
 	} // getClassList
 	
-	/**
-	* Send a command to the UMIAC using the getUserInfo batch API and return
-	* the output as a Vector of String[] objects (one String[] per output line):
-	* // 0: |Fred Farley Fish|70728384|FFISH|08-25-2000 01:46:30 PM
-	*
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#getUserInformation(java.lang.String)
+	 */
 	public Vector getUserInformation (String ids)
 		throws Exception
 	{
@@ -570,28 +599,9 @@ public class UmiacClient
 	} // getUserInformation
 	
 	
-	/**
-	* getInstructorSections
-	*
-	* Sends a getInstructorSections command to UMIAC and returns the resulting
-	* output as a Vector of String[] objects (one String[] per output line of
-	* year|term_id|campus_code|subject|catalog_nbr|class_section|title|url|
-	* component (e.g., LAB, DISC)|role|subrole|crosslist ("CL" if cross-listed,
-	* blank if not)  Note: String[] will have 12 elements if CL is appended and
-	* 11 elements if it is not.
-	* Output is terminated by EOT
-	* As opposed to getInstructorClasses, the output is in data format rather
-	* that text (e.g., A rather than Ann Arbor, D rather than Dearborn).
-	* The results include cross-listed sections.
-	* @param id is the Instructor's uniqname
-	* @param term_year is expressed in four-digit numbers: 2003
-	* @param term is expressed as a single-digit number:
-	* 1 - SUMMER
-	* 2 - FALL
-	* 3 - WINTER
-	* 4 - SPRING
-	* 5 - SPRING/SUMMER
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#getInstructorSections(java.lang.String, java.lang.String, java.lang.String)
+	 */
 	public Vector getInstructorSections (String id, String term_year, String term)
 		throws IdUnusedException
 	{
@@ -634,27 +644,9 @@ public class UmiacClient
 		
 	} // getInstructorSections
 	
-	/**
-	* getInstructorClasses
-	*
-	* Sends a getInstructorClasses command to UMIAC and returns the resulting
-	* output as a Vector of String[] objects (one String[] per output line of 
-	* 14 fields: year|term (text)|campus (text)|subject|catalog_nbr|title|(legacy, always blank)|
-	* class_section|url|units taken (blank for instructors)|component (LEC, DIS, LAB, etc)|
-	* role|subrole|enrl_status)
-	* Output is terminated by EOT
-	* As opposed to getInstructorSections, the output is in a human-readable format
-	* rather than data (e.g., Ann Arbor rather than A, Dearborn rather than D).
-	* The results do not include cross-listed sections.
-	* @param id is the Instructor's uniqname
-	* @param term_year is expressed in four-digit numbers: 2003
-	* @param term is expressed as a single-digit number:
-	* 1 - SUMMER
-	* 2 - FALL
-	* 3 - WINTER
-	* 4 - SPRING
-	* 5 - SPRING/SUMMER
-	*/
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.IUmiacClient#getInstructorClasses(java.lang.String, java.lang.String, java.lang.String)
+	 */
 	public Vector getInstructorClasses (String id, String term_year, String term)
 		throws IdUnusedException
 	{
@@ -696,6 +688,52 @@ public class UmiacClient
 		return rv;
 		
 	} // getInstructorClasses
+	
+	/**
+	* Set group url to specified section record
+	*/
+	public void setGroupUrl(String year, String term, String campus, String subject, String course, String section, String url)
+	{
+		String command = "setGroupUrl," + year + "," + term + "," + campus + "," + subject + "," + course + "," + section + "," + url + "\n\n";
+
+		makeRawCall(command);
+
+	}	// setGroupUrl
+	
+	/**
+	* Get sections based on given url
+	*/
+	public Vector getUrlSections(String url)
+	{
+		String command = "getUrlSections," + url + "\n\n";
+
+		Vector result = makeRawCall(command);
+		
+		// if there are no results
+		if (	(result == null)
+			||	(result.size() < 1))
+		{
+			return null;
+		}
+
+		Vector rv = new Vector();
+		for (int i = 0; i < result.size(); i++)
+		{
+			String[] res = StringUtil.split((String)result.elementAt(i),"|");
+			String resString = "";
+			for(int j = 0; j < res.length; j++)
+			{
+				// concat section info separated with ","
+				resString = resString.concat(res[j]).concat(",");
+			}
+			// remove the last ","
+			resString = resString.substring(0, resString.length()-1);
+			rv.add(resString);
+		}
+
+		return rv;
+
+	}	// getUrlSections
 
 	/**
 	* Send a command to UMIAC and returns the resulting
@@ -706,9 +744,9 @@ public class UmiacClient
 	*/
 	public Vector makeRawCall(String umiacCommand)
 	{
-		if (Log.getLogger("chef").isDebugEnabled())
+		if (getLogger().isDebugEnabled())
 		{
-			Log.debug("chef", this + ".makeCall: " + umiacCommand);
+			getLogger().debug( this + ".makeCall: " + umiacCommand);
 		}
 		PrintWriter out = null;
 		BufferedReader in = null;
@@ -741,7 +779,8 @@ public class UmiacClient
 		}
 		catch (Throwable e)
 		{
-			Logger.warn("UMIAC: " + e.toString());
+			getLogger().warn("UMIAC: " + e.toString());
+	//		Logger.warn("UMIAC: " + e.toString());
 		}
 		finally
 		{
@@ -752,12 +791,120 @@ public class UmiacClient
 				if (out != null) out.close();
 				if (socket != null) socket.close();
 			}
-			catch (Exception ignore){Logger.warn("UMIAC: " + ignore);}
+			catch (Exception ignore){getLogger().warn("UMIAC: " + ignore);}
+//			catch (Exception ignore){Logger.warn("UMIAC: " + ignore);}
 		}
 		
 		return v;
 
 	}	// makeRawCall
+	
+	/**
+	 * Unpack a multiple id that may contain many full ids connected with "+", each
+	 * of which may have multiple sections enclosed in []
+	 * @param id The multiple group id.
+	 * @return An array of strings of real umiac group ids, one for each in the multiple.
+	 */
+	public String[] unpackId(String id)
+	{
+		if (id == null) return null;
+
+		Vector returnVector = new Vector();
+
+		// first unpack the full ids
+		String[] first = unpackIdFull(id);
+
+		// then, for each, unpack the sections
+		for (int i = 0; i < first.length; i++)
+		{
+			String[] second = unpackIdSections(first[i]);
+			for (int s = 0; s < second.length; s++)
+			{
+				returnVector.add(second[s]);
+			}
+		}
+
+		String[] rv = (String[]) returnVector.toArray(new String[returnVector.size()]);
+
+		return rv;
+	}
+
+	/**
+	 * Unpack a crosslisted multiple groupId into a set of individual group ids.
+	 * 2002,2,A,EDUC,504,[001,002,003,004,006]+2002,2,A,LSA,101,[002,003]+etc
+	 * @param id The crosslisted multiple group id.
+	 * @return An array of strings of real umiac group ids, one for each in the multiple.
+	 */
+	protected String[] unpackIdFull(String id)
+	{
+		String[] rv = null;
+
+		// if there is not a '+' return just the id
+		int pos = id.indexOf('+');
+		if (pos == -1)
+		{
+			rv = new String[1];
+			rv[0] = id;
+		}
+		else
+		{
+			// split by the "+" separators
+			rv = StringUtil.split(id, "+");
+		}
+
+		return rv;
+	}
+
+	/**
+	 * Unpack a multiple section groupId into a set of individual group ids.
+	 * 2002,2,A,EDUC,504,[001,002,003,004,006]
+	 * @param id The multiple section group id.
+	 * @return An array of strings of real umiac group ids, one for each section in the multiple.
+	 */
+	protected String[] unpackIdSections(String id)
+	{
+		String[] rv = null;
+
+		// if there is not a '[' and a ']', or they are inverted or enclose an empty string,
+		// return just the id
+		int leftPos = id.indexOf('[');
+		int rightPos = id.indexOf(']');
+		if (!((leftPos != -1) && (rightPos != -1)) || (rightPos - leftPos <= 1))
+		{
+			rv = new String[1];
+			rv[0] = id;
+		}
+		else
+		{
+			// isolate the root
+			String root = id.substring(0, leftPos);
+
+			// isolate the sections
+			String sectionString = id.substring(leftPos + 1, rightPos);
+
+			// separate these
+			String sections[] = StringUtil.split(sectionString, ",");
+
+			// handle misformed strings
+			if ((sections == null) || (sections.length == 0))
+			{
+				rv = new String[1];
+				rv[0] = id;
+			}
+
+			else
+			{
+				// build a return for each section
+				rv = new String[sections.length];
+				for (int i = 0; i < sections.length; i++)
+				{
+					rv[i] = root + sections[i];
+				}
+			}
+		}
+
+		return rv;
+	}
 
 	/*******************************************************************************
 	* CacheRefresher implementation

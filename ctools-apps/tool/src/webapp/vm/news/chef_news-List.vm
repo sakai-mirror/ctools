@@ -18,7 +18,7 @@
 				#end
 				#if($item.Description)
 					<p style="margin-left:2em;margin-top:.5em">
-						$validator.escapeHtml($item.Description)
+						$item.Description
 						#if($item.Link)
 							 <a href="$validator.escapeHtml($item.Link)" target="_blank">($full_story)</a>
 						 #end

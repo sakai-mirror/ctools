@@ -37,7 +37,7 @@ import org.sakaiproject.service.framework.log.Logger;
 import org.sakaiproject.service.legacy.coursemanagement.Course;
 import org.sakaiproject.service.legacy.coursemanagement.CourseManagementProvider;
 import org.sakaiproject.service.legacy.coursemanagement.CourseMember;
-import org.sakaiproject.util.UmiacClient;
+import org.sakaiproject.util.api.umiac.UmiacClient;
 
 /**
 * <p>UnivOfMichCourseManagementProvider is CourseManagementProvider that provides a course for any
@@ -96,6 +96,17 @@ public class UnivOfMichCourseManagementProvider
 	/** Configuration: kerberos or cosign. */
 	protected boolean m_useKerberos = true;
 
+	/** Dependency: UmiacClient */
+	private UmiacClient m_umiac; 
+	
+	public void setUmiac(UmiacClient m_umiac) {
+		this.m_umiac = m_umiac;
+	}
+
+	public UmiacClient getUmiac() {
+		return m_umiac;
+	}
+	
 	/*******************************************************************************
 	* Init and Destroy
 	*******************************************************************************/
@@ -138,9 +149,6 @@ public class UnivOfMichCourseManagementProvider
 	* CourseManagementProvider implementation
 	*******************************************************************************/
 
-	/** My UMIAC client interface. */
-	protected UmiacClient m_umiac = UmiacClient.getInstance();
-
 	/**
 	* @inheritDoc
 	*/
@@ -150,7 +158,7 @@ public class UnivOfMichCourseManagementProvider
 		// get the course name
 		try
 		{
-			rv = m_umiac.getGroupName(courseId);
+			rv = getUmiac().getGroupName(courseId);
 			if (rv!=null)
 			{
 				return rv;
@@ -179,7 +187,7 @@ public class UnivOfMichCourseManagementProvider
 		//get course participant list
 		//output as a Vector of String[] objects (one String[] per output line:
 		//sort_name|uniqname|umid|level (always "-")|credits|role|enrl_status
-		Vector plist = m_umiac.getClassList (fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
+		Vector plist = getUmiac().getClassList (fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
 		Vector members = new Vector();
 		for (int j= 0; j<plist.size(); j++)
 		{
@@ -209,7 +217,7 @@ public class UnivOfMichCourseManagementProvider
 		//get course participant list
 		//output as a Vector of String[] objects (one String[] per output line:
 		//sort_name|uniqname|umid|level (always "-")|credits|role|enrl_status
-		Vector plist = m_umiac.getClassList (fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
+		Vector plist = getUmiac().getClassList (fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
 		Vector members = new Vector();
 		for (int j= 0; j<plist.size(); j++)
 		{
@@ -248,7 +256,7 @@ public class UnivOfMichCourseManagementProvider
 			//getInstructorSections returns 12 strings: year, term_id, campus_code, 
 			//subject, catalog_nbr, class_section, title, url, component, role, 
 			//subrole, "CL" if cross-listed, blank if not
-			Vector courses = m_umiac.getInstructorSections (instructorId, termYear, (String) termIndex.get(termTerm));
+			Vector courses = getUmiac().getInstructorSections (instructorId, termYear, (String) termIndex.get(termTerm));
 			
 			int count = courses.size();
 			for (i=0; i<courses.size(); i++)
@@ -271,7 +279,7 @@ public class UnivOfMichCourseManagementProvider
 				
 				//output as a Vector of String[] objects (one String[] per output line:
 				//sort_name|uniqname|umid|level (always "-")|credits|role|enrl_status
-				Vector plist = m_umiac.getClassList (res[0], res[1], res[2], res[3], res[4], res[5]);
+				Vector plist = getUmiac().getClassList (res[0], res[1], res[2], res[3], res[4], res[5]);
 				Vector members = new Vector();
 				for (int j= 0; j<plist.size(); j++)
 				{

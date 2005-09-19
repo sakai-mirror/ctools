@@ -47,7 +47,7 @@ import org.sakaiproject.service.framework.log.Logger;
 import org.sakaiproject.service.legacy.user.UserDirectoryProvider;
 import org.sakaiproject.service.legacy.user.UserEdit;
 import org.sakaiproject.util.RequestFilter;
-import org.sakaiproject.util.UmiacClient;
+import org.sakaiproject.util.api.umiac.UmiacClient;
 import org.sakaiproject.util.java.StringUtil;
 
 /**
@@ -124,6 +124,20 @@ public class UnivOfMichUserDirectoryProvider
 		}
 	}
 
+	/** My UMIAC client interface. */
+	private UmiacClient m_umiac;
+	
+	public void setUmiac(UmiacClient m_umiac) {
+		this.m_umiac = m_umiac;
+	}
+
+	public UmiacClient getUmiac() {
+		return m_umiac;
+	}
+
+
+
+	
 	/*******************************************************************************
 	* Init and Destroy
 	*******************************************************************************/
@@ -160,8 +174,6 @@ public class UnivOfMichUserDirectoryProvider
 	* UserDirectoryProvider implementation
 	*******************************************************************************/
 
-	/** My UMIAC client interface. */
-	protected UmiacClient m_umiac = UmiacClient.getInstance();
 
 	/**
 	* See if a user by this id exists.
@@ -178,7 +190,7 @@ public class UnivOfMichUserDirectoryProvider
 
 		// first check with Umiac
 //long umiacTime = System.currentTimeMillis();
-		boolean knownUmiac = m_umiac.userExists(userId);
+		boolean knownUmiac = getUmiac().userExists(userId);
 //umiacTime = System.currentTimeMillis() - umiacTime;
 //m_logger.info(this + ".userExists: " + userId + "  umiac: " + knownUmiac + " (" + umiacTime + ")");
 		if (knownUmiac)
@@ -231,7 +243,7 @@ public class UnivOfMichUserDirectoryProvider
 		// lookup the user in UMIAC
 		try
 		{
-			m_umiac.setUserNames(edit);
+			getUmiac().setUserNames(edit);
 		}
 		catch (IdUnusedException e)
 		{

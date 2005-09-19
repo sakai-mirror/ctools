@@ -12,6 +12,15 @@
 		<property name="currentService"><ref bean="org.sakaiproject.service.framework.current.CurrentService"/></property>
 		<property name="serverConfigurationService"><ref bean="org.sakaiproject.service.framework.config.ServerConfigurationService"/></property>
  		<property name="method"><value>cosign</value></property>
+ 		<property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
+	</bean>
+
+	<bean id="org.sakaiproject.util.api.umiac.Umiac"
+			class="org.sakaiproject.util.impl.umiac.UmiacClientImpl"
+			init-method="init"
+			destroy-method="destroy"
+			singleton="true">
+		<property name="logger"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property>
 	</bean>
 
 	<bean id="org.sakaiproject.service.legacy.realm.RealmProvider"
@@ -20,6 +29,7 @@
 			destroy-method="destroy"
 			singleton="true">
 		<property name="logger"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property>
+		 <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
 	</bean>
 
 	<bean id="org.sakaiproject.service.legacy.coursemanagement.CourseManagementProvider"
@@ -28,6 +38,16 @@
 			destroy-method="destroy"
 			singleton="true">
 		<property name="logger"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property>
+		 <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
 	</bean>
 
+	<bean id="eventwatcher"
+			class="org.sakaiproject.eventwatcher.EventWatcher"
+			init-method="init"
+			destroy-method="destroy"
+			singleton="true">
+		<property name="logger"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property>
+		<property name="eventTrackingService"><ref bean="org.sakaiproject.service.legacy.event.EventTrackingService"/></property>
+		<property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
+	</bean>
 </beans>

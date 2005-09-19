@@ -26,13 +26,11 @@ package org.sakaiproject.component.legacy.realm;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.service.framework.log.Logger;
 import org.sakaiproject.service.legacy.realm.RealmProvider;
-import org.sakaiproject.util.java.StringUtil;
-import org.sakaiproject.util.UmiacClient;
+import org.sakaiproject.util.api.umiac.UmiacClient;
 
 /**
 * <p>UnivOfMichRealmProvider with information from U of M's UMIAC system.</p>
@@ -59,6 +57,20 @@ public class UnivOfMichRealmProvider implements RealmProvider
 		m_logger = service;
 	}
 
+	/** My UMIAC client interface. */
+	//private IUmiacClient m_umiac = UmiacClient.getInstance();
+	private UmiacClient m_umiac;
+
+	public void setUmiac(UmiacClient m_umiac) {
+		this.m_umiac = m_umiac;
+	}
+
+	public UmiacClient getUmiac() {
+		return m_umiac;
+	}
+
+
+	
 	/*******************************************************************************
 	* Init and Destroy
 	*******************************************************************************/
@@ -90,8 +102,6 @@ public class UnivOfMichRealmProvider implements RealmProvider
 	* RealmProvider implementation
 	*******************************************************************************/
 
-	/** My UMIAC client interface. */
-	protected UmiacClient m_umiac = UmiacClient.getInstance();
 
 	/**
 	* Construct.
@@ -113,7 +123,7 @@ public class UnivOfMichRealmProvider implements RealmProvider
 		String ids[] = unpackId(id);
 
 		// use the user's external list of sites : Map of provider id -> role for this user
-		Map map = m_umiac.getUserSections(user);
+		Map map = getUmiac().getUserSections(user);
 		if (!map.isEmpty())
 		{
 			for (int i = 0; i < ids.length; i++)
@@ -147,7 +157,7 @@ public class UnivOfMichRealmProvider implements RealmProvider
 		// get a Map of userId - role string (Student, Instructor) for these umiac ids
 		try
 		{
-			Map map = m_umiac.getGroupRoles(ids);
+			Map map = getUmiac().getGroupRoles(ids);
 
 			return map;
 		}
@@ -165,7 +175,7 @@ public class UnivOfMichRealmProvider implements RealmProvider
 		if (userId == null) return new HashMap();
 
 		// get the user's external list of sites : Map of provider id -> role for this user
-		Map map = m_umiac.getUserSections(userId);
+		Map map = getUmiac().getUserSections(userId);
 
 		// transfer to our special map
 		MyMap rv = new MyMap();
@@ -182,103 +192,7 @@ public class UnivOfMichRealmProvider implements RealmProvider
 	 */
 	public String[] unpackId(String id)
 	{
-		if (id == null) return null;
-
-		Vector returnVector = new Vector();
-
-		// first unpack the full ids
-		String[] first = unpackIdFull(id);
-
-		// then, for each, unpack the sections
-		for (int i = 0; i < first.length; i++)
-		{
-			String[] second = unpackIdSections(first[i]);
-			for (int s = 0; s < second.length; s++)
-			{
-				returnVector.add(second[s]);
-			}
-		}
-
-		String[] rv = (String[]) returnVector.toArray(new String[returnVector.size()]);
-
-		return rv;
-	}
-
-	/**
-	 * Unpack a crosslisted multiple groupId into a set of individual group ids.
-	 * 2002,2,A,EDUC,504,[001,002,003,004,006]+2002,2,A,LSA,101,[002,003]+etc
-	 * @param id The crosslisted multiple group id.
-	 * @return An array of strings of real umiac group ids, one for each in the multiple.
-	 */
-	protected String[] unpackIdFull(String id)
-	{
-		String[] rv = null;
-
-		// if there is not a '+' return just the id
-		int pos = id.indexOf('+');
-		if (pos == -1)
-		{
-			rv = new String[1];
-			rv[0] = id;
-		}
-		else
-		{
-			// split by the "+" separators
-			rv = StringUtil.split(id, "+");
-		}
-
-		return rv;
-	}
-
-	/**
-	 * Unpack a multiple section groupId into a set of individual group ids.
-	 * 2002,2,A,EDUC,504,[001,002,003,004,006]
-	 * @param id The multiple section group id.
-	 * @return An array of strings of real umiac group ids, one for each section in the multiple.
-	 */
-	protected String[] unpackIdSections(String id)
-	{
-		String[] rv = null;
-
-		// if there is not a '[' and a ']', or they are inverted or enclose an empty string,
-		// return just the id
-		int leftPos = id.indexOf('[');
-		int rightPos = id.indexOf(']');
-		if (!((leftPos != -1) && (rightPos != -1)) || (rightPos - leftPos <= 1))
-		{
-			rv = new String[1];
-			rv[0] = id;
-		}
-		else
-		{
-			// isolate the root
-			String root = id.substring(0, leftPos);
-
-			// isolate the sections
-			String sectionString = id.substring(leftPos + 1, rightPos);
-
-			// separate these
-			String sections[] = StringUtil.split(sectionString, ",");
-
-			// handle misformed strings
-			if ((sections == null) || (sections.length == 0))
-			{
-				rv = new String[1];
-				rv[0] = id;
-			}
-
-			else
-			{
-				// build a return for each section
-				rv = new String[sections.length];
-				for (int i = 0; i < sections.length; i++)
-				{
-					rv[i] = root + sections[i];
-				}
-			}
-		}
-
-		return rv;
+		return m_umiac.unpackId(id);
 	}
 
 	/**

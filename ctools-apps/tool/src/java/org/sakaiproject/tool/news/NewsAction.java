@@ -62,8 +62,8 @@ public class NewsAction
 	private static ResourceBundle rb = ResourceBundle.getBundle("news");
 	
 	/** names and values of request parameters to select sub-panels */
-	private static final String MONITOR_PANEL = "List";
-	private static final String CONTROL_PANEL = "Control";
+	protected static final String MONITOR_PANEL = "List";
+	protected static final String CONTROL_PANEL = "Control";
 
 	/** portlet configuration parameter names. */
 	protected static final String PARAM_CHANNEL_URL = "channel-url";
@@ -77,8 +77,8 @@ public class NewsAction
 	private static final String FORM_CHANNEL_URL = "address-of-channel";
 	
 	/** State and init and context names for text options. */
-	private static final String GRAPHIC_VERSION_TEXT = "graphic_version";
-	private static final String FULL_STORY_TEXT = "full_story";
+	protected static final String GRAPHIC_VERSION_TEXT = "graphic_version";
+	protected static final String FULL_STORY_TEXT = "full_story";
 
 	/**
 	* Populate the state object, if needed.
