@@ -719,34 +719,37 @@ public class AccessServlet
 		// get the grades spreadsheet blob
 		byte[] spreadsheet = AssignmentService.getGradesSpreadsheet(ref.getReference());
 
-		res.setContentType("application/vnd.ms-excel");
-		res.setHeader("Content-Disposition", "attachment; filename = export_grades_file.xls");
-
-		OutputStream out = null;
-		try
+		if (spreadsheet != null)
 		{
-			out = res.getOutputStream();
-			out.write(spreadsheet);
-			out.flush();
-			out.close();
-		}
-		catch (Throwable ignore)
-		{
-		}
-		finally
-		{
-			if (out != null)
+			res.setContentType("application/vnd.ms-excel");
+			res.setHeader("Content-Disposition", "attachment; filename = export_grades_file.xls");
+	
+			OutputStream out = null;
+			try
 			{
-				try
+				out = res.getOutputStream();
+				out.write(spreadsheet);
+				out.flush();
+				out.close();
+			}
+			catch (Throwable ignore)
+			{
+			}
+			finally
+			{
+				if (out != null)
 				{
-					out.close();
-				}
-				catch (Throwable ignore)
-				{
+					try
+					{
+						out.close();
+					}
+					catch (Throwable ignore)
+					{
+					}
 				}
 			}
 		}
-
+		
 	}   // doAssignmentGrades
 
 	/**
@@ -760,30 +763,33 @@ public class AccessServlet
 		// get the submissions zip blob
 		byte[] zip = AssignmentService.getSubmissionsZip(ref.getReference());
 
-		res.setContentType("application/zip");
-		res.setHeader("Content-Disposition", "attachment; filename = bulk_download.zip");
-
-		OutputStream out = null;
-		try
+		if (zip != null)
 		{
-			out = res.getOutputStream();
-			out.write(zip);
-			out.flush();
-			out.close();
-		}
-		catch (Throwable ignore)
-		{
-		}
-		finally
-		{
-			if (out != null)
+			res.setContentType("application/zip");
+			res.setHeader("Content-Disposition", "attachment; filename = bulk_download.zip");
+	
+			OutputStream out = null;
+			try
 			{
-				try
+				out = res.getOutputStream();
+				out.write(zip);
+				out.flush();
+				out.close();
+			}
+			catch (Throwable ignore)
+			{
+			}
+			finally
+			{
+				if (out != null)
 				{
-					out.close();
-				}
-				catch (Throwable ignore)
-				{
+					try
+					{
+						out.close();
+					}
+					catch (Throwable ignore)
+					{
+					}
 				}
 			}
 		}
