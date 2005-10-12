@@ -1276,7 +1276,17 @@ extends PagedResourceActionII
 		// assignment submission
 		try
 		{
-			context.put ("submission", AssignmentService.getSubmission ((String) state.getAttribute (GRADE_SUBMISSION_SUBMISSION_ID)));
+			AssignmentSubmission s = AssignmentService.getSubmission ((String) state.getAttribute (GRADE_SUBMISSION_SUBMISSION_ID));
+			if (s != null)
+			{
+				context.put ("submission", s);
+				ResourceProperties p = s.getProperties();
+				
+				if (p.getProperty(GRADE_SUBMISSION_ALLOW_RESUBMIT) != null)
+				{
+					context.put ("value_allowResubmit", p.getProperty(GRADE_SUBMISSION_ALLOW_RESUBMIT));
+				}
+			}
 		}
 		catch (IdUnusedException e )
 		{
@@ -1306,7 +1316,10 @@ extends PagedResourceActionII
 		context.put ("value_feedback_comment", state.getAttribute (GRADE_SUBMISSION_FEEDBACK_COMMENT));
 		context.put ("value_feedback_text", state.getAttribute (GRADE_SUBMISSION_FEEDBACK_TEXT));
 		context.put ("value_feedback_attachment", state.getAttribute (ATTACHMENTS));
-		context.put ("value_allowResubmit", state.getAttribute(GRADE_SUBMISSION_ALLOW_RESUBMIT));
+		if (state.getAttribute(GRADE_SUBMISSION_ALLOW_RESUBMIT) != null)
+		{
+			context.put ("value_allowResubmit", state.getAttribute(GRADE_SUBMISSION_ALLOW_RESUBMIT));
+		}
 		
 		// format to show one decimal place in grade
 		context.put ("value_grade", displayGrade(state, (String) state.getAttribute (GRADE_SUBMISSION_GRADE)));
@@ -2210,9 +2223,20 @@ extends PagedResourceActionII
 				}
 				else if (gradeOption.equals("return"))
 				{
+					if (StringUtil.trimToNull(grade) != null)
+					{
+						sEdit.setGradeReleased (true);
+						sEdit.setGraded(true);
+					}
 					sEdit.setReturned (true);
 					sEdit.setTimeReturned(TimeService.newTime());
 					sEdit.setHonorPledgeFlag (Boolean.FALSE.booleanValue ());
+					
+					if (state.getAttribute(GRADE_SUBMISSION_ALLOW_RESUBMIT) != null && ((Boolean)state.getAttribute(GRADE_SUBMISSION_ALLOW_RESUBMIT)).booleanValue())
+					{
+						sEdit.getPropertiesEdit().addProperty(GRADE_SUBMISSION_ALLOW_RESUBMIT, Boolean.TRUE.toString());
+						state.removeAttribute(GRADE_SUBMISSION_ALLOW_RESUBMIT);
+					}
 				}
 		
 				sEdit.setFeedbackComment ((String) state.getAttribute (GRADE_SUBMISSION_FEEDBACK_COMMENT));
@@ -2538,6 +2562,8 @@ extends PagedResourceActionII
 							sEdit.setFeedbackText("");
 							sEdit.setFeedbackComment("");
 							sEdit.clearFeedbackAttachments();
+							
+							sPropertiesEdit.removeProperty(GRADE_SUBMISSION_ALLOW_RESUBMIT);
 						}
 						//sEdit.addSubmitter (u);
 						sEdit.setAssignment (a);
