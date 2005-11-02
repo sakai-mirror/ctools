@@ -558,38 +558,30 @@ public class DbSiteService
 			// not based on super user status
 
 			// if we are joining, start our where with the join clauses
-			String where;
+			StringBuffer where = new StringBuffer();
 			if ((type == SelectionType.ACCESS) || (type == SelectionType.UPDATE))
 			{
 				// join on site id and also select the proper user
-				where = "SAKAI_SITE.SITE_ID = SAKAI_SITE_USER.SITE_ID and SAKAI_SITE_USER.USER_ID = ?";
+				where.append("SAKAI_SITE.SITE_ID = SAKAI_SITE_USER.SITE_ID and SAKAI_SITE_USER.USER_ID = ? and ");
 			}
 			
-			// otherwise start with something so we can have the "and"s below
-			else
-			{
-				where = "SITE_ID = SITE_ID";
-			}
+			// ignore user sites
+			if (type.isIgnoreUser()) where.append("SAKAI_SITE.IS_USER = '0' and ");
+			// reject special sites
+			if (type.isIgnoreSpecial()) where.append("SAKAI_SITE.IS_SPECIAL = '0' and ");
+			// reject unpublished sites
+			if (type.isIgnoreUnpublished()) where.append("SAKAI_SITE.PUBLISHED = 1 and ");
 
-			where = where
-				// ignore user sites
-				+	(type.isIgnoreUser() ? " and SAKAI_SITE.IS_USER = '0'" : "")
-				// reject special sites
-				+	(type.isIgnoreSpecial() ? " and SAKAI_SITE.IS_SPECIAL = '0'" : "")
-				// reject unpublished sites
-				+	(type.isIgnoreUnpublished() ? " and SAKAI_SITE.PUBLISHED = 1" : "");
-			
 			if (ofType != null)
 			{
 				if (ofType.getClass().equals(String.class))
 				{
 					// type criteria is a simple String value
-					where = where + " and SAKAI_SITE.TYPE = ?";
+					where.append("SAKAI_SITE.TYPE = ? and ");
 				}
 				else if (ofType instanceof String[] || ofType instanceof List || ofType instanceof Set)
 				{
 					//more complex type criteria
-					where = where + " and SAKAI_SITE.TYPE IN (";
 					int size = 0;
 					if (ofType instanceof String[])
 					{
@@ -603,29 +595,30 @@ public class DbSiteService
 					{
 						size = ((Set) ofType).size();
 					}
-					
-					for (int i=0; i < size; i++)
+					if (size > 0)
 					{
-						where = where + "?,";
+						where.append("SAKAI_SITE.TYPE IN (?");
+						for (int i = 1; i < size; i++)
+						{
+							where.append(",?");
+						}
+						where.append(") and ");
 					}
-					where = where.substring(0,where.length()-1) + ") ";
 				}
 			}
 			
-			where = where
-				// reject non-joinable sites
-				+	((type == SelectionType.JOINABLE) ? " and SAKAI_SITE.JOINABLE = '1'" : "")
-				// check for pub view status
-				+	((type == SelectionType.PUBVIEW) ? " and SAKAI_SITE.PUBVIEW = '1'" : "")
-				// check criteria
-				+	((criteria != null) ? " and (UPPER(SAKAI_SITE.TITLE) like UPPER(?) or UPPER(SAKAI_SITE.SHORT_DESC) like UPPER(?) or UPPER(SAKAI_SITE.DESCRIPTION) like UPPER(?) or UPPER(SAKAI_SITE.SITE_ID) like UPPER(?) or UPPER(SAKAI_SITE.CREATEDBY) like UPPER(?))" : "")
-				// update permission
-				+	((type == SelectionType.UPDATE) ? " and SAKAI_SITE_USER.PERMISSION <= -1" : "")
-				// access permission
-				+	((type == SelectionType.ACCESS) ? " and SAKAI_SITE_USER.PERMISSION <= SAKAI_SITE.PUBLISHED" : "")
-				// joinable requires NOT access permission
-				+	((type == SelectionType.JOINABLE) ? " and SITE_ID not in (select SITE_ID from SAKAI_SITE_USER where USER_ID = ? and PERMISSION <= PUBLISHED)" : "")
-				;
+			// reject non-joinable sites
+			if (type == SelectionType.JOINABLE) where.append("SAKAI_SITE.JOINABLE = '1' and ");
+			// check for pub view status
+			if (type == SelectionType.PUBVIEW) where.append("SAKAI_SITE.PUBVIEW = '1' and ");
+			// check criteria
+			if (criteria != null) where.append("UPPER(SAKAI_SITE.TITLE) like UPPER(?) and ");
+			// update permission
+			if (type == SelectionType.UPDATE) where.append("SAKAI_SITE_USER.PERMISSION <= -1 and ");
+			// access permission
+			if (type == SelectionType.ACCESS) where.append("SAKAI_SITE_USER.PERMISSION <= SAKAI_SITE.PUBLISHED and ");
+			// joinable requires NOT access permission
+			if (type == SelectionType.JOINABLE) where.append("SITE_ID not in (select SITE_ID from SAKAI_SITE_USER where USER_ID = ? and PERMISSION <= PUBLISHED) and ");
 
 			// do we need a join?
 			String join = null;
@@ -640,7 +633,7 @@ public class DbSiteService
 			{
 				for (int i = 0; i < propertyCriteria.size(); i++)
 				{
-					where = where + " and SAKAI_SITE.SITE_ID in (select SITE_ID from SAKAI_SITE_PROPERTY where NAME = ? and UPPER(VALUE) like UPPER(?))";
+					where.append("SAKAI_SITE.SITE_ID in (select SITE_ID from SAKAI_SITE_PROPERTY where NAME = ? and UPPER(VALUE) like UPPER(?)) and ");
 				}
 			}
 
@@ -733,11 +726,9 @@ public class DbSiteService
 					fieldCount+=((Set) ofType).size();
 				}
 			}
-			if (criteria !=null) fieldCount += 5;
-			if ((type == SelectionType.JOINABLE) || (type == SelectionType.ACCESS) || (type == SelectionType.UPDATE))
-				fieldCount++;
-			if (propertyCriteria != null)
-				fieldCount += (2 * propertyCriteria.size());
+			if (criteria != null) fieldCount += 1;
+			if ((type == SelectionType.JOINABLE) || (type == SelectionType.ACCESS) || (type == SelectionType.UPDATE)) fieldCount++;
+			if (propertyCriteria != null) fieldCount += (2 * propertyCriteria.size());
 			Object fields[] = null;
 			if (fieldCount > 0)
 			{
@@ -783,10 +774,6 @@ public class DbSiteService
 				{
 					criteria = "%" + criteria + "%";
 					fields[pos++] = criteria;
-					fields[pos++] = criteria;
-					fields[pos++] = criteria;
-					fields[pos++] = criteria;
-					fields[pos++] = criteria;
 				}
 				if ((propertyCriteria != null) && (propertyCriteria.size() > 0))
 				{
@@ -807,16 +794,22 @@ public class DbSiteService
 
 			List rv = null;
 
+			// where has a trailing 'and ' to remove
+			if ((where.length() > 5) && (where.substring(where.length()-5).equals(" and ")))
+			{
+				where.setLength(where.length()-5);
+			}
+
 			// paging
 			if (page != null)
 			{
 				// adjust to the size of the set found
 				// page.validate(rv.size());
-				rv = getSelectedResources(where, order, fields, page.getFirst(), page.getLast(), join);
+				rv = getSelectedResources(where.toString(), order, fields, page.getFirst(), page.getLast(), join);
 			}
 			else
 			{
-				rv = getSelectedResources(where, order, fields, join);
+				rv = getSelectedResources(where.toString(), order, fields, join);
 			}
 			
 			return rv;
@@ -883,40 +876,31 @@ public class DbSiteService
 		public int countSites(SelectionType type, Object ofType, String criteria, Map propertyCriteria)
 		{
 			// if we are joining, start our where with the join clauses
-			String where;
+			StringBuffer where = new StringBuffer();
 			if ((type == SelectionType.ACCESS) || (type == SelectionType.UPDATE))
 			{
 				// join on site id and also select the proper user
-				where = "SAKAI_SITE.SITE_ID = SAKAI_SITE_USER.SITE_ID and SAKAI_SITE_USER.USER_ID = ?";
+				where.append("SAKAI_SITE.SITE_ID = SAKAI_SITE_USER.SITE_ID and SAKAI_SITE_USER.USER_ID = ? and ");
 			}
 			
-			// otherwise start with something so we can have the "and"s below
-			else
-			{
-				where = "SITE_ID = SITE_ID";
-			}
+			// ignore user sites
+			if (type.isIgnoreUser()) where.append("SAKAI_SITE.IS_USER = '0' and ");
+			// reject special sites
+			if (type.isIgnoreSpecial()) where.append("SAKAI_SITE.IS_SPECIAL = '0' and ");
+			// reject unpublished sites
+			if (type.isIgnoreUnpublished()) where.append("SAKAI_SITE.PUBLISHED = 1 and ");
 
-				// start with something null so we at least have something and the " and" strings below make sense
-			where = where
-				// ignore user sites
-				+	(type.isIgnoreUser() ? " and SAKAI_SITE.IS_USER = '0'" : "")
-				// reject special sites
-				+	(type.isIgnoreSpecial() ? " and SAKAI_SITE.IS_SPECIAL = '0'" : "")
-				// reject unpublished sites
-				+	(type.isIgnoreUnpublished() ? " and SAKAI_SITE.PUBLISHED = 1" : "");
-			
 			// reject unwanted site types
 			if (ofType != null)
 			{
 				if (ofType instanceof String)
 				{
 					// type criteria is a simple String value
-					where = where + " and SAKAI_SITE.TYPE = ?";
+					where.append("SAKAI_SITE.TYPE = ? and ");
 				}
 				else if (ofType instanceof String[] || ofType instanceof List || ofType instanceof Set)
 				{
 					//more complex type criteria
-					where = where + " and SAKAI_SITE.TYPE IN (";
 					int size = 0;
 					if (ofType instanceof String[])
 					{
@@ -930,28 +914,30 @@ public class DbSiteService
 					{
 						size = ((Set) ofType).size();
 					}
-					for (int i=0; i < size; i++)
+					if (size > 0)
 					{
-						where = where + "?,";
+						where.append("SAKAI_SITE.TYPE IN (?");
+						for (int i = 1; i < size; i++)
+						{
+							where.append(",?");
+						}
+						where.append(") and ");
 					}
-					where = where.substring(0,where.lastIndexOf(",")) + ") ";
 				}
 			}
 			
-			where = where
-				// reject non-joinable sites
-				+	((type == SelectionType.JOINABLE) ? " and SAKAI_SITE.JOINABLE = '1'" : "")
-				// check for pub view status
-				+	((type == SelectionType.PUBVIEW) ? " and SAKAI_SITE.PUBVIEW = '1'" : "")
-				// check criteria
-				+	((criteria != null) ? " and (UPPER(SAKAI_SITE.TITLE) like UPPER(?) or UPPER(SAKAI_SITE.SHORT_DESC) like UPPER(?) or UPPER(SAKAI_SITE.DESCRIPTION) like UPPER(?) or UPPER(SAKAI_SITE.SITE_ID) like UPPER(?) or UPPER(SAKAI_SITE.CREATEDBY) like UPPER(?))" : "")
-				// update permission
-				+	((type == SelectionType.UPDATE) ? " and SAKAI_SITE_USER.PERMISSION <= -1" : "")
-				// access permission
-				+	((type == SelectionType.ACCESS) ? " and SAKAI_SITE_USER.PERMISSION <= SAKAI_SITE.PUBLISHED" : "")
-				// joinable requires NOT access permission
-				+	((type == SelectionType.JOINABLE) ? " and SAKAI_SITE.SITE_ID not in (select SITE_ID from SAKAI_SITE_USER where USER_ID = ? and PERMISSION <= PUBLISHED)" : "")
-				;
+			// reject non-joinable sites
+			if (type == SelectionType.JOINABLE) where.append("SAKAI_SITE.JOINABLE = '1' and ");
+			// check for pub view status
+			if (type == SelectionType.PUBVIEW) where.append("SAKAI_SITE.PUBVIEW = '1' and ");
+			// check criteria
+			if (criteria != null) where.append("UPPER(SAKAI_SITE.TITLE) like UPPER(?) and ");
+			// update permission
+			if (type == SelectionType.UPDATE) where.append("SAKAI_SITE_USER.PERMISSION <= -1 and ");
+			// access permission
+			if (type == SelectionType.ACCESS) where.append("SAKAI_SITE_USER.PERMISSION <= SAKAI_SITE.PUBLISHED and ");
+			// joinable requires NOT access permission
+			if (type == SelectionType.JOINABLE) where.append("SAKAI_SITE.SITE_ID not in (select SITE_ID from SAKAI_SITE_USER where USER_ID = ? and PERMISSION <= PUBLISHED) and ");
 
 			// do we need a join?
 			String join = null;
@@ -966,7 +952,7 @@ public class DbSiteService
 			{
 				for (int i = 0; i < propertyCriteria.size(); i++)
 				{
-					where = where + " and SAKAI_SITE.SITE_ID in (select SITE_ID from SAKAI_SITE_PROPERTY where NAME = ? and UPPER(VALUE) like UPPER(?))";
+					where.append("SAKAI_SITE.SITE_ID in (select SITE_ID from SAKAI_SITE_PROPERTY where NAME = ? and UPPER(VALUE) like UPPER(?)) and ");
 				}
 			}
 
@@ -992,11 +978,9 @@ public class DbSiteService
 					fieldCount+=((Set) ofType).size();
 				}
 			}
-			if (criteria !=null) fieldCount += 5;
-			if ((type == SelectionType.JOINABLE) || (type == SelectionType.ACCESS) || (type == SelectionType.UPDATE))
-				fieldCount++;
-			if (propertyCriteria != null)
-				fieldCount += (2 * propertyCriteria.size());
+			if (criteria != null) fieldCount += 1;
+			if ((type == SelectionType.JOINABLE) || (type == SelectionType.ACCESS) || (type == SelectionType.UPDATE)) fieldCount++;
+			if (propertyCriteria != null) fieldCount += (2 * propertyCriteria.size());
 			Object fields[] = null;
 			if (fieldCount > 0)
 			{
@@ -1042,10 +1026,6 @@ public class DbSiteService
 				{
 					criteria = "%" + criteria + "%";
 					fields[pos++] = criteria;
-					fields[pos++] = criteria;
-					fields[pos++] = criteria;
-					fields[pos++] = criteria;
-					fields[pos++] = criteria;
 				}
 				if ((propertyCriteria != null) && (propertyCriteria.size() > 0))
 				{
@@ -1064,7 +1044,13 @@ public class DbSiteService
 				}
 			}
 
-			int rv = countSelectedResources(where, fields, join);
+			// where has a trailing 'and ' to remove
+			if ((where.length() > 5) && (where.substring(where.length()-5).equals(" and ")))
+			{
+				where.setLength(where.length()-5);
+			}
+
+			int rv = countSelectedResources(where.toString(), fields, join);
 
 			return rv;
 		}
