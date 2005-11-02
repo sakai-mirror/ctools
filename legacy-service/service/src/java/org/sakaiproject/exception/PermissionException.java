@@ -1,7 +1,6 @@
 /**********************************************************************************
-*
-* $Header: /cvs/sakai2/legacy-service/service/src/java/org/sakaiproject/exception/PermissionException.java,v 1.1 2005/05/12 15:45:35 ggolden.umich.edu Exp $
-*
+* $URL$
+* $Id$
 ***********************************************************************************
 *
 * Copyright (c) 2003, 2004 The Regents of the University of Michigan, Trustees of Indiana University,
@@ -24,6 +23,9 @@
 
 // package
 package org.sakaiproject.exception;
+
+//import org.sakaiproject.api.kernel.session.cover.SessionManager;
+import org.sakaiproject.service.framework.session.cover.UsageSessionService;
 
 /**
 * <p>PermissionException indicates an invalid unlock attempt by a user for a lock and a resource.</p>
@@ -82,6 +84,19 @@ public class PermissionException extends Exception
 		m_resource = resource;
 	}
 
+	/**
+	* Construct, using the current session's user id
+	* @param lock The lock name.
+	* @param resource The resource id.
+	*/
+	public PermissionException(String lock, String resource)
+	{
+	    //		m_user = SessionManager.getCurrentSessionUserId();
+	    m_user = UsageSessionService.getSessionUserId();
+		m_lock = lock;
+		m_resource = resource;
+	}
+
 	public String toString()
 	{
 		return super.toString() + " user=" + m_user + " lock=" + m_lock + " resource=" + m_resource;
@@ -89,8 +104,5 @@ public class PermissionException extends Exception
 
 } // PermissionException
 
-/**********************************************************************************
-*
-* $Header: /cvs/sakai2/legacy-service/service/src/java/org/sakaiproject/exception/PermissionException.java,v 1.1 2005/05/12 15:45:35 ggolden.umich.edu Exp $
-*
-**********************************************************************************/
+
+

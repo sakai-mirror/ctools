@@ -127,6 +127,7 @@ import org.sakaiproject.util.ParameterParser;
 import org.sakaiproject.util.SortedIterator;
 import org.sakaiproject.util.Validator;
 import org.sakaiproject.util.java.StringUtil;
+import org.sakaiproject.util.SubjectAffiliates;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -4972,7 +4973,7 @@ public class SiteAction extends PagedResourceActionII
 		for (Iterator i = allAffiliates.iterator(); i.hasNext(); )
 		{
 			SubjectAffiliates sa = (SubjectAffiliates)i.next();
-			if(sa.subject.equals(subject)) return sa.uniqnames;
+			if(sa.getSubject().equals(subject)) return sa.getUniqnames();
 		}
 		return rv;
 		
@@ -8253,7 +8254,6 @@ public class SiteAction extends PagedResourceActionII
 						List manualAddCourses = (List) state.getAttribute(STATE_MANUAL_ADD_COURSE_COURSES);
 						List manualAddSections = (List) state.getAttribute(STATE_MANUAL_ADD_COURSE_SECTIONS);
 						
-						Site site = (Site) state.getAttribute(STATE_SITE_INSTANCE);
 						Term t = (Term) state.getAttribute(STATE_TERM_SELECTED);
 						for (int m=0; m<manualAddNumber && t!=null; m++)
 						{
@@ -8263,7 +8263,7 @@ public class SiteAction extends PagedResourceActionII
 						state.setAttribute(SITE_MANUAL_COURSE_LIST, manualList);
 					}
 					
-					updateCourseClasses(state, (List) state.getAttribute(SITE_MANUAL_COURSE_LIST), (List) state.getAttribute(STATE_ADD_CLASS_PROVIDER_CHOSEN));
+					updateCourseClasses(state, (List) state.getAttribute(STATE_ADD_CLASS_PROVIDER_CHOSEN), (List) state.getAttribute(SITE_MANUAL_COURSE_LIST));
 					
 					removeAddClassContext(state);
 				}
@@ -11133,12 +11133,12 @@ public class SiteAction extends PagedResourceActionII
 					String subject = StringUtil.trimToZero(subjectFields[j]);
 					
 					SubjectAffiliates affiliate = new SubjectAffiliates();
-					affiliate.subject = subject;
-					affiliate.campus = campus;
+					affiliate.setSubject(subject);
+					affiliate.setCampus(campus);
 					
 					for (int k=0; k < uniqnameFields.length;k++)
 					{
-						affiliate.uniqnames.add(StringUtil.trimToZero(uniqnameFields[k]));
+						affiliate.getUniqnames().add(StringUtil.trimToZero(uniqnameFields[k]));
 					}
 					affiliates.add(affiliate);
 				}
@@ -12385,23 +12385,6 @@ public class SiteAction extends PagedResourceActionII
 		public List getSections() { return sections; }
 		
 	} // SiteListItem
-	
-	/**
-	* SubjectAffiliates
-	*
-	* A utility class representing Affiliates within
-	* academic subject areas.
-	*/
-	public class SubjectAffiliates
-	{
-		String subject = "";
-		String campus = "";
-		Collection uniqnames = new Vector();
-		public String getSubject() { return subject; }
-		public String getCampus() { return campus; }
-		public Collection getUniqnames() { return uniqnames; }
-		
-	} //SubjectAffiliates
 	
 	//dissertation tool related
 	/**

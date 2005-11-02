@@ -49,6 +49,12 @@
 			<version>2.4-20040521</version>
 		</dependency>
 
+		<dependency>
+			<groupId>sakaiproject</groupId>
+			<artifactId>sakai-legacy-util</artifactId>
+			<version>${pom.currentVersion}</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

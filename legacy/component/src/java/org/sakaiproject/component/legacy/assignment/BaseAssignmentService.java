@@ -2357,15 +2357,17 @@ public abstract class BaseAssignmentService
 		if (m_logger.isDebugEnabled())
 					m_logger.debug(this + ": getSubmissionsZip reference=" + ref);
 		
-		String typeGradesString = new String(REF_TYPE_GRADES + Resource.SEPARATOR);
-		String context = ref.substring(ref.indexOf(typeGradesString) + typeGradesString.length());
-		if (allowGradeSubmission(context))
+		byte[] rv = null;
+		
+		try
 		{
+			Assignment a = getAssignment(assignmentReferenceFromSubmissionsZipReference(ref));
+				
 			Blob b = new Blob();
 			StringBuffer exceptionMessage = new StringBuffer();
-			try
+			
+			if (allowGradeSubmission(a.getContext()))
 			{
-				Assignment a = getAssignment(assignmentReferenceFromSubmissionsZipReference(ref));
 				try
 				{
 					ZipOutputStream out = new ZipOutputStream(b.outputStream());
@@ -2386,7 +2388,6 @@ public abstract class BaseAssignmentService
 					int len;
 					
 					// Create the ZIP file
-					String outFilename = "outfile.zip";				
 					String submittersName = "";
 					int count = 1;
 					while (submissions.hasNext())
@@ -2398,14 +2399,16 @@ public abstract class BaseAssignmentService
 						if (s.getSubmitted())
 						{
 							User[] submitters = s.getSubmitters();
+							String submittersString = "";
 							for (int i = 0; i < submitters.length; i++)
 							{
 								if (i>0)
 								{
-									submittersName = submittersName.concat("; ");
+									submittersString = submittersString.concat("; ");
 								}
-								submittersName = submittersName.concat(submitters[i].getSortName());
+								submittersString = submittersString.concat(submitters[i].getSortName());
 							}
+							submittersName = submittersName.concat(submittersString);
 							submittedText= s.getSubmittedText();
 	
 							boolean added = false;
@@ -2419,7 +2422,8 @@ public abstract class BaseAssignmentService
 									if (ac.getTypeOfSubmission() != Assignment.ATTACHMENT_ONLY_ASSIGNMENT_SUBMISSION)
 									{
 										//create the text file only when a text submission is allowed
-										ZipEntry textEntry = new ZipEntry(submittersName + "submissionText");
+//										ZipEntry textEntry = new ZipEntry(submittersName + "submissionText");
+										ZipEntry textEntry = new ZipEntry(submittersName + submittersString + "_submissionText.txt");
 										in = (new Blob(FormattedText.convertFormattedTextToPlaintext(submittedText).getBytes())).inputStream();
 										out.putNextEntry(textEntry);
 										
@@ -2513,25 +2517,25 @@ public abstract class BaseAssignmentService
 					exceptionMessage.append("Can not establish the IO to create zip file. ");
 					m_logger.debug(this + ": getSubmissionsZip--IOException unable to create the zip file for assignment " + a.getTitle());
 				}
+				
+				//return zip file content
+				rv = b.getBytes();
 			}
-			catch (IdUnusedException e)
-			{
-				if (m_logger.isDebugEnabled())
-					m_logger.debug(this + ": getSubmissionsZip--IdUnusedException Unable to get assignment " + ref);
-				throw new IdUnusedException(ref);
-			}
-			catch (PermissionException e)
-			{
-				m_logger.debug(this + ": getSubmissionsZip--PermissionException Not permitted to get assignment " + ref);
-				throw new PermissionException(UsageSessionService.getSessionUserId(), SECURE_ACCESS_ASSIGNMENT, ref);
-			}
-			
-			return b.getBytes();
 		}
-		else
+		catch (IdUnusedException e)
 		{
-			return null;
+			if (m_logger.isDebugEnabled())
+				m_logger.debug(this + ": getSubmissionsZip--IdUnusedException Unable to get assignment " + ref);
+			throw new IdUnusedException(ref);
 		}
+		catch (PermissionException e)
+		{
+			m_logger.debug(this + ": getSubmissionsZip--PermissionException Not permitted to get assignment " + ref);
+			throw new PermissionException(SECURE_ACCESS_ASSIGNMENT, ref);
+		}
+			
+		
+		return rv;
 		
 	}	// getSubmissionsZip
 	

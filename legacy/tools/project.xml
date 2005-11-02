@@ -141,6 +141,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>sakaiproject</groupId>
+			<artifactId>sakai-component</artifactId>
+			<version>${pom.currentVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>sakaiproject</groupId>
+			<artifactId>sakai-syllabus-api</artifactId>
+			<version>${pom.currentVersion}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>servletapi</groupId>
 			<artifactId>servletapi</artifactId>
 			<version>2.4-20040521</version>

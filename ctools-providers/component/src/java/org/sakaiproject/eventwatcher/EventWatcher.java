@@ -27,7 +27,11 @@ package org.sakaiproject.eventwatcher;
 // imports
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
@@ -35,13 +39,23 @@ import java.util.Vector;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.service.framework.config.cover.ServerConfigurationService;
 import org.sakaiproject.service.framework.log.Logger;
-
+import org.sakaiproject.service.framework.session.SessionState;
+import org.sakaiproject.service.legacy.coursemanagement.Course;
+import org.sakaiproject.service.legacy.coursemanagement.cover.CourseManagementService;
 import org.sakaiproject.service.legacy.event.Event;
 import org.sakaiproject.service.legacy.event.EventTrackingService;
 import org.sakaiproject.service.legacy.realm.cover.RealmService;
 import org.sakaiproject.service.legacy.realm.Realm;
+import org.sakaiproject.service.legacy.realm.RealmEdit;
+import org.sakaiproject.service.legacy.realm.Role;
+import org.sakaiproject.service.legacy.realm.cover.RealmService;
 import org.sakaiproject.service.legacy.resource.Reference;
+import org.sakaiproject.service.legacy.site.SiteEdit;
+import org.sakaiproject.service.legacy.user.User;
+import org.sakaiproject.service.legacy.user.cover.UserDirectoryService;
 import org.sakaiproject.util.api.umiac.UmiacClient;
+import org.sakaiproject.util.java.StringUtil;
+import org.sakaiproject.util.SubjectAffiliates;
 
 /**
 * <p>%%%</p>
@@ -82,7 +96,9 @@ public class EventWatcher implements Observer
 	/*******************************************************************************
 	* Init and Destroy
 	*******************************************************************************/
-
+	/** affiliates */
+	protected Vector m_affiliates = null;
+	
 	/**
 	 * Final initialization, once all dependencies are set.
 	 */
@@ -95,6 +111,9 @@ public class EventWatcher implements Observer
 			// start watching the events - only those generated on this server, not those from elsewhere
 			m_eventTrackingService.addLocalObserver(this);
 
+			// read affiliates info
+			setupSubjectAffiliates();
+			
 			m_logger.info(this +".init()");
 		}
 		catch (Throwable t)
@@ -197,6 +216,9 @@ public class EventWatcher implements Observer
 							if (sList.size() == 6)
 							{
 								m_umiac.setGroupUrl((String) sList.get(0), (String) sList.get(1), (String) sList.get(2), (String) sList.get(3), (String) sList.get(4), (String) sList.get(5), "-");
+								
+								// remove subject affiliates from the realm
+								modifySubjectAffliates((String) sList.get(3), ref.getId(), false);
 							}
 						}
 					}
@@ -213,6 +235,9 @@ public class EventWatcher implements Observer
 							{
 								// year,term,campus,subject,course,section
 								m_umiac.setGroupUrl((String) pIdList.get(0), (String) pIdList.get(1), (String) pIdList.get(2), (String) pIdList.get(3), (String) pIdList.get(4), (String) pIdList.get(5), url);
+								
+								// add subject affiliates to the realm
+								modifySubjectAffliates((String) pIdList.get(3), ref.getId(), true);
 							}
 						}
 					}
@@ -229,6 +254,125 @@ public class EventWatcher implements Observer
 		}
 	} // update
 
+	/**
+	* Get affiliates information
+	*
+	*/
+	private void setupSubjectAffiliates()
+	{
+		Vector affiliates = new Vector();
+		
+		List subjectList = new Vector();
+		List campusList = new Vector();
+		List uniqnameList = new Vector();
+		
+		//get term information
+		if (ServerConfigurationService.getStrings("affiliatesubjects") != null)
+		{
+			subjectList = new ArrayList(Arrays.asList(ServerConfigurationService.getStrings("affiliatesubjects")));
+		}
+		if (ServerConfigurationService.getStrings("affiliatecampus") != null)
+		{
+			campusList = new ArrayList(Arrays.asList(ServerConfigurationService.getStrings("affiliatecampus")));
+		}
+		if (ServerConfigurationService.getStrings("affiliateuniqnames") != null)
+		{
+			uniqnameList = new ArrayList(Arrays.asList(ServerConfigurationService.getStrings("affiliateuniqnames")));
+		}
+		
+		if (subjectList.size() > 0 && subjectList.size() == campusList.size() && subjectList.size() == uniqnameList.size())
+		{
+			for (int i=0; i < subjectList.size();i++)
+			{
+				String[] subjectFields = ((String) subjectList.get(i)).split(",");
+				String[] uniqnameFields = ((String) uniqnameList.get(i)).split(",");
+				String campus = (String) campusList.get(i);
+				
+				for (int j=0; j < subjectFields.length; j++)
+				{
+					String subject = StringUtil.trimToZero(subjectFields[j]);
+					
+					SubjectAffiliates affiliate = new SubjectAffiliates();
+					affiliate.setSubject(subject);
+					affiliate.setCampus(campus);
+					
+					for (int k=0; k < uniqnameFields.length;k++)
+					{
+						affiliate.getUniqnames().add(StringUtil.trimToZero(uniqnameFields[k]));
+					}
+					affiliates.add(affiliate);
+				}
+			}
+		}
+		
+		m_affiliates = affiliates;
+		
+	}	// setupSubjectAffiliates
+	
+	// modify affiliate information
+	private void modifySubjectAffliates(String subject, String realmId, boolean add)
+	{
+		Collection affiliates = new Vector();
+		String affiliate = "";
+		
+		// get affliates for subjects
+		affiliates = new HashSet(getSubjectAffiliates(subject));
+		
+		// try to add uniqnames with appropriate role
+		for (Iterator i = affiliates.iterator(); i.hasNext(); )
+		{
+			affiliate = (String)i.next();
+			
+			try
+			{
+				User user = UserDirectoryService.getUser(affiliate);
+				if (RealmService.allowUpdateRealm(realmId))
+				{
+					try
+					{
+						RealmEdit realmEdit = RealmService.editRealm(realmId);
+						Role role = realmEdit.getRole("Affiliate");
+						if (add)
+						{
+							realmEdit.addUserRole(user.getId(), role.getId(), true, false);
+						}
+						else
+						{
+							realmEdit.removeUser(user.getId());
+						}
+						RealmService.commitEdit(realmEdit);
+					}
+					catch(Exception ignore) {}
+				}
+			}
+			catch(Exception ignore)
+			{
+				m_logger.warn(this + " cannot find affiliate " + affiliate);
+			}
+			
+		}	// for	
+		
+		
+	} // modifySubjectAffliates
+	
+	/**
+	* @params - String subject is the University's Subject code
+	* @return - Collection of uniqnames of affiliates for this subject
+	*/
+	private Collection getSubjectAffiliates(String subject)
+	{
+		Collection rv = null;
+		
+		//iterate through the subjects looking for this subject
+		for (Iterator i = m_affiliates.iterator(); i.hasNext(); )
+		{
+			SubjectAffiliates sa = (SubjectAffiliates)i.next();
+			if(sa.getSubject().equals(subject)) return sa.getUniqnames();
+		}
+		return rv;
+		
+	} //getSubjectAffiliates
+	
 } // EventWatcher
 
 
