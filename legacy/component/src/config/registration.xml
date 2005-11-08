@@ -104,5 +104,8 @@
 	<function name="gradebook.access" />
 	<function name="gradebook.maintain" />
 
+	<function name="melete.author" />
+	<function name="melete.student" />
+
 </registration>
 	
