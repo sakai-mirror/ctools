@@ -5196,14 +5196,12 @@ public class SiteAction extends PagedResourceActionII
 					to = instructor.getEmail();
 					headerTo = instructor.getEmail();
 					replyTo = requestEmail;
-					if (termExist)
+					message_subject = rb.getString("java.sitereqfrom")+ " " + sessionUserName;
+					if (termExist && term != null)
 					{
-						message_subject = rb.getString("java.official")+" " + term.getTerm() + " " + term.getYear();
+						message_subject=message_subject.concat(" " + rb.getString("java.for") + " " + term.getTerm() + " " + term.getYear() + " ");
 					}
-					else
-					{
-						message_subject = rb.getString("java.official")+" ";
-					}
+					
 					buf.append(rb.getString("java.hello")+" \n\n");
 					buf.append(rb.getString("java.receiv")+" " + sessionUserName + ", ");
 					buf.append(rb.getString("java.who")+"\n");
@@ -5242,6 +5240,10 @@ public class SiteAction extends PagedResourceActionII
 			headerTo = requestEmail;
 			replyTo = UserDirectoryService.getCurrentUser().getEmail();
 			message_subject = rb.getString("java.sitereqfrom")+" " + sessionUserName;
+			if (termExist && term != null)
+			{
+				message_subject=message_subject.concat(" " + rb.getString("java.for") + " " + term.getTerm() + " " + term.getYear() + " ");
+			}
 			buf.setLength(0);
 			buf.append(rb.getString("java.to")+"\t\t" + productionSiteName + " "+rb.getString("java.supp")+"\n");
 			buf.append("\n"+rb.getString("java.from")+"\t" + sessionUserName + "\n");
@@ -5286,13 +5288,16 @@ public class SiteAction extends PagedResourceActionII
 			buf.append(rb.getString("java.siteid")+"\t" +  id + "\n");
 			buf.append(rb.getString("java.siteinstr")+"\n"  + additional + "\n\n");
 			
-			if (sendEmailToRequestee)
+			if (requestId != null)
 			{
-				buf.append(rb.getString("java.authoriz")+" " + noEmailInIdAccountName + " "+rb.getString("java.asreq"));
-			}
-			else
-			{
-				buf.append(rb.getString("java.thesiteemail")+" " + noEmailInIdAccountName + " "+rb.getString("java.asreq"));
+				if (sendEmailToRequestee)
+				{
+					buf.append(rb.getString("java.authoriz")+" " + requestId + " "+rb.getString("java.asreq"));
+				}
+				else
+				{
+					buf.append(rb.getString("java.thesiteemail")+" " + requestId + " "+rb.getString("java.asreq"));
+				}
 			}
 			content = buf.toString();
 			EmailService.send(from, to, message_subject, content, headerTo, replyTo, null);
