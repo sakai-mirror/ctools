@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/java"/>
+	<classpathentry kind="lib" path="target/ctools-melete-remote/WEB-INF/lib/logkit-1.2.jar"/>
+	<classpathentry kind="lib" path="target/ctools-melete-remote/WEB-INF/lib/oro-2.0.8.jar"/>
+	<classpathentry kind="lib" path="target/ctools-melete-remote/WEB-INF/lib/sakai-legacy-tool-support-2.0.0.jar"/>
+	<classpathentry kind="lib" path="target/ctools-melete-remote/WEB-INF/lib/sakai-legacy-util-2.0.0.jar"/>
+	<classpathentry kind="lib" path="target/ctools-melete-remote/WEB-INF/lib/sakai-util-java-2.0.0.jar"/>
+	<classpathentry kind="lib" path="target/ctools-melete-remote/WEB-INF/lib/sakai-util-text-2.0.0.jar"/>
+	<classpathentry kind="lib" path="target/ctools-melete-remote/WEB-INF/lib/sakai-util-web-2.0.0.jar"/>
+	<classpathentry kind="lib" path="target/ctools-melete-remote/WEB-INF/lib/velocity-1.3.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="target/ctools-melete-remote/WEB-INF/classes"/>
+</classpath>

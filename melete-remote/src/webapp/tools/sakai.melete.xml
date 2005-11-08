@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<registration>
+  <!--moved to legacy\component\src\config\registration.xml	
+      <function name="melete.author" />
+      <function name="melete.student" />
+      -->
+
+  <tool
+     id="sakai.melete"
+     title="Modules"
+     description="Melete - Foothill Authoring Tool">
+
+    <!-- 
+	 Might want to preconfigure this with source url and the type as final.
+	 <configuration name="source" value="http://localhost:9200/portal/tool/eea7399a-70ed-4131-80ea-eba7398ad16b" />
+	 -->
+    <!--
+    <category name="course" />
+    <category name="project" />
+    -->
+  </tool>
+
+
+</registration>
