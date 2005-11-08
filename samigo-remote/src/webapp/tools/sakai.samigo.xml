@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<registration>
+
+  <tool
+     id="sakai.samigo"
+     title="Tests and Quizzes"
+     description="Tests and Quizzes">
+
+    <!-- 
+	 Might want to preconfigure this with source url and the type as final.  E.G.
+	 <configuration name="source" value="http://localhost:9200/portal/tool/eea7399a-70ed-4131-80ea-eba7398ad16b" />
+	 -->
+    
+  </tool>
+
+</registration>
