@@ -4216,7 +4216,7 @@ extends PagedResourceActionII
 							}
 							catch (IdUnusedException ee)
 							{
-								addAlert(state, rb.getString("cannotfin6"));
+								//ignore the exception
 							}
 							catch (PermissionException ee)
 							{
@@ -4250,11 +4250,11 @@ extends PagedResourceActionII
 							}
 							catch (PermissionException ee)
 							{
-								addAlert(state, rb.getString("cannotrem") + " " + title + ". ");
+								//ignore the exception
 							}
 							catch (InUseException ee)
 							{
-								addAlert(state, INUSE_ERROR_MESSAGE + rb.getString("calen"));
+								//ignore the exception
 							}
 						}
 					}					
