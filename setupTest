@@ -1,0 +1,20 @@
+#!/bin/bash
+# These are fake local ports that forward to the remote ports.
+
+# $Id$
+# $HeadURL$
+
+set -x
+
+LOCAL_UMIAC=YOUR_DESIRED_LOCALHOST_PORT_HERE
+LOCAL_SAKAIDEV=YOUR_OTHER_DESIRED_LOCALHOST_PORT_HERE
+
+# This assumes that whisk will be able to reach the service.
+
+# umiac
+ssh -4 -N -L $LOCAL_UMIAC:localhost:8888 whisk.ds.itd.umich.edu &
+
+# dev oracle
+ssh -4 -N -L $LOCAL_SAKAIDEV:<fill in remote host>:<fill in remote port> whisk.ds.itd.umich.edu &
+
+#end
