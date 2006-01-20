@@ -1,0 +1,438 @@
+<project name="ctoolsBuild" basedir="." default="info" >
+
+  <!--
+
+      $Id$
+      $HeadURL$
+
+      Ant script that will extract and configure sakai and ctools.
+
+      This will extract source, customize it, compile, create image.
+
+      This gets complicated for exernal tools (e.g. melete) where the source is
+      not in the normal Sakai repository, and there are things that need to be 
+      modified in the configuration.
+
+      
+  -->
+
+  <!-- can set revision number in 4 ways:
+       
+       1 - let it default to HEAD
+       2 - set in the properties file
+       3 - set in the invocation of the svn command 
+       (e.g.     <execSvnCmd url="${sakai.svnurl}" revision="4080" /> )
+       4 - set it on the command line e.g. "ant -Drevision=4111 buildSakai")
+
+  -->
+
+  <!-- 
+       TTD:
+       customizeCtools (modify various files?)
+       
+       
+      image - drop unused (axis scheduler, legacy provider, more??)
+      image - melete
+      image - samigo
+      image - edit sakai.properties (security.properties etc.)
+
+      ctools - sakai.properties
+      ctools - umiac
+      ctools - kerberous
+
+     pilot - remote tools
+
+     DONE:
+     use import to specify the source to get? (not now)
+     read in the specific configuration
+     respect revision numbers
+     Read in a properties file
+     create the build directory
+     CAN'T read in unknown list of properties apparently ?!(*#)$
+     clean up unwanted directories
+     allow files from subdirctory to move to another one.
+     image - install db driver
+     image - copy / unzip the sakai.tar.gz
+     build an image.
+  -->
+
+  <property file="ctools-config.properties" />
+  <property name="build.dir" value="./build" />
+  <property name="logs.dir" value="./logs" />
+  <property name="image.dir" value="./image" />
+  <property name="image.dest.dir" value="." />
+  <property name="svnCmd" value="export" />
+  <property name="defaultRevision" value="HEAD" />
+
+  <target name="info">
+    <echo> print configure and build specific ctools version.</echo>
+    <echo> Can extract particular resources from svn and combine them into a directory to build in.</echo>
+    <echo> Provides utility targets: 
+
+    buildImage
+    compileCtools
+    compileSakai
+    editCtools
+    editGradTools
+    editGradToolsOld
+    editMaster
+    editMelete
+    extractCtools
+    extractMelete
+    getCtoolsSrc
+    getSakaiSrc
+    info
+    prepareBuildDir
+    removeUnneededCtools
+    removeUnneededSakai
+
+    macro tasks:
+    place - move contents of a directory to another one.  This
+    is useful since SVN will extract resources but will not
+    allow changing the parent directory.  E.g. if you want to
+    extract the sakai_2-1 release the contents will be put in
+    the sakai_2-1 directory even if you want it in the
+    "./build" directory.  This allows moving the contents of an
+    extracted directory to another directory.  That directory
+    defaults to the ${build.dir} directory.  
+
+    buildSakai -
+    
+    </echo>
+  </target>
+
+
+
+
+  <!-- extract source and modify as necessary -->
+
+  <!-- primary target -->
+  <target name="buildCtoolsImage" depends="prepare,getSource,editSource,compileSakai,buildImage">
+
+    </target>
+
+  <!-- secondary targets -->
+  <target name="prepare" depends="prepareBuildDirs" >
+  </target>
+
+  <target name="getSource" 
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete" 
+	  description="get the source for sakai and required tools."/>
+
+  <target name="editSource" depends="editCtools,editMelete" description="Modify/customize source as necessary."/>
+
+
+  <!-- utility -->
+
+  <target name="prepareBuildDirs"
+	  description="clean all the directories needed for a build." >
+    <delete dir="${build.dir}" />
+    <mkdir dir="${build.dir}" />
+    <delete dir="${logs.dir}" />
+    <mkdir dir="${logs.dir}" />
+    <delete dir="${image.dir}" />
+    <mkdir dir="${image.dir}" />
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--             construct the source                   -->
+  <!-- ================================================== -->
+
+  <!-- ================================================== -->
+  <!--               deal with Sakai proper               -->
+  <!-- ================================================== -->
+
+  <target name="getSakaiSrc" depends="prepareBuildDirs">
+    <execSvnCmd url="${sakai.svnurl}" revision="${sakai.revision}"/>
+<!--    <place fromdir="${build.dir}/sakai_2-1-1" /> -->
+    <place fromdir="${build.dir}/${sakai.svndir}" />
+    <antcall target="removeUnneededSakai" />
+  </target>
+
+  <target name="removeUnneededSakai" >
+    <removeFromBuild deleteDir="portal/mercury" />
+    <removeFromBuild deleteDir="common/common-composite-component/src/test" />
+    <removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
+    <removeFromBuild deleteDir="gradebook/testservice" />
+    <removeFromBuild deleteDir="metaobj/api-impl/src/test" />
+    <removeFromBuild deleteDir="osid/osid-unit-test" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/completetest" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/test" />
+    <removeFromBuild deleteDir="rwiki/radeox/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/testBundle" />
+    <removeFromBuild deleteDir="sam/testdata" />
+    <removeFromBuild deleteDir="sam/tests" />
+    <removeFromBuild deleteDir="sam/tool/src/java/test" />
+    <removeFromBuild deleteDir="providers" />
+
+  </target>
+
+  <!--
+  <target name="editMasterOld">
+    <echo>change version in the master/project.properties file to ${sakai.tag}.</echo>
+    <echo>fix code to set the sakai.version</echo>
+    <replace file="${build.dir}/master/project.properties" summary="yes">
+      <replacefilter 
+	  token="sakai.version=sakai_2-1"
+	  value="sakai.version=${sakai.tag}" />
+    </replace>
+  </target>
+-->
+
+  <target name="editMaster">
+    <echo>change version in the ${build.dir}/master/project.properties file to ${sakai.tag}.</echo>
+    <replaceregexp file="${build.dir}/master/project.properties" >
+      <regexp pattern="sakai\.version=.*" />
+      <substitution 
+	  expression="sakai.version=${sakai.tag}" />
+    </replaceregexp>
+  </target>
+
+<!--
+    <replaceregexp 
+	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml" >
+      <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
+      <substitution 
+	  expression="configuration name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
+    </replaceregexp>
+-->
+
+
+  <target name="compileSakai" depends="editMaster">
+    <exec executable="maven"
+	  dir="${build.dir}"
+	  failonerror="true"
+	  searchpath="true"
+	  >
+      <arg value="-b" />
+      <arg value="-o" />
+      <arg value="sakai:clean" />
+      <arg value="sakai:build" />
+      <arg value="sakai:deploy-zip" />
+    </exec>
+  </target>
+
+  <!-- ================================================== -->
+  <!--           deal with CTools specific source         -->
+  <!-- ================================================== -->
+
+  <target name="getCtoolsSrc">
+    <execSvnCmd url="${ctools.svnurl}" revision="${ctools.revision}"/> 
+    <antcall target="removeUnneededCtools" />
+    <place fromdir="${build.dir}/ctools" />
+  </target>
+
+
+  <target name="removeUnneededCtools" >
+    <!-- get rid of the ctools master directory since it should NOT 
+	 overwrite the sakai master directory.
+    -->
+    <removeFromBuild deleteDir="ctools/master" />
+    <removeFromBuild deleteDir="ctools/ctools-remote" />
+    <!-- this gets rid of the ctools/melete directory, which is not necessary.
+    Melete is handled separately below. 
+    -->
+    <removeFromBuild deleteDir="ctools/melete" />
+  </target>
+
+  <target name="editCtools" depends="editGradTools">
+    <!-- edit the files that need to be modified for ctools -->
+  </target>
+
+  <target name="editGradTools">
+    <echo> edit file: ${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml</echo>
+    <replaceregexp 
+	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml" >
+      <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
+      <substitution 
+	  expression="configuration name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
+    </replaceregexp>
+    <replaceregexp 
+	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml"  >
+      <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
+      <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
+    </replaceregexp>
+  </target>
+
+  <!-- ================================================== -->
+  <!--           deal with Melete specific source         -->
+  <!-- ================================================== -->
+
+  <target name="extractMelete" if="melete.install" >
+    <execSvnCmd url="${melete.svnurl}" revision="${melete.revision}"/> 
+    <untar src="${build.dir}/${melete.archivename}" dest="${build.dir}" compression="gzip" />
+  </target>
+
+  <target name="editMelete" if="melete.install" >
+    <!-- update the directory value for the melete uploads. -->
+    <replaceregexp match="/var" replace="/meletehome" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<include name="meleteDocs.xml" />
+	<include name="**/web.xml" />
+      </fileset>
+    </replaceregexp>
+  </target>
+  
+  <target name="imageMelete" if="melete.install">
+    <echo>update image for melete</echo>
+    <copy todir="${image.dir}/conf/Catalina/localhost">
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<include name="meleteDocs.xml" />
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- =============================== -->
+  <!--         image targets           -->
+  <!-- =============================== -->
+
+  <target name="buildImage">
+    <mkdir dir="${image.dir}" />
+    <untar src="${build.dir}/sakai.tar.gz" dest="${image.dir}" compression="gzip" />
+    <copy file="${dbdriver}" todir="${image.dir}/common/lib" />
+    <antcall target="imageMelete" />
+    <delete dir="${image.dir}/licenses" />
+    <tar basedir="${image.dir}" 
+	 compression="gzip" longfile="warn"
+	 destfile="${image.dest.dir}/image.${sakai.tag}.tar.gz"
+	 />
+    <!--
+	This will create a zip archive, if you want one.
+    <zip basedir="${image.dir}"
+	 destfile="${image.dest.dir}/image.${sakai.tag}.zip"
+	 />
+    -->
+
+    <echo>
+      Remember to setup the sakai directory and change the revision number for the footer.
+    </echo>
+
+  </target>
+ 
+  <!--
+  to uncompress a tar file into an existing tomcat directory you can use something like:
+  tar \-\-gunzip -f sakai_2-1_4840.tar.gz -C ~/tomcats/image-test -x
+  where the value following the -C is the destination directory.
+  -->
+
+  <!-- =============================== -->
+  <!--          Targets to do          -->
+  <!-- =============================== -->
+
+  <target name="compileCtools" depends="">
+    <echo> not implemented yet</echo>
+  </target>
+
+
+  <!-- ========================================= -->
+  <!--             macro definitions             -->
+  <!-- ========================================= -->
+
+  <!-- run a svn command.  
+       
+       This wraps the execution of specific svn commands.  It supplies default
+       values for the cmd, svn url, output (build) directory, the directory to
+       contain the log file, and the svn revision to use.
+       
+       The commands likely to be useful are: ls, co (checkout), and export (get files
+       without svn information, useful for compilation).
+       
+       example:  <execSvnCmd url="${ctools.svnurl}"  /> 
+       example:  <execSvnCmd url="${ctools.svnurl}" revision="4444" /> 
+
+       This is a macro to support default values and to hide
+       the svn specific syntax.
+  -->
+
+  <macrodef name="execSvnCmd">
+    <attribute name="cmd" default="${svnCmd}" />
+    <attribute name="url" default="${sakai.svnurl}" />
+    <attribute name="dir" default="${build.dir}" />
+    <attribute name="logdir" default="${logs.dir}" />
+    <attribute name="revision" default="${defaultRevision}" />
+    <sequential>
+      <echo>Extract svn resource: @{cmd} from @{url} revision: @{revision}.</echo>
+      <exec executable="svn"
+	    dir="@{dir}"
+	    failonerror="true"
+	    output="@{logdir}/${ant.project.name}.log"
+	    append="true" >
+	<arg value="-r@{revision}" />
+	<arg value="@{cmd}" />
+	<arg value="@{url}" />
+      </exec>
+    </sequential>
+  </macrodef>
+
+  <!-- remove files from build directory -->
+  <macrodef name="removeFromBuild">
+    <attribute name="dir" default="${build.dir}" />
+    <attribute name="deleteDir" />
+    <sequential>
+      <delete dir="${build.dir}/@{deleteDir}"  verbose="false" quiet="true" />
+    </sequential>
+  </macrodef>
+
+  <!-- Take files from one directory and put in another.  It is necessary
+       since a svn export or checkout will extract the directory specified,
+       but you often want the resources in the directory, not the directory
+       itself.  This is particularly an issue when you need to merge 
+       different resources.  E.g. the sakai_2-1 release with the
+       ctools specific tools.
+       
+       This is a macro to support default values.
+       
+       example:     <place fromdir="${build.dir}/sakai_2-1" />
+  -->
+
+  <target name="testPlace">
+    <place fromdir="${build.dir}/ctools" />
+  </target>
+
+  <macrodef name="placeUnixBroken" >
+    <attribute name="todir" default="${build.dir}" />
+    <attribute name="fromdir" />
+    <attribute name="verbose" default="no" />
+    <attribute name="logdir" default="." />
+
+    <sequential>
+      <echo> new: place files from @{fromdir} in @{todir}</echo>
+      <exec executable="/bin/bash"
+	    dir="${basedir}/@{fromdir}"
+	    failonerror="true"
+	    output="@{logdir}/${ant.project.name}.log"
+	    append="true" 
+	    searchpath="true" 
+	    >
+	<arg value="-c" />
+	<arg value="mv -a . ${basedir}/@{todir}" />
+      </exec>
+
+    </sequential>
+  </macrodef>
+
+  <macrodef name="place">
+    <attribute name="todir" default="${build.dir}" />
+    <attribute name="fromdir" />
+    <attribute name="verbose" default="no" />
+
+    <sequential>
+      <echo> place files from @{fromdir} in @{todir}</echo>
+      <move todir="@{todir}" verbose="@{verbose}" includeEmptyDirs="yes">
+	<fileset dir="@{fromdir}" defaultexcludes="no" />
+	<!-- 
+	<fileset dir="@{fromdir}" >
+	  <or>
+	  <type type="dir" />
+	  <type type="file" />
+	  </or>
+	</fileset>
+	-->
+      </move>
+    </sequential>
+
+  </macrodef>
+
+</project>
