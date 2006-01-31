@@ -100,7 +100,7 @@ public class LegacyAuthnComponent implements AuthenticationManager
 				throw new AuthenticationException("invalid login");
 			}
 			
-			Authentication rv = new org.sakaiproject.util.Authentication(evidence.getIdentifier(), evidence.getIdentifier());
+			Authentication rv = new org.sakaiproject.util.Authentication(user.getId(), user.getId());
 			return rv;
 		}
 
@@ -118,6 +118,10 @@ public class LegacyAuthnComponent implements AuthenticationManager
 			try
 			{
 				User user = UserDirectoryService.getUser(evidence.getIdentifier());
+
+				// use the user id as both the uuid and eid
+				Authentication rv = new org.sakaiproject.util.Authentication(user.getId(), user.getId());
+				return rv;
 			}
 			catch (IdUnusedException ex)
 			{
@@ -125,10 +129,6 @@ public class LegacyAuthnComponent implements AuthenticationManager
 				// TODO: create the user record here?
 				throw new AuthenticationException("invalid login");
 			}
-
-			// use the user id as both the uuid and eid
-			Authentication rv = new org.sakaiproject.util.Authentication(evidence.getIdentifier(), evidence.getIdentifier());
-			return rv;
 		}
 
 		else
