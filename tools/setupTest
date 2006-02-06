@@ -6,15 +6,33 @@
 
 set -x
 
-LOCAL_UMIAC=YOUR_DESIRED_LOCALHOST_PORT_HERE
-LOCAL_SAKAIDEV=YOUR_OTHER_DESIRED_LOCALHOST_PORT_HERE
+# This is an example of setting up ssh port forwarding so that you can
+# use local ports to connect to ports on remote hosts.  This in turn
+# allows accessing services on a host that does not have a direct path
+# to the service.  It isn't free though: you need authenticated ssh
+# access to a host that does have access.
 
-# This assumes that whisk will be able to reach the service.
+# This can be useful for running tests without compromising the security 
+# of important resources.
+
+# The <SSH_SERVER_HOST> is the host that has access to the required
+# services.  You need to have ssh access to this host.
+
+# The <LOCAL_yyy_PORT> text refers to the port on the current host 
+# that you want to use to access the service.
+
+# The phrase <xxx_SERVICE_HOST>:<SERVER_PORT> states the host name and
+# port for the service from the point of view of the ssh_server.  Note
+# that if the <xxx_SERVICE_HOST> is "localhost" then that localhost refers
+# to the ssh_server_host, not the host from which you are requesting the
+# port forwarding.
+
+# Note that the values between the <> characters should be replaced by the values you need.
 
 # umiac
-ssh -4 -N -L $LOCAL_UMIAC:localhost:8888 whisk.ds.itd.umich.edu &
+ssh -4 -N -L <LOCAL_UMIAC_PORT>:<UMIAC_SERVICE_HOST>:<UMIAC_SERVICE_PORT> <SSH_SERVER_HOST> &
 
 # dev oracle
-ssh -4 -N -L $LOCAL_SAKAIDEV:<fill in remote host>:<fill in remote port> whisk.ds.itd.umich.edu &
+ssh -4 -N -L <LOCAL_SAKAI_ORACLE_PORT>:<ORACLE_SERVICE_HOST>:<ORACLE_SERVICE_PORT> <SSH_SERVER_HOST> &
 
 #end

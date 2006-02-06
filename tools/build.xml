@@ -2,18 +2,18 @@
 
   <!--
 
-      $Id$
-      $HeadURL$
+$Id$
+$HeadURL$
 
-      Ant script that will extract and configure sakai and ctools.
+Ant script that will extract and configure sakai and ctools.
 
-      This will extract source, customize it, compile, create image.
+This will extract source, customize it, compile, create image.
 
-      This gets complicated for exernal tools (e.g. melete) where the source is
-      not in the normal Sakai repository, and there are things that need to be 
-      modified in the configuration.
+This gets complicated for exernal tools (e.g. melete) where the source is
+not in the normal Sakai repository, and there are things that need to be 
+modified in the configuration.
 
-      
+
   -->
 
   <!-- can set revision number in 4 ways:
@@ -31,32 +31,35 @@
        customizeCtools (modify various files?)
        
        
-      image - drop unused (axis scheduler, legacy provider, more??)
-      image - melete
-      image - samigo
-      image - edit sakai.properties (security.properties etc.)
+       image - drop unused (axis scheduler, legacy provider, more??)
+       image - melete
+       image - samigo
+       image - edit sakai.properties (security.properties etc.)
 
-      ctools - sakai.properties
-      ctools - umiac
-      ctools - kerberous
+ctools - sakai.properties
+ctools - umiac
+ctools - kerberous
 
-     pilot - remote tools
+pilot - remote tools
 
-     DONE:
-     use import to specify the source to get? (not now)
-     read in the specific configuration
-     respect revision numbers
-     Read in a properties file
-     create the build directory
-     CAN'T read in unknown list of properties apparently ?!(*#)$
-     clean up unwanted directories
-     allow files from subdirctory to move to another one.
-     image - install db driver
-     image - copy / unzip the sakai.tar.gz
-     build an image.
+DONE:
+use import to specify the source to get? (not now)
+read in the specific configuration
+respect revision numbers
+Read in a properties file
+create the build directory
+CAN'T read in unknown list of properties apparently ?!(*#)$
+clean up unwanted directories
+allow files from subdirctory to move to another one.
+image - install db driver
+image - copy / unzip the sakai.tar.gz
+build an image.
   -->
 
-  <property file="ctools-config.properties" />
+  <property name="config-file" value="" />
+
+  <!--   <property file="ctools-config.properties" /> -->
+  <property file="${config-file}" />
   <property name="build.dir" value="./build" />
   <property name="logs.dir" value="./logs" />
   <property name="image.dir" value="./image" />
@@ -109,7 +112,13 @@
   <!-- primary target -->
   <target name="buildCtoolsImage" depends="prepare,getSource,editSource,compileSakai,buildImage">
 
-    </target>
+  </target>
+
+
+  <!-- build from a single branch which is pre-configured -->
+  <target name="buildCtoolsBranchImage" depends="prepare,getSourceCtoolsBranch,editSource,compileSakai,buildImage">
+
+  </target>
 
   <!-- secondary targets -->
   <target name="prepare" depends="prepareBuildDirs" >
@@ -119,7 +128,17 @@
 	  depends="getSakaiSrc,getCtoolsSrc,extractMelete" 
 	  description="get the source for sakai and required tools."/>
 
+
   <target name="editSource" depends="editCtools,editMelete" description="Modify/customize source as necessary."/>
+
+  <!-- just build from a single branch directory -->
+  <target name="getSourceCtoolsBranch" 
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete" 
+	  description="get the source for sakai and required tools."/>
+
+
+
+  <target name="editSourceCtoolsBranch" depends="editCtools" description="Modify/customize source as necessary."/>
 
 
   <!-- utility -->
@@ -145,7 +164,7 @@
 
   <target name="getSakaiSrc" depends="prepareBuildDirs">
     <execSvnCmd url="${sakai.svnurl}" revision="${sakai.revision}"/>
-<!--    <place fromdir="${build.dir}/sakai_2-1-1" /> -->
+    <!--    <place fromdir="${build.dir}/sakai_2-1-1" /> -->
     <place fromdir="${build.dir}/${sakai.svndir}" />
     <antcall target="removeUnneededSakai" />
   </target>
@@ -170,16 +189,16 @@
   </target>
 
   <!--
-  <target name="editMasterOld">
-    <echo>change version in the master/project.properties file to ${sakai.tag}.</echo>
-    <echo>fix code to set the sakai.version</echo>
-    <replace file="${build.dir}/master/project.properties" summary="yes">
+      <target name="editMasterOld">
+      <echo>change version in the master/project.properties file to ${sakai.tag}.</echo>
+      <echo>fix code to set the sakai.version</echo>
+      <replace file="${build.dir}/master/project.properties" summary="yes">
       <replacefilter 
-	  token="sakai.version=sakai_2-1"
-	  value="sakai.version=${sakai.tag}" />
-    </replace>
-  </target>
--->
+      token="sakai.version=sakai_2-1"
+      value="sakai.version=${sakai.tag}" />
+      </replace>
+      </target>
+  -->
 
   <target name="editMaster">
     <echo>change version in the ${build.dir}/master/project.properties file to ${sakai.tag}.</echo>
@@ -190,14 +209,14 @@
     </replaceregexp>
   </target>
 
-<!--
-    <replaceregexp 
-	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml" >
+  <!--
+      <replaceregexp 
+      file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml" >
       <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
       <substitution 
-	  expression="configuration name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
-    </replaceregexp>
--->
+      expression="configuration name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
+      </replaceregexp>
+  -->
 
 
   <target name="compileSakai" depends="editMaster">
@@ -232,7 +251,7 @@
     <removeFromBuild deleteDir="ctools/master" />
     <removeFromBuild deleteDir="ctools/ctools-remote" />
     <!-- this gets rid of the ctools/melete directory, which is not necessary.
-    Melete is handled separately below. 
+	 Melete is handled separately below. 
     -->
     <removeFromBuild deleteDir="ctools/melete" />
   </target>
@@ -300,9 +319,9 @@
 	 />
     <!--
 	This will create a zip archive, if you want one.
-    <zip basedir="${image.dir}"
-	 destfile="${image.dest.dir}/image.${sakai.tag}.zip"
-	 />
+	<zip basedir="${image.dir}"
+	destfile="${image.dest.dir}/image.${sakai.tag}.zip"
+	/>
     -->
 
     <echo>
@@ -310,11 +329,11 @@
     </echo>
 
   </target>
- 
+  
   <!--
-  to uncompress a tar file into an existing tomcat directory you can use something like:
-  tar \-\-gunzip -f sakai_2-1_4840.tar.gz -C ~/tomcats/image-test -x
-  where the value following the -C is the destination directory.
+      to uncompress a tar file into an existing tomcat directory you can use something like:
+      tar \-\-gunzip -f sakai_2-1_4840.tar.gz -C ~/tomcats/image-test -x
+      where the value following the -C is the destination directory.
   -->
 
   <!-- =============================== -->
@@ -342,8 +361,8 @@
        example:  <execSvnCmd url="${ctools.svnurl}"  /> 
        example:  <execSvnCmd url="${ctools.svnurl}" revision="4444" /> 
 
-       This is a macro to support default values and to hide
-       the svn specific syntax.
+This is a macro to support default values and to hide
+the svn specific syntax.
   -->
 
   <macrodef name="execSvnCmd">
@@ -423,12 +442,12 @@
       <move todir="@{todir}" verbose="@{verbose}" includeEmptyDirs="yes">
 	<fileset dir="@{fromdir}" defaultexcludes="no" />
 	<!-- 
-	<fileset dir="@{fromdir}" >
-	  <or>
-	  <type type="dir" />
-	  <type type="file" />
-	  </or>
-	</fileset>
+	     <fileset dir="@{fromdir}" >
+	     <or>
+	     <type type="dir" />
+	     <type type="file" />
+	     </or>
+	     </fileset>
 	-->
       </move>
     </sequential>
