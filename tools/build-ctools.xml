@@ -1,0 +1,117 @@
+<project name="ctoolsBuildA" basedir="." default="info" >
+
+  <!--
+
+$Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+$HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="ctoolsBuildInfo">
+    <echo>
+      fill me in.
+    </echo>
+  </target>
+
+
+  <!-- extract source and modify as necessary -->
+
+  <!-- primary target -->
+
+  <!--
+  <target name="buildCtoolsImage" depends="prepare,getSource,editSource,compileSakai,buildImage">
+
+  </target>
+  -->
+
+
+  <!-- build from a single branch which is pre-configured -->
+  <!--
+  <target name="buildCtoolsBranchImage" depends="prepare,getSourceCtoolsBranch,editSource,compileSakai,buildImage">
+
+  </target>
+  -->
+
+  <!-- just build from a single branch directory -->
+
+
+  <!--
+  <target name="editSourceCtoolsBranch" depends="editCtools" description="Modify/customize source as necessary."/>
+  -->
+
+  <!-- ================================================== -->
+  <!--           deal with CTools specific source         -->
+  <!-- ================================================== -->
+
+  <target name="getCtoolsSrc">
+    <execSvnCmd url="${ctools.svnurl}" revision="${ctools.revision}"/> 
+    <antcall target="removeUnneededCtools" />
+    <place fromdir="${build.dir}/ctools" />
+  </target>
+
+
+  <target name="removeUnneededCtools" >
+    <!-- get rid of the ctools master directory since it should NOT 
+	 overwrite the sakai master directory.
+    -->
+    <removeFromBuild deleteDir="ctools/master" />
+    <removeFromBuild deleteDir="ctools/ctools-remote" />
+    <!-- this gets rid of the ctools/melete directory, which is not necessary.
+	 Melete is handled separately below. 
+    -->
+    <removeFromBuild deleteDir="ctools/melete" />
+  </target>
+
+  <target name="editCtools" depends="editGradTools">
+    <!-- edit the files that need to be modified for ctools -->
+  </target>
+
+  <target name="editGradTools">
+    <echo> edit file: ${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml</echo>
+    <replaceregexp 
+	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml" >
+      <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
+      <substitution 
+	  expression="configuration name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
+    </replaceregexp>
+    <replaceregexp 
+	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml"  >
+      <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
+      <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
+    </replaceregexp>
+  </target>
+
+  <!-- =============================== -->
+  <!--         image targets           -->
+  <!-- =============================== -->
+
+  <!--
+  <target name="buildImage">
+    <mkdir dir="${image.dir}" />
+    <untar src="${build.dir}/sakai.tar.gz" dest="${image.dir}" compression="gzip" />
+    <copy file="${dbdriver}" todir="${image.dir}/common/lib" />
+    <antcall target="imageMelete" />
+    <delete dir="${image.dir}/licenses" />
+    <tar basedir="${image.dir}" 
+	 compression="gzip" longfile="warn"
+	 destfile="${image.dest.dir}/image.${sakai.tag}.tar.gz"
+	 />
+    <!\-\- 
+	This will create a zip archive, if you want one.
+	<zip basedir="${image.dir}"
+	destfile="${image.dest.dir}/image.${sakai.tag}.zip"
+	/>
+    \-\->
+
+    <echo>
+      Remember to setup the sakai directory and change the revision number for the footer.
+    </echo>
+
+  </target>
+-->  
+</project>

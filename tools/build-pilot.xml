@@ -1,0 +1,171 @@
+<project name="ctoolsBuild" basedir="." default="info" >
+
+  <!--
+
+$Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+$HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+
+ This ant script will control building an image for production with a
+ specific configuration.  It calls a basic script, and calls
+ additional ones as necessary to deal with specific situations.  Those
+ are included via the import tasks below.  Those additional scripts
+ are used to deal with compliations that arise with exernal tools
+ (e.g. melete) where the source is not in the normal Sakai repository,
+ and there are things that need to be modified in the configuration.
+
+ The imported files are meant to include the targets specific only to
+ that tool or tools.  They do not need to be aware of the overall
+ build process.
+
+ Values particular to a specific build are kept in a properties file.
+ The attribute name of file is "config-file" so a specific properties
+ file can be set on the command line.  
+
+ E.g. "ant -f build-pilot.xml -Dconfig-file=atestconfiguration.properties buildCtoolsImage."
+
+ It does not default to a useful file since you don't want to just
+ build a default configuration for production.
+
+ This file may grow large, with many targets if there are a varity of
+ images you wish to build.
+
+ In general the steps that a tool build will go thorough are:
+ - get source
+ - edit source (changing configuration from default values perhaps) and getting rid
+   of directories and files that aren't required.
+ - compiling sakai based on the source created above
+ - building an image for installation from the compiled artifacts.
+
+ This doesn't supply the sakai.properties files you want to customize.
+ 
+  -->
+
+  <!-- can set revision number in 4 ways:
+       
+       1 - let it default to HEAD
+       2 - set in the properties file
+       3 - set in the invocation of the svn command 
+       (e.g.     <execSvnCmd url="${sakai.svnurl}" revision="4080" /> )
+       4 - set it on the command line e.g. "ant -Drevision=4111 buildSakai")
+
+  -->
+
+  <!-- 
+       TTD:
+       customizeCtools (modify various files?)
+       
+  -->
+
+  <import file="./build-ctools.xml" />
+  <import file="./build-mc.xml" />
+  <import file="./build-melete.xml" />
+  <import file="./build-sakai.xml" />
+  <import file="./build-util.xml" />
+
+  <property name="config-file" value="ctools-pilot-200602.properties" />
+  <!--
+  <property name="config-file" value="ctools-config.properties" />
+  -->
+
+  <!--   <property file="ctools-config.properties" /> -->
+  <property file="${config-file}" />
+  <property name="build.dir" value="./build" />
+  <property name="logs.dir" value="./logs" />
+  <property name="image.dir" value="./image" />
+  <property name="image.dest.dir" value="." />
+  <property name="svnCmd" value="export" />
+  <property name="defaultRevision" value="HEAD" />
+
+  <target name="info">
+    <echo>
+      fill me in.
+    </echo>
+  </target>
+
+
+  <!-- extract source and modify as necessary -->
+
+  <!-- primary target -->
+
+  <target name="buildCtoolsImage" depends="prepare,getSource,editSource,compileSakai,buildImage">
+
+  </target>
+
+
+
+  <!-- build from a single branch which is pre-configured -->
+  <!-- 
+  <target name="buildCtoolsBranchImage" depends="prepare,getSourceCtoolsBranch,editSource,compileSakai,buildImage">
+  </target>
+  -->
+
+  <!-- secondary targets -->
+  <target name="prepare" depends="prepareBuildDirs" >
+  </target>
+
+  <target name="getSource" 
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getMessageCenterSrc" 
+	  description="get the source for sakai and required tools."/>
+
+
+  <target name="editSource" depends="editCtools,editMelete" description="Modify/customize source as necessary."/>
+
+  <!-- just build from a single branch directory -->
+  <!--
+  <target name="getSourceCtoolsBranch" 
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete" 
+	  description="get the source for sakai and required tools."/>
+  -->
+<!--
+  <target name="editSourceCtoolsBranch" depends="editCtools" description="Modify/customize source as necessary."/>
+-->
+
+  <!-- =============================== -->
+  <!--         image targets           -->
+  <!-- =============================== -->
+
+  <target name="buildImage">
+    <mkdir dir="${image.dir}" />
+    <untar src="${build.dir}/sakai.tar.gz" dest="${image.dir}" compression="gzip" />
+    <copy file="${dbdriver}" todir="${image.dir}/common/lib" />
+    <antcall target="imageMelete" />
+    <delete dir="${image.dir}/licenses" />
+    <!-- untar doesn't work well with these pathlengths
+    <tar basedir="${image.dir}" 
+	 compression="gzip" longfile="warn"
+	 destfile="${image.dest.dir}/image.${sakai.tag}.tar.gz"
+	 />
+    -->
+	<zip basedir="${image.dir}"
+	destfile="${image.dest.dir}/image.${sakai.tag}.zip"
+	/>
+    <!--
+	This will create a zip archive, if you want one.
+	<zip basedir="${image.dir}"
+	destfile="${image.dest.dir}/image.${sakai.tag}.zip"
+	/>
+    -->
+
+    <echo>
+      Remember to setup the sakai directory and change the revision number for the footer.
+    </echo>
+
+  </target>
+
+
+  <!-- use zip not tar since the ant tar won't untar the files with long path names -->
+ <target name="installTestImage">
+   <unzip src="${image.dest.dir}/image.${sakai.tag}.zip"
+	  dest="${install.test.dir}">
+   </unzip>
+ </target>
+
+  
+  <!--
+      to uncompress a tar file into an existing tomcat directory you can use something like:
+      tar \-\-gunzip -f sakai_2-1_4840.tar.gz -C ~/tomcats/image-test -x
+      where the value following the -C is the destination directory.
+  -->
+
+
+</project>
