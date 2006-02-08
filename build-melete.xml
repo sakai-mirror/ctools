@@ -1,0 +1,49 @@
+<project name="meleteBuild" basedir="." default="info" >
+
+  <!--
+
+$Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+$HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+
+  -->
+
+  <!-- 
+       TTD:
+       
+  -->
+
+  <target name="info-melete">
+    <echo>
+      fill me in.
+    </echo>
+  </target>
+
+  <!-- ================================================== -->
+  <!--           deal with Melete specific source         -->
+  <!-- ================================================== -->
+
+  <target name="extractMelete" if="melete.install" >
+    <execSvnCmd url="${melete.svnurl}" revision="${melete.revision}"/> 
+    <untar src="${build.dir}/${melete.archivename}" dest="${build.dir}" compression="gzip" />
+  </target>
+
+  <target name="editMelete" if="melete.install" >
+    <!-- update the directory value for the melete uploads. -->
+    <replaceregexp match="/var" replace="/meletehome" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<include name="meleteDocs.xml" />
+	<include name="**/web.xml" />
+      </fileset>
+    </replaceregexp>
+  </target>
+  
+  <target name="imageMelete" if="melete.install">
+    <echo>update image for melete</echo>
+    <copy todir="${image.dir}/conf/Catalina/localhost">
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<include name="meleteDocs.xml" />
+      </fileset>
+    </copy>
+  </target>
+
+</project>

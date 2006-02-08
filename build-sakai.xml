@@ -1,0 +1,58 @@
+<project name="buildSakai" basedir="." default="info" >
+
+
+<!--
+# $Id: cleanupData.pl 47 2006-02-03 18:58:48Z dlhaines $
+# $HeadURL: file:///Volumes/UserData/Users/dlhaines/svn/repo/trunk/mytools/cleanupData.pl $
+-->
+
+
+  <!-- ================================================== -->
+  <!--             construct the source                   -->
+  <!-- ================================================== -->
+
+  <!-- ================================================== -->
+  <!--               deal with Sakai proper               -->
+  <!-- ================================================== -->
+
+  <target name="getSakaiSrc" depends="prepareBuildDirs">
+    <execSvnCmd url="${sakai.svnurl}" revision="${sakai.revision}"/>
+    <place fromdir="${build.dir}/${sakai.svndir}" />
+    <antcall target="removeUnneededSakai" />
+  </target>
+
+  <target name="removeUnneededSakai" >
+    <removeFromBuild deleteDir="portal/mercury" />
+    <removeFromBuild deleteDir="common/common-composite-component/src/test" />
+    <removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
+    <removeFromBuild deleteDir="gradebook/testservice" />
+    <removeFromBuild deleteDir="metaobj/api-impl/src/test" />
+    <removeFromBuild deleteDir="osid/osid-unit-test" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/completetest" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/test" />
+    <removeFromBuild deleteDir="rwiki/radeox/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/testBundle" />
+    <removeFromBuild deleteDir="sam/testdata" />
+    <removeFromBuild deleteDir="sam/tests" />
+    <removeFromBuild deleteDir="sam/tool/src/java/test" />
+    <removeFromBuild deleteDir="providers" />
+
+  </target>
+
+  <target name="compileSakai" depends="editMaster">
+    <exec executable="maven"
+	  dir="${build.dir}"
+	  failonerror="true"
+	  searchpath="true"
+	  >
+      <arg value="-b" />
+      <arg value="-o" />
+      <arg value="sakai:clean" />
+      <arg value="sakai:build" />
+      <arg value="sakai:deploy-zip" />
+    </exec>
+  </target>
+
+
+</project>

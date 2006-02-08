@@ -1,0 +1,72 @@
+<project name="buildMessageCenter" basedir="." default="info" >
+
+  <!--
+
+$Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+$HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="message-centerBuildInfo">
+    <echo>
+      fill me in.
+    </echo>
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--      deal with MessageCenter specific source       -->
+  <!-- ================================================== -->
+
+  <target name="getMessageCenterSrc">
+    <echo>
+      Extracting message center tool: ${messagecenter.svnurl} revision: ${messagecenter.revision}.
+    </echo>
+    <execSvnCmd url="${messagecenter.svnurl}" revision="${messagecenter.revision}"/> 
+    <!--
+    <antcall target="removeUnneededMessageCenter" />
+    -->
+    <!--
+    <place fromdir="${build.dir}/messagecenter" />
+    -->
+    <!--
+    <place fromdir="${build.dir}/${messagecenter.svndir}" />
+    -->
+  </target>
+
+
+  <!--
+  <target name="removeUnneededMessageCenter" >
+    <removeFromBuild deleteDir="messagecenter/master" />
+  </target>
+  -->
+
+    <!-- edit the files that need to be modified for message center -->
+  <!--
+  <target name="editMessageCenter" depends="" >
+  </target>
+  -->
+
+<!--
+  <target name="editGradTools">
+    <echo> edit file: ${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml</echo>
+    <replaceregexp 
+	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml" >
+      <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
+      <substitution 
+	  expression="configuration name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
+    </replaceregexp>
+    <replaceregexp 
+	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml"  >
+      <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
+      <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
+    </replaceregexp>
+  </target>
+-->
+
+</project>
