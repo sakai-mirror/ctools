@@ -40,6 +40,22 @@
 
   </target>
 
+  <target name="editSakai" >
+  </target>
+
+  <target name="imageSakai" >
+    <removeWarFromImage deleteWar="sakai-axis.war" />
+    <removeWarFromImage deleteWar="sakai-wsrp-producer.war" />
+    <removeWarFromImage deleteWar="sakai-comp-test-app1.war" />
+    <removeWarFromImage deleteWar="sakai-group-test.war" />
+    <removeWarFromImage deleteWar="sakai-osid-repo-test.war" />
+    <removeWarFromImage deleteWar="sakai-sections-testservice.war" />
+    <removeWarFromImage deleteWar="sakai-jsf-example.war" />
+    <removeWarFromImage deleteWar="sakai-sample-tools-browser.war" />
+    <removeWarFromImage deleteWar="sakai-sample-tools-jsf1.war" />
+    <removeWarFromImage deleteWar="sakai-sample-tools-qa-helper.war" />
+  </target>
+
   <target name="compileSakai" depends="editMaster">
     <exec executable="maven"
 	  dir="${build.dir}"

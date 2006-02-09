@@ -40,19 +40,8 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
  
   -->
 
-  <!-- can set revision number in 4 ways:
-       
-       1 - let it default to HEAD
-       2 - set in the properties file
-       3 - set in the invocation of the svn command 
-       (e.g.     <execSvnCmd url="${sakai.svnurl}" revision="4080" /> )
-       4 - set it on the command line e.g. "ant -Drevision=4111 buildSakai")
-
-  -->
-
   <!-- 
        TTD:
-       customizeCtools (modify various files?)
        
   -->
 
@@ -67,7 +56,6 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
   <property name="config-file" value="ctools-config.properties" />
   -->
 
-  <!--   <property file="ctools-config.properties" /> -->
   <property file="${config-file}" />
   <property name="build.dir" value="./build" />
   <property name="logs.dir" value="./logs" />
@@ -83,53 +71,62 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
   </target>
 
 
-  <!-- extract source and modify as necessary -->
+  <!-- ========================= -->
+  <!-- primary targets.  These shouldn't have to change.  -->
+  <!-- There may be multiple targets to support multiple different build types. -->
+  <!-- ========================= -->
 
-  <!-- primary target -->
+  <target name="buildCtoolsImage" depends="prepare,getSource,editSource,compileSakai,buildImage" />
 
-  <target name="buildCtoolsImage" depends="prepare,getSource,editSource,compileSakai,buildImage">
+  <!-- ========================= -->
+  <!-- secondary targets   These are customized based on the needs of the particular build.  -->
+  <!-- ========================= -->
 
-  </target>
-
-
-
-  <!-- build from a single branch which is pre-configured -->
-  <!-- 
-  <target name="buildCtoolsBranchImage" depends="prepare,getSourceCtoolsBranch,editSource,compileSakai,buildImage">
-  </target>
-  -->
-
-  <!-- secondary targets -->
-  <target name="prepare" depends="prepareBuildDirs" >
-  </target>
-
+  <!-- Assemble the desired source files. -->
   <target name="getSource" 
 	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getMessageCenterSrc" 
 	  description="get the source for sakai and required tools."/>
 
-
+  <!-- Make changes in the source that may be required for this installation. -->
   <target name="editSource" depends="editCtools,editMelete" description="Modify/customize source as necessary."/>
-
-  <!-- just build from a single branch directory -->
-  <!--
-  <target name="getSourceCtoolsBranch" 
-	  depends="getSakaiSrc,getCtoolsSrc,extractMelete" 
-	  description="get the source for sakai and required tools."/>
-  -->
-<!--
-  <target name="editSourceCtoolsBranch" depends="editCtools" description="Modify/customize source as necessary."/>
--->
 
   <!-- =============================== -->
   <!--         image targets           -->
   <!-- =============================== -->
 
+  <target name="buildImage" depends="assembleImage,modifyImage,bundleImage,summarizeBuild" />
+
+  <target name="modifyImage"  depends="imageSakai,imageMelete" >
+  </target>
+
+
+  <!--
   <target name="buildImage">
     <mkdir dir="${image.dir}" />
     <untar src="${build.dir}/sakai.tar.gz" dest="${image.dir}" compression="gzip" />
     <copy file="${dbdriver}" todir="${image.dir}/common/lib" />
     <antcall target="imageMelete" />
     <delete dir="${image.dir}/licenses" />
+	<zip basedir="${image.dir}"
+	destfile="${image.dest.dir}/image.${sakai.tag}.zip"
+	/>
+    <echo>
+      Now remember to setup the sakai directory and change the revision number for the footer.
+    </echo>
+
+  </target>
+  -->  
+
+  <!-- This should be lower level, but will stay here until I figure out what 
+  to do about the imageMelete target -->
+
+  <target name="buildImageOld">
+    <mkdir dir="${image.dir}" />
+    <untar src="${build.dir}/sakai.tar.gz" dest="${image.dir}" compression="gzip" />
+    <copy file="${dbdriver}" todir="${image.dir}/common/lib" />
+    <antcall target="imageMelete" />
+    <delete dir="${image.dir}/licenses" />
+
     <!-- untar doesn't work well with these pathlengths
     <tar basedir="${image.dir}" 
 	 compression="gzip" longfile="warn"
@@ -139,19 +136,12 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
 	<zip basedir="${image.dir}"
 	destfile="${image.dest.dir}/image.${sakai.tag}.zip"
 	/>
-    <!--
-	This will create a zip archive, if you want one.
-	<zip basedir="${image.dir}"
-	destfile="${image.dest.dir}/image.${sakai.tag}.zip"
-	/>
-    -->
 
     <echo>
-      Remember to setup the sakai directory and change the revision number for the footer.
+      Now remember to setup the sakai directory and change the revision number for the footer.
     </echo>
 
   </target>
-
 
   <!-- use zip not tar since the ant tar won't untar the files with long path names -->
  <target name="installTestImage">
