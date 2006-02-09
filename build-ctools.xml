@@ -7,11 +7,6 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
 
   -->
 
-  <!-- 
-       TTD:
-  -->
-
-
   <target name="ctoolsBuildInfo">
     <echo>
       fill me in.
@@ -19,39 +14,23 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
   </target>
 
 
-  <!-- extract source and modify as necessary -->
-
-  <!-- primary target -->
-
-  <!--
-  <target name="buildCtoolsImage" depends="prepare,getSource,editSource,compileSakai,buildImage">
-
-  </target>
-  -->
-
-
-  <!-- build from a single branch which is pre-configured -->
-  <!--
-  <target name="buildCtoolsBranchImage" depends="prepare,getSourceCtoolsBranch,editSource,compileSakai,buildImage">
-
-  </target>
-  -->
-
-  <!-- just build from a single branch directory -->
-
-
-  <!--
-  <target name="editSourceCtoolsBranch" depends="editCtools" description="Modify/customize source as necessary."/>
-  -->
-
   <!-- ================================================== -->
   <!--           deal with CTools specific source         -->
   <!-- ================================================== -->
 
+
+  <!-- entry points -->
+  
+  <!-- get the source -->
   <target name="getCtoolsSrc">
     <execSvnCmd url="${ctools.svnurl}" revision="${ctools.revision}"/> 
     <antcall target="removeUnneededCtools" />
     <place fromdir="${build.dir}/ctools" />
+  </target>
+
+  <!-- change source as required -->
+  <target name="editCtools" depends="editGradTools,editDefaultTools">
+    <!-- edit the files that need to be modified for ctools -->
   </target>
 
 
@@ -61,24 +40,26 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
     -->
     <removeFromBuild deleteDir="ctools/master" />
     <removeFromBuild deleteDir="ctools/ctools-remote" />
+
     <!-- this gets rid of the ctools/melete directory, which is not necessary.
-	 Melete is handled separately below. 
+	 Melete is handled separately.
     -->
     <removeFromBuild deleteDir="ctools/melete" />
   </target>
 
-  <target name="editCtools" depends="editGradTools">
-    <!-- edit the files that need to be modified for ctools -->
-  </target>
-
+  <!-- add the gradtools configuration changes to the sakai code. -->
   <target name="editGradTools">
-    <echo> edit file: ${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml</echo>
+    <echo> edit file: ${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml for gradtools.</echo>
+
+    <!-- add the gradtools student site type. -->
     <replaceregexp 
+
 	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml" >
       <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
       <substitution 
 	  expression="configuration name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
     </replaceregexp>
+
     <replaceregexp 
 	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml"  >
       <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
@@ -86,32 +67,21 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
     </replaceregexp>
   </target>
 
-  <!-- =============================== -->
-  <!--         image targets           -->
-  <!-- =============================== -->
+  <!-- Be sure these tools don't appear in the project category -->
+  <target name="editDefaultTools">
 
-  <!--
-  <target name="buildImage">
-    <mkdir dir="${image.dir}" />
-    <untar src="${build.dir}/sakai.tar.gz" dest="${image.dir}" compression="gzip" />
-    <copy file="${dbdriver}" todir="${image.dir}/common/lib" />
-    <antcall target="imageMelete" />
-    <delete dir="${image.dir}/licenses" />
-    <tar basedir="${image.dir}" 
-	 compression="gzip" longfile="warn"
-	 destfile="${image.dest.dir}/image.${sakai.tag}.tar.gz"
-	 />
-    <!\-\- 
-	This will create a zip archive, if you want one.
-	<zip basedir="${image.dir}"
-	destfile="${image.dest.dir}/image.${sakai.tag}.zip"
-	/>
-    \-\->
+    <echo> edit registrations under ${build.dir} to make sure the tool categories are as desired.</echo>
 
-    <echo>
-      Remember to setup the sakai directory and change the revision number for the footer.
-    </echo>
+    <!-- make the project category disappear for these. -->
+    <replaceregexp >
+      <fileset dir="${build.dir}" includes="**/sakai.gradebook.tool.xml,**/sakai.samigo.tool.xml" />
+      <!-- this works, but not on sakai.samigo.tool.xml ?? -->
+      <regexp pattern="&lt;category.*name=&quot;project&quot;.*"/>
+      <!-- -->
+ 
+      <substitution  expression="" />
+    </replaceregexp>
 
   </target>
--->  
+
 </project>

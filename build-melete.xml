@@ -2,8 +2,11 @@
 
   <!--
 
-$Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
-$HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+   $Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+   
+   Get the melete tar from svn, untar it, update the configuration files, and then
+   preconfigure the conf directory for tomcat.
 
   -->
 

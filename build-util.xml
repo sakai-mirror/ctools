@@ -2,16 +2,16 @@
 
   <!--
 
-$Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
-$HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+  $Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+  $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
 
 
   Utility ant targets to help build the build scripts.
 
- Ant script that will extract and configure sakai and ctools.
- This will call subscripts to build parts
+  Ant script that will extract and configure sakai and ctools.
+  This will call subscripts to build parts
 
- This will extract source, customize it, compile, create image.
+  This will extract source, customize it, compile, create image.
 
   -->
 
@@ -19,17 +19,7 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
        TTD:
   -->
 
-  <!--
-  <property name="config-file" value="" />
-  <property file="${config-file}" />
-  <property name="build.dir" value="./build" />
-  <property name="logs.dir" value="./logs" />
-  <property name="image.dir" value="./image" />
-  <property name="image.dest.dir" value="." />
-  <property name="svnCmd" value="export" />
-  <property name="defaultRevision" value="HEAD" />
--->
-  <target name="info">
+  <target name="info-util">
     <echo>
 
       provide utility targets for building a ctools image.
@@ -47,7 +37,6 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
     </echo>
   </target>
 
-
   
   <!-- utility targets -->
   <target name="prepare" depends="prepareBuildDirs" >
@@ -55,7 +44,6 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
 
   <!-- utility -->
 
-<!--
   <target name="prepareBuildDirs"
 	  description="clean all the directories needed for a build." >
     <delete dir="${build.dir}" />
@@ -65,22 +53,7 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
     <delete dir="${image.dir}" />
     <mkdir dir="${image.dir}" />
   </target>
--->
 
-  <!-- ================================================== -->
-  <!--             extract the source and compile it.     -->
-  <!-- ================================================== -->
-
-  <!-- ================================================== -->
-  <!--               deal with Sakai proper               -->
-  <!-- ================================================== -->
-<!--
-  <target name="getSakaiSrc" depends="prepareBuildDirs">
-    <execSvnCmd url="${sakai.svnurl}" revision="${sakai.revision}"/>
-    <place fromdir="${build.dir}/${sakai.svndir}" />
-    <antcall target="removeUnneededSakai" />
-  </target>
--->
   <target name="editMaster">
     <echo>change version in the ${build.dir}/master/project.properties file to ${sakai.tag}.</echo>
     <replaceregexp file="${build.dir}/master/project.properties" >
@@ -89,55 +62,25 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
 	  expression="sakai.version=${sakai.tag}" />
     </replaceregexp>
   </target>
-<!--
 
-  <target name="compileSakai" depends="editMaster">
-    <exec executable="maven"
-	  dir="${build.dir}"
-	  failonerror="true"
-	  searchpath="true"
-	  >
-      <arg value="-b" />
-      <arg value="-o" />
-      <arg value="sakai:clean" />
-      <arg value="sakai:build" />
-      <arg value="sakai:deploy-zip" />
-    </exec>
-  </target>
-
--->
-  <!-- =============================== -->
-  <!--         image targets           -->
-  <!-- =============================== -->
-<!--
-  <target name="buildImage">
-    <mkdir dir="${image.dir}" />
+  <!-- create the image -->
+  <target name="assembleImage">
     <untar src="${build.dir}/sakai.tar.gz" dest="${image.dir}" compression="gzip" />
     <copy file="${dbdriver}" todir="${image.dir}/common/lib" />
-    <antcall target="imageMelete" />
     <delete dir="${image.dir}/licenses" />
-    <tar basedir="${image.dir}" 
-	 compression="gzip" longfile="warn"
-	 destfile="${image.dest.dir}/image.${sakai.tag}.tar.gz"
-	 />
-    <!\-\-
-	This will create a zip archive, if you want one.
-	<zip basedir="${image.dir}"
-	destfile="${image.dest.dir}/image.${sakai.tag}.zip"
-	/>
-    \-\->
-
-    <echo>
-      Remember to setup the sakai directory and change the revision number for the footer.
-    </echo>
-
   </target>
--->  
-  <!--
-      to uncompress a tar file into an existing tomcat directory you can use something like:
-      tar \-\-gunzip -f sakai_2-1_4840.tar.gz -C ~/tomcats/image-test -x
-      where the value following the -C is the destination directory.
-  -->
+
+  <target name="bundleImage" >
+    <zip basedir="${image.dir}" destfile="${image.dest.dir}/image.${sakai.tag}.zip" />
+  </target>
+
+  <target name="summarizeBuild">
+    <echo>
+      Now remember to setup the sakai directory and change the revision number for the footer.
+    </echo>
+  </target>
+
+
 
   <!-- ========================================= -->
   <!--             macro definitions             -->
@@ -155,8 +98,8 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
        example:  <execSvnCmd url="${ctools.svnurl}"  /> 
        example:  <execSvnCmd url="${ctools.svnurl}" revision="4444" /> 
 
-This is a macro to support default values and to hide
-the svn specific syntax.
+       This is a macro to support default values and to hide
+       the svn specific syntax.
   -->
 
   <macrodef name="execSvnCmd">
@@ -187,6 +130,18 @@ the svn specific syntax.
       <delete dir="${build.dir}/@{deleteDir}"  verbose="false" quiet="true" />
     </sequential>
   </macrodef>
+
+  <!-- remove war files from image directory -->
+  <macrodef name="removeWarFromImage">
+    <attribute name="dir" default="${image.dir}/webapps" />
+    <attribute name="deleteWar" />
+    <sequential>
+    <echo> removeWarFromImage: delete war: @{dir}/@{deleteWar} </echo>
+      <delete file="@{dir}/@{deleteWar}"  />
+<!--      <delete dir="${dir}/@{deleteWar}"  verbose="false" quiet="true" /> -->
+    </sequential>
+  </macrodef>
+
 
   <!-- Take files from one directory and put in another.  It is necessary
        since a svn export or checkout will extract the directory specified,
@@ -248,18 +203,6 @@ the svn specific syntax.
 
   </macrodef>
 
-
-  <!-- utility -->
-
-  <target name="prepareBuildDirs"
-	  description="clean all the directories needed for a build." >
-    <delete dir="${build.dir}" />
-    <mkdir dir="${build.dir}" />
-    <delete dir="${logs.dir}" />
-    <mkdir dir="${logs.dir}" />
-    <delete dir="${image.dir}" />
-    <mkdir dir="${image.dir}" />
-  </target>
 
   
 
