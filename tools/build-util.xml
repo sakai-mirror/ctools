@@ -190,14 +190,6 @@
       <echo> place files from @{fromdir} in @{todir}</echo>
       <move todir="@{todir}" verbose="@{verbose}" includeEmptyDirs="yes">
 	<fileset dir="@{fromdir}" defaultexcludes="no" />
-	<!-- 
-	     <fileset dir="@{fromdir}" >
-	     <or>
-	     <type type="dir" />
-	     <type type="file" />
-	     </or>
-	     </fileset>
-	-->
       </move>
     </sequential>
 
