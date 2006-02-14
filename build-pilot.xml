@@ -49,6 +49,7 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
   <import file="./build-mc.xml" />
   <import file="./build-melete.xml" />
   <import file="./build-sakai.xml" />
+  <import file="./build-samigo.xml" />
   <import file="./build-util.xml" />
 
   <property name="config-file" value="ctools-pilot-200602.properties" />
@@ -88,7 +89,7 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
 	  description="get the source for sakai and required tools."/>
 
   <!-- Make changes in the source that may be required for this installation. -->
-  <target name="editSource" depends="editCtools,editMelete" description="Modify/customize source as necessary."/>
+  <target name="editSource" depends="editCtools,editSamigo,editMelete" description="Modify/customize source as necessary."/>
 
   <!-- =============================== -->
   <!--         image targets           -->
@@ -96,26 +97,8 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
 
   <target name="buildImage" depends="assembleImage,modifyImage,bundleImage,summarizeBuild" />
 
-  <target name="modifyImage"  depends="imageSakai,imageMelete" >
-  </target>
+  <target name="modifyImage"  depends="imageSakai,imageMelete" />
 
-
-  <!--
-  <target name="buildImage">
-    <mkdir dir="${image.dir}" />
-    <untar src="${build.dir}/sakai.tar.gz" dest="${image.dir}" compression="gzip" />
-    <copy file="${dbdriver}" todir="${image.dir}/common/lib" />
-    <antcall target="imageMelete" />
-    <delete dir="${image.dir}/licenses" />
-	<zip basedir="${image.dir}"
-	destfile="${image.dest.dir}/image.${sakai.tag}.zip"
-	/>
-    <echo>
-      Now remember to setup the sakai directory and change the revision number for the footer.
-    </echo>
-
-  </target>
-  -->  
 
   <!-- This should be lower level, but will stay here until I figure out what 
   to do about the imageMelete target -->

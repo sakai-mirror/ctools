@@ -44,7 +44,6 @@
   </target>
 
   <target name="imageSakai" >
-    <removeWarFromImage deleteWar="sakai-axis.war" />
     <removeWarFromImage deleteWar="sakai-wsrp-producer.war" />
     <removeWarFromImage deleteWar="sakai-comp-test-app1.war" />
     <removeWarFromImage deleteWar="sakai-group-test.war" />
