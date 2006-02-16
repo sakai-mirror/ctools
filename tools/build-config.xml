@@ -1,0 +1,107 @@
+<project name="buildInstance" basedir="." default="info-instance" >
+
+  <!--
+
+   $Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+
+   Customize sakai.properties for each instance.
+
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="info-instance" >
+    <echo>
+      create sakai.properties customized to specific instances.
+    </echo>
+  </target>
+
+  <property name="type.file" value="instance.${type}.properties" />
+  <property file="${type.file}" />
+  <property name="properties.file" value="${build.dir}" />
+  <!--
+  <property name="properties.file" value="${build.dir}" />
+  -->
+
+  <target name="buildProperties" depends="copyConfig, editInstanceSakaiProperties" />
+
+  <target name="copyConfig">
+    <copy todir="${instances.dir}/${type}">
+      <fileset dir="${config.dir}">
+	<exclude name="**/sakai.properties"/>
+	<exclude name="**/.project" />
+      </fileset>
+    </copy>
+  </target>
+
+
+  <target name="editInstanceSakaiProperties" >
+    <echo> sakai.properties: ${sakai.properties} </echo>
+    <echo> type: ${type} </echo>
+    <echo> instances.dir: ${instances.dir}</echo>
+    <echo> serverUrl: ${serverUrl} </echo>
+    <echo> version.service: ${version.service} </echo>
+    <echo> version.sakai: ${version.sakai} </echo>
+
+    <copy file="${sakai.properties}" tofile="${instances.dir}/${type}/sakai.properties" overwrite="true">
+
+       <filterchain> 
+
+	<tokenfilter>
+	  <replaceregex pattern="^(serverUrl\s*=\s*).*" replace="\1${serverUrl}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(serverName\s*=\s*).*" replace="\1${serverName}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(loggedOutUrl\s*=\s*).*" replace="\1${loggedOutUrl}" />
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(bodyPath@org.sakaiproject.service.legacy.content.ContentHostingService\s*=\s*).*" replace="\1${bodyPath}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(version.service\s*=\s*).*" replace="\1${version.service}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(version.sakai\s*=\s*).*" replace="\1${version.sakai}"/>
+	</tokenfilter>
+
+      </filterchain> 
+    </copy>
+
+    <!-- set the parameter to save the files to the file system, not the db -->
+    <!--
+    <replaceregexp flags="i">
+      <regexp pattern="(&lt;.*filter-class&gt;com.corejsf.UploadFilter&lt;/filter-class&gt;.*)">
+      </regexp>
+      <substitution expression="\1 &lt;init-param&gt; &lt;param-name&gt;com.corejsf.UploadFilter.saveMediaToDb&lt;/param-name&gt; &lt;param-value&gt;false&lt;/param-value&gt; &lt;/init-param&gt;" />
+
+      <fileset dir="${build.dir}/sam/tool/sakai-samigo/webapp" >
+	<include name="**/web.xml" />
+      </fileset>
+    </replaceregexp>
+    -->
+      <!--
+	  /</!/[/CDATA/[
+	  <init-param>
+	  <param-name>com.corejsf.UploadFilter.saveMediaToDb</param-name>
+	  <param-value>false</param-value>
+	  </init-param>
+	  /]/]/>"
+
+      -->
+
+
+  </target>
+
+
+</project>
