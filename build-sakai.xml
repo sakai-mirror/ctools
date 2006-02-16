@@ -37,6 +37,7 @@
     <removeFromBuild deleteDir="sam/tests" />
     <removeFromBuild deleteDir="sam/tool/src/java/test" />
     <removeFromBuild deleteDir="providers" />
+    <removeFromBuild deleteDIr="wsrp" />
 
   </target>
 
@@ -44,7 +45,9 @@
   </target>
 
   <target name="imageSakai" >
+    <!--
     <removeWarFromImage deleteWar="sakai-wsrp-producer.war" />
+    -->
     <removeWarFromImage deleteWar="sakai-comp-test-app1.war" />
     <removeWarFromImage deleteWar="sakai-group-test.war" />
     <removeWarFromImage deleteWar="sakai-osid-repo-test.war" />
@@ -62,7 +65,9 @@
 	  searchpath="true"
 	  >
       <arg value="-b" />
+      <!--  sometimes needed with a new build
       <arg value="-o" />
+      -->
       <arg value="sakai:clean" />
       <arg value="sakai:build" />
       <arg value="sakai:deploy-zip" />
