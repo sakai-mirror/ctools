@@ -5,7 +5,7 @@
 $Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
 $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
 
-Add the message center.
+Add samigo.
 
   -->
 
@@ -28,20 +28,6 @@ Add the message center.
   <!-- source is included in sakai -->
   <!-- edit the web.xml for db configuration -->
 
-  <!--
-      add this to web.xml
-      <init-param>
-      <param-name>com.corejsf.UploadFilter.saveMediaToDb</param-name>
-      <param-value>false</param-value>
-      </init-param>
-
-<init-param>
-<param-name>com.corejsf.UploadFilter.repositoryPath</param-name>
-<param-value>/tmpXXX/</param-value>
-</init-param>
-  -->
-
-
   <target name="editSamigo" >
 
     <!-- update web.xml so that store files in a proper directory rather than in the db -->
@@ -57,48 +43,13 @@ Add the message center.
       </regexp>
       <substitution expression="\1 &lt;init-param&gt; &lt;param-name&gt;com.corejsf.UploadFilter.saveMediaToDb&lt;/param-name&gt; &lt;param-value&gt;false&lt;/param-value&gt; &lt;/init-param&gt;" />
 
-      <!--
-      <substitution expression="\1 HOWDY" />
-      -->
       <fileset dir="${build.dir}/sam/tool/sakai-samigo/webapp" >
 	<include name="**/web.xml" />
       </fileset>
     </replaceregexp>
-      <!--
-	  /</!/[/CDATA/[
-	  <init-param>
-	  <param-name>com.corejsf.UploadFilter.saveMediaToDb</param-name>
-	  <param-value>false</param-value>
-	  </init-param>
-	  /]/]/>"
-
-      -->
-
-
-    <!--
-	<target name="editMaster">
-	<echo>change version in the ${build.dir}/master/project.properties file to ${sakai.tag}.</echo>
-	<replaceregexp file="${build.dir}/master/project.properties" >
-	<regexp pattern="sakai\.version=.*" />
-	<substitution 
-	expression="sakai.version=${sakai.tag}" />
-	</replaceregexp>
-	</target>
-    -->
-
 
   </target>
 
   
-  <target name="editMeleteOld" >
-    <!-- update web.xml so that store files in a proper directory rather than in the db -->
-    <replaceregexp match="/var" replace="/meletehome" flags="g" >
-      <fileset dir="${build.dir}/${melete.dirname}">
-	<include name="meleteDocs.xml" />
-	<include name="**/web.xml" />
-      </fileset>
-    </replaceregexp>
-  </target>
-
 
 </project>

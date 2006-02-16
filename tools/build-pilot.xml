@@ -5,39 +5,39 @@
 $Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
 $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
 
- This ant script will control building an image for production with a
- specific configuration.  It calls a basic script, and calls
- additional ones as necessary to deal with specific situations.  Those
- are included via the import tasks below.  Those additional scripts
- are used to deal with compliations that arise with exernal tools
- (e.g. melete) where the source is not in the normal Sakai repository,
- and there are things that need to be modified in the configuration.
+This ant script will control building an image for production with a
+specific configuration.  It calls a basic script, and calls
+additional ones as necessary to deal with specific situations.  Those
+are included via the import tasks below.  Those additional scripts
+are used to deal with compliations that arise with exernal tools
+(e.g. melete) where the source is not in the normal Sakai repository,
+and there are things that need to be modified in the configuration.
 
- The imported files are meant to include the targets specific only to
- that tool or tools.  They do not need to be aware of the overall
- build process.
+The imported files are meant to include the targets specific only to
+that tool or tools.  They do not need to be aware of the overall
+build process.
 
- Values particular to a specific build are kept in a properties file.
- The attribute name of file is "config-file" so a specific properties
- file can be set on the command line.  
+Values particular to a specific build are kept in a properties file.
+The attribute name of file is "config-file" so a specific properties
+file can be set on the command line.  
 
- E.g. "ant -f build-pilot.xml -Dconfig-file=atestconfiguration.properties buildCtoolsImage."
+E.g. "ant -f build-pilot.xml -Dconfig-file=atestconfiguration.properties buildCtoolsImage."
 
- It does not default to a useful file since you don't want to just
- build a default configuration for production.
+It does not default to a useful file since you don't want to just
+build a default configuration for production.
 
- This file may grow large, with many targets if there are a varity of
- images you wish to build.
+This file may grow large, with many targets if there are a varity of
+images you wish to build.
 
- In general the steps that a tool build will go thorough are:
- - get source
- - edit source (changing configuration from default values perhaps) and getting rid
-   of directories and files that aren't required.
- - compiling sakai based on the source created above
- - building an image for installation from the compiled artifacts.
+In general the steps that a tool build will go thorough are:
+- get source
+- edit source (changing configuration from default values perhaps) and getting rid
+of directories and files that aren't required.
+- compiling sakai based on the source created above
+- building an image for installation from the compiled artifacts.
 
- This doesn't supply the sakai.properties files you want to customize.
- 
+This doesn't supply the sakai.properties files you want to customize.
+
   -->
 
   <!-- 
@@ -51,19 +51,29 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
   <import file="./build-sakai.xml" />
   <import file="./build-samigo.xml" />
   <import file="./build-util.xml" />
+  <import file="./build-config.xml" />
 
   <property name="config-file" value="ctools-pilot-200602.properties" />
   <!--
-  <property name="config-file" value="ctools-config.properties" />
+      <property name="config-file" value="ctools-config.properties" />
   -->
 
   <property file="${config-file}" />
   <property name="build.dir" value="./build" />
   <property name="logs.dir" value="./logs" />
   <property name="image.dir" value="./image" />
+  <property name="instances.dir" value="./instances" />
   <property name="image.dest.dir" value="." />
+  <property name="config.dir" value="${build.dir}/ctools-reference/config" />
   <property name="svnCmd" value="export" />
   <property name="defaultRevision" value="HEAD" />
+
+
+  <!--
+      <property name="sakai.properties" value="${build.dir}/ctools-reference/config/sakai.properties" />
+  -->
+
+  <property name="sakai.properties" value="${config.dir}/sakai.properties" />
 
   <target name="info">
     <echo>
@@ -77,7 +87,7 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
   <!-- There may be multiple targets to support multiple different build types. -->
   <!-- ========================= -->
 
-  <target name="buildCtoolsImage" depends="prepare,getSource,editSource,compileSakai,buildImage" />
+  <target name="buildCtoolsImage" depends="prepare,getSource,editSource,compileSakai,buildImage,buildConfig" />
 
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
@@ -101,7 +111,7 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
 
 
   <!-- This should be lower level, but will stay here until I figure out what 
-  to do about the imageMelete target -->
+       to do about the imageMelete target -->
 
   <target name="buildImageOld">
     <mkdir dir="${image.dir}" />
@@ -111,14 +121,14 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
     <delete dir="${image.dir}/licenses" />
 
     <!-- untar doesn't work well with these pathlengths
-    <tar basedir="${image.dir}" 
+	 <tar basedir="${image.dir}" 
 	 compression="gzip" longfile="warn"
 	 destfile="${image.dest.dir}/image.${sakai.tag}.tar.gz"
 	 />
     -->
-	<zip basedir="${image.dir}"
-	destfile="${image.dest.dir}/image.${sakai.tag}.zip"
-	/>
+    <zip basedir="${image.dir}"
+	 destfile="${image.dest.dir}/image.${sakai.tag}.zip"
+	 />
 
     <echo>
       Now remember to setup the sakai directory and change the revision number for the footer.
@@ -127,11 +137,107 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
   </target>
 
   <!-- use zip not tar since the ant tar won't untar the files with long path names -->
- <target name="installTestImage">
-   <unzip src="${image.dest.dir}/image.${sakai.tag}.zip"
-	  dest="${install.test.dir}">
-   </unzip>
- </target>
+  <target name="installTestImage">
+    <unzip src="${image.dest.dir}/image.${sakai.tag}.zip"
+	   dest="${install.test.dir}">
+    </unzip>
+  </target>
+
+
+  <target name="buildConfig" >
+
+    <!--
+	<ant antfile="build-config.xml" target="copyConfig" inheritall="false" >
+	<property name="sakai.properties" value="${sakai.properties}" />
+	<property name="type" value="whisk" />
+	<property name="instances.dir" value="${instances.dir}" />
+	</ant>
+    -->
+
+    <ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="whisk" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+      <property name="config.dir" value="${config.dir}" />
+    </ant>
+
+
+    <ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="testctools" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+      <property name="config.dir" value="${config.dir}" />
+    </ant>
+
+    <ant antfile="build-config.xml" target="buildProperties"  inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="ctoolsload" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+      <property name="config.dir" value="${config.dir}" />
+    </ant>
+
+    <ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="ctools" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+      <property name="config.dir" value="${config.dir}" />
+    </ant>
+  </target>
+
+
+  <target name="buildConfigOld" >
+
+    <ant antfile="build-config.xml" target="copyConfig" inheritall="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="whisk" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="config.dir" value="${config.dir}" />
+    </ant>
+
+    <ant antfile="build-config.xml" target="editInstanceSakaiProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="whisk" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+
+    </ant>
+
+
+    <ant antfile="build-config.xml" target="editInstanceSakaiProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="testctools" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+
+    </ant>
+
+    <ant antfile="build-config.xml" target="editInstanceSakaiProperties"  inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="ctoolsload" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+    </ant>
+
+    <ant antfile="build-config.xml" target="editInstanceSakaiProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="ctools" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+
+    </ant>
+  </target>
 
   
   <!--

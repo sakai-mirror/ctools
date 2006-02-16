@@ -32,7 +32,7 @@
 
   <target name="editMelete" if="melete.install" >
     <!-- update the directory value for the melete uploads. -->
-    <replaceregexp match="/var" replace="/meletehome" flags="g" >
+    <replaceregexp match="/var" replace="/melete" flags="g" >
       <fileset dir="${build.dir}/${melete.dirname}">
 	<include name="meleteDocs.xml" />
 	<include name="**/web.xml" />

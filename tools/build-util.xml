@@ -52,6 +52,8 @@
     <mkdir dir="${logs.dir}" />
     <delete dir="${image.dir}" />
     <mkdir dir="${image.dir}" />
+    <delete dir="${instances.dir}" />
+    <mkdir dir="${instances.dir}" />
   </target>
 
   <target name="editMaster">
