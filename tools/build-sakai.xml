@@ -37,7 +37,7 @@
     <removeFromBuild deleteDir="sam/tests" />
     <removeFromBuild deleteDir="sam/tool/src/java/test" />
     <removeFromBuild deleteDir="providers" />
-    <removeFromBuild deleteDIr="wsrp" />
+    <removeFromBuild deleteDir="wsrp" />
 
   </target>
 
