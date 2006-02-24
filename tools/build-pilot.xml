@@ -166,6 +166,16 @@ This doesn't supply the sakai.properties files you want to customize.
 
     <ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
       <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="whisk.ctpilot" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+      <property name="config.dir" value="${config.dir}" />
+    </ant>
+
+
+    <ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
       <property name="type" value="testctools" />
       <property name="instances.dir" value="${instances.dir}" />
       <property name="version.service" value="${version.service}" />
@@ -190,9 +200,39 @@ This doesn't supply the sakai.properties files you want to customize.
       <property name="version.sakai" value="${version.sakai}" />
       <property name="config.dir" value="${config.dir}" />
     </ant>
+
+    <ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="ctpitest" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+      <property name="config.dir" value="${config.dir}" />
+    </ant>
+
+    <ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="ctpiload" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+      <property name="config.dir" value="${config.dir}" />
+    </ant>
+
+    <ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="ctpilot" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+      <property name="config.dir" value="${config.dir}" />
+    </ant>
+
+
   </target>
 
 
+<!--
   <target name="buildConfigOld" >
 
     <ant antfile="build-config.xml" target="copyConfig" inheritall="false" >
@@ -235,16 +275,68 @@ This doesn't supply the sakai.properties files you want to customize.
       <property name="instances.dir" value="${instances.dir}" />
       <property name="version.service" value="${version.service}" />
       <property name="version.sakai" value="${version.sakai}" />
-
     </ant>
-  </target>
 
+    <ant antfile="build-config.xml" target="editInstanceSakaiProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="ctpilot" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+    </ant>
+
+    <ant antfile="build-config.xml" target="editInstanceSakaiProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="ctpitest" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+    </ant>
+
+    <ant antfile="build-config.xml" target="editInstanceSakaiProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="ctpiload" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+    </ant>
+
+  </target>
+-->
   
   <!--
       to uncompress a tar file into an existing tomcat directory you can use something like:
       tar \-\-gunzip -f sakai_2-1_4840.tar.gz -C ~/tomcats/image-test -x
       where the value following the -C is the destination directory.
   -->
+
+  <macrodef name="buildPropertiesFile">
+    <attribute name="instanceName" />
+    <sequential>
+    <ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
+      <property name="sakai.properties" value="${sakai.properties}" />
+      <property name="type" value="@{instanceName}" />
+      <property name="instances.dir" value="${instances.dir}" />
+      <property name="version.service" value="${version.service}" />
+      <property name="version.sakai" value="${version.sakai}" />
+      <property name="config.dir" value="${config.dir}" />
+    </ant>
+    </sequential>
+    <!--
+      <echo>Extract svn resource: @{cmd} from @{url} revision: @{revision}.</echo>
+      <exec executable="svn"
+	    dir="@{dir}"
+	    failonerror="true"
+	    output="@{logdir}/${ant.project.name}.log"
+	    append="true" >
+	<arg value="-r@{revision}" />
+	<arg value="@{cmd}" />
+	<arg value="@{url}" />
+      </exec>
+      -->
+
+  </macrodef>
+
 
 
 </project>
