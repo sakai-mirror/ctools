@@ -147,14 +147,15 @@ This doesn't supply the sakai.properties files you want to customize.
   <target name="buildConfig" 
 	  description="Customize the properties files on an instance by instance basis.">
 
-    <buildPropertiesFile instanceName="whisk" />
-    <buildPropertiesFile instanceName="whisk.ctpilot" />
-    <buildPropertiesFile instanceName="testctools" />
-    <buildPropertiesFile instanceName="ctoolsload" />
     <buildPropertiesFile instanceName="ctools" />
-    <buildPropertiesFile instanceName="ctpitest" />
+    <buildPropertiesFile instanceName="ctoolsload" />
+    <buildPropertiesFile instanceName="testctools" />
+    <buildPropertiesFile instanceName="whisk" />
+
     <buildPropertiesFile instanceName="ctpiload" />
     <buildPropertiesFile instanceName="ctpilot" />
+    <buildPropertiesFile instanceName="ctpilot.whisk" />
+    <buildPropertiesFile instanceName="ctpitest" />
 
     <!--
 	<ant antfile="build-config.xml" target="copyConfig" inheritall="false" >
