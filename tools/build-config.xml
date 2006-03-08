@@ -22,8 +22,8 @@
 
   <property name="type.file" value="instance.${type}.properties" />
   <property file="${type.file}" />
-  <property name="properties.file" value="${build.dir}" />
   <!--
+  <property name="properties.file" value="${build.dir}" />
   <property name="properties.file" value="${build.dir}" />
   -->
 
@@ -47,7 +47,12 @@
     <echo> version.service: ${version.service} </echo>
     <echo> version.sakai: ${version.sakai} </echo>
 
-    <copy file="${sakai.properties}" tofile="${instances.dir}/${type}/sakai.properties" overwrite="true">
+    <!-- to add a new property to be customized add a new token filter
+    entry below -->
+
+    <copy file="${sakai.properties}" 
+	  tofile="${instances.dir}/${type}/sakai.properties" 
+	  overwrite="true">
 
        <filterchain> 
 
@@ -91,6 +96,25 @@
 	  <replaceregex pattern="^(login.icon\s*=\s*).*" replace="\1${login.icon}"/>
 	</tokenfilter>
 
+	<tokenfilter>
+	  <replaceregex pattern="^(bottomnav.1\s*=\s*).*" replace="\1${bottomnav.1}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(resources.show_all_collections.tool\s*=\s*).*" replace="\1${resources.show_all_collections.tool}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(resources.show_all_collections.dropbox\s*=\s*).*" replace="\1${resources.show_all_collections.dropbox}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(resources.show_all_collections.helper\s*=\s*).*" replace="\1${resources.show_all_collections.helper}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(ui.service\s*=\s*).*" replace="\1${ui.service}"/>
+	</tokenfilter>
 
 
       </filterchain> 
