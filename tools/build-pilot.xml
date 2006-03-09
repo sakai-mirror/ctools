@@ -54,9 +54,6 @@ This doesn't supply the sakai.properties files you want to customize.
   <import file="./build-config.xml" />
 
   <property name="config-file" value="ctools-pilot-200602.properties" />
-  <!--
-      <property name="config-file" value="ctools-config.properties" />
-  -->
 
   <property file="${config-file}" />
   <property name="build.dir" value="./build" />
@@ -68,10 +65,6 @@ This doesn't supply the sakai.properties files you want to customize.
   <property name="svnCmd" value="export" />
   <property name="defaultRevision" value="HEAD" />
 
-
-  <!--
-      <property name="sakai.properties" value="${build.dir}/ctools-reference/config/sakai.properties" />
-  -->
 
   <property name="sakai.properties" value="${config.dir}/sakai.properties" />
 
@@ -110,33 +103,6 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <target name="modifyImage"  depends="imageSakai,imageMelete" />
 
-
-  <!-- This should be lower level, but will stay here until I figure out what 
-       to do about the imageMelete target -->
-
-  <target name="buildImageOld">
-    <mkdir dir="${image.dir}" />
-    <untar src="${build.dir}/sakai.tar.gz" dest="${image.dir}" compression="gzip" />
-    <copy file="${dbdriver}" todir="${image.dir}/common/lib" />
-    <antcall target="imageMelete" />
-    <delete dir="${image.dir}/licenses" />
-
-    <!-- untar doesn't work well with these pathlengths
-	 <tar basedir="${image.dir}" 
-	 compression="gzip" longfile="warn"
-	 destfile="${image.dest.dir}/image.${sakai.tag}.tar.gz"
-	 />
-    -->
-    <zip basedir="${image.dir}"
-	 destfile="${image.dest.dir}/image.${sakai.tag}.zip"
-	 />
-
-    <echo>
-      Now remember to setup the sakai directory and change the revision number for the footer.
-    </echo>
-
-  </target>
-
   <!-- use zip not tar since the ant tar won't untar the files with long path names -->
   <target name="installTestImage">
     <unzip src="${image.dest.dir}/image.${sakai.tag}.zip"
@@ -157,170 +123,8 @@ This doesn't supply the sakai.properties files you want to customize.
     <buildPropertiesFile instanceName="ctpilot.whisk" />
     <buildPropertiesFile instanceName="ctpitest" />
 
-    <!--
-	<ant antfile="build-config.xml" target="copyConfig" inheritall="false" >
-	<property name="sakai.properties" value="${sakai.properties}" />
-	<property name="type" value="whisk" />
-	<property name="instances.dir" value="${instances.dir}" />
-	</ant>
-
-
-<ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="whisk" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-<property name="config.dir" value="${config.dir}" />
-</ant>
-
-
-<ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="whisk.ctpilot" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-<property name="config.dir" value="${config.dir}" />
-</ant>
-
-
-<ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="testctools" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-<property name="config.dir" value="${config.dir}" />
-</ant>
-
-<ant antfile="build-config.xml" target="buildProperties"  inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="ctoolsload" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-<property name="config.dir" value="${config.dir}" />
-</ant>
-
-<ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="ctools" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-<property name="config.dir" value="${config.dir}" />
-</ant>
-
-<ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="ctpitest" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-<property name="config.dir" value="${config.dir}" />
-</ant>
-
-<ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="ctpiload" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-<property name="config.dir" value="${config.dir}" />
-</ant>
-
-<ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="ctpilot" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-<property name="config.dir" value="${config.dir}" />
-</ant>
-    -->
-
-
   </target>
 
-  <!--
-      <target name="testmacro">
-      <buildPropertiesFile instanceName="ctpilot" />
-      </target>
-  -->
-
-  <!--
-      <target name="buildConfigOld" >
-
-<ant antfile="build-config.xml" target="copyConfig" inheritall="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="whisk" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="config.dir" value="${config.dir}" />
-</ant>
-
-<ant antfile="build-config.xml" target="editInstanceSakaiProperties" inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="whisk" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-
-</ant>
-
-
-<ant antfile="build-config.xml" target="editInstanceSakaiProperties" inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="testctools" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-
-</ant>
-
-<ant antfile="build-config.xml" target="editInstanceSakaiProperties"  inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="ctoolsload" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-</ant>
-
-<ant antfile="build-config.xml" target="editInstanceSakaiProperties" inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="ctools" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-</ant>
-
-<ant antfile="build-config.xml" target="editInstanceSakaiProperties" inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="ctpilot" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-</ant>
-
-<ant antfile="build-config.xml" target="editInstanceSakaiProperties" inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="ctpitest" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-</ant>
-
-<ant antfile="build-config.xml" target="editInstanceSakaiProperties" inheritAll="false" >
-<property name="sakai.properties" value="${sakai.properties}" />
-<property name="type" value="ctpiload" />
-<property name="instances.dir" value="${instances.dir}" />
-<property name="version.service" value="${version.service}" />
-<property name="version.sakai" value="${version.sakai}" />
-</ant>
-
-</target>
-  -->
-  
   <!--
       to uncompress a tar file into an existing tomcat directory you can use something like:
       tar \-\-gunzip -f sakai_2-1_4840.tar.gz -C ~/tomcats/image-test -x
@@ -339,21 +143,7 @@ This doesn't supply the sakai.properties files you want to customize.
 	<property name="config.dir" value="${config.dir}" />
       </ant>
     </sequential>
-    <!--
-	<echo>Extract svn resource: @{cmd} from @{url} revision: @{revision}.</echo>
-	<exec executable="svn"
-	dir="@{dir}"
-	failonerror="true"
-	output="@{logdir}/${ant.project.name}.log"
-	append="true" >
-	<arg value="-r@{revision}" />
-	<arg value="@{cmd}" />
-	<arg value="@{url}" />
-	</exec>
-    -->
 
   </macrodef>
-
-
 
 </project>

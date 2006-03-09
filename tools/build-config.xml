@@ -120,30 +120,6 @@
       </filterchain> 
     </copy>
 
-    <!-- set the parameter to save the files to the file system, not the db -->
-    <!--
-    <replaceregexp flags="i">
-      <regexp pattern="(&lt;.*filter-class&gt;com.corejsf.UploadFilter&lt;/filter-class&gt;.*)">
-      </regexp>
-      <substitution expression="\1 &lt;init-param&gt; &lt;param-name&gt;com.corejsf.UploadFilter.saveMediaToDb&lt;/param-name&gt; &lt;param-value&gt;false&lt;/param-value&gt; &lt;/init-param&gt;" />
-
-      <fileset dir="${build.dir}/sam/tool/sakai-samigo/webapp" >
-	<include name="**/web.xml" />
-      </fileset>
-    </replaceregexp>
-    -->
-      <!--
-	  /</!/[/CDATA/[
-	  <init-param>
-	  <param-name>com.corejsf.UploadFilter.saveMediaToDb</param-name>
-	  <param-value>false</param-value>
-	  </init-param>
-	  /]/]/>"
-
-      -->
-
-
   </target>
-
 
 </project>
