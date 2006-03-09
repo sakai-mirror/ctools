@@ -65,7 +65,6 @@ This doesn't supply the sakai.properties files you want to customize.
   <property name="svnCmd" value="export" />
   <property name="defaultRevision" value="HEAD" />
 
-
   <property name="sakai.properties" value="${config.dir}/sakai.properties" />
 
   <target name="info">
@@ -94,6 +93,14 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <!-- Make changes in the source that may be required for this installation. -->
   <target name="editSource" depends="editCtools,editSamigo,editMelete" description="Modify/customize source as necessary."/>
+
+
+  <!-- Update the configuration files -->
+  <target name="updateConfigurationSource" depends="updateConfigMsg,getConfigurationSrc"
+	  description="Update the files for configuration so can rebuild that information separately from the source"/>
+
+  <target name="updateConfigMsg">
+  </target>
 
   <!-- =============================== -->
   <!--         image targets           -->
