@@ -22,12 +22,9 @@
 
   <property name="type.file" value="instance.${type}.properties" />
   <property file="${type.file}" />
-  <!--
-  <property name="properties.file" value="${build.dir}" />
-  <property name="properties.file" value="${build.dir}" />
-  -->
 
-  <target name="buildProperties" depends="copyConfig, editInstanceSakaiProperties" />
+  <target name="buildProperties" depends="copyConfig, editInstanceSakaiProperties" 
+	  description="copy and edit the sakai.properties files." />
 
   <target name="copyConfig">
     <copy todir="${instances.dir}/${type}">

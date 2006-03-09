@@ -21,6 +21,20 @@
     <antcall target="removeUnneededSakai" />
   </target>
 
+  <target name="getConfigurationSrc"
+	  description="update the configuration information (not the executable files)." >
+    <echo> update configuration from ${build.configuration.svnurl}/${build.configuration.configdir} revision: ${build.configuration.revision}</echo>
+<!--    <echo>  fromdir="${build.dir}/${sakai.svndir}" </echo> -->
+<!-- force is added since this will checkout over existing files -->
+    <execSvnCmd url="${build.configuration.svnurl}/${build.configuration.configdir}" revision="${build.configuration.revision}"
+		additionalArguments="--force" />
+    <!--
+    <place fromdir="${build.dir}/${build.configuration.configdir}" 
+	   todir="${build.dir}/${build.configuration.configdir}"
+	   verbose="yes" />
+    -->
+  </target>
+
   <target name="removeUnneededSakai" >
     <removeFromBuild deleteDir="portal/mercury" />
     <removeFromBuild deleteDir="common/common-composite-component/src/test" />
