@@ -119,8 +119,8 @@ This doesn't supply the sakai.properties files you want to customize.
     <buildPropertiesFile instanceName="whisk" />
 
     <buildPropertiesFile instanceName="ctpiload" />
-    <buildPropertiesFile instanceName="ctpilot" />
     <buildPropertiesFile instanceName="ctpilot.whisk" />
+    <buildPropertiesFile instanceName="ctpilot0" />
     <buildPropertiesFile instanceName="ctpitest" />
 
   </target>
