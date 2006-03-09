@@ -116,6 +116,9 @@
 	  <replaceregex pattern="^(ui.service\s*=\s*).*" replace="\1${ui.service}"/>
 	</tokenfilter>
 
+	<tokenfilter>
+	  <replaceregex pattern="^(wsetup.group.support\s*=\s*).*" replace="\1${wsetup.group.support}"/>
+	</tokenfilter>
 
       </filterchain> 
     </copy>
