@@ -117,6 +117,11 @@
 	  <replaceregex pattern="^(wsetup.group.support\s*=\s*).*" replace="\1${wsetup.group.support}"/>
 	</tokenfilter>
 
+	<tokenfilter>
+	  <replaceregex pattern="^(stealthTools@org.sakaiproject.api.kernel.tool.ActiveToolManager\s*=\s*).*" 
+			replace="\1${stealthTools@org.sakaiproject.api.kernel.tool.ActiveToolManager}"/>
+	</tokenfilter>
+
       </filterchain> 
     </copy>
 
