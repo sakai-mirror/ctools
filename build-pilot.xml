@@ -46,14 +46,15 @@ This doesn't supply the sakai.properties files you want to customize.
   -->
 
   <import file="./build-ctools.xml" />
-  <import file="./build-mc.xml" />
+<!--   <import file="./build-mc.xml" /> -->
   <import file="./build-melete.xml" />
   <import file="./build-sakai.xml" />
   <import file="./build-samigo.xml" />
   <import file="./build-util.xml" />
   <import file="./build-config.xml" />
 
-  <property name="config-file" value="ctools-pilot-200602.properties" />
+<!--  <property name="config-file" value="ctools-pilot-200602.properties" /> -->
+  <property name="config-file" value="dummy" /> 
 
   <property file="${config-file}" />
   <property name="build.dir" value="./build" />
@@ -87,8 +88,13 @@ This doesn't supply the sakai.properties files you want to customize.
   <!-- ========================= -->
 
   <!-- Assemble the desired source files. -->
+<!--
   <target name="getSource" 
 	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getMessageCenterSrc" 
+	  description="get the source for sakai and required tools."/>
+-->
+  <target name="getSource" 
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete"
 	  description="get the source for sakai and required tools."/>
 
   <!-- Make changes in the source that may be required for this installation. -->

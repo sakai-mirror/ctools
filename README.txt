@@ -1,5 +1,14 @@
 Tools to aid in building a production CTools image.
 
+TTD:
+- make pilot vs regular distinction
+(some things are the same over many instances)
+- make instance distinction
+(doing this)
+- make the build destination distinction
+(pick up the db driver from a different location)
+- improve packaging / installation.
+
 -------- PURPOSE 
 
 This tools set has been built for OS X and will work there.  It will
@@ -44,6 +53,8 @@ and add configuration files, e.g. sakai.properties.
 To untar the image file into a tomcat directory:
 - Create tomcat installation directory and populate it with tomcat.  
 - run tar --gunzip -f <imagename>.tar.gz -C <tomcat directory> -x
+
+
 
 
 $ID$
