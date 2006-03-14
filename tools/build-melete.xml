@@ -38,6 +38,12 @@
 	<include name="**/web.xml" />
       </fileset>
     </replaceregexp>
+
+    <replaceregexp match="/melete/melete/packagefiles" replace="/melete/packagefiles" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<include name="**/web.xml" />
+      </fileset>
+    </replaceregexp>
   </target>
   
   <target name="imageMelete" if="melete.install">
