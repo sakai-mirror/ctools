@@ -117,9 +117,10 @@ This doesn't supply the sakai.properties files you want to customize.
   <target name="modifyImage"  depends="imageSakai,imageMelete" />
 
   <!-- use zip not tar since the ant tar won't untar the files with long path names -->
-  <target name="installTestImage">
+  <target name="installTestImage"
+	  description="install the image to a local test directory">
     <unzip src="${image.dest.dir}/image.${sakai.tag}.zip"
-	   dest="${install.test.dir}">
+	   dest="${install.test.dir}/">
     </unzip>
   </target>
 
