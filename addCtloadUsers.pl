@@ -33,13 +33,41 @@
 #   Seth Theriault <slt@columbia.edu>
 #   Academic Information Systems, Columbia University
 #
+#use SOAP::Lite +trace => all;
 use SOAP::Lite;
+
+use Config::Properties;
+
+#   # reading...
+
+#   open PROPS, "< my_config.props"
+#     or die "unable to open configuration file";
+
+#   my $properties = new Config::Properties();
+#   $properties->load(*PROPS);
+
+#   $value = $properties->getProperty( $key );
+
+
+#   # saving...
+
+#   open PROPS, "> my_config.props"
+#     or die "unable to open configuration file for writing";
+
+#   $properties->setProperty( $key, $value );
+
+#   $properties->format( '%s => %s' );
+#   $properties->store(*PROPS, $header );
 
 use strict;
 
 use addSakaiUsers;
 
 my $trace = 0;
+
+# hold object for reading properties from file.
+our $configFileName = "addUsers.properties";
+our $properties;
 
 # Default Sakai admin user's credentials
 my $user = "admin";
@@ -49,6 +77,7 @@ my $soap;
 
 my $lineCnt;
 
+our ($form1_lower,$form1_upper,$form2_lower,$form2_upper);
 
 # our @test = (
 # 	     "AAbobZB acorn",	
@@ -90,14 +119,45 @@ sub generateCtloadUsersForm2 {
   }
 }
 
+sub readProperties {
+ #   open PROPS, "< my_config.props"
+ #     or die "unable to open configuration file";
+
+
+ #   my $properties = new Config::Properties();
+ #   $properties->load(*PROPS);
+ #   $value = $properties->getProperty( $key );
+
+ 
+  open PROPS, "<$configFileName"
+    or die("can't open configuration file: $configFileName $!");
+
+  $properties = new Config::Properties();
+  $properties->load(*PROPS);
+  my $value = $properties->getProperty("user");
+   print "value: $value\n";
+
+}
+
 sub setupCtload {
 
-  setUser("admin");
-  setPassword("XXXX");
+  readProperties();
 
-  setLoginURI( "https://ctoolsload.ds.itd.umich.edu/sakai-axis/SakaiLogin.jws?wsdl");
-  setProxyURI( "https://ctoolsload.ds.itd.umich.edu/sakai-axis/SakaiLogin.jws?wsdl");
-  setScriptURI("https://ctoolsload.ds.itd.umich.edu/sakai-axis/SakaiScript.jws?wsdl");
+   setUser($properties->getProperty("user"));
+   setPassword($properties->getProperty("password"));
+
+   setLoginURI($properties->getProperty("loginURI"));
+   setProxyURI($properties->getProperty("proxyURI"));
+   setScriptURI($properties->getProperty("scriptURI"));
+#   setProxyURI( "https://ctoolsload.ds.itd.umich.edu/sakai-axis/SakaiLogin.jws?wsdl");
+#   setScriptURI("https://ctoolsload.ds.itd.umich.edu/sakai-axis/SakaiScript.jws?wsdl");
+
+#   setUser("admin");
+#   setPassword("r0ck3tman");
+
+#   setLoginURI( "https://ctoolsload.ds.itd.umich.edu/sakai-axis/SakaiLogin.jws?wsdl");
+#   setProxyURI( "https://ctoolsload.ds.itd.umich.edu/sakai-axis/SakaiLogin.jws?wsdl");
+#   setScriptURI("https://ctoolsload.ds.itd.umich.edu/sakai-axis/SakaiScript.jws?wsdl");
 
 }
 
@@ -109,8 +169,28 @@ sub main {
 
 #  generateCtloadUsersForm1(11,1000);
 #  generateCtloadUsersForm2(6,10);
+
+
+#  exit;
+  my($lower,$upper) = ($properties->getProperty("form1_lower"),$properties->getProperty("form1_upper"));
+  print "form1_lower: ",$lower, "form1_upper: ",$upper,"\n"
+    unless ($lower > $upper);
+
+  generateCtloadUsersForm1($lower,$upper)
+    unless ($lower > $upper);
+  ($lower,$upper) = ($properties->getProperty("form2_lower"),$properties->getProperty("form2_upper"));
+#  generateCtloadUsersForm2($properties->getProperty("form2_lower"),$properties->getProperty("form2_upper"))
+  generateCtloadUsersForm2($lower,$upper)
+    unless ($lower > $upper);
+
+
 #  generateCtloadUsersForm2(11,19);
-  generateCtloadUsersForm2(99,9999);
+#  generateCtloadUsersForm2(99,9999);
+#  generateCtloadUsersForm2(2900,9999);
+#  generateCtloadUsersForm2(8600,9000);
+#  generateCtloadUsersForm2(20000,25000);
+
+#  generateCtloadUsersForm2(30000,30001);
 #  generateCtloadUsersForm2(10000,60000);
 
   printSummary();
