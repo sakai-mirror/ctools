@@ -45,6 +45,8 @@ This doesn't supply the sakai.properties files you want to customize.
        
   -->
 
+<!--  <property name="${user.home}/build.properties" value="dummy"/> -->
+  <property file="${user.home}/build.properties" />
   <import file="./build-ctools.xml" />
 <!--   <import file="./build-mc.xml" /> -->
   <import file="./build-melete.xml" />
