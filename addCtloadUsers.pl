@@ -3,10 +3,12 @@
 # $HeadURL$
 # $Id$
 #
+##############################
+# This code was adapted and generalized from a script provided by Seth Theriault from Columbia.
+##############################
 #
-# This code was adapted from a script provided by Seth Theriault form Columbia.
-#
-# Copyright (c) 2005 The Trustees of Columbia University in the City of New York
+# Copyright (c) 2005 The Trustees of Columbia University in the City of New York.
+# Copyright (c) 2005 The Trustees of the University of Michigan, Ann Arbor.
 # 
 # Licensed under the Educational Community License Version 1.0.
 #
@@ -33,34 +35,18 @@
 #   Seth Theriault <slt@columbia.edu>
 #   Academic Information Systems, Columbia University
 #
+
+#######
+## TTD ##
+# Could make anonymous function and pass that in to do the actual formating.  Then
+# there could be less duplication.
+
+
+# You can learn a lot if it doesn't work and you turn on tracing.
 #use SOAP::Lite +trace => all;
 use SOAP::Lite;
-
 use Config::Properties;
-
-#   # reading...
-
-#   open PROPS, "< my_config.props"
-#     or die "unable to open configuration file";
-
-#   my $properties = new Config::Properties();
-#   $properties->load(*PROPS);
-
-#   $value = $properties->getProperty( $key );
-
-
-#   # saving...
-
-#   open PROPS, "> my_config.props"
-#     or die "unable to open configuration file for writing";
-
-#   $properties->setProperty( $key, $value );
-
-#   $properties->format( '%s => %s' );
-#   $properties->store(*PROPS, $header );
-
 use strict;
-
 use addSakaiUsers;
 
 my $trace = 0;
@@ -75,8 +61,7 @@ my $password = "admin";
 
 my $soap;
 
-my $lineCnt;
-
+# for the two ways to create user names for UofM load testings.
 our ($form1_lower,$form1_upper,$form2_lower,$form2_upper);
 
 # our @test = (
@@ -84,6 +69,8 @@ our ($form1_lower,$form1_upper,$form2_lower,$form2_upper);
 #      "AAblueZB justcorn",
 # 	     "AAblueZAB justcorn"
 # 	    );
+
+## These user names are almost the same, but not quite.
 
 sub generateCtloadUsersForm1 {
   my($start,$end) = @_;
@@ -120,22 +107,17 @@ sub generateCtloadUsersForm2 {
 }
 
 sub readProperties {
- #   open PROPS, "< my_config.props"
- #     or die "unable to open configuration file";
 
-
- #   my $properties = new Config::Properties();
- #   $properties->load(*PROPS);
- #   $value = $properties->getProperty( $key );
-
- 
+  # Use the Config::Properties module so that can store the values
+  # that are likely to vary from run to run in a separate file.
   open PROPS, "<$configFileName"
     or die("can't open configuration file: $configFileName $!");
 
   $properties = new Config::Properties();
   $properties->load(*PROPS);
-  my $value = $properties->getProperty("user");
-   print "value: $value\n";
+ 
+  # to read a named value use this:
+  #  my $value = $properties->getProperty("user");
 
 }
 
@@ -143,35 +125,22 @@ sub setupCtload {
 
   readProperties();
 
-   setUser($properties->getProperty("user"));
-   setPassword($properties->getProperty("password"));
+  setUser($properties->getProperty("user"));
+  setPassword($properties->getProperty("password"));
 
-   setLoginURI($properties->getProperty("loginURI"));
-   setProxyURI($properties->getProperty("proxyURI"));
-   setScriptURI($properties->getProperty("scriptURI"));
-#   setProxyURI( "https://ctoolsload.ds.itd.umich.edu/sakai-axis/SakaiLogin.jws?wsdl");
-#   setScriptURI("https://ctoolsload.ds.itd.umich.edu/sakai-axis/SakaiScript.jws?wsdl");
-
-#   setUser("admin");
-#   setPassword("r0ck3tman");
-
-#   setLoginURI( "https://ctoolsload.ds.itd.umich.edu/sakai-axis/SakaiLogin.jws?wsdl");
-#   setProxyURI( "https://ctoolsload.ds.itd.umich.edu/sakai-axis/SakaiLogin.jws?wsdl");
-#   setScriptURI("https://ctoolsload.ds.itd.umich.edu/sakai-axis/SakaiScript.jws?wsdl");
+  setLoginURI($properties->getProperty("loginURI"));
+  setProxyURI($properties->getProperty("proxyURI"));
+  setScriptURI($properties->getProperty("scriptURI"));
 
 }
 
 
+# run the two forms of user name generation and provide limits for the generation 
+# based on properties.
 sub main {
+
   setupCtload();
-#  generateCtloadUsersForm1(1,1000);
-#  generateCtloadUsersForm2(1,60000);
 
-#  generateCtloadUsersForm1(11,1000);
-#  generateCtloadUsersForm2(6,10);
-
-
-#  exit;
   my($lower,$upper) = ($properties->getProperty("form1_lower"),$properties->getProperty("form1_upper"));
   print "form1_lower: ",$lower, "form1_upper: ",$upper,"\n"
     unless ($lower > $upper);
@@ -179,19 +148,9 @@ sub main {
   generateCtloadUsersForm1($lower,$upper)
     unless ($lower > $upper);
   ($lower,$upper) = ($properties->getProperty("form2_lower"),$properties->getProperty("form2_upper"));
-#  generateCtloadUsersForm2($properties->getProperty("form2_lower"),$properties->getProperty("form2_upper"))
+
   generateCtloadUsersForm2($lower,$upper)
     unless ($lower > $upper);
-
-
-#  generateCtloadUsersForm2(11,19);
-#  generateCtloadUsersForm2(99,9999);
-#  generateCtloadUsersForm2(2900,9999);
-#  generateCtloadUsersForm2(8600,9000);
-#  generateCtloadUsersForm2(20000,25000);
-
-#  generateCtloadUsersForm2(30000,30001);
-#  generateCtloadUsersForm2(10000,60000);
 
   printSummary();
 }
