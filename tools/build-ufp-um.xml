@@ -1,0 +1,35 @@
+<project name="buildUserMembership" basedir="." default="info" >
+
+  <!--
+
+   $Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+   
+   Add the user membership tool
+ 
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="userMembershipInfo">
+    <echo>
+      fill me in.
+    </echo>
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--    deal with User Membership specific source       -->
+  <!-- ================================================== -->
+
+  <target name="getUfpUmSrc" >
+    <echo>
+      Extracting user membership tool: ${usermembership.svnurl} revision: ${usermembership.revision}.
+    </echo>
+    <execSvnCmd url="${usermembership.svnurl}" revision="${usermembership.revision}"/> 
+  </target>
+
+</project>
