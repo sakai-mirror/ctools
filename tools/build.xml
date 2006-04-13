@@ -49,6 +49,7 @@ This doesn't supply the sakai.properties files you want to customize.
   <property file="${user.home}/build.properties" />
   <import file="./build-ctools.xml" />
 <!--   <import file="./build-mc.xml" /> -->
+  <import file="./build-ufp-um.xml" />
   <import file="./build-melete.xml" />
   <import file="./build-sakai.xml" />
   <import file="./build-samigo.xml" />
@@ -96,7 +97,7 @@ This doesn't supply the sakai.properties files you want to customize.
 	  description="get the source for sakai and required tools."/>
 -->
   <target name="getSource" 
-	  depends="getSakaiSrc,getCtoolsSrc,extractMelete"
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getUfpUmSrc"
 	  description="get the source for sakai and required tools."/>
 
   <!-- Make changes in the source that may be required for this installation. -->
