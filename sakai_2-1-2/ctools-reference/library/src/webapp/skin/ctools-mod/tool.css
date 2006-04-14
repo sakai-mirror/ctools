@@ -1,0 +1,180 @@
+/*NOTE:This file is linked to after the tool_base.css file inside of tools. It provides for skinning.*/
+@media print 
+{
+   body {font-size: 9pt !important;margin:0 !important;padding:0 !important}
+	.navIntraTool,.navIntraToolLink, .itemAction, .act,.leftNav, .rightNav, .screenOnly {display:none}
+	a:link, a:visited{text-decoration:underline !important}
+	table{font-size: inherit !important}
+	.listHier{}
+	.listHier th {background:#fff !important;font-weight:bold !important;border-bottom:1px dashed gray}
+	.portletBody {padding:0 !important}
+	h3, h4, h5, h6 {margin-left:0 !important}
+
+}
+/*PART 1:GENERIC SELECTORS*/
+body{font-family:'Trebuchet MS',Verdana,Geneva,Arial,Helvetica,sans-serif;font-size:80%}
+hr{height:0}
+img{border:0px}
+table{font-size:1em}
+fieldset{border:none;padding:0;margin-top:1em}
+iframe{margin-top:2px}
+/*PART 2:LINKS*/
+a:link{color:#35b;text-decoration:none}
+a:visited{color:#53b;text-decoration:none}
+a:hover,a:active{color:#33f;text-decoration:underline !important}
+a:focus{color:#33f;text-decoration:underline !important}
+table.calendar td a:hover{text-decoration:underline}
+.listHier th a:link,.listHier th a:visited{color:#35b;text-decoration:underline;border:none}
+.listHier th a:hover{color:#33f;text-decoration:underline}
+.specialLink a:link,.specialLink a:visited{color:#35b;text-decoration:none}
+.specialLink a:hover{color:#33f;text-decoration:underline}
+tr.selectedMove a:link,tr.selectedMove a:visited{color:#888}
+.itemAction  a,.itemAction  a:link{color:#27d;padding:.2em .3em .1em 0;white-space:nowrap;border-bottom:1px solid #fff}
+.itemAction  a:visited{color:#27d;text-decoration:none;border-bottom:1px solid #fff}
+.itemAction  a:hover{color:#27d;/*for ie*/ text-decoration:underline}
+html>body .itemAction  a:hover{color:#27d;text-decoration:none !important;/*for other*/ border-bottom:1px solid #27d}
+.itemAction a.highlightlink{font-weight:bold}
+tr.selectedMove .itemAction a:link,tr.selectedMove .itemAction a:visited{color:#888;text-decoration:none;border-bottom:none}
+.navIntraTool a,.navIntraTool a:link{margin:0 .5em;text-decoration:underline;}
+.navIntraTool a:visited{color:#35b;text-decoration:underline}
+.navIntraTool a:hover{color:#33f;text-decoration:underline}
+.navIntraTool a:active{color:#33f;text-decoration:none}
+.breadCrumb a:link,.breadCrumb a:visited{color:#35b;text-decoration:none}
+.breadCrumb a:hover{color:#33f;text-decoration:underline}
+/*PART 2:TOOL TITLE SELECTORS and other PORTAL THINGS*/
+.toolTitle{width:80%;background:url(images/blue_tabcap_r.gif) bottom right no-repeat #00338C}
+.toolTitle td.title img{margin:0;vertical-align:text-bottom;width:16px !important}
+.toolTitle td.title{padding:2px 4px 6px 4px;height:1em;font-size:120%;color:#fff}
+.toolTitle td.title h2{display:inline;margin:0 0 0 .2em;padding:0;color:#fff;font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;font-weight:normal;font-size:.8em}
+.toolTitle td.title a{background:url(images/reload.gif) center left no-repeat}
+.toolTitle td.title a:hover{background:url(images/reload_h.gif) center left no-repeat}
+.toolTitle td.action{padding:2px 4px 6px 2px;text-align:right;vertical-align:middle}
+.toolTitle td.action img{margin:0;vertical-align:text-bottom;width:16px !important}
+.toolTitle td.action a{background:url(images/help.gif) center right no-repeat}
+.toolTitle td.action a:hover{background:url(images/help_h.gif) center right no-repeat}
+/*below for "presence in chat" functionality - uncomment when needed*/
+.presenceList{font-size:.8em;
+	list-style: none;
+	margin: 0;
+	padding-left: .1em;
+}
+.presenceList li {
+	padding:0 0 0 .7em;
+	margin-bottom:.2em;
+	}
+.presenceList li.inChat {
+	background:url(images/chatpresicon.gif) -.1em center no-repeat;
+	}
+/*.chefPresenceListItem{font-size:.9em;margin-left:3px;white-space:nowrap;}
+.presenceList{background-color:#fff; margin: 0px;color:#000}
+*/	
+	/*PART 3:CALENDAR SELECTORS*/
+table.calendar{background-color:#ffc}
+table.calendar th{background-color:#ffc;font-weight:normal;text-align:center;border-collapse:collapse}
+.bgActivity{background-color:#ffc;border:1px solid #bbb;text-align:right}
+.bgWithoutActivity{background-color:#fff;border:1px solid #bbb;text-align:right}
+.borderGrayYear{background-color:#eee;border:1px solid #bbb;text-align:right}
+.borderGrayDayWeek{border-bottom:none;border-collapse:collapse;border-left:1px solid #bbb;border-right:1px solid #bbb;border-top:1px solid #bbb}
+.borderGrayBackground{background-color:#ffc;border-bottom:none;border-left:1px solid #bbb;border-right:1px solid #bbb;border-top:1px solid #bbb}
+.borderGrayTodayBgCenter{background-color:#ffc;border-left:1px solid #000;border-right:1px solid #000;border-top:1px solid #bbb}
+.borderGrayTodayEmptyMiddleBottom{background-color:white;border:1px solid #bbb}
+.borderGrayTodayEmptyMiddleCenter{background-color:white;border-left:1px solid #bbb;border-right:1px solid #bbb;border-top:1px solid #bbb}
+.borderGrayTodayLeftBottom{border-bottom:1px solid #bbb;border-left:1px solid #000;border-right:1px solid #bbb;border-top:1px solid #bbb}
+.borderGrayTodayLeftCenter{border-left:1px solid #000;border-right:1px solid #bbb;border-top:1px solid #bbb}
+.borderGrayTodayMiddleCenter{border-left:1px solid #bbb;border-right:1px solid #bbb;border-top:1px solid #bbb}
+.borderGrayTodayRightBottom{border-bottom:1px solid #bbb;border-left:1px solid #bbb;border-right:1px solid #000;border-top:1px solid #bbb}
+.borderGrayTodayRightCenter{border-left:1px solid #bbb;border-right:1px solid #000;border-top:1px solid #bbb}
+.borderOnlyLeftDay{background-color:#ffc;border-left:1px solid #bbb}
+.borderOnlyLeft{border-left:1px solid #bbb}
+.borderToday{border:1px solid #000}
+.borderTodayCenter{border-bottom:1px solid #bbb;border-left:1px solid #000;border-right:1px solid #000;border-top:1px solid #bbb}
+.borderTodayTop{border-bottom:1px solid #bbb;border-left:1px solid #000;border-right:1px solid #000;border-top:1px solid #000}
+.borderTodayWithActivity{background-color:#ffc;border:1px solid #000;text-align:right}
+.borderTodayWithoutActivity{background-color:#FFF;border:1px solid #000;text-align:right}
+.borderTopLeft{background-color:#ffc;border-left:1px solid #bbb;border-right:1px solid  #bbb;border-top:1px solid #bbb}
+.borderTopLeftWhite{border-left:1px solid #bbb;border-right:1px solid  #bbb;border-top:1px solid #bbb}
+.borderWhiteYear{background-color:#ffc;border:1px solid #fff;text-align:center}
+.borderWhite{border-bottom:none;border-left:1px solid #fff;border-right:1px solid #fff;border-top:1px solid #fff}
+.borderGrayTodayCenter,.borderOnlyLeftTodayCenter{border-left:1px solid #000;border-right:1px solid #000;border-top:1px solid #bbb}
+.borderGrayTodayEmptyRightBottom,.borderGrayTodayEmptyRightCenter{background-color:white;border-left:1px solid #bbb;border-right:1px solid #000;border-top:1px solid #bbb}
+.borderGrayTodayMiddleBottom,.borderFullGray,.borderGrayMonth{border:1px solid #bbb}
+.borderTodayBottom,.borderGrayTodayBottom,.borderOnlyLeftTodayBottom{border-bottom:1px solid #000;border-left:1px solid #000;border-right:1px solid #000;border-top:1px solid #bbb}
+table.calendar .event{background-color:#ffc}
+/*PART 4:LAYOUT*/
+.portletBody{padding:.3em 2em 1em 2em}
+.listHier{font-size:1em}
+.listHier th{background-color:#ddd}
+.listHier td{vertical-align:top;padding:.4em}
+table.lines{border-collapse:collapse}
+table.lines tr:hover{background-color:#ffc}
+table.lines tr.exclude:hover{background:transparent}
+table.lines td{border-bottom:1px solid #bbb;border-top:1px solid #eee}
+tr.selectedCopy{background:#ffd}
+tr.selectedCopy td{border-top:2px solid #bbb;border-bottom:2px solid #bbb}
+tr.selectedMove{color:#888;background:#eee}
+tr.selectedMove td{border-top:2px dotted #bbb;border-bottom:2px dotted #bbb}
+tr.highLightRow{background:#ddd}
+.lines td.selected img{display:none}
+.currentSort{font-weight:bold;text-decoration:none}
+.notCurrentSort{font-weight:normal;text-decoration:none}
+.itemAction{font-size:.85em;font-family:verdana,arial;margin:.1em 0 0 .5em;line-height:1.6em;color:#888;padding:2px}
+h4 + div.itemAction{margin:.1em 0 0 1.5em}
+.chefEditItem,.itemSummaryForm{margin-left:.7em}
+.chefEditItem th,.itemSummaryForm th{color:#000;font-weight:normal !important;font-family:Arial,Helvetica,sans-serif;width:15.3em;text-align:left}
+.chefEditItem td,.itemSummaryForm td{padding:.5em 0;vertical-align:top}
+.discTria{background-color:#ddd;font-family:Arial,Helvetica,sans-serif}
+/*PART 5:HIERARCHY*/
+h2,h3,h4,h5,h6{color:#555;padding:.3em;font-weight:bold;font-family:Arial,Helvetica,sans-serif;margin:1em -.3em .5em -.3em;background-color:transparent !important}
+h2{font-size:130%}
+h3{font-size:130%;margin:1em -.3em .5em -1em}
+h4{font-size:110%}
+h5,h6{font-size:100%}
+h6{font-size:100%}
+h3.textList,h4.textList,h5.textList, h6.textList{font-size:1em;}
+.listHier th h3,.listHier th h4,.listHier th h5,.listHier th h6,.listHier td h3,.listHier td h4,.listHier td h5,.listHier td h6{margin:0;padding:0;font-size:1em;background:none;font-weight:normal;font-family:'Trebuchet MS',Verdana,Geneva,Arial,Helvetica,sans-serif !important}
+/*PART 6:INPUTS*/
+input.upload{}
+.act{padding:1em 0}
+.act input{color:#000}
+.act input:hover{color:#000}
+.listNav input.searchField, .rightNav input.searchField{background-color:#fff;border:1px solid #bbb;padding:2px}
+.act input.active{color:#000}
+.leftNav, viewNav{font-size:1em;margin-top:.3em}
+.lone {float:none}
+.leftNav form{display:inline}
+.listNav, .rightNav{font-size:1em;padding:0;margin-top:.5em}
+.listNav form,.righNav form{display:inline;margin:0;padding:0}
+.listNav div.instruction, .rightNav div.instruction{display:block;padding-bottom:.3em;margin:0 1em}
+.itemNav input,.rightNav input{padding:0 .3em}
+.itemNav input[type="submit"], .rightNav input[type="submit"]{font-size:90%;padding:.3em .6em}
+.itemNav input[type="button"], .rightNav input[type="button"]{font-size:90%;padding:.3em .6em}
+label{color:#000;font-family:Arial,Helvetica,sans-serif;font-weight:normal;margin-top:.3em}
+.shorttext .reqStar{color:#b11;width:auto;margin:0 0 0 -1em;font-weight:bold;font-size:1em;padding:0}
+.labelindnt{font-size:1em;margin:0 0 0 15.5em}
+.shorttext input{padding:.1em .3em;border:1px solid #bbb}
+.shorttext input:focus{border:1px solid #000}
+input[type=text]{border:1px solid #bbb}
+input[type=text]:focus{border:1px solid #000}
+textarea{padding:.1em .3em;border:1px solid #bbb;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:100%}
+textarea:focus{border:1px solid #000}
+label.block{display:block}
+.inlineForm{margin:0px;padding:0px;display:inline}
+.inlineForm a{border:none;background-color:transparent}
+/*PART 7:TOOLBAR*/
+.navIntraTool{background-color:#fff;padding:.3em 0;margin:-.35em -2.2em;line-height:1.5em;padding-left:0;text-align:left;font-size:.9em;font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;border-bottom:1px solid #bbb}
+.navIntraTool:hover{border-bottom:1px solid #fc0}
+.navIntraToolLink input{padding:0;border:none;background:transparent}
+.navIntraToolLink input.disabled{padding-bottom:1px;border-bottom:none;background:transparent}
+.navIntraToolLink input.enabled{color:#35b;border-bottom:1px solid #35b;background:transparent}
+.currentView{font-weight:normal}
+/*MESSAGES*/
+.instruction{line-height:1.3em;color:#555;clear:both}
+div.instruction{line-height:1.3em;clear:both;display:block}
+.step{font-size:90%;height:auto}
+.highlight{color:#b11}
+.breadCrumb{clear:both;margin:1em 0}
+h3 .breadCrumb{clear:both;font-size:.8em}
+.reqStar{color:#b11;width:auto;margin-left:-1em;font-weight:bold;font-size:1em;padding:0;float:left;border-top:3px solid #fff}
+.longtext .reqStar{color:#b11;font-size:1.2em;font-weight:normal;padding:0 0 0 .1em;float:left}
+.reqStarInline{color:#b11;font-size:1.2em;vertical-align:middle;width:1em}
+#submitnotif{background:#fff url(../images/warn.gif) .3em .3em no-repeat;border:1px solid #b11;font-family:Verdana,Arial,Helvetica,sans-serif;clear:none;color:#b11;font-size:small;text-decoration:blink;vertical-align:text-top;margin:0;padding:5px 5px 5px 25px}
