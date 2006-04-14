@@ -5869,7 +5869,7 @@ public class SiteAction extends PagedResourceActionII
 				{
 					String requiredField = (String) requiredFields.get(j);
 					
-					buf.append(requiredField +"\t" + requiredFieldList.get(i) + "\n");
+					buf.append(requiredField +"\t" + requiredFieldList.get(j) + "\n");
 				}
 			}
 			buf.append(rb.getString("java.name")+"\t" + sessionUserName + " (" + noEmailInIdAccountName + " " + sessionUserId + ")\n");

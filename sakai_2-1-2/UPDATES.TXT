@@ -1,0 +1,14 @@
+copied in sakai_2-1-2 branch
+copied in ctools-apps, providers, reference and gradtools
+merged:
+    # deal with the group awareness in assigments
+svn merge -r7569:7571 $T/sakai
+svn merge -r7598:7599 $T/sakai ?? no change listed?
+
+    # Merge in r7801:7804 to deal with:
+    # SAK-4369 CT-537 bad information in site request email
+    # SAK-4311 CT-540 (action links now buttons so IE can cope)
+    # CT-532 repetition in site title.
+
+svn merge -r7800:7804 $T/sakai
+svn merge -r7800:7804 $T/ctools 
