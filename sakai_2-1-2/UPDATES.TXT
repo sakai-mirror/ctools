@@ -3,7 +3,7 @@ copied in ctools-apps, providers, reference and gradtools
 merged:
     # deal with the group awareness in assigments
 svn merge -r7569:7571 $T/sakai
-svn merge -r7598:7599 $T/sakai ?? no change listed?
+svn merge -r7598:7599 $T/sakai 
 
     # Merge in r7801:7804 to deal with:
     # SAK-4369 CT-537 bad information in site request email
