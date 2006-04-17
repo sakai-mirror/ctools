@@ -9,7 +9,17 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
 
   <target name="ctoolsBuildInfo">
     <echo>
-      fill me in.
+      Install the CTools specific code.  It may not be called if you want to have a 
+      pure sakai build.  It will extract the ctools code, delete unecessary code,
+      and will edit values in code or configuration files as appropriate.  For example it 
+      will add the grad tool sites to the site type configuration xml file.
+      This should not be invoked on its own.  It will be called by the master build.xml.
+      The default configuration values are given below.  They may be overridden by a build
+      properties file.
+
+      ctools.extract.skip = ${ctools.extract.skip}
+      ctools.svnurl = ${ctools.svnurl}
+      ctools.revision = ${ctools.revision}
     </echo>
   </target>
 
@@ -22,14 +32,15 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
   <!-- entry points -->
   
   <!-- get the source -->
-  <target name="getCtoolsSrc">
+  <target name="getCtoolsSrc" unless="ctools.extract.skip" >
+    <echo> Extract ctools source ctools.extract.skip=[${ctools.extract.skip}]</echo>
     <execSvnCmd url="${ctools.svnurl}" revision="${ctools.revision}"/> 
     <antcall target="removeUnneededCtools" />
     <place fromdir="${build.dir}/ctools" />
   </target>
 
   <!-- change source as required -->
-  <target name="editCtools" depends="editGradTools,editDefaultTools">
+  <target name="editCtools" depends="editGradTools,editDefaultTools" >
     <!-- edit the files that need to be modified for ctools -->
   </target>
 

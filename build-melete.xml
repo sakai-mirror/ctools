@@ -15,9 +15,17 @@
        
   -->
 
-  <target name="info-melete">
+  <target name="meleteBuildInfo">
     <echo>
-      fill me in.
+      This will include the melete tool into Sakai for a ctools environment.  It should be called
+      from the master build file, not on its own.
+
+      The default configuration values are below.  They may be overridden by a properties file for
+      a particular build.
+
+
+
+
     </echo>
   </target>
 
@@ -25,12 +33,19 @@
   <!--           deal with Melete specific source         -->
   <!-- ================================================== -->
 
+<!--
   <target name="extractMelete" if="melete.install" >
     <execSvnCmd url="${melete.svnurl}" revision="${melete.revision}"/> 
     <untar src="${build.dir}/${melete.archivename}" dest="${build.dir}" compression="gzip" />
   </target>
+-->
 
-  <target name="editMelete" if="melete.install" >
+  <target name="extractMelete" unless="melete.install.skip" >
+    <execSvnCmd url="${melete.svnurl}" revision="${melete.revision}"/> 
+    <untar src="${build.dir}/${melete.archivename}" dest="${build.dir}" compression="gzip" />
+  </target>
+
+  <target name="editMelete" unless="melete.install.skip" >
     <!-- update the directory value for the melete uploads. -->
     <replaceregexp match="/var" replace="/melete" flags="g" >
       <fileset dir="${build.dir}/${melete.dirname}">
@@ -46,7 +61,7 @@
     </replaceregexp>
   </target>
   
-  <target name="imageMelete" if="melete.install">
+  <target name="imageMelete" unless="melete.install.skip">
     <echo>update image for melete</echo>
     <copy todir="${image.dir}/conf/Catalina/localhost">
       <fileset dir="${build.dir}/${melete.dirname}">

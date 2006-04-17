@@ -6,6 +6,19 @@
 # $HeadURL: file:///Volumes/UserData/Users/dlhaines/svn/repo/trunk/mytools/cleanupData.pl $
 -->
 
+<target name="sakaiBuildInfo" >
+  <echo>
+    This installs and compiles the sakai code.  Targets in this file should not be invoked directly
+    but should be called by the master build.xml.
+
+    The default values for the sakai build are given below.  They are usually overridden by a properties file.
+
+    sakai.svndir = ${sakai.svndir}
+    sakai.svnurl = ${sakai.svnurl}
+    sakai.revision = ${sakai.revision}
+  </echo>
+</target>
+
 
   <!-- ================================================== -->
   <!--             construct the source                   -->

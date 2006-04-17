@@ -47,16 +47,21 @@ This doesn't supply the sakai.properties files you want to customize.
 
 <!--  <property name="${user.home}/build.properties" value="dummy"/> -->
   <property file="${user.home}/build.properties" />
+
+  <!-- include extra functional targets -->
+  <import file="./build-util.xml" />
+  <import file="./build-config.xml" />
+
+  <!-- register pieces to build -->
   <import file="./build-ctools.xml" />
-<!--   <import file="./build-mc.xml" /> -->
+  <import file="./build-mc.xml" /> 
   <import file="./build-ufp-um.xml" />
   <import file="./build-melete.xml" />
   <import file="./build-sakai.xml" />
   <import file="./build-samigo.xml" />
-  <import file="./build-util.xml" />
-  <import file="./build-config.xml" />
 
-<!--  <property name="config-file" value="ctools-pilot-200602.properties" /> -->
+  <!--  <property name="config-file" value="ctools-pilot-200602.properties" /> -->
+  <!-- set a default value -->
   <property name="config-file" value="dummy" /> 
 
   <property file="${config-file}" />
@@ -110,6 +115,8 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <target name="updateConfigMsg">
   </target>
+
+  <target name="tmp-info" depends="userMembershipInfo" />
 
   <!-- =============================== -->
   <!--         image targets           -->

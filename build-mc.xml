@@ -14,9 +14,16 @@
   -->
 
 
-  <target name="message-centerBuildInfo">
+  <target name="messagecenterBuildInfo">
     <echo>
-      fill me in.
+      This installs the message center tool.  Targets in this file should not be invoked directly
+      but should be called by the master build.xml.
+      The default values for the message center build are given below.  They are usually overridden by 
+      a properties file.
+
+      messagecenter.install.skip = ${messagecenter.install.skip}
+      messagecenter.svnurl = ${messagecenter.svnurl}
+      messagecenter.revision = ${messagecenter.revision}
     </echo>
   </target>
 
@@ -25,7 +32,7 @@
   <!--      deal with MessageCenter specific source       -->
   <!-- ================================================== -->
 
-  <target name="getMessageCenterSrc">
+  <target name="getMessageCenterSrc" unless="messagecenter.install.skip">
     <echo>
       Extracting message center tool: ${messagecenter.svnurl} revision: ${messagecenter.revision}.
     </echo>

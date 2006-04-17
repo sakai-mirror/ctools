@@ -14,9 +14,16 @@
   -->
 
 
-  <target name="info-instance" >
+  <target name="configInfo" >
     <echo>
-      create sakai.properties customized to specific instances.
+      This customizes the configuration information for a particular build.  Targets in here should
+      not be invoked directly but shoudl be invoked from the master build.xml.
+
+      The configuration properties for this build are below.  They are usually gotten from a properties file for the build.
+
+      build.configuration.svnurl = ${build.configuration.svnurl}
+      build.configuration.configdir = ${build.configuration.configdir}
+      build.configuration.revision = ${build.configuration.revision}
     </echo>
   </target>
 
