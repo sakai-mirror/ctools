@@ -16,7 +16,12 @@
 
   <target name="userMembershipInfo">
     <echo>
-      fill me in.
+      This will extract the user membership tool. It should be called by the master build.xml not directly.
+
+      The configuration values are:
+      usermembership.install.skip = ${usermembership.install.skip}
+      usermembership.svnurl = ${usermembership.svnurl}
+      usermembership.revision = ${usermembership.revision}
     </echo>
   </target>
 
@@ -25,7 +30,7 @@
   <!--    deal with User Membership specific source       -->
   <!-- ================================================== -->
 
-  <target name="getUfpUmSrc" >
+  <target name="getUfpUmSrc" unless="usermembership.install.skip">
     <echo>
       Extracting user membership tool: ${usermembership.svnurl} revision: ${usermembership.revision}.
     </echo>
