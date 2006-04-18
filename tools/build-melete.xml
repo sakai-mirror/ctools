@@ -20,11 +20,13 @@
       This will include the melete tool into Sakai for a ctools environment.  It should be called
       from the master build file, not on its own.
 
-      The default configuration values are below.  They may be overridden by a properties file for
+      The current configuration values are below.  They may be overridden by a properties file for
       a particular build.
 
-
-
+      melete.install.skip=[${melete.install.skip}]
+      melete.svnurl=${melete.svnurl} 
+      melete.revision=${melete.revision} 
+      melete.archivename=${melete.archivename} 
 
     </echo>
   </target>
@@ -41,6 +43,7 @@
 -->
 
   <target name="extractMelete" unless="melete.install.skip" >
+    <echo> extracting melete:</echo>
     <execSvnCmd url="${melete.svnurl}" revision="${melete.revision}"/> 
     <untar src="${build.dir}/${melete.archivename}" dest="${build.dir}" compression="gzip" />
   </target>
