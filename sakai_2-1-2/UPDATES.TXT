@@ -12,3 +12,8 @@ svn merge -r7598:7599 $T/sakai
 
 svn merge -r7800:7804 $T/sakai
 svn merge -r7800:7804 $T/ctools 
+
+2006/04/18 added these
+svn merge -r7600:7601 $TS
+svn merge -r7759:7760 $TS
+svn merge -r7847:7848 $TS

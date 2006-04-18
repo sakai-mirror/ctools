@@ -52,6 +52,9 @@ import org.sakaiproject.service.framework.component.cover.ComponentManager;
 import org.sakaiproject.service.framework.config.cover.ServerConfigurationService;
 import org.sakaiproject.service.framework.portal.cover.PortalService;
 import org.sakaiproject.service.framework.session.SessionState;
+import org.sakaiproject.service.gradebook.shared.ConflictingAssignmentNameException;
+import org.sakaiproject.service.gradebook.shared.GradebookNotFoundException;
+import org.sakaiproject.service.gradebook.shared.ConflictingExternalIdException;
 import org.sakaiproject.service.gradebook.shared.GradebookService;
 import org.sakaiproject.service.gradebook.shared.AssignmentHasIllegalPointsException;
 import org.sakaiproject.service.legacy.announcement.AnnouncementChannel;
@@ -1669,7 +1672,7 @@ extends PagedResourceActionII
 		    			{
 		    				addAlert(state, rb.getString("addtogradebook.illegalPoints"));
 		    			}
-		    			catch(Exception e)
+		    			catch(ConflictingAssignmentNameException e)
 		    			{
 			        		// try to modify assignment title, make sure there is no such assignment in the gradebook, and insert again
 			        		boolean trying = true;
@@ -1709,7 +1712,19 @@ extends PagedResourceActionII
 				    				}
 			    				}
 			    			}
-			        }
+		    			}
+		    			catch (ConflictingExternalIdException e)
+		    			{
+		    				// ignore
+		    			}
+		    			catch (GradebookNotFoundException e)
+		    			{
+		    				// ignore
+		    			}
+		    			catch (Exception e)
+		    			{
+		    				// ignore
+		    			}
 		    		}
 				else if (addUpdateRemoveAssignment.equals("update"))
 			    	{
