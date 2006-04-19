@@ -140,12 +140,15 @@ This doesn't supply the sakai.properties files you want to customize.
     <buildPropertiesFile instanceName="ctools" />
     <buildPropertiesFile instanceName="ctoolsload" />
     <buildPropertiesFile instanceName="testctools" />
+
+    <!--
     <buildPropertiesFile instanceName="whisk" />
 
     <buildPropertiesFile instanceName="ctpiload" />
     <buildPropertiesFile instanceName="ctpilot.whisk" />
     <buildPropertiesFile instanceName="ctpilot0" />
     <buildPropertiesFile instanceName="ctpitest" />
+    -->
 
   </target>
 

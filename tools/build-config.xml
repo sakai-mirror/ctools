@@ -34,6 +34,7 @@
 	  description="copy and edit the sakai.properties files." />
 
   <target name="copyConfig">
+    <echo> copy from config.dir: ${config.dir} </echo>
     <copy todir="${instances.dir}/${type}">
       <fileset dir="${config.dir}">
 	<exclude name="**/sakai.properties"/>
@@ -105,29 +106,19 @@
 	</tokenfilter>
 
 	<tokenfilter>
-	  <replaceregex pattern="^(resources.show_all_collections.tool\s*=\s*).*" replace="\1${resources.show_all_collections.tool}"/>
-	</tokenfilter>
-
-	<tokenfilter>
-	  <replaceregex pattern="^(resources.show_all_collections.dropbox\s*=\s*).*" replace="\1${resources.show_all_collections.dropbox}"/>
-	</tokenfilter>
-
-	<tokenfilter>
-	  <replaceregex pattern="^(resources.show_all_collections.helper\s*=\s*).*" replace="\1${resources.show_all_collections.helper}"/>
-	</tokenfilter>
-
-	<tokenfilter>
 	  <replaceregex pattern="^(ui.service\s*=\s*).*" replace="\1${ui.service}"/>
 	</tokenfilter>
 
 	<tokenfilter>
-	  <replaceregex pattern="^(wsetup.group.support\s*=\s*).*" replace="\1${wsetup.group.support}"/>
+	  <replaceregex pattern="^(smtp@org.sakaiproject.service.framework.email.EmailService\s*=\s*).*" 
+			replace="\1${smtp@org.sakaiproject.service.framework.email.EmailService}" />
 	</tokenfilter>
 
 	<tokenfilter>
 	  <replaceregex pattern="^(stealthTools@org.sakaiproject.api.kernel.tool.ActiveToolManager\s*=\s*).*" 
 			replace="\1${stealthTools@org.sakaiproject.api.kernel.tool.ActiveToolManager}"/>
 	</tokenfilter>
+
 
       </filterchain> 
     </copy>
