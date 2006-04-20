@@ -143,10 +143,10 @@ label.block{display:block}
 .inlineForm a{border:none;background-color:transparent}
 /*PART 7:TOOLBAR*/
 .navIntraTool{background-color:#ffc;padding:.3em 0;margin:-.35em -2.2em;line-height:1.5em;padding-left:1em;text-align:left;font-size:.9em;font-family:Verdana,Arial,Helvetica,sans-serif}
-.navIntraToolLink input{padding:0;border:none;background:transparent}
-.navIntraToolLink input.disabled{padding-bottom:1px;border-bottom:none;background:transparent}
+.navIntraToolLink input{padding:0;border:1px solid #fff;background:transparent}
+.navIntraToolLink input.disabled{padding-bottom:1px;border-bottom:1px solid #fff;background:transparent}
 .navIntraToolLink input.enabled{color:#35b;border-bottom:1px solid #35b;background:transparent}
-.navIntraToolLink input:hover{color:#33F;border-bottom:1px solid #33f;background:transparent}
+.navIntraToolLink input:hover{border-bottom:1px solid #fff;background:transparent}
 .currentView{font-weight:normal}
 /*MESSAGES*/
 .instruction{line-height:1.3em;color:#555}

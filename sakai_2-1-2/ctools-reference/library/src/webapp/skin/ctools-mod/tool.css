@@ -166,6 +166,7 @@ label.block{display:block}
 .navIntraToolLink input{padding:0;border:none;background:transparent}
 .navIntraToolLink input.disabled{padding-bottom:1px;border-bottom:none;background:transparent}
 .navIntraToolLink input.enabled{color:#35b;border-bottom:1px solid #35b;background:transparent}
+.navIntraToolLink input:hover{border-bottom:none}
 .currentView{font-weight:normal}
 /*MESSAGES*/
 .instruction{line-height:1.3em;color:#555;clear:both}
