@@ -45,7 +45,7 @@ This doesn't supply the sakai.properties files you want to customize.
        - remote execution either from here, or make this so one command can run it on a remote host.
        - automate installing / populating the tomcat
        - formalize the project.properties more
-       -- order is first gets it, so read local project.properties first
+       - order is first gets it, so read local project.properties first
        - clean up / regularize
        - change logging format (e.g. use the Josh format)
        - easier way to set variable properties in sakai.properties?  E.g. use more files?
