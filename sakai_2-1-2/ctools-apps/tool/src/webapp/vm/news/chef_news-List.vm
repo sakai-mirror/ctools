@@ -26,7 +26,7 @@
 					#if($item.Link)
 						 <a href="$validator.escapeHtml($item.Link)" target="_blank">($full_story)</a>
 					 #end
-					 #if($item.Pubdate)
+					 #if($item.Pubdate && !$item.Pubdate == "")
 					 	($item.Pubdate)
 					#end
 				</p>	

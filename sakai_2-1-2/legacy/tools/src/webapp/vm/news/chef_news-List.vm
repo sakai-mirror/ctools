@@ -28,7 +28,7 @@
 						#if($item.Link)
 							 <a href="$validator.escapeHtml($item.Link)" target="_blank" title="$tlang.getString("goto.item") $title">($full_story)</a>
 						 #end
-						 #if($item.Pubdate)
+						 #if($item.Pubdate && !$item.Pubdate == "")
 						 	($item.Pubdate)
 						#end
 					</p>	
