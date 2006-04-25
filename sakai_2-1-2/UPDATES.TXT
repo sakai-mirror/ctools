@@ -17,3 +17,19 @@ svn merge -r7800:7804 $T/ctools
 svn merge -r7600:7601 $TS
 svn merge -r7759:7760 $TS
 svn merge -r7847:7848 $TS
+
+2006/04/25 SAK-4433:
+svn merge  -r8247:8248 https://source.sakaiproject.org/svn/trunk/sakai 
+U    legacy/tools/src/java/org/sakaiproject/tool/assignment/AssignmentAction.java 
+ 
+For gradtools: CT-513 SAK-4393
+
+dlh:~/dev/ctools-spring-06/ctools-spring-06/sakai_2-1-2/gradtools dlhaines$ svn merge $T/ctools/gradtools -r8119:8121 
+U    component/src/java/org/sakaiproject/component/app/dissertation/UploadExtractsJobImpl.java
+dlh:~/dev/ctools-spring-06/ctools-spring-06/sakai_2-1-2/ctools-apps dlhaines$ svn merge $T/ctools/ctools-apps -r8119:8121 
+U    tool/src/webapp/vm/news/chef_news-List.vm
+
+for gradtools: SAK-4393  CT-546
+dlh:~/dev/ctools-spring-06/ctools-spring-06/sakai_2-1-2 dlhaines$ svn merge -r8191:8193 $T/sakai
+U    legacy/tools/src/webapp/vm/news/chef_news-List.vm
+U    util/text/src/java/org/sakaiproject/util/text/FormattedText.java
