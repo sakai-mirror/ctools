@@ -42,10 +42,18 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <!-- 
        TTD:
-       
+       - remote execution either from here, or make this so one command can run it on a remote host.
+       - automate installing / populating the tomcat
+       - formalize the project.properties more
+       -- order is first gets it, so read local project.properties first
+       - clean up / regularize
+       - change logging format (e.g. use the Josh format)
+       - easier way to set variable properties in sakai.properties?  E.g. use more files?
+       - add release "flavor" e.g. standard, pilot, debug (for better log messages)
   -->
 
 <!--  <property name="${user.home}/build.properties" value="dummy"/> -->
+  <property file="./project.properties" />
   <property file="${user.home}/build.properties" />
 
   <!-- include extra functional targets -->
@@ -89,7 +97,9 @@ This doesn't supply the sakai.properties files you want to customize.
   <!-- ========================= -->
 
   <target name="buildCtoolsImage" depends="prepare,getSource,editSource,compileSakai,buildImage,buildConfig"
-	  description="Build a ctools image based on the properties files specified."/>
+	  description="Build a ctools image based on the properties files specified.">
+    <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
+  </target>
 
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
