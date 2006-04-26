@@ -4804,7 +4804,7 @@ extends PagedResourceActionII
 			}
 			state.setAttribute(AttachmentAction.STATE_FROM_TEXT, rb.getString("thenewass"));
 			User[] users = {UserDirectoryService.getCurrentUser()};
-			// state.setAttribute(ResourcesAction.STATE_SAVE_ATTACHMENT_IN_DROPBOX, users);
+			state.setAttribute(ResourcesAction.STATE_SAVE_ATTACHMENT_IN_DROPBOX, users);
 		}
 		else if (mode.equals (MODE_INSTRUCTOR_NEW_EDIT_ASSIGNMENT))
 		{
@@ -4843,7 +4843,7 @@ extends PagedResourceActionII
 				if (s != null)
 				{
 					User[] users = s.getSubmitters();
-					// state.setAttribute(ResourcesAction.STATE_SAVE_ATTACHMENT_IN_DROPBOX, users);
+					state.setAttribute(ResourcesAction.STATE_SAVE_ATTACHMENT_IN_DROPBOX, users);
 				}
 			}
 			catch(Exception ignore)
@@ -4990,7 +4990,7 @@ extends PagedResourceActionII
 			if (s != null)
 			{
 				User[] users = s.getSubmitters();
-				//state.setAttribute(ResourcesAction.STATE_SAVE_ATTACHMENT_IN_DROPBOX, users); 
+				state.setAttribute(ResourcesAction.STATE_SAVE_ATTACHMENT_IN_DROPBOX, users); 
 			}
 		}
 		catch(Exception ignore)
@@ -7142,7 +7142,7 @@ extends PagedResourceActionII
 					}
 					state.setAttribute(AttachmentAction.STATE_FROM_TEXT, rb.getString("thenewass"));
 					User[] users = {UserDirectoryService.getCurrentUser()};
-				//	state.setAttribute(ResourcesAction.STATE_SAVE_ATTACHMENT_IN_DROPBOX, users);
+					state.setAttribute(ResourcesAction.STATE_SAVE_ATTACHMENT_IN_DROPBOX, users);
 				}
 				else if (mode.equals (MODE_INSTRUCTOR_NEW_EDIT_ASSIGNMENT))
 				{
