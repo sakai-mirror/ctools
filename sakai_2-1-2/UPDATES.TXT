@@ -33,3 +33,8 @@ for gradtools: SAK-4393  CT-546
 dlh:~/dev/ctools-spring-06/ctools-spring-06/sakai_2-1-2 dlhaines$ svn merge -r8191:8193 $T/sakai
 U    legacy/tools/src/webapp/vm/news/chef_news-List.vm
 U    util/text/src/java/org/sakaiproject/util/text/FormattedText.java
+
+4/26/06
+for gradtools: CT-564
+dlh:~/dev/ctools-spring-06/ctools-spring-06/sakai_2-1-2/gradtools dlhaines$ svn merge -r8295:8296 $T/ctools/gradtools
+U    component/src/java/org/sakaiproject/component/app/dissertation/UploadExtractsJobImpl.java

@@ -41,5 +41,6 @@
 	<classpathentry kind="src" path="/legacy-service"/>
 	<classpathentry kind="var" path="MAVEN_REPO/lucene/jars/lucene-1.4.3.jar"/>
 	<classpathentry kind="src" path="search-model/src/java"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/sections"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
