@@ -38,3 +38,7 @@ U    util/text/src/java/org/sakaiproject/util/text/FormattedText.java
 for gradtools: CT-564
 dlh:~/dev/ctools-spring-06/ctools-spring-06/sakai_2-1-2/gradtools dlhaines$ svn merge -r8295:8296 $T/ctools/gradtools
 U    component/src/java/org/sakaiproject/component/app/dissertation/UploadExtractsJobImpl.java
+
+4/27/06 SAK-566
+dlh:~/dev/ctools-spring-06/ctools-spring-06/sakai_2-1-2/legacy/tools dlhaines$ svn merge -r8409:8410 $TS/legacy/tools
+U    src/java/org/sakaiproject/tool/assignment/AssignmentAction.java
