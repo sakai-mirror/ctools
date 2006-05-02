@@ -66,6 +66,14 @@
     <removeFromBuild deleteDir="providers" />
     <removeFromBuild deleteDir="wsrp" />
 
+    <!-- remove for this build.  Find a better way. -->
+    <removeFromBuild deleteDir="sam" />
+
+    <!-- removed as of 4/28/06 -->
+    <removeFromBuild deleteDir="roster" />
+    <removeFromBuild deleteDir="webservices" />
+    <removeFromBuild deleteDir="portlet" />
+
   </target>
 
   <target name="editSakai" >
@@ -83,6 +91,15 @@
     <removeWarFromImage deleteWar="sakai-sample-tools-browser.war" />
     <removeWarFromImage deleteWar="sakai-sample-tools-jsf1.war" />
     <removeWarFromImage deleteWar="sakai-sample-tools-qa-helper.war" />
+    <removeWarFromImage deleteWar="samigo.war" />
+    <removeWarFromImage deleteWar="sakai-wsrp-producer.war" />
+    <removeWarFromImage deleteWar="sakai-roster-components.war" />
+    <removeWarFromImage deleteWar="sakai-roster-tool.war" />
+
+
+    <!-- added 2006/05/01 -->
+    <removeWarFromImage deleteWar="sakai-samigo.war" />
+
   </target>
 
   <target name="compileSakai" depends="editMaster">
