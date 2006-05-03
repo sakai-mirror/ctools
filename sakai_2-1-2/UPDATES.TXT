@@ -39,6 +39,12 @@ for gradtools: CT-564
 dlh:~/dev/ctools-spring-06/ctools-spring-06/sakai_2-1-2/gradtools dlhaines$ svn merge -r8295:8296 $T/ctools/gradtools
 U    component/src/java/org/sakaiproject/component/app/dissertation/UploadExtractsJobImpl.java
 
+add in r8359 by zqain to fix CT-524
+
 4/27/06 SAK-566
 dlh:~/dev/ctools-spring-06/ctools-spring-06/sakai_2-1-2/legacy/tools dlhaines$ svn merge -r8409:8410 $TS/legacy/tools
 U    src/java/org/sakaiproject/tool/assignment/AssignmentAction.java
+
+5/3/06 CT-514, CT-590
+udhcp-macvpn-771:~/dev/ctools-spring-06/ctools-spring-06/sakai_2-1-2/gradtools dlhaines$ svn merge -r8797:8798 $T/ctools/gradtools
+U    component/src/java/org/sakaiproject/component/app/dissertation/UploadExtractsJobImpl.java
