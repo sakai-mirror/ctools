@@ -6,7 +6,10 @@
       <configuration name="test" value="reg-value"/>
 
       <category name="sakai.main"/>
+      <!-- 
+	   Commented out per CT-594
       <category name="project"/>
+      --> 
 
       <keyword name="structured"/>
       <keyword name="artifact"/>

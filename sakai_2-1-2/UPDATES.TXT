@@ -48,3 +48,6 @@ U    src/java/org/sakaiproject/tool/assignment/AssignmentAction.java
 5/3/06 CT-514, CT-590
 udhcp-macvpn-771:~/dev/ctools-spring-06/ctools-spring-06/sakai_2-1-2/gradtools dlhaines$ svn merge -r8797:8798 $T/ctools/gradtools
 U    component/src/java/org/sakaiproject/component/app/dissertation/UploadExtractsJobImpl.java
+
+5/4/06 CT-589, CT-594
+modified sakai.properties (CT-598) and sakai.metaobj.xml (CT-594)
