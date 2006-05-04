@@ -8,7 +8,15 @@
 
 annc.all.groups	maintain	Affiliate	Assistant	Instructor	Owner	Organizer
 
-#asn.all.groups	
+asn.all.groups	maintain Instructor 
+
+asn.read access maintain Instructor Student 'Teaching_FIXME_Assistant'
+asn.submit access maintain Instructor Student 'Teaching_FIXME_Assistant'
+asn.delete maintain Instructor 'Teaching_FIXME_Assistant'
+asn.grade maintain Instructor 'Teaching_FIXME_Assistant'
+asn.new maintain Instructor 'Teaching_FIXME_Assistant'
+asn.revise maintain Instructor 'Teaching_FIXME_Assistant'
+
 
 assessment.createAssessment	maintain	Affiliate	Assistant	Instructor	Owner	Organizer
 assessment.deleteAssessment.any	maintain	Affiliate	Assistant	Instructor	Owner	Organizer
