@@ -84,5 +84,25 @@
 	    <ant:echo>SCP copy compressed file: successful.</ant:echo>
 	</goal>
 
+	<goal name="rwiki_ddl">
+	  <!-- -->
+	  <!--
+	  <j:set var="maven.hibernate.properties" value="ddl.properties" />
+	  -->
+	  <j:set var="maven.hibernate.quiet" value="no" />
+	  <j:set var="maven.hibernate.text" value="yes" />
+	  <j:set var="maven.hibernate.delimiter" value=";" />
+	  <!--
+	  <j:set var="maven.hibernate.input.dir" value="rwiki-model,search-model" />
+	  -->
+	  <j:set var="maven.hibernate.input.dir" value="bin" />
+	  <!--
+	  <j:set var="maven.hibernate.input.includes" value="**/src/**/*.hbm.xml" />
+	  -->
+	  <j:set var="maven.hibernate.input.includes" value="**/*.hbm.xml" />
+	  <j:set var="maven.hibernate.dialect" value="net.sf.hibernate.dialect.Oracle9Dialect" />
+	  <!-- -->
+	  <attainGoal name="hibernate:schema-export" />
+	</goal>
 
 </project>
