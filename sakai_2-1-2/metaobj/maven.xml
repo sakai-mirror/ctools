@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--sakai2 -->
 <project
+      xmlns:j="jelly:core"
+      xmlns:license="license"
+      xmlns:util="jelly:util"
+      xmlns:ant="jelly:ant"
+      xmlns:artifact="artifact"
+      xmlns:maven="jelly:maven"
+      xmlns:gump="jelly:gump"
    default="sakai:build">
+
+  <goal name="metaobj_ddl">
+    <j:set var="maven.hibernate.quiet" value="no" />
+    <j:set var="maven.hibernate.text" value="yes" />
+    <j:set var="maven.hibernate.delimiter" value=";" />
+    <j:set var="maven.hibernate.input.dir" value="api/target/classes" />
+    <j:set var="maven.hibernate.input.includes" value="**/*.hbm.xml" />
+    <j:set var="maven.hibernate.dialect" value="net.sf.hibernate.dialect.Oracle9Dialect" />
+    <attainGoal name="hibernate:schema-export" />
+  </goal>
+
 
 </project>

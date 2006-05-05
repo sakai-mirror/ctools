@@ -28,6 +28,11 @@
             <war.bundle>true</war.bundle>
          </properties>
       </dependency>
+        <dependency>
+	  <id>oracleDriver</id>
+	  <artifactId>ojdbc14</artifactId>
+	  <jar>ojdbc14.jar</jar>	 
+        </dependency>
 
    </dependencies>
 
