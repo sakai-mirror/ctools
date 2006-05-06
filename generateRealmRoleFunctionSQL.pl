@@ -15,6 +15,9 @@
 # <function> <roleA> <roleb> ......
 # Blank lines and comment lines (starting with a #) are ignored.
 
+# $HeadURL$
+# $Id$
+
 use strict;
 
 # keep track of some things for reporting
@@ -35,7 +38,7 @@ our $sqlFunctionTmpl = "insert into SAKAI_REALM_FUNCTION VALUES (SAKAI_REALM_FUN
 # insert new role
 our $sqlRoleTmpl = "insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, '%s');";
 # map the new functions and roles together
-our $sqlPairTmpl = "insert into FUNCTIONS_SRC_TEMP values ('%s','%s');";
+our $sqlPairTmpl = "insert into PERMISSIONS_SRC_TEMP values ('%s','%s');";
 
 # variables to hold information from the input file.
 our ($function,@roles);
@@ -44,6 +47,10 @@ our $r;
 
 
 ##### Do it
+
+print "Note that this only generates the specific sql and doesn't generate\n";
+print "the sql to actually perform the update.  The output then in just a model\n";
+print "for the right sql."
 
 printHeader();
 
