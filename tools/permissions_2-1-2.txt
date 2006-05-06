@@ -10,12 +10,13 @@ annc.all.groups	maintain	Affiliate	Assistant	Instructor	Owner	Organizer
 
 asn.all.groups	maintain Instructor 
 
-asn.read access maintain Instructor Student 'Teaching_FIXME_Assistant'
-asn.submit access maintain Instructor Student 'Teaching_FIXME_Assistant'
-asn.delete maintain Instructor 'Teaching_FIXME_Assistant'
-asn.grade maintain Instructor 'Teaching_FIXME_Assistant'
-asn.new maintain Instructor 'Teaching_FIXME_Assistant'
-asn.revise maintain Instructor 'Teaching_FIXME_Assistant'
+asn.read access maintain Instructor Student Assistant
+asn.submit access maintain Instructor Student Assistant
+#asn.delete maintain Instructor Assistant
+asn.delete maintain Instructor
+asn.grade maintain Instructor Assistant
+asn.new maintain Instructor Assistant
+asn.revise maintain Instructor Assistant
 
 
 assessment.createAssessment	maintain	Affiliate	Assistant	Instructor	Owner	Organizer
@@ -40,7 +41,7 @@ assessment.template.delete.own	maintain	Affiliate	Assistant	Instructor	Owner	Org
 assessment.template.edit.own	maintain	Affiliate	Assistant	Instructor	Owner	Organizer
 
 dropbox.maintain	maintain	Affiliate	Assistant	Instructor	Owner	Organizer
-dropbox.editAssignments	maintain	Affiliate	Assistant	Instructor	Owner	Organizer
+gradebook.editAssignments	maintain	Affiliate	Assistant	Instructor	Owner	Organizer
 
 gradebook.gradeAll	maintain	Affiliate	Assistant	Instructor	Owner	Organizer
 gradebook.gradeSection	Assistant
@@ -61,6 +62,7 @@ rwiki.read	access	maintain	Affiliate	Assistant	Instructor	Student	Owner	Observer
 #rwiki.superadmin	
 rwiki.update	access	maintain	Affiliate	Assistant	Instructor	Owner	Member	Organizer
 
-section.role.instructor	maintain	Affiliate	Instructor	Owner	Organizer
+#section.role.instructor	maintain	Affiliate	Instructor	Owner	Organizer
+section.role.instructor	maintain	Instructor	Owner
 section.role.student	access	Student	Member
 section.role.ta	Assistant
