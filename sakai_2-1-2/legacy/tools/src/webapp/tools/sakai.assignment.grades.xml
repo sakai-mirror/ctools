@@ -8,8 +8,11 @@
 			description="For posting, submitting and grading assignment(s) online.">
 		
 		<category name="course" />
+
+		<!-- comment out per CT-594 
 		<category name="project" />
-		
+		-->
+
 		<configuration name="withGrades" value="TRUE" type="final" />
 		<configuration name="help.id" value="sakai.assignment" type="final" />
 
