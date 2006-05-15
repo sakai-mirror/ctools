@@ -141,11 +141,13 @@
             <version>${sakai.plugin.version}</version>
             <type>plugin</type>
         </dependency>
+	<!-- only needed when generating the ddl via Hibernate 
         <dependency>
 	  <id>oracleDriver</id>
 	  <artifactId>ojdbc14</artifactId>
 	  <jar>ojdbc14.jar</jar>	 
         </dependency>
+	-->
     </dependencies>
 </project>
 
