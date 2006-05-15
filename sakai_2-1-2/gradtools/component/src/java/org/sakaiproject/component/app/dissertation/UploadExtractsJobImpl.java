@@ -117,13 +117,13 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 	//MPathways fields
 	private static Pattern m_patternAcadProg = Pattern.compile("(^\"[0-9]{5}\"$|^\"\"$)");
 	private static Pattern m_patternAnticipate = Pattern.compile("(^\"[A-Z]{2}[- ][0-9]{4}\"$|^\"[A-Za-z]*( |,)[0-9]{4}\"$|^\"\"$)");
-	private static Pattern m_patternDateCompl = Pattern.compile("(^([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/[0-9]{4}$|)");
+	private static Pattern m_patternDateCompl = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}.*)\"$|^\"#EMPTY\"$|^\"\"$|)");
 	private static Pattern m_patternMilestone = Pattern.compile("(^\"[A-Za-z]*\"$|^\"\"$)");
 	private static Pattern m_patternAcademicPlan = Pattern.compile("(^\"[0-9]{4}[A-Z0-9]*\"|^\"[0-9]{4}[A-Z0-9]*\"\r?$|^\"\"$|^\"\"\r?$)");
 	private static Pattern m_patternRole = Pattern.compile("(^\".*\"$|^\"\"$|^\"#EMPTY\"$)"); //not restrictive
 	private static Pattern m_patternMember = Pattern.compile("(^\".*\"$|^\"\"$|^\"#EMPTY\"$)"); //not restrictive
-	private static Pattern m_patternEvalDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4} 0:00)\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4} 0:00)\"$|^\"#EMPTY\"$|^\"\"$|)");
-	private static Pattern m_patternCommitteeApprovedDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4} 0:00)\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4} 0:00)\"\r$|^\"#EMPTY\"\r$|^\"\"\r$|)");
+	private static Pattern m_patternEvalDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}.*)\"$|^\"#EMPTY\"$|^\"\"$)");
+	private static Pattern m_patternCommitteeApprovedDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}.*)\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4} 0:00)\"\r$|^\"#EMPTY\"\r$|^\"\"\r$|)");
 		
 	//Rackham OARD database fields
 	private static Pattern 	m_patternFOS = Pattern.compile("(^\"[0-9]{4}\"$|^\"\"$)");
@@ -377,12 +377,12 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			int day = 0;
 			String[] parts = timeString.split("/");
 			String[] yearParts = new String[2];
-			for(int x = 0; x < parts.length; x++)
+			//for(int x = 0; x < parts.length; x++)
 			try
 			{
 				if(parts[2].indexOf(" ")!= -1)
 				{
-					//"1/11/2006 0:00"
+					//"1/11/2006 0:00, 11/11/2006 0:0"
 					yearParts = parts[2].split(" ");
 					year = Integer.parseInt(yearParts[0]);
 				}
@@ -395,7 +395,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			}
 			
 			try
-			{
+			{ 
 				month = Integer.parseInt(parts[0]);
 			}
 			catch(NumberFormatException nfe)
@@ -787,7 +787,12 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						else
 						{
 							//strip quotation marks from quoted field
-							mp.m_date_compl = StringUtil.trimToNull(flds[3]);
+							if(!flds[3].equals(""))
+							{
+								mp.m_date_compl = flds[3].substring(1,flds[3].length()-1);
+								if(mp.m_date_compl.equals("#EMPTY"))
+									mp.m_date_compl = "";
+							}
 						}
 						
 						//* 5 ¦  Milestone ¦  A10	| name of milestone PRELIM or ADVCAND or DISSERT
