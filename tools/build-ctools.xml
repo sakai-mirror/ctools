@@ -64,7 +64,6 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
 
     <!-- add the gradtools student site type. -->
     <replaceregexp 
-
 	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml" >
       <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
       <substitution 
@@ -76,6 +75,45 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
       <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
       <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
     </replaceregexp>
+
+    <!-- update the tool references to add gradtools tools as appropriate.
+    This adds student, department, and rackham. -->
+    <replaceregexp>
+
+      <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
+      <substitution expression="\1 &lt;category name=&quot;GradToolsStudent&quot; /&gt;  &lt;category name=&quot;GradToolsDepartment&quot; /&gt;  &lt;category name=&quot;GradToolsRackham&quot; /&gt;" />
+      
+      <fileset dir="${build.dir}/legacy/tools/src/webapp/tools"  >
+	<include name="sakai.announcements.xml" />
+	<include name="sakai.chat.xml" />
+	<include name="sakai.discussion.xml" />
+	<include name="sakai.iframe.xml" />
+	<include name="sakai.resources.xml" />
+	<include name="sakai.schedule.xml" />
+	<include name="sakai.siteinfo.xml" />
+      </fileset>
+
+    </replaceregexp>
+
+    <!-- update the tool references to add gradtools tools as appropriate.
+    This adds just student. -->
+    <replaceregexp>
+
+      <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
+      <substitution expression="\1 &lt;category name=&quot;GradToolsStudent&quot; /&gt;" />
+      
+      <fileset dir="${build.dir}/legacy/tools/src/webapp/tools"  >
+	<include name="sakai.dropbox.xml" />
+	<include name="sakai.mailbox.xml" />
+	<include name="sakai.news.xml" />
+      </fileset>
+
+      <!--
+      <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
+      <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
+      -->
+    </replaceregexp>
+
   </target>
 
   <!-- Be sure these tools don't appear in the project category -->
