@@ -4761,7 +4761,8 @@ public class SiteAction extends PagedResourceActionII
 						{
 							Role r = site.getUserRole(memberId);
 							Member m = site.getMember(memberId);
-							group.addMember(memberId, r!= null?r.getId():"", m!=null?m.isActive():true, m!=null?m.isProvided():false);
+							// for every member added through the interface, it should be declared as "not-provided"
+							group.addMember(memberId, r!= null?r.getId():"", m!=null?m.isActive():true, false);
 						}
 					}
 					
@@ -10493,7 +10494,6 @@ public class SiteAction extends PagedResourceActionII
 				}	// if
 			}	// 	
 		} // emailInIdAccounts
-		state.setAttribute(STATE_ADD_PARTICIPANTS, pList);
 		
 		boolean same_role = true;
 		if (params.getString("same_role") == null)
@@ -10521,10 +10521,122 @@ public class SiteAction extends PagedResourceActionII
 				state.setAttribute(STATE_TEMPLATE_INDEX, "20");
 			}
 		}
+		
+		// remove duplicate or existing user from participant list
+		pList=removeDuplicateParticipants(pList, state);
+		pList=removeExistingParticipants(pList, state);
+		state.setAttribute(STATE_ADD_PARTICIPANTS, pList);
 		return;
 	
 	} // checkAddParticipant
 	
+	private Vector removeDuplicateParticipants(List pList, SessionState state)
+	{
+		// check the uniqness of list member
+		Set s = new HashSet();
+		Set uniqnameSet = new HashSet();
+		Vector rv = new Vector();
+		for (int i = 0; i < pList.size(); i++)
+		{
+			Participant p = (Participant) pList.get(i);
+			if (!uniqnameSet.contains(p.getUniqname()))
+			{
+				// no entry for the account yet
+				rv.add(p);
+				uniqnameSet.add(p.getUniqname());
+			}
+			else
+			{
+				// found duplicates
+				s.add(p.getUniqname());
+			}
+		}
+		
+		if (!s.isEmpty())
+		{
+			int count = 0;
+			String accounts = "";
+			for (Iterator i = s.iterator();i.hasNext();)
+			{
+				if (count == 0)
+				{
+					accounts = (String) i.next();
+				}
+				else
+				{
+					accounts = accounts + ", " + (String) i.next();
+				}
+				count++;
+			}
+			if (count == 1)
+			{
+				addAlert(state, rb.getString("add.duplicatedpart.single") + accounts + ".");
+			}
+			else
+			{
+				addAlert(state, rb.getString("add.duplicatedpart") + accounts + ".");
+			}
+		}
+		return rv;
+	}
+	
+	private Vector removeExistingParticipants(List pList, SessionState state)
+	{
+		String siteId=PortalService.getCurrentSiteId();
+		Vector rv = new Vector();
+		Set s = new HashSet();
+		
+		try
+		{
+			Site site=SiteService.getSite(siteId);
+		
+			for (int i = 0; i < pList.size(); i++)
+			{
+				Participant p = (Participant) pList.get(i);
+				if (site.getMember(p.getUniqname()) == null)
+				{
+					// no entry for the account yet
+					rv.add(p);
+				}
+				else
+				{
+					// found duplicates
+					s.add(p.getUniqname());
+				}
+			}
+	    }
+	    catch (Exception ignore)
+	    {
+	    		// ignore exceptions
+	    }
+
+		if (!s.isEmpty())
+		{
+			int count = 0;
+			String accounts = "";
+			for (Iterator i = s.iterator();i.hasNext();)
+			{
+				if (count == 0)
+				{
+					accounts = (String) i.next();
+				}
+				else
+				{
+					accounts = accounts + ", " + (String) i.next();
+				}
+				count++;
+			}
+			if (count == 1)
+			{
+				addAlert(state, rb.getString("add.existingpart.single") + accounts + ".");
+			}
+			else
+			{
+				addAlert(state, rb.getString("add.existingpart") + accounts + ".");
+			}
+		}
+		return rv;
+	}
 	
 	public void doAdd_participant(RunData data)
 	{
