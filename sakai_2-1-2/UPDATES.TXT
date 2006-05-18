@@ -51,3 +51,10 @@ U    component/src/java/org/sakaiproject/component/app/dissertation/UploadExtrac
 
 5/4/06 CT-589, CT-594
 modified sakai.properties (CT-598) and sakai.metaobj.xml (CT-594)
+
+(some missing?)
+
+5/18/06
+CT-618, SAK-4704
+SAK-4373
+SAK-4581

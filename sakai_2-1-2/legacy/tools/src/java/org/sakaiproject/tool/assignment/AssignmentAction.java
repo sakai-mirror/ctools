@@ -4575,6 +4575,9 @@ extends PagedResourceActionII
 				Assignment a = AssignmentService.getAssignment(assignmentId);
 				state.setAttribute(EXPORT_ASSIGNMENT_ID, a.getId());
 				state.setAttribute (STATE_MODE, MODE_INSTRUCTOR_GRADE_ASSIGNMENT);
+				
+				// we are changing the view, so start with first page again. 
+				resetPaging(state);
 			}
 			catch (IdUnusedException e)
 			{
@@ -4605,7 +4608,9 @@ extends PagedResourceActionII
 			state.setAttribute (GRADE_ASSIGNMENT_EXPAND_FLAG, new Boolean (false));
 			state.setAttribute (GRADE_SUBMISSION_EXPAND_FLAG, new Boolean (true));
 			state.setAttribute (STATE_MODE, MODE_INSTRUCTOR_GRADE_ASSIGNMENT);
-		
+			
+			// we are changing the view, so start with first page again. 
+			resetPaging(state);
 		}
 		catch (IdUnusedException e )
 		{

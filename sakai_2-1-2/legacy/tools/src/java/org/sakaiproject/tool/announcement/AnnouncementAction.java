@@ -996,13 +996,10 @@ extends PagedResourceActionII
 				
 			} // if allowGetMessages()
 		}
+
+		context.put ("service", AnnouncementService.getInstance());
+		context.put ("entityManager", EntityManager.getInstance());
 		
-		String currentChannelDisplayName = "";
-		if (site != null)
-		{
-			currentChannelDisplayName = site.getTitle();
-		}
-		context.put("currentChannelDisplayName", currentChannelDisplayName);
 		// ********* for site column display ********
 		
 		context.put("isOnWorkspaceTab", (isOnWorkspaceTab() ? "true" : "false"));
