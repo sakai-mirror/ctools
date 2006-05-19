@@ -66,6 +66,7 @@ This doesn't supply the sakai.properties files you want to customize.
   <import file="./build-ufp-um.xml" />
   <import file="./build-melete.xml" />
   <import file="./build-sakai.xml" />
+  <import file="./build-osp.xml" />
   <import file="./build-samigo.xml" />
 
   <!--  <property name="config-file" value="ctools-pilot-200602.properties" /> -->
@@ -112,7 +113,7 @@ This doesn't supply the sakai.properties files you want to customize.
 	  description="get the source for sakai and required tools."/>
 -->
   <target name="getSource" 
-	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getUfpUmSrc"
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getUfpUmSrc,getOSPSrc"
 	  description="get the source for sakai and required tools."/>
 
   <!-- Make changes in the source that may be required for this installation. -->
@@ -153,12 +154,11 @@ This doesn't supply the sakai.properties files you want to customize.
 
     <!--
     <buildPropertiesFile instanceName="whisk" />
-
+    -->
     <buildPropertiesFile instanceName="ctpiload" />
     <buildPropertiesFile instanceName="ctpilot.whisk" />
     <buildPropertiesFile instanceName="ctpilot0" />
     <buildPropertiesFile instanceName="ctpitest" />
-    -->
 
   </target>
 
