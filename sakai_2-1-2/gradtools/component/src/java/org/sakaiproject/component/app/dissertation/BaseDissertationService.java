@@ -12303,7 +12303,7 @@ public abstract class BaseDissertationService
 		String jobGroup = IdService.getUniqueId();
 		
 		//associate a trigger with the job
-		SimpleTrigger trigger = new SimpleTrigger("NewStepTrigger", jobGroup, new Date());
+		SimpleTrigger trigger = new SimpleTrigger("NewStepTrigger", jobGroup);
 		try
 		{
 			//get a scheduler instance from the factory
@@ -12455,7 +12455,7 @@ public abstract class BaseDissertationService
 		String jobGroup = IdService.getUniqueId();
 		
 		//associate a trigger with the job
-		SimpleTrigger trigger = new SimpleTrigger("ReviseStepTrigger", jobGroup, new Date());
+		SimpleTrigger trigger = new SimpleTrigger("ReviseStepTrigger", jobGroup);
 		try
 		{
 			//get a scheduler instance from the factory
@@ -12572,7 +12572,7 @@ public abstract class BaseDissertationService
 		String jobGroup = IdService.getUniqueId();
 		
 		//associate a trigger with the job
-		SimpleTrigger trigger = new SimpleTrigger("MoveStepTrigger", jobGroup, new Date());
+		SimpleTrigger trigger = new SimpleTrigger("MoveStepTrigger", jobGroup);
 		try
 		{
 			//get a scheduler instance from the factory
@@ -12728,7 +12728,7 @@ public abstract class BaseDissertationService
 		String jobGroup = IdService.getUniqueId();
 		
 		//associate a trigger with the job
-		SimpleTrigger trigger = new SimpleTrigger("DeleteStepTrigger", jobGroup, new Date());
+		SimpleTrigger trigger = new SimpleTrigger("DeleteStepTrigger", jobGroup);
 		try
 		{
 			//get a scheduler instance from the factory
@@ -12905,7 +12905,7 @@ public abstract class BaseDissertationService
 		jobDataMap.put("CURRENT_SITE", currentSite);
 		
 		//associate a trigger with the job
-		SimpleTrigger trigger = new SimpleTrigger("NewStepTrigger", jobGroup, new Date());
+		SimpleTrigger trigger = new SimpleTrigger("UploadTrigger", jobGroup);
 		try
 		{
 			//get a scheduler instance from the factory
