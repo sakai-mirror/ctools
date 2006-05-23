@@ -1231,6 +1231,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						
 							//	COMM_CERT_DATE
 							infoEdit.setTimeCommitteeCert(parseTimeString(rec.m_comm_cert_date));
+							
+							//	DEGREE_CONFERRED_DATE
+							infoEdit.setTimeDegreeConferred(parseTimeString(rec.m_degree_conferred_date));
 						}
 					}
 				}
@@ -1307,19 +1310,18 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			try
 			{
 				/** infoEdit was committed or cancelled in queryLists
-				 *  so no need to commit or cancel here */
-				
+				 *  so no need to commit or cancel here 
+				 */
 				info = (CandidateInfoEdit)data.get(x);
 				
 				//get the candidate path for this student
 				path = DissertationService.getCandidatePathForCandidate(info.getChefId());
 				if(path == null)
 				{
-					//if there is no path, create one
-					
-					/** there is no student site id yet or we don't know it
-					 *  site attribute is set to uniqname initially */
-					
+					/** if there is no path, create one
+					 *  there is no student site id yet or we don't know it
+					 *  site attribute is set to uniqname initially 
+					 */
 					String currentSite = info.getChefId();
 					String parentSite = info.getParentSite();
 					Dissertation dissertation = DissertationService.getDissertationForSite(parentSite);
@@ -1338,14 +1340,12 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 							m_logger.warn(this + ". dumpData dissertation for school is null");
 							bufD.append(info.getChefId() + ": cannot create student's path, because dissertation for school is null" + NEWLINE);
 							
-							//note execption and continue with next student
+							//note exception and continue with next student
 							continue;
 						}
 					}
 					try
 					{
-						//TODO %%% get through Dissertation Service get a new path based on this dissertation
-						//pathEdit = addCandidatePathFromListener(dissertation, currentSite);
 						pathEdit = DissertationService.addCandidatePath(dissertation, currentSite);
 						if(pathEdit == null)
 						{
@@ -1428,7 +1428,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 							DissertationService.commitEdit(pathEdit);
 					}
 					
-				}//created path for student
+				}
 				
 				//get path for student
 				path = DissertationService.getCandidatePathForCandidate(info.getChefId());
@@ -1455,138 +1455,146 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 				{
 					//try to get the auto-validation number
 					statusRef = (String)orderedStatus.get("" + y);
-					//statusId = statusId(statusRef);
-					//status = m_statusStorage.get(statusId);
 					status = DissertationService.getStepStatus(statusRef);
 					autoValidationId = status.getAutoValidationId();
 					
-					//if there is a used auto-validation number
-					if((!"".equals(autoValidationId)) && (!"None".equals(autoValidationId))
-							&& (!"9".equals(autoValidationId)) && (!"10".equals(autoValidationId)) 
+					/** 
+					 * auto id 1, 2, 3, 6 in MP data
+					 * 1 Pass prelims
+					 * 2 Advance to candidacy
+					 * 3 Submit completed evaluations
+					 * 6 Submit completed evlauations (the last eval returned time is used
+					 * as step competion time)
+					 * 
+					 * auto id 3, 5, 7, 8, 11 in OARD data
+					 * 4 Complete Rackham pre-defense meeting
+					 * 5 Get evaluation forms
+					 * 7 Return Final Oral Exam
+					 * 8 Return the Certificate
+					 * 11 Complete post defense, Approve degree
+					 * 
+					 * 9, 10, and 12 are deprecated.
+					 * 
+					 * A value may be null because the data is null or because
+					 * the extract file containing the data was not uploaded.
+					 * 
+					 * */
+					
+					//if there is an in-use auto-validation number for this step
+					if((!"".equals(autoValidationId)) 
+							&& (!"None".equals(autoValidationId))
+							&& (!"9".equals(autoValidationId)) 
+							&& (!"10".equals(autoValidationId)) 
 							&& (!"12".equals(autoValidationId)))
 					{
 						try
 						{
-							//get a status edit
-							//statusEdit = m_statusStorage.edit(statusId);
 							statusEdit = DissertationService.editStepStatus(statusRef);
 							
 							//get an integer
 							autoValidNumber = Integer.parseInt(autoValidationId);
 							
-							//remove prior auxiliary text so it can be changed
-							if(statusEdit.getAuxiliaryText() != null)
-								statusEdit.setAuxiliaryText(null);
-							
-							/** display committee member names/roles with step
-							 *  "Approve dissertation committee"
-							 */
-							if(autoValidNumber == 3 && ((Vector)info.getCommitteeEvalsCompleted()).size() > 0)
+							//clear/set auxiliary text (committee members) only if MP data for this student was uploaded
+							if(info.getMPRecInExtract())
 							{
-								memberRole.clear();
-								memberRole.add(START_ITALIC + "Committee:" + END_ITALIC);
-								for(int i = 0; i < info.getCommitteeEvalsCompleted().size(); i++)
-								{
-									String temp = (String)info.getCommitteeEvalsCompleted().get(i);
-									if(temp.indexOf(", received on ")!= -1)
-										temp = temp.substring(0,temp.indexOf(", received on "));
-									memberRole.add(temp);
-								}
-								statusEdit.setAuxiliaryText(memberRole);
-							}
-							
-							/** display committee member names/dates with step
-							 *  "Submit completed evaluation forms to Rackham three days before defense"
-							 *  previously was with "Return Final Oral Examination report to Rackham" */
-							
-							//set auxiliary text to appear with step
-							if(autoValidNumber == 6 && ((Vector)info.getCommitteeEvalsCompleted()).size() > 0)
-							{
-								memberRole.clear();
-								memberRole.add(START_ITALIC + "Evaluations required from:"+ END_ITALIC);
-								memberRole.addAll(info.getCommitteeEvalsCompleted());
+								//remove prior auxiliary text to start
+								if(statusEdit.getAuxiliaryText() != null)
+									statusEdit.setAuxiliaryText(null);
 								
-								//statusEdit.setAuxiliaryText(info.getCommitteeEvalsCompleted());
-								statusEdit.setAuxiliaryText(memberRole);
+								/** display committee member names/roles with step
+								 *  "Approve dissertation committee"
+								 */
+								if(autoValidNumber == 3 && ((Vector)info.getCommitteeEvalsCompleted()).size() > 0)
+								{
+									memberRole.clear();
+									memberRole.add(START_ITALIC + "Committee:" + END_ITALIC);
+									for(int i = 0; i < info.getCommitteeEvalsCompleted().size(); i++)
+									{
+										String temp = (String)info.getCommitteeEvalsCompleted().get(i);
+										if(temp.indexOf(", received on ")!= -1)
+											temp = temp.substring(0,temp.indexOf(", received on "));
+										memberRole.add(temp);
+									}
+									statusEdit.setAuxiliaryText(memberRole);
+								}
+								
+								/** display committee member names/dates with step
+								 *  "Submit completed evaluation forms to Rackham three days before defense"
+								 *  previously was with "Return Final Oral Examination report to Rackham" 
+								 */
+								if(autoValidNumber == 6 && ((Vector)info.getCommitteeEvalsCompleted()).size() > 0)
+								{
+									memberRole.clear();
+									memberRole.add(START_ITALIC + "Evaluations required from:"+ END_ITALIC);
+									memberRole.addAll(info.getCommitteeEvalsCompleted());
+									statusEdit.setAuxiliaryText(memberRole);
+								}
 							}
 							
+							//based on uploaded data values and business rules defined by Rackham, set step completion time
 							completionTime = info.getExternalValidation(autoValidNumber);
 							if(completionTime != null)
-							{
-								//We want autovalidation #9 to set TimeCompleted to new Time() once
-								//if(autoValidNumber != 9)
-								//{
-									//statusEdit = m_statusStorage.edit(statusId);	
-									statusEdit.setCompleted(true);
-									statusEdit.setTimeCompleted(completionTime);
-									
-									//We want to display Advanced to Candidacy Term (e.g., 'Fall 2003') 
-									//with time 'Approve advance to candidacy' completed
-									if(autoValidNumber == 2)
-									{
-										degreeTerm = info.getAdvCandDesc();
-										
-										//translation of term for readability
-										if(degreeTerm != null && !degreeTerm.equals(""))
-										{
-											if(degreeTerm.startsWith("FA"))
-												newDegreeTerm = degreeTerm.replaceFirst("FA", "Fall ");
-											else if(degreeTerm.startsWith("WN"))
-												newDegreeTerm = degreeTerm.replaceFirst("WN", "Winter ");
-											else if(degreeTerm.startsWith("SP"))
-												newDegreeTerm = degreeTerm.replaceFirst("SP", "Spring ");
-											else if(degreeTerm.startsWith("SU"))
-												newDegreeTerm = degreeTerm.replaceFirst("SU", "Summer ");
-											else if(degreeTerm.startsWith("SS"))
-												newDegreeTerm = degreeTerm.replaceFirst("SS", "Spring-Summer ");
-											if(newDegreeTerm != null)
-												degreeTerm = newDegreeTerm;
-											statusEdit.setTimeCompletedText(degreeTerm);
-										}
-									}//autoValidation == 2
-									
-									//We want to display Oral Exam Date, Oral Exam Time, Oral Exam Place 
-									//with first format time 'Complete Rackham pre-defense meeting' completed
-									if(autoValidNumber == 4)
-									{
-										oralExamText = info.getOralExamTime().toString() + " " + info.getOralExamPlace();
-										statusEdit.setTimeCompletedText(oralExamText);
-									}
-									
-									//We want to display student's Degree Term with 
-									//date of approval of degree conferral
-									if(autoValidNumber == 11)
-									{
-										//more editing for readability
-										degreeTerm = info.getDegreeTermTrans();
-										if(degreeTerm != null && !degreeTerm.equals(""))
-										{
-											if(degreeTerm.startsWith("FA-"))
-												newDegreeTerm = degreeTerm.replaceFirst("FA-", "Fall ");
-											else if(degreeTerm.startsWith("WN-"))
-												newDegreeTerm = degreeTerm.replaceFirst("WN-", "Winter ");
-											else if(degreeTerm.startsWith("SP-"))
-												newDegreeTerm = degreeTerm.replaceFirst("SP-", "Spring ");
-											else if(degreeTerm.startsWith("SU-"))
-												newDegreeTerm = degreeTerm.replaceFirst("SU-", "Summer ");
-											else if(degreeTerm.startsWith("SS-"))
-												newDegreeTerm = degreeTerm.replaceFirst("SS-", "Spring-Summer ");
-											if(newDegreeTerm != null)
-												degreeTerm = newDegreeTerm;
-											statusEdit.setTimeCompletedText(degreeTerm);
-										}
-									}//autoValidation = 11
-									/*
-								}//autoValidation != 9
-								else
+							{	
+								statusEdit.setCompleted(true);
+								statusEdit.setTimeCompleted(completionTime);
+								
+								//We want to display Advanced to Candidacy Term (e.g., 'Fall 2003') 
+								//with time 'Approve advance to candidacy' completed
+								if(autoValidNumber == 2)
 								{
-									if(status.getTimeCompleted()==null || status.getTimeCompleted().equals(""))
+									degreeTerm = info.getAdvCandDesc();
+									
+									//translation of term for readability
+									if(degreeTerm != null && !degreeTerm.equals(""))
 									{
-										statusEdit.setCompleted(true);
-										statusEdit.setTimeCompleted(completionTime);
+										if(degreeTerm.startsWith("FA"))
+											newDegreeTerm = degreeTerm.replaceFirst("FA", "Fall ");
+										else if(degreeTerm.startsWith("WN"))
+											newDegreeTerm = degreeTerm.replaceFirst("WN", "Winter ");
+										else if(degreeTerm.startsWith("SP"))
+											newDegreeTerm = degreeTerm.replaceFirst("SP", "Spring ");
+										else if(degreeTerm.startsWith("SU"))
+											newDegreeTerm = degreeTerm.replaceFirst("SU", "Summer ");
+										else if(degreeTerm.startsWith("SS"))
+											newDegreeTerm = degreeTerm.replaceFirst("SS", "Spring-Summer ");
+										if(newDegreeTerm != null)
+											degreeTerm = newDegreeTerm;
+										statusEdit.setTimeCompletedText(degreeTerm);
 									}
-								}//autoValidation == 9
-								*/
+								}
+								
+								//We want to display Oral Exam Date, Oral Exam Time, Oral Exam Place 
+								//with first format time 'Complete Rackham pre-defense meeting' completed
+								if(autoValidNumber == 4)
+								{
+									oralExamText = info.getOralExamTime().toString() + " " + info.getOralExamPlace();
+									statusEdit.setTimeCompletedText(oralExamText);
+								}
+								
+								//We want to display student's Degree Term with 
+								//date of approval of degree conferral
+								if(autoValidNumber == 11)
+								{
+									//more editing for readability
+									degreeTerm = info.getDegreeTermTrans();
+									if(degreeTerm != null && !degreeTerm.equals(""))
+									{
+										if(degreeTerm.startsWith("FA-"))
+											newDegreeTerm = degreeTerm.replaceFirst("FA-", "Fall ");
+										else if(degreeTerm.startsWith("WN-"))
+											newDegreeTerm = degreeTerm.replaceFirst("WN-", "Winter ");
+										else if(degreeTerm.startsWith("SP-"))
+											newDegreeTerm = degreeTerm.replaceFirst("SP-", "Spring ");
+										else if(degreeTerm.startsWith("SU-"))
+											newDegreeTerm = degreeTerm.replaceFirst("SU-", "Summer ");
+										else if(degreeTerm.startsWith("SS-"))
+											newDegreeTerm = degreeTerm.replaceFirst("SS-", "Spring-Summer ");
+										if(newDegreeTerm != null)
+											degreeTerm = newDegreeTerm;
+										statusEdit.setTimeCompletedText(degreeTerm);
+									}
+								}
+									
 							}//completion time not null
 							else
 							{
@@ -1594,13 +1602,33 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 								 * if null is because there is a record with 
 								 * date set to null, set status to null
 								 * if null is because the record is missing, 
-								 * do not change the existing status */
-								
-								if((((autoValidNumber == 1) || (autoValidNumber == 2)) && info.getMPRecInExtract()) ||
-								((autoValidNumber != 1) && (autoValidNumber != 2) && info.getOARDRecInExtract()))
+								 * do not change the existing status 
+								 */
+								if(info.getMPRecInExtract())
 								{
-									statusEdit.setCompleted(false);
-									statusEdit.setTimeCompleted(completionTime);
+									//auto id 1, 2, 3, 6 in MP data
+									if(autoValidNumber == 1 || 
+											autoValidNumber == 2 ||
+											autoValidNumber == 3 || 
+											autoValidNumber == 6)
+									{
+										statusEdit.setCompleted(false);
+										statusEdit.setTimeCompleted(completionTime);
+									}
+									
+								}
+								if(info.getOARDRecInExtract())
+								{
+									//auto id 3, 5, 7, 8, 11 in OARD data
+									if(autoValidNumber == 3 || 
+											autoValidNumber == 5 ||
+											autoValidNumber == 7 || 
+											autoValidNumber == 8 || 
+											autoValidNumber ==11)
+									{
+										statusEdit.setCompleted(false);
+										statusEdit.setTimeCompleted(completionTime);
+									}
 								}
 							}
 							
@@ -1616,8 +1644,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 							if(statusEdit != null && statusEdit.isActiveEdit())
 								DissertationService.cancelEdit(statusEdit);
 						}
-					}//there is an auto-validation number
-				}//for each ordered step status
+					}
+				}
 			}
 			catch(Exception e)
 			{
@@ -1651,43 +1679,23 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		* All dates are formatted as mm/dd/ccyy.  
 		* 
 		* OARDEXT.txt Data Structure:
-		* STRUCT ¦ Field Name            ¦Field Type
-		* 1 ¦  Emplid                    ¦  A8 - Student's emplid
-		* 2 ¦  Fos                       ¦  A4    - Students field of study code
-		* 3 ¦  Lname                     ¦  A25 - Students last name
-		* 4 ¦  Fname                     ¦  A30 - Students first name
-		* 5 ¦  Degterm trans             ¦  A7 - Students degree term as TT-CCYY (e.g. FA-2003)
-		* 6 ¦  Oral exam date            ¦  D - Date of oral defense
-		* 7 ¦  Oral exam time            ¦  A7 - Time of oral defense
-		* 8 ¦  Oral exam place           ¦  A25 - Place of oral defense
-		* 9 ¦  Committee approved date   ¦  D - date committee was approved
-		*10 ¦  First format date         ¦  D - date of pre defense meeting in Rackham
-		*11 ¦  Oral report return date   ¦  D
-		*12 ¦  Degree conferred date     ¦  D - date the degree was conferred in OARD system
-		*13 ¦  Update date               ¦  D - date record was last modified
-		*14 ¦  Comm cert date            ¦  D -
-		*15 |  Campus id                 |  A1-A8 - student's uniqname (Chef id)
-		*/
-		
-		/*
-		 * And here is the modified OARD structure:
-STRUCT ¦         Field Name         ¦Field Type
-     1 ¦  Emplid                    ¦  A8
-     2 ¦  Fos                       ¦  A4
-     3 ¦  Lname                     ¦  A25
-     4 ¦  Fname                     ¦  A30
-     5 ¦  Degterm trans             ¦  A7
-     6 ¦  Oral exam date            ¦  D
-     7 ¦  Oral exam time            ¦  A7
-     8 ¦  Oral exam place           ¦  A25
-     9 ¦  First format date         ¦  D
-    10 ¦  Oral report return date   ¦  D
-    11 ¦  Degree conferred date     ¦  D
-    12 ¦  Update date               ¦  D
-    13 ¦  Comm cert date            ¦  D
-    14 ¦  Campus_id                 ¦  A12
-*/
-		
+		* STRUCT   ¦  Field Name                ¦Field Type
+		*
+		*	     1 ¦  Emplid                    ¦  A8 - Student's emplid
+		*	     2 ¦  Fos                       ¦  A4 - Students field of study code
+		*	     3 ¦  Lname                     ¦  A25 - Students last name
+		*	     4 ¦  Fname                     ¦  A30 - Students first name
+		*	     5 ¦  Degterm trans             ¦  A7- Students degree term as TT-CCYY (e.g. FA-2003)
+		*	     6 ¦  Oral exam date            ¦  D - Date of oral defense
+		*	     7 ¦  Oral exam time            ¦  A7 - Time of oral defense
+		*	     8 ¦  Oral exam place           ¦  A25 - Place of oral defense
+		*	     9 ¦  First format date         ¦  D - date of pre defense meeting in Rackham
+		*	    10 ¦  Oral report return date   ¦  D
+		*	    11 ¦  Degree conferred date     ¦  D - date the degree was conferred in OARD system
+		*	    12 ¦  Update date               ¦  D - date record was last modified
+		*	    13 ¦  Comm cert date            ¦  D
+		*	    14 ¦  Campus_id                 ¦  A12 (A1-A8) - student's uniqname (chefid)
+        */
 		public String m_umid = null;
 		public String m_fos = null;
 		public String m_lname = null;
@@ -1737,19 +1745,18 @@ STRUCT ¦         Field Name         ¦Field Type
 		* MPEXT.txt Data Structure
 		* STRUCT 	¦  Field Name         		¦Field Type
 		* 
-		* 1 		¦  Emplid					¦  A9	| Student's emplid
-		* 2 		¦  Acad_prog				¦  A9	| Academic Program Code
-		* 3 		¦  Anticipate_Anticipate_1	¦  A15	| Adv to cand term code
-		* 4			¦  Date_compl				¦  D	| Date milestone was completed 
-		* 5 		¦  Milestone				¦  A10	| name of milestone PRELIM or ADVCAND
-		* 6 		|  Acad_plan				|  A4	| Field of study and degree (e.g. 1220PHD1)
-		* 7 		|  Committee__Committee__1	|  A24  | Committee role
-		* 8 		¦  Committee__1				¦  A23	| Member name
-		* 9 		|  Eval_recvd				|  A14	| Eval received date
-		*10 		|  Campus id				|  A1-A8| Student's uniqname (Chef id)
-		*11 		¦  Comm_appr_               ¦  A13
+		* 		1 	¦  Emplid					¦  A9	| Student's emplid
+		* 		2 	¦  Acad_prog				¦  A9	| Academic Program Code
+		* 		3 	¦  Anticipate_Anticipate_1	¦  A15	| Adv to cand term code
+		* 		4	¦  Date_compl				¦  D	| Date milestone was completed 
+		* 		5 	¦  Milestone				¦  A10	| name of milestone PRELIM or ADVCAND
+		* 		6 	|  Acad_plan				|  A4	| Field of study and degree (e.g. 1220PHD1)
+		* 		7 	|  Committee__Committee__1	|  A24  | Committee role
+		* 		8 	¦  Committee__1				¦  A23	| Member name
+		* 		9 	|  Eval_recvd				|  A14	| Eval received date
+		* 		10 	|  Campus id				|  A1-A8| Student's uniqname (Chef id)
+		* 		11 	¦  Comm_appr_               ¦  A13
 		*/
-			
 		private String m_umid = null;
 		private String m_acad_prog = null;
 		private String m_anticipate = null;
