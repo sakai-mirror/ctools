@@ -70,7 +70,9 @@
     <removeFromBuild deleteDir="sam" />
 
     <!-- removed as of 4/28/06 -->
+    <!--
     <removeFromBuild deleteDir="roster" />
+    -->
     <removeFromBuild deleteDir="webservices" />
 
 
