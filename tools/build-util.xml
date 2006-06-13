@@ -55,6 +55,8 @@
     <mkdir dir="${image.dir}" />
     <delete dir="${instances.dir}" />
     <mkdir dir="${instances.dir}" />
+    <delete dir="${install.test.dir}" />
+    <mkdir dir="${install.test.dir}" />
   </target>
 
   <target name="editMaster">
@@ -74,7 +76,12 @@
   </target>
 
   <target name="bundleImage" >
+  <!--
+  do not create zip by default
     <zip basedir="${image.dir}" destfile="${image.dest.dir}/image.${sakai.tag}.zip" />
+    -->
+    <tar basedir="${image.dir}" destfile="${image.dest.dir}/image.${sakai.tag}.tar.gz" 
+	 longfile="gnu" compression="gzip" />
   </target>
 
   <target name="summarizeBuild">

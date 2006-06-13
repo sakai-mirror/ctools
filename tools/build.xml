@@ -82,6 +82,7 @@ This doesn't supply the sakai.properties files you want to customize.
   <property name="config.dir" value="${build.dir}/ctools-reference/config" />
   <property name="svnCmd" value="export" />
   <property name="defaultRevision" value="HEAD" />
+  <property name="install.test.dir" value="tomcat" />
 
   <property name="sakai.properties" value="${config.dir}/sakai.properties" />
 
@@ -140,6 +141,9 @@ This doesn't supply the sakai.properties files you want to customize.
   <!-- use zip not tar since the ant tar won't untar the files with long path names -->
   <target name="installTestImage"
 	  description="install the image to a local test directory">
+    <unzip src="${tomcat.base.zip}"
+	   dest="${install.test.dir}/">
+    </unzip>
     <unzip src="${image.dest.dir}/image.${sakai.tag}.zip"
 	   dest="${install.test.dir}/">
     </unzip>
