@@ -117,13 +117,13 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 	//MPathways fields
 	private static Pattern m_patternAcadProg = Pattern.compile("(^\"[0-9]{5}\"$|^\"\"$)");
 	private static Pattern m_patternAnticipate = Pattern.compile("(^\"[A-Z]{2}[- ][0-9]{4}\"$|^\"[A-Za-z]*( |,)[0-9]{4}\"$|^\"\"$)");
-	private static Pattern m_patternDateCompl = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}.*)\"$|^\"#EMPTY\"$|^\"\"$|)");
+	private static Pattern m_patternDateCompl = Pattern.compile("(^([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}.*)$|^\"\"$|)");
 	private static Pattern m_patternMilestone = Pattern.compile("(^\"[A-Za-z]*\"$|^\"\"$)");
 	private static Pattern m_patternAcademicPlan = Pattern.compile("(^\"[0-9]{4}[A-Z0-9]*\"|^\"[0-9]{4}[A-Z0-9]*\"\r?$|^\"\"$|^\"\"\r?$)");
 	private static Pattern m_patternRole = Pattern.compile("(^\".*\"$|^\"\"$|^\"#EMPTY\"$)"); //not restrictive
 	private static Pattern m_patternMember = Pattern.compile("(^\".*\"$|^\"\"$|^\"#EMPTY\"$)"); //not restrictive
 	private static Pattern m_patternEvalDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}.*)\"$|^\"#EMPTY\"$|^\"\"$)");
-	private static Pattern m_patternCommitteeApprovedDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}.*)\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4} 0:00)\"\r$|^\"#EMPTY\"\r$|^\"\"\r$|)");
+	private static Pattern m_patternCommitteeApprovedDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}.*)\"\r$|^\"#EMPTY\"\r$|^\"\"\r$)");
 		
 	//Rackham OARD database fields
 	private static Pattern 	m_patternFOS = Pattern.compile("(^\"[0-9]{4}\"$|^\"\"$)");
@@ -778,6 +778,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						}
 						
 						//* 4 ¦  Date_compl ¦  D	| Date milestone was completed 
+						/* 	OK.  Then lets say that field 4 (date completed) will not be quoted
+						 *  and should contain a date formatted as mm/dd/cyyy.  
+						 *  It will not contain #EMPTY, but may be null. */
 						matcher = m_patternDateCompl.matcher(flds[3]);
 						if(!(flds[3] == null || matcher.matches()))
 						{
@@ -785,13 +788,14 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 							bufM.append(prefix + "4  Explanation:  date_compl = " + flds[3] + NEWLINE);
 						}
 						else
-						{
-							//strip quotation marks from quoted field
+						{		
 							if(!flds[3].equals(""))
 							{
-								mp.m_date_compl = flds[3].substring(1,flds[3].length()-1);
-								if(mp.m_date_compl.equals("#EMPTY"))
-									mp.m_date_compl = "";
+								//strip quotation marks from quoted field
+								//mp.m_date_compl = flds[3].substring(1,flds[3].length()-1);
+								mp.m_date_compl = flds[3];
+								//if(mp.m_date_compl.equals("#EMPTY"))
+									//mp.m_date_compl = "";
 							}
 						}
 						
@@ -1460,18 +1464,23 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 					
 					/** 
 					 * auto id 1, 2, 3, 6 in MP data
-					 * 1 Pass prelims
-					 * 2 Advance to candidacy
-					 * 3 Submit completed evaluations
-					 * 6 Submit completed evlauations (the last eval returned time is used
+					 * 1 Pass preliminary exams by deadline
+					 * 2 Approve Advance to Candidacy
+					 * 3 Approve dissertation committee
+					 * 6 Submit completed evaluation forms (instructions) to Rackham
+					 * three days before defense (the last eval returned time is used
 					 * as step competion time)
 					 * 
-					 * auto id 3, 5, 7, 8, 11 in OARD data
-					 * 4 Complete Rackham pre-defense meeting
-					 * 5 Get evaluation forms
-					 * 7 Return Final Oral Exam
-					 * 8 Return the Certificate
-					 * 11 Complete post defense, Approve degree
+					 * auto id 4, 5, 7, 8, 11 in OARD data
+					 * 4 Attend scheduled group pre-defense meeting and bring a complete 
+					 * copy of dissertation to note any formatting corrections
+					 * 5 Get evaluation forms (instructions) from Rackham and deliver to 
+					 * committee members with a copy of the dissertation
+					 * 7 Return Final Oral Examination Report to Rackham
+					 * 8 Return the Certificate of Dissertation Committee Approval Form 
+					 * (instructions)} to Rackham
+					 * 11 Complete post-defense meeting with Rackham and bring completed 
+					 * paperwork requirements
 					 * 
 					 * 9, 10, and 12 are deprecated.
 					 * 
@@ -1619,8 +1628,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 								}
 								if(info.getOARDRecInExtract())
 								{
-									//auto id 3, 5, 7, 8, 11 in OARD data
-									if(autoValidNumber == 3 || 
+									//auto id 4, 5, 7, 8, 11 in OARD data
+									if(autoValidNumber == 4 ||
 											autoValidNumber == 5 ||
 											autoValidNumber == 7 || 
 											autoValidNumber == 8 || 
