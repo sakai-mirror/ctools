@@ -94,14 +94,13 @@
     <removeWarFromImage deleteWar="sakai-sample-tools-browser.war" />
     <removeWarFromImage deleteWar="sakai-sample-tools-jsf1.war" />
     <removeWarFromImage deleteWar="sakai-sample-tools-qa-helper.war" />
-    <!--
+    <!-- -->
     <removeWarFromImage deleteWar="samigo.war" />
-    -->
     <removeWarFromImage deleteWar="sakai-wsrp-producer.war" />
-    <!--
+    <!-- -->
     <removeWarFromImage deleteWar="sakai-roster-components.war" />
     <removeWarFromImage deleteWar="sakai-roster-tool.war" />
-    -->
+    <!--    -->
 
 
     <!-- added 2006/05/01 -->
