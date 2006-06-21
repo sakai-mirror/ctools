@@ -1,4 +1,4 @@
-<project name="buildSamigo" basedir="." default="info-samigo" >
+<project name="build-samigo" basedir="." default="info-samigo" >
 
   <!--
 

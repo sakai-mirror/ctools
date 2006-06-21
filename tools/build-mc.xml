@@ -1,4 +1,4 @@
-<project name="buildMessageCenter" basedir="." default="info" >
+<project name="build-mc" basedir="." default="info" >
 
   <!--
 

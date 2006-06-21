@@ -1,4 +1,4 @@
-<project name="buildUserMembership" basedir="." default="info" >
+<project name="build-type-ufp-um" basedir="." default="info" >
 
   <!--
 

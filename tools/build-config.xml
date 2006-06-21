@@ -1,4 +1,4 @@
-<project name="buildInstance" basedir="." default="info-instance" >
+<project name="build-config" basedir="." default="info-instance" >
 
   <!--
 
@@ -27,15 +27,15 @@
     </echo>
   </target>
 
-  <property name="type.file" value="instance.${type}.properties" />
-  <property file="${type.file}" />
+  <property name="instance-type.file" value="instance.${instance-type}.properties" />
+  <property file="${instance-type.file}" />
 
   <target name="buildProperties" depends="copyConfig, editInstanceSakaiProperties" 
 	  description="copy and edit the sakai.properties files." />
 
   <target name="copyConfig">
     <echo> copy from config.dir: ${config.dir} </echo>
-    <copy todir="${instances.dir}/${type}">
+    <copy todir="${instances.dir}/${instance-type}">
       <fileset dir="${config.dir}">
 	<exclude name="**/sakai.properties"/>
 	<exclude name="**/.project" />
@@ -46,7 +46,7 @@
 
   <target name="editInstanceSakaiProperties" >
     <echo> sakai.properties: ${sakai.properties} </echo>
-    <echo> type: ${type} </echo>
+    <echo> instance-type: ${instance-type} </echo>
     <echo> instances.dir: ${instances.dir}</echo>
     <echo> serverUrl: ${serverUrl} </echo>
     <echo> version.service: ${version.service} </echo>
@@ -56,7 +56,7 @@
     entry below -->
 
     <copy file="${sakai.properties}" 
-	  tofile="${instances.dir}/${type}/sakai.properties" 
+	  tofile="${instances.dir}/${instance-type}/sakai.properties" 
 	  overwrite="true">
 
        <filterchain> 

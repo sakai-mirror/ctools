@@ -1,4 +1,4 @@
-<project name="build-utils" basedir="." default="info" >
+<project name="build-util" basedir="." default="info" >
 
   <!--
 
