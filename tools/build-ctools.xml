@@ -1,0 +1,136 @@
+<project name="ctoolsBuildA" basedir="." default="info" >
+
+  <!--
+
+$Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+$HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+
+  -->
+
+  <target name="ctoolsBuildInfo">
+    <echo>
+      Install the CTools specific code.  It may not be called if you want to have a 
+      pure sakai build.  It will extract the ctools code, delete unecessary code,
+      and will edit values in code or configuration files as appropriate.  For example it 
+      will add the grad tool sites to the site type configuration xml file.
+      This should not be invoked on its own.  It will be called by the master build.xml.
+      The default configuration values are given below.  They may be overridden by a build
+      properties file.
+
+      ctools.extract.skip = ${ctools.extract.skip}
+      ctools.svnurl = ${ctools.svnurl}
+      ctools.revision = ${ctools.revision}
+    </echo>
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--           deal with CTools specific source         -->
+  <!-- ================================================== -->
+
+
+  <!-- entry points -->
+  
+  <!-- get the source -->
+  <target name="getCtoolsSrc" unless="ctools.extract.skip" >
+    <echo> Extract ctools source ctools.extract.skip=[${ctools.extract.skip}]</echo>
+    <execSvnCmd url="${ctools.svnurl}" revision="${ctools.revision}"/> 
+    <antcall target="removeUnneededCtools" />
+    <place fromdir="${build.dir}/ctools" />
+  </target>
+
+  <!-- change source as required -->
+  <target name="editCtools" depends="editGradTools,editDefaultTools" >
+    <!-- edit the files that need to be modified for ctools -->
+  </target>
+
+
+  <target name="removeUnneededCtools" >
+    <!-- get rid of the ctools master directory since it should NOT 
+	 overwrite the sakai master directory.
+    -->
+    <removeFromBuild deleteDir="ctools/master" />
+    <removeFromBuild deleteDir="ctools/ctools-remote" />
+
+    <!-- this gets rid of the ctools/melete directory, which is not necessary.
+	 Melete is handled separately.
+    -->
+    <removeFromBuild deleteDir="ctools/melete" />
+  </target>
+
+  <!-- add the gradtools configuration changes to the sakai code. -->
+  <target name="editGradTools">
+    <echo> edit file: ${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml for gradtools.</echo>
+
+    <!-- add the gradtools student site type. -->
+    <replaceregexp 
+	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml" >
+      <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
+      <substitution 
+	  expression="configuration name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
+    </replaceregexp>
+
+    <replaceregexp 
+	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml"  >
+      <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
+      <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
+    </replaceregexp>
+
+    <!-- update the tool references to add gradtools tools as appropriate.
+    This adds student, department, and rackham. -->
+    <replaceregexp>
+
+      <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
+      <substitution expression="\1 &lt;category name=&quot;GradToolsStudent&quot; /&gt;  &lt;category name=&quot;GradToolsDepartment&quot; /&gt;  &lt;category name=&quot;GradToolsRackham&quot; /&gt;" />
+      
+      <fileset dir="${build.dir}/legacy/tools/src/webapp/tools"  >
+	<include name="sakai.announcements.xml" />
+	<include name="sakai.chat.xml" />
+	<include name="sakai.discussion.xml" />
+	<include name="sakai.iframe.xml" />
+	<include name="sakai.resources.xml" />
+	<include name="sakai.schedule.xml" />
+	<include name="sakai.siteinfo.xml" />
+      </fileset>
+
+    </replaceregexp>
+
+    <!-- update the tool references to add gradtools tools as appropriate.
+    This adds just student. -->
+    <replaceregexp>
+
+      <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
+      <substitution expression="\1 &lt;category name=&quot;GradToolsStudent&quot; /&gt;" />
+      
+      <fileset dir="${build.dir}/legacy/tools/src/webapp/tools"  >
+	<include name="sakai.dropbox.xml" />
+	<include name="sakai.mailbox.xml" />
+	<include name="sakai.news.xml" />
+      </fileset>
+
+      <!--
+      <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
+      <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
+      -->
+    </replaceregexp>
+
+  </target>
+
+  <!-- Be sure these tools don't appear in the project category -->
+  <target name="editDefaultTools">
+
+    <echo> edit registrations under ${build.dir} to make sure the tool categories are as desired.</echo>
+
+    <!-- make the project category disappear for these. -->
+    <replaceregexp >
+      <fileset dir="${build.dir}" includes="**/sakai.gradebook.tool.xml,**/sakai.samigo.tool.xml" />
+      <!-- this works, but not on sakai.samigo.tool.xml ?? -->
+      <regexp pattern="&lt;category.*name=&quot;project&quot;.*"/>
+      <!-- -->
+ 
+      <substitution  expression="" />
+    </replaceregexp>
+
+  </target>
+
+</project>

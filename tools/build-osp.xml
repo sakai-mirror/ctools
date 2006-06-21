@@ -1,0 +1,42 @@
+<project name="buildOSP" basedir="." default="info" >
+
+  <!--
+
+   $Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+   
+   Add the user membership tool
+ 
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="userOSP">
+    <echo>
+      This will extract the OSP tools.
+
+      <!--
+      The configuration values are:
+      usermembership.install.skip = ${usermembership.install.skip}
+      usermembership.svnurl = ${usermembership.svnurl}
+      usermembership.revision = ${usermembership.revision}
+      -->
+    </echo>
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--    deal with OSP specific source       -->
+  <!-- ================================================== -->
+
+  <target name="getOSPSrc" unless="osp.install.skip">
+    <echo>
+      Extracting OSP tools: 
+    </echo>
+    <execSvnCmd url="${osp.svnurl}" revision="${osp.revision}"/> 
+  </target>
+
+</project>
