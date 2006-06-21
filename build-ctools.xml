@@ -34,9 +34,16 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
   <!-- get the source -->
   <target name="getCtoolsSrc" unless="ctools.extract.skip" >
     <echo> Extract ctools source ctools.extract.skip=[${ctools.extract.skip}]</echo>
-    <execSvnCmd url="${ctools.svnurl}" revision="${ctools.revision}"/> 
+    <execSvnCmd url="${ctools.svnurl}/ctools-apps" revision="${ctools.revision}"  destination="ctools-apps"/> 
+    <execSvnCmd url="${ctools.svnurl}/ctools-providers" revision="${ctools.revision}"  destination="ctools-providers"/> 
+    <execSvnCmd url="${gradtools.svnurl}" revision="${ctools.revision}"  destination="gradtools" /> 
+    <!--
+    <execSvnCmd url="${gradtools.svnurl}" revision="${ctools.revision}"  additionalArguments="\-\-force" /> 
+    -->
     <antcall target="removeUnneededCtools" />
+    <!--
     <place fromdir="${build.dir}/ctools" />
+    -->
   </target>
 
   <!-- change source as required -->
@@ -49,20 +56,25 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
     <!-- get rid of the ctools master directory since it should NOT 
 	 overwrite the sakai master directory.
     -->
+    <!--
     <removeFromBuild deleteDir="ctools/master" />
     <removeFromBuild deleteDir="ctools/ctools-remote" />
+    -->
 
     <!-- this gets rid of the ctools/melete directory, which is not necessary.
 	 Melete is handled separately.
-    -->
+
     <removeFromBuild deleteDir="ctools/melete" />
+    -->
   </target>
 
   <!-- add the gradtools configuration changes to the sakai code. -->
   <target name="editGradTools">
     <echo> edit file: ${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml for gradtools.</echo>
+    <echo> REINSTATE GRADTOOLS SETUP CURRENTLY COMMENTED OUT</echo>
 
     <!-- add the gradtools student site type. -->
+    <!--
     <replaceregexp 
 	file="${build.dir}/legacy/tools/src/webapp/tools/sakai.sitesetup.xml" >
       <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
@@ -76,8 +88,11 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
       <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
     </replaceregexp>
 
+    -->
+
     <!-- update the tool references to add gradtools tools as appropriate.
     This adds student, department, and rackham. -->
+    <!--
     <replaceregexp>
 
       <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
@@ -94,9 +109,11 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
       </fileset>
 
     </replaceregexp>
+    -->
 
     <!-- update the tool references to add gradtools tools as appropriate.
     This adds just student. -->
+    <!--
     <replaceregexp>
 
       <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
@@ -108,11 +125,12 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
 	<include name="sakai.news.xml" />
       </fileset>
 
-      <!--
+      <!\-\-
       <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
       <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
-      -->
+      \-\->
     </replaceregexp>
+-->
 
   </target>
 

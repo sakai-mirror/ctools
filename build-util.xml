@@ -118,9 +118,16 @@
     <attribute name="dir" default="${build.dir}" />
     <attribute name="logdir" default="${logs.dir}" />
     <attribute name="revision" default="${defaultRevision}" />
-    <attribute name="additionalArguments" default="-q" />
+<!--    <attribute name="additionalArguments" default="-q" /> -->
+    <attribute name="additionalArguments" default="--force" /> 
+    <!--
+    adds an extra 'build' directory level
+    <attribute name="destination" default="${build.dir}" />
+    -->
+    <attribute name="destination" default="." />
     <sequential>
-      <echo>Extract svn resource: @{cmd} from @{url} revision: @{revision}.</echo>
+      <echo>Extract svn resource: via @{cmd} from @{url} revision: @{revision}.</echo>
+      <mkdir dir="@{dir}" />
       <exec executable="svn"
 	    dir="@{dir}"
 	    failonerror="true"
@@ -130,6 +137,7 @@
 	<arg value="@{additionalArguments}" />
 	<arg value="@{cmd}" />
 	<arg value="@{url}" />
+	<arg value="@{destination}" />
 
       </exec>
     </sequential>
