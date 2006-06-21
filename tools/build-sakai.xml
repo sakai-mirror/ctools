@@ -30,7 +30,9 @@
 
   <target name="getSakaiSrc" depends="prepareBuildDirs">
     <execSvnCmd url="${sakai.svnurl}" revision="${sakai.revision}"/>
+    <!--
     <place fromdir="${build.dir}/${sakai.svndir}" />
+    -->
     <antcall target="removeUnneededSakai" />
   </target>
 
