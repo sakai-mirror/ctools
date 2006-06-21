@@ -1,0 +1,121 @@
+/* tool-base.css 
+radically pruned,as is on ctools branch anyways - only ctools will ever use
+more pruning post2.1
+*/
+body{font-family:verdana,arial,helvetica,sans-serif;font-size:.8em;padding:0;margin:0}
+hr{height:0}
+h3,h4,h5{font-weight:bold;padding:.2em}
+h3.textList,h4.textList,h5.textList, h6.textList{font-size:1em;}
+img{border:0}
+fieldset{border:none;margin-top:1em}
+legend{font-weight:bold;color:#000;font-size:100%;margin-left:0;padding-left:0}
+/* IE gives forms a top margin unless told not to
+this affects jsf based tools*/
+.portletBody form{margin-top:0}
+/*table for displaying the details of an item*/
+.itemSummary{margin:.5em 0}
+table.itemSummary th{font-weight:normal;font-family:Arial,Helvetica,sans-serif;white-space:nowrap;vertical-align:top;text-align:left;padding:.3em 1em .3em .3em}
+table.itemSummary td{text-align:left;padding:.3em 1em .3em 1em;vertical-align:top}
+table.itemSummary caption{text-align:left;font-weight:bold;padding:1em 0 0 0}
+ul.attachList{margin:1em 0;padding:0}
+ul.attachList img{vertical-align:middle;margin:0 1em 0 0}
+ul.attachList li{list-style:none;margin:0 0 .3em 0}
+/* FORM VIEW */
+/*match a shorttext label and input to get consistent alignment*/
+.shorttext label{margin-right:1em;width:180px;font-weight:normal;float:left}
+.shorttext input{border:1px solid #333}
+textarea{margin-top:.5em;border:1px solid #333}
+.checkbox{margin:.5em 1em;border:1px solid #fff}
+.shorttext,.longtext{margin:1em;border:1px solid #fff}
+/* LIST VIEW(S) */
+/*table and cells for displaying a list of hierarchical items*/
+table.listHier{width:100%;clear:both;margin-top:.5em}
+table.listHier th{font-weight:normal;text-align:left;white-space:nowrap;margin:0;padding:.2em}
+table.listHier th.row{background:transparent}
+table.listHier td img{margin-right:.2em;vertical-align:text-top}
+table.listHier td a:hover,
+table.listHier th a:hover{text-decoration:none}
+table.listHier .attach{width:.5em}
+/*use this listView in conjunction with listnav;they will float left and right,respectively.
+listView is the block around a selector for changing the filter applied to a list;use with 
+<div> tag.*/
+.listView,.leftNav{float:left;vertical-align:bottom;text-align:left;line-height:2em} 
+/*use this listNav in conjunction with listView (see above). listNav is the block element 
+around the list navigator used to chunk up long lists;use with <div> tag.*/
+.listNav,.rightNav{float:right;vertical-align:bottom;text-align:right;line-height:2em}
+.itemNav{vertical-align:bottom;text-align:right;line-height:2em}
+/*action links for list items,use with <a> tag*/
+.itemAction{font-size:.9em}
+/*make the currently sorted column header text bold,apply to <th> tag*/
+.currentSort{font-weight:bold !important}
+/*for abc or 123 navigators*/
+span.abc{letter-spacing:.2em;color:#555}
+span.abc a:hover{font-weight:bold;color:maroon;text-decoration:none}
+span.abc a,span.abc a:link{font-weight:bold}
+/* INDENTING CLASSES:use these classes with <div> blocks to structure layout hierarchically.
+The 'tier##' classes are the original class names that support the SSTree javascript library. */
+.indnt0,.tier0{margin-left:0  !important}
+.indnt1,.tier1{margin-left:1em  !important}
+.indnt2,.tier2{margin-left:2em  !important}
+.indnt3,.tier3{margin-left:3em  !important}
+.indnt4,.tier4{margin-left:4em  !important}
+.indnt5,.tier5{margin-left:5em  !important}
+.indnt6,.tier6{margin-left:6em  !important}
+.indnt7,.tier7{margin-left:7em  !important}
+.indnt8,.tier8{margin-left:8em  !important}
+.indnt9,.tier9{margin-left:9em  !important}
+.indnt10,.tier10{margin-left:10em  !important}
+.pad0{padding-left:0  !important}
+/* MESSAGES */
+/*for status text in wizards - note:should really collapse into a generalized box*/
+.step{height:1.5em;background-color:#CCC;padding:.3em .5em}
+/*for instructions*/
+.instruction{line-height:1.2em;margin:1em 0}
+.clear {margin:3em 0;clear:both;}
+.validation{}
+/*validation message - overrides other rules in effect*/
+p.validation{padding:20px 30px}
+/* UI COMPONENTS */
+/*navigation*/
+/*navigator for a view's global actions (i.e. actions not associated with particular items),
+place below the View Title and above the view. .navModeAction is depricated because "mode" 
+has been renamed to "view" */
+.navModeAction,.navViewAction{background-color:#CCC;text-align:center;font-size:.8em;padding:.3em;vertical-align:middle}
+/*for navigators flush right when there is just one navigator in same row
+-mB:are we sure we need this if we have leftNav and rightNav  */
+.nav{text-align:right}
+.nav input{}
+/*for action controls */
+.act{padding:1em}
+/*the default action control*/
+/*disclosure triangle -mB:this is actually normally a header like an h4 or h5 OR
+it's used with SSTree. Should we keep this class? I would like to rename it if we
+do;not very intuitive.*/
+.discTria{background-color:#CCC;padding:.3em}
+/*list manager - two side by side select items,children of table.sidebyside*/
+.sidebyside{}
+.sidebyside th{padding:.3em;text-align:left;font-weight:normal}
+.sidebyside td{padding:.3em}
+.sidebyside select{width:18em}
+/*leftover classes - not used?*/
+hr.itemSeparator{}
+.skip{display:inline;position:absolute;top:-999px;left:-999px;height:0}
+.information{background-color:transparent;background-image:url('images/info.gif');background-position:.3em;background-repeat:no-repeat;border:1px solid #444;display:block;width:80%;clear:both;color:#444;font-size:1em;margin:5px 0px;padding:5px 5px 5px 25px}
+.success{background-color:#fff;background-image:url('images/check.gif');background-position:.3em;background-repeat:no-repeat;border:1px solid #4a4;display:block;width:80%;clear:both;color:#000;font-size:1em;margin:5px 0px;padding:5px 5px 5px 25px}
+.validationEmbedded,.validation,.alertMessage{background:#fff url(images/warn.gif) .3em .3em no-repeat;border:1px solid #b11;display:block;width:80%;font-size:1em;clear:both;color:#b11;margin:5px 0px 5px 0;padding:5px 5px 5px 25px}
+.error{}
+.fatalerror{}
+.textBlock{}
+.smaller{font-size: 90%;}
+/*external login form formatting*/
+.login{margin:5em auto;border:1px solid #666;width:auto}
+.login th{background-color:#eee;padding:.5em;border-bottom:1px solid #666}
+.login td.logo{background:url(ctools/images/logo_inst.gif) no-repeat 2em center #51698D;width:13em}
+.login td.form{padding:.5em;background:#51698D}
+.loginform{color:#fff}
+.loginform label{color:#fff}
+.loginform td{padding:.3em;color:#fff}
+.loginform td #eid{width:10.6em}
+.loginform td #pwd{width:10em}
+.loginform td #submit{border:1px solid #666;float:right;background-color:#ddd;padding:.1em}
+.loginform td #submit:hover{border:1px solid #333;background-color:#eee}

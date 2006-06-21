@@ -1,0 +1,100 @@
+body{width:100%;padding:0;font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;margin:0}
+/*GROUP 1 - top navigation*/
+/*iframe sizes for different states and different browsers*/
+.sitenav-log{/*user not logged in*/ height:73px}
+html>body .sitenav-log{/*user not logged in (moz/safari)*/ height:73px}
+.sitenav-max{/*user logged in*/ height:93px}
+html>body .sitenav-max{/*user logged in (moz/safari) */ height:94px}
+.sitenav-min{/*no logos or banners*/ height:30px}
+/*container for the #tabNavigation ul*/
+.tabHolder{width:100%;height:auto;background:#2E3C52;padding:0;margin:0}
+.tabHolder table{margin-bottom:0}
+.tabHolder table td{margin:0;padding:0}
+.tabHolder table td.tabCell{padding:0}
+.tabHolder table td.selectCell{text-align:left;padding:0 0 0 .3em}
+.tabHolder table td.selectCell select{display:inline;font-size:.7em;margin:0 0 0 3px;padding:0}
+.tabHolder table td.galleryLogin{font-size:.8em;padding-left:2em}
+.tabHolder table td.galleryLogin a,.tabHolder table td.mast-head-r a:visited{color:#fff}
+.tabHolder table td.galleryLogin a:hover{color:#1997BB;text-decoration:underline}
+.siteNavBlock{margin:0;padding:0}
+/*ul - the li are the tabs*/
+#tabNavigation{white-space:nowrap;list-style:none none none;font-size:.8em;margin:0 0 0px 3px;padding:4px 0;width:100%}
+/*hacks for moz and saf*/	
+html>body #tabNavigation{margin:0 0 -1px 3px}
+\head+body #tabNavigation{margin:0 0 -1px 3px}
+/*displays a bar on bottom of tabs*/
+#tabBottom{color:#fff;font-size:.5em;text-align:right;padding:0;margin:0}
+/*the tab*/
+html>body #tabBottom{/*for Moz*/ font-size:.7em}
+#tabNavigation li{display:inline;line-height:.9em}
+/*the current tab*/
+#tabNavigation .selectedTab a,#tabNavigation .selectedTab a:link,#tabNavigation .selectedTab a:visited,#tabNavigation .selectedTab a:hover{background:url(images/topright-curtab.gif) top right no-repeat #B8C2CE;color:#2E3C52;padding:3px 5px 5px 5px;cursor:text}
+.workspace #tabNavigation .selectedTab a,.workspace #tabNavigation .selectedTab a:link,.workspace #tabNavigation .selectedTab a:visited,.workspace #tabNavigation .selectedTab a:hover{background:url(images/topright-curtab.gif) top right no-repeat #C2C2C2;color:#2E3C52;padding:3px 5px 5px 5px}
+.project #tabNavigation .selectedTab a,.project #tabNavigation .selectedTab a:link,.project #tabNavigation .selectedTab a:visited,.project #tabNavigation .selectedTab a:hover{background:url(images/topright-curtab.gif) top right no-repeat #C6BEAD;color:#2E3C52;padding:3px 5px 5px 5px}
+.course #tabNavigation .selectedTab a,.course #tabNavigation .selectedTab a:link,.course #tabNavigation .selectedTab a:visited,.course #tabNavigation .selectedTab a:hover{background:url(images/topright-curtab.gif) top right no-repeat #B8C2CE;color:#2E3C52;padding:3px 5px 5px 5px}
+/*various hacks for this and that browser*/
+html>body #tabNavigation .selectedTab a,html>body #tabNavigation .selectedTab a:link,html>body #tabNavigation .selectedTab a:visited{padding:4px 5px 5px 5px;margin:0 0 -1px 3px}
+\head+body #tabNavigation .selectedTab a,\head+body #tabNavigation .selectedTab a:link,\head+body #tabNavigation .selectedTab a:visited,\head+body #tabNavigation .selectedTab a:hover{padding:3px 5px 4px 5px;margin:0 0 -1px 3px}
+/*the link inside the tab*/
+#tabNavigation a,#tabNavigation a:link,#tabNavigation a:visited{background:url(images/topright-tab.gif) top right no-repeat #DDE3EB;color:#2E3C52;height:.8em;margin:0;padding:2px 6px;text-decoration:none}
+/*various hacks for this and that browser*/
+html #tabNavigation a/* */,html #tabNavigation a:link/* */,html #tabNavigation a:visited/* */{border-bottom:none;height:auto;margin:0}
+html>body #tabNavigation a,html>body #tabNavigation a:link,html>body #tabNavigation a:visited{border-bottom:none;padding:4px 6px 4px 6px}
+\head+body #tabNavigation a,\head+body #tabNavigation a:link,\head+body #tabNavigation a:visited{padding:3px 6px 3px 6px}
+/*the hover for the tabs*/
+#tabNavigation a:hover{color:#2E3C52;background:url(images/topright-tab_hov.gif) top right no-repeat #FC0}
+.fixTabsIE{visibility:hidden;display:none;border-width:0}
+/*a convenience class - not used in these examples - overrides the color in selected regions*/
+.divColor{background-color:#B8C2CE !important}
+.workspace .divColor{background-color:#C2C2C2 !important}
+.course .divColor{background-color:#B8C2CE !important}
+.project .divColor{background-color:#C6BEAD !important}
+/*GROUP 2 - masthead - holds logos,banners,login form and links*/
+.mast-head{width:100%;background-color:#51698D;margin:0;font-size:.8em;color:#fff}
+.mast-head td.left{width:80px}
+.mast-head td.middle{}
+.mast-head td.right{text-align:right;white-space:nowrap;padding:5px 15px 5px 5px}
+.mast-head td.right a,.mast-head .right a:visited{color:#fff}
+.mast-head td.right a:hover{color:#fff;text-decoration:underline}
+.mast-head td.right a img{margin-top:1.2em;border:none}
+.mast-head td.right form{margin-top:2em}
+/*since this skin is used as default - some definition for the login form elements*/
+input{border:1px solid #ccc;background-color:#fff;padding:3px;font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;margin-left:.5em;color:#000}
+#submit{border:1px solid  #51698D;background-color:#eee;margin-left:1em;font-size:.9em;padding:2px;color:#777}
+#submit:hover{border:1px solid #eee;color:#000}
+/* GROUP 3 - tool menu  */
+#divLogo{width:8em;overflow:hidden;display:inline;margin-left:auto;margin-right:auto;clear:both}
+html>body #divLogo{display:block}
+#divLogo img{display:inline;margin:0 auto 1em auto;clear:both;margin-left:auto;margin-right:auto}
+#siteType{display:none}
+#siteStatus{text-transform:capitalize;background:url(images/warn.gif) 3px 3px no-repeat #fff;border:1px solid  #536377;clear:both;color:#1A506A;font-size:x-small;margin:5px 2px 15px 2px;padding:3px 3px 3px 20px}
+html #siteStatus/* */{}
+#leftnavlozenge{width:11em;padding:0;margin:0 0 1em;font-size:70%;color:#293C52;clear:both}
+#leftnavlozenge ul{list-style:none;margin:0;padding:0}
+#leftnavlozenge li{margin:0;width:auto}
+#leftnavlozenge li a:link,#leftnavlozenge li a{display:block;padding:5px 5px 5px 0.5em;text-decoration:none;width:100%;color:#2E3C52}
+/*	adjust for moz + safari*/
+#leftnavlozenge li a.selected{cursor:text}
+#leftnavlozenge li a.selected,#leftnavlozenge li a:hover{padding:5px 5px 5px 0.5em;width:100%;background-color:#fff;color:#2E3C52}
+html>body #leftnavlozenge li a{width:100%;border-width:1px;border-color:transparent #fff;border-style:solid}
+html>body #leftnavlozenge li a:hover,html>body #leftnavlozenge li a.selected{border-width:1px;border-color:transparent #fff;border-style:solid;padding:5px 5px 5px 0.5em}
+#presence{width:100%}
+html>body #presence{border-width:0 0 1px 0;border-style:solid;border-color:#B8C2CE}
+\head+body #presence{border-width:0 0 1px 0;border-style:solid;border-color:#B8C2CE}
+#pres_title{text-align:center;color:#293C52;font-size:.7em;margin:.2em auto}
+/* GROUP 4 - content and channels */
+.portletTitleWrap{width:98.8%;margin-top:1em}
+.portletMainWrap{width:99.5%}
+.portletTitleIframe{width:100% !important;margin:0 !important;height:1.3em}
+.portletMainIframe{text-align:left;border:1px solid #B8C2CE;width:99%;margin-bottom:.5em;height:auto}
+/*GROUP 5:tableless layout*/
+#container{margin-top:0}
+#content{padding:.3em .3em .3em .3em;margin-left:8.5em;background-color:#fff}
+#sidebar{float:left;width:8.4em;line-height:17px;color:#293C52;padding-bottom:2em}
+#footer{background-color:#DDE3EB;color:#1A506A;font-size:xx-small;margin:0px;padding:0;width:auto;clear:both;top:0}
+.footerExtNav{padding-top:.5em;padding-bottom:.5em}
+.footerExtNav a,.footerExtNav A:link,.footerExtNav A:visited{color:#1A506A;text-decoration:none;margin:1em}
+.footerExtNav a:hover{color:#1A506A;text-decoration:underline;margin:1em}
+#footerInfo{background-color:#FFF;font-size:xx-small;text-align:center;clear:both}
+#footerInfo img{margin-top:.5em;margin-bottom:.5em}
+.skip{display:inline;position:absolute;top:-999px;left:-999px;height:0;width:0}
