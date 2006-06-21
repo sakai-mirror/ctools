@@ -1,4 +1,4 @@
-<project name="meleteBuild" basedir="." default="info" >
+<project name="build-melete" basedir="." default="info" >
 
   <!--
 
