@@ -33,6 +33,10 @@ import java.util.Vector;
 
 
 // imports
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.sakaiproject.cheftool.Context;
 import org.sakaiproject.cheftool.PortletConfig;
 import org.sakaiproject.cheftool.RunData;
@@ -57,6 +61,7 @@ import org.sakaiproject.tool.api.ToolSession;
 import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.util.StringUtil;
+import org.sakaiproject.exception.IdUnusedException;
 
 
 /**
@@ -70,6 +75,8 @@ public class NewsAction
 {
 	
 	private static ResourceBundle rb = ResourceBundle.getBundle("news");
+	
+	private static Log log = LogFactory.getLog(NewsAction.class);
 	
 	/** names and values of request parameters to select sub-panels */
 	protected static final String MONITOR_PANEL = "List";
@@ -384,7 +391,9 @@ public class NewsAction
 					// TODO: save site page title? -ggolden
 //					Site sEdit = SiteService.getSite(PortalService.getCurrentSiteId());
 					Site sEdit = SiteService.getSite(ToolManager.getCurrentPlacement().getContext());
-					SitePage pEdit = sEdit.getPage(p.getId());
+		//			SitePage pEdit = sEdit.getPage(p.getId());
+					// this may or may not be right.
+					SitePage pEdit = sEdit.getPage(p.getSiteId());
 					pEdit.setTitle(newChannelTitle);
 					SiteService.save(sEdit);
 				}
