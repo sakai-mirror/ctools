@@ -36,6 +36,7 @@ import java.util.Observer;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.cover.AuthzGroupService;
@@ -74,21 +75,11 @@ import org.sakaiproject.util.api.umiac.UmiacClient;
 */
 public class EventWatcher implements Observer
 {
+	
+	private static Log log = LogFactory.getLog(EventWatcher.class);
 	/*******************************************************************************
 	* Dependencies and their setter methods
 	*******************************************************************************/
-
-	/** Dependency: logging service */
-	protected Log m_logger = null;
-
-	/**
-	 * Dependency: logging service.
-	 * @param service The logging service.
-	 */
-	public void setLogger(Log service)
-	{
-		m_logger = service;
-	}
 
 	/** Dependency: event tracking service */
 	protected EventTrackingService m_eventTrackingService = null;
@@ -115,19 +106,19 @@ public class EventWatcher implements Observer
 	{
 		try
 		{
-			m_logger.warn(this);
-			m_logger.warn(m_eventTrackingService);
+			log.warn(this);
+			log.warn(m_eventTrackingService);
 			// start watching the events - only those generated on this server, not those from elsewhere
 			m_eventTrackingService.addLocalObserver(this);
 
 			// read affiliates info
 			setupSubjectAffiliates();
 			
-			m_logger.info(this +".init()");
+			log.info(this +".init()");
 		}
 		catch (Throwable t)
 		{
-			m_logger.warn(this +".init(): ", t);
+			log.warn(this +".init(): ", t);
 		}
 	}
 
@@ -139,7 +130,7 @@ public class EventWatcher implements Observer
 		// done with event watching
 		m_eventTrackingService.deleteObserver(this);
 
-		m_logger.info(this +".destroy()");
+		log.info(this +".destroy()");
 	}
 
 	/*******************************************************************************
@@ -257,11 +248,11 @@ public class EventWatcher implements Observer
 					}
 //					catch (IdUnusedException e)
 //					{
-//						m_logger.warn(this + ".update:" + e.getMessage() + ": " + event.getResource());
+//						log.warn(this + ".update:" + e.getMessage() + ": " + event.getResource());
 //					}
 					catch (Exception e)
 					{
-						m_logger.warn(this + ".update:" + e.getMessage() + ": " + event.getResource());
+						log.warn(this + ".update:" + e.getMessage() + ": " + event.getResource());
 					}
 					
 					// reset
@@ -364,7 +355,7 @@ public class EventWatcher implements Observer
 			}
 			catch(Exception ignore)
 			{
-				m_logger.warn(this + " cannot find affiliate " + affiliate);
+				log.warn(this + " cannot find affiliate " + affiliate);
 			}
 			
 		}	// for	

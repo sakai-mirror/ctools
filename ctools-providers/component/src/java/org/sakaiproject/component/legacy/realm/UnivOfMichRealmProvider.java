@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.authz.api.GroupProvider;
 import org.sakaiproject.util.api.umiac.UmiacClient;
@@ -45,17 +46,7 @@ public class UnivOfMichRealmProvider implements GroupProvider
 	* Dependencies and their setter methods
 	*******************************************************************************/
 
-	/** Dependency: logging service */
-	protected Log m_logger = null;
-
-	/**
-	 * Dependency: logging service.
-	 * @param service The logging service.
-	 */
-	public void setLogger(Log service)
-	{
-		m_logger = service;
-	}
+	private static Log log = LogFactory.getLog(UnivOfMichRealmProvider.class);
 
 	/** My UMIAC client interface. */
 	//private IUmiacClient m_umiac = UmiacClient.getInstance();
@@ -82,11 +73,11 @@ public class UnivOfMichRealmProvider implements GroupProvider
 	{
 		try
 		{
-			m_logger.info(this +".init()");
+			log.info(this +".init()");
 		}
 		catch (Throwable t)
 		{
-			m_logger.warn(this +".init(): ", t);
+			log.warn(this +".init(): ", t);
 		}
 	}
 
@@ -95,7 +86,7 @@ public class UnivOfMichRealmProvider implements GroupProvider
 	 */
 	public void destroy()
 	{
-		m_logger.info(this +".destroy()");
+		log.info(this +".destroy()");
 	}
 
 	/*******************************************************************************

@@ -43,6 +43,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.component.api.ServerConfigurationService;
 
 import org.sakaiproject.exception.IdUnusedException;
@@ -74,22 +75,8 @@ import org.sakaiproject.util.api.umiac.UmiacClient;
 public class UnivOfMichUserDirectoryProvider
 	implements UserDirectoryProvider
 {
-	/*******************************************************************************
-	* Dependencies and their setter methods
-	*******************************************************************************/
 
-	/** Dependency: logging service */
-	protected Log m_logger = null;
-
-	/**
-	 * Dependency: logging service.
-	 * @param service The logging service.
-	 */
-	public void setLogger(Log service)
-	{
-		m_logger = service;
-	}
-
+		private static Log log = LogFactory.getLog(UnivOfMichUserDirectoryProvider.class);
 //	/** Dependency: CurrentService */
 //	protected CurrentService m_currentService = null;
 //
@@ -154,11 +141,11 @@ public class UnivOfMichUserDirectoryProvider
 	{
 		try
 		{
-			m_logger.info(this +".init()");
+			log.info(this +".init()");
 		}
 		catch (Throwable t)
 		{
-			m_logger.warn(this +".init(): ", t);
+			log.warn(this +".init(): ", t);
 		}
 
 	} // init
@@ -171,7 +158,7 @@ public class UnivOfMichUserDirectoryProvider
 	*/
 	public void destroy()
 	{
-		m_logger.info(this +".destroy()");
+		log.info(this +".destroy()");
 
 	} // destroy
 
@@ -197,7 +184,7 @@ public class UnivOfMichUserDirectoryProvider
 //long umiacTime = System.currentTimeMillis();
 		boolean knownUmiac = getUmiac().userExists(userId);
 //umiacTime = System.currentTimeMillis() - umiacTime;
-//m_logger.info(this + ".userExists: " + userId + "  umiac: " + knownUmiac + " (" + umiacTime + ")");
+//log.info(this + ".userExists: " + userId + "  umiac: " + knownUmiac + " (" + umiacTime + ")");
 		if (knownUmiac)
 		{
 			return true;
@@ -213,7 +200,7 @@ public class UnivOfMichUserDirectoryProvider
 //long kerbTime = System.currentTimeMillis();
 			boolean knownKerb = userKnownToKerberos(userId);
 //kerbTime = System.currentTimeMillis() - kerbTime;
-//m_logger.info(this + ".userExists: " + userId + " kerberos: " + knownKerb + " (" + kerbTime + ")");
+//log.info(this + ".userExists: " + userId + " kerberos: " + knownKerb + " (" + kerbTime + ")");
 			if (knownKerb)
 			{
 				return true;
@@ -225,7 +212,7 @@ public class UnivOfMichUserDirectoryProvider
 //long cosignTime = System.currentTimeMillis();
 			boolean knownCosign = userKnownToCosign(userId);
 //cosignTime = System.currentTimeMillis() - cosignTime;
-//m_logger.info(this + ".userExists: " + userId + " cosign: " + knownCosign + " (" + cosignTime + ")");
+//log.info(this + ".userExists: " + userId + " cosign: " + knownCosign + " (" + cosignTime + ")");
 			if (knownCosign)
 			{
 				return true;
@@ -316,7 +303,7 @@ public class UnivOfMichUserDirectoryProvider
 //long kerbTime = System.currentTimeMillis();
 			boolean authKerb = authenticateKerberos(userId, password);
 //kerbTime = System.currentTimeMillis() - kerbTime;
-//m_logger.info(this + ".authenticateUser: " + userId + " kerberos: " + authKerb + " (" + kerbTime + ")");
+//log.info(this + ".authenticateUser: " + userId + " kerberos: " + authKerb + " (" + kerbTime + ")");
 			if (authKerb)
 			{
 				return true;
@@ -328,7 +315,7 @@ public class UnivOfMichUserDirectoryProvider
 //long cosignTime = System.currentTimeMillis();
 			boolean authCosign = authenticateCosign(userId, password);
 //cosignTime = System.currentTimeMillis() - cosignTime;
-//m_logger.info(this + ".authenticateUser: " + userId + " cosign: " + authCosign + " (" + cosignTime+ ")");
+//log.info(this + ".authenticateUser: " + userId + " cosign: " + authCosign + " (" + cosignTime+ ")");
 			if (authCosign)
 			{
 				return true;
@@ -413,14 +400,14 @@ public class UnivOfMichUserDirectoryProvider
 		}
 		catch (LoginException le)
 		{
-			if (m_logger.isDebugEnabled())
-				m_logger.debug(this + ".authenticateKerberos(): " + le.toString());
+			if (log.isDebugEnabled())
+				log.debug(this + ".authenticateKerberos(): " + le.toString());
 			return false;
 		}
 		catch (SecurityException se)
 		{
-			if (m_logger.isDebugEnabled())
-				m_logger.debug(this + ".authenticateKerberos(): " + se.toString());
+			if (log.isDebugEnabled())
+				log.debug(this + ".authenticateKerberos(): " + se.toString());
 			return false;
 		}
 
@@ -429,15 +416,15 @@ public class UnivOfMichUserDirectoryProvider
 			// attempt authentication
 			lc.login();
 
-			if (m_logger.isDebugEnabled())
-				m_logger.debug(this + ".authenticateKerberos(" + user + ", pw): kerberos success!");
+			if (log.isDebugEnabled())
+				log.debug(this + ".authenticateKerberos(" + user + ", pw): kerberos success!");
 
 			return true;
 		}
 		catch (LoginException le)
 		{
-			if (m_logger.isDebugEnabled())
-				m_logger.debug(this + ".authenticateKerberos(" + user + ", pw): kerberos failed: " + le.toString());
+			if (log.isDebugEnabled())
+				log.debug(this + ".authenticateKerberos(" + user + ", pw): kerberos failed: " + le.toString());
 
 			return false;
 		}
@@ -468,14 +455,14 @@ public class UnivOfMichUserDirectoryProvider
 		}
 		catch (LoginException le)
 		{
-			if (m_logger.isDebugEnabled())
-				m_logger.debug(this + ".useKnownToKerberos(): " + le.toString());
+			if (log.isDebugEnabled())
+				log.debug(this + ".useKnownToKerberos(): " + le.toString());
 			return false;
 		}
 		catch (SecurityException se)
 		{
-			if (m_logger.isDebugEnabled())
-				m_logger.debug(this + ".useKnownToKerberos(): " + se.toString());
+			if (log.isDebugEnabled())
+				log.debug(this + ".useKnownToKerberos(): " + se.toString());
 			return false;
 		}
 
@@ -484,8 +471,8 @@ public class UnivOfMichUserDirectoryProvider
 			// attempt authentication
 			lc.login();
 
-			if (m_logger.isDebugEnabled())
-				m_logger.debug(this + ".useKnownToKerberos(" + user + "): kerberos success!");
+			if (log.isDebugEnabled())
+				log.debug(this + ".useKnownToKerberos(" + user + "): kerberos success!");
 
 			return true;
 		}
@@ -496,16 +483,16 @@ public class UnivOfMichUserDirectoryProvider
 			// if this is the message, the user was good, the password was bad
 			if (msg.equals("Pre-authentication information was invalid (24) - Preauthentication failed"))
 			{
-				if (m_logger.isDebugEnabled())
-					m_logger.debug(this + ".useKnownToKerberos(" + user + "): kerberos user exists!");
+				if (log.isDebugEnabled())
+					log.debug(this + ".useKnownToKerberos(" + user + "): kerberos user exists!");
 
 				return true;
 			}
 
 			// the other message is when the user is bad:
 			// Client not found in Kerberos database (6) - Client not found in Kerberos database
-			if (m_logger.isDebugEnabled())
-				m_logger.debug(this + ".userKnownToKerberos(" + user + "): kerberos user does not exist!");
+			if (log.isDebugEnabled())
+				log.debug(this + ".userKnownToKerberos(" + user + "): kerberos user does not exist!");
 
 			return false;
 		}
@@ -549,8 +536,8 @@ public class UnivOfMichUserDirectoryProvider
 			{
 				if (callbacks[i] instanceof TextOutputCallback)
 				{
-					if (m_logger.isDebugEnabled())
-						m_logger.debug("ChefCallbackHandler: TextOutputCallback");
+					if (log.isDebugEnabled())
+						log.debug("ChefCallbackHandler: TextOutputCallback");
 				}
 
 				else if (callbacks[i] instanceof NameCallback)
@@ -574,8 +561,8 @@ public class UnivOfMichUserDirectoryProvider
 
 				else if (callbacks[i] instanceof ConfirmationCallback)
 				{
-					if (m_logger.isDebugEnabled())
-						m_logger.debug("ChefCallbackHandler: ConfirmationCallback");
+					if (log.isDebugEnabled())
+						log.debug("ChefCallbackHandler: ConfirmationCallback");
 				}
 
 				else
@@ -636,8 +623,8 @@ public class UnivOfMichUserDirectoryProvider
 		}
 		catch (Exception e)
 		{
-			if (m_logger.isDebugEnabled())
-				m_logger.debug(this +".authenticateCosign(): " + e.toString());
+			if (log.isDebugEnabled())
+				log.debug(this +".authenticateCosign(): " + e.toString());
 			return false;
 		}
 
@@ -660,8 +647,8 @@ public class UnivOfMichUserDirectoryProvider
 		}
 		catch (Exception e)
 		{
-			if (m_logger.isDebugEnabled())
-				m_logger.debug(this +".authenticateCosign(): " + e.toString());
+			if (log.isDebugEnabled())
+				log.debug(this +".authenticateCosign(): " + e.toString());
 			return false;
 		}
 

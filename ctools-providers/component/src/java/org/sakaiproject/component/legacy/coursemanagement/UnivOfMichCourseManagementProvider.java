@@ -39,6 +39,7 @@ import java.util.Vector;
 //import org.sakaiproject.service.legacy.coursemanagement.CourseMember;
 //import org.sakaiproject.service.legacy.coursemanagement.Term;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.util.api.umiac.UmiacClient;
@@ -67,18 +68,8 @@ public class UnivOfMichCourseManagementProvider
 	* Dependencies and their setter methods
 	*******************************************************************************/
 
-	/** Dependency: logging service */
-	protected Log m_logger = null;
-
-	/**
-	 * Dependency: logging service.
-	 * @param service The logging service.
-	 */
-	public void setLogger(Log service)
-	{
-		m_logger = service;
-	}
-
+	private static Log log = LogFactory.getLog(UnivOfMichCourseManagementProvider.class);
+	
 	/** Dependency: CurrentService */
 	// protected CurrentService m_currentService = null;
 
@@ -128,11 +119,11 @@ public class UnivOfMichCourseManagementProvider
 	{
 		try
 		{
-			m_logger.info(this +".init()");
+			log.info(this +".init()");
 		}
 		catch (Throwable t)
 		{
-			m_logger.warn(this +".init(): ", t);
+			log.warn(this +".init(): ", t);
 		}
 		
 		termIndex.put("SUMMER", "1");
@@ -151,7 +142,7 @@ public class UnivOfMichCourseManagementProvider
 	*/
 	public void destroy()
 	{
-		m_logger.info(this +".destroy()");
+		log.info(this +".destroy()");
 
 	} // destroy
 
@@ -365,7 +356,7 @@ public class UnivOfMichCourseManagementProvider
 		}
 		catch (Exception e)
 		{
-			//m_logger.info(this + " Cannot find any course in record for the instructor with id " + instructorId + ". ");
+			//log.info(this + " Cannot find any course in record for the instructor with id " + instructorId + ". ");
 		}
 		return rv;
 		

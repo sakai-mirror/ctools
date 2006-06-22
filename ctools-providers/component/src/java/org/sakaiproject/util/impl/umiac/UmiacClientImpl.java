@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.event.api.Event;
@@ -69,23 +70,9 @@ public class UmiacClientImpl
 
 	/** The one and only Umiac client. */
 	protected static UmiacClient M_instance = null;
+	
+	private static Log log = LogFactory.getLog(UmiacClientImpl.class);
 
-	/** Dependency: logging service */
-	protected Log m_logger = null;
-
-	/**
-	 * Dependency: logging service.
-	 * @param service The logging service.
-	 */
-	public void setLogger(Log service)
-	{
-		m_logger = service;
-	}
-
-	public Log getLogger()
-	{
-		return this.m_logger;
-	}
 	
 	/** Get the umiac client. */
 //	private static IUmiacClient getInstance()
@@ -110,12 +97,12 @@ public class UmiacClientImpl
 
 		if (m_host == null)
 		{
-			getLogger().warn(this + " - no 'umiac.address' in configuration");
+			log.warn(this + " - no 'umiac.address' in configuration");
 //			Log.warn("chef", this + " - no 'umiac.address' in configuration");
 		}
 		if (m_port == -1)
 		{
-			getLogger().warn(this + " - no 'umiac.port' in configuration (or invalid integer)");
+			log.warn(this + " - no 'umiac.port' in configuration (or invalid integer)");
 		}
 
 		// build a synchronized map for the call cache, automatiaclly checking for expiration every 15 mins.
@@ -136,17 +123,17 @@ public class UmiacClientImpl
 		try
 		{
 	//		if (Log.getLogger("chef").isDebugEnabled())
-			if (getLogger().isDebugEnabled())
+			if (log.isDebugEnabled())
 			{
-				getLogger().debug(this +".init()");
+				log.debug(this +".init()");
 			}
 		//	m_logger.info(this +".init()");
 		}
 		catch (Throwable t)
 		{
-			if (getLogger().isDebugEnabled())
+			if (log.isDebugEnabled())
 			{
-				getLogger().debug(this +".init(): ", t);
+				log.debug(this +".init(): ", t);
 			}
 		//	m_logger.warn(this +".init(): ", t);
 		}
@@ -157,9 +144,9 @@ public class UmiacClientImpl
 	 */
 	public void destroy()
 	{
-		if (getLogger().isDebugEnabled())
+		if (log.isDebugEnabled())
 		{
-			getLogger().debug(this +".destroy()");
+			log.debug(this +".destroy()");
 		}
 	//	m_logger.info(this +".destroy()");
 	}
@@ -759,9 +746,9 @@ public class UmiacClientImpl
 	*/
 	public Vector makeRawCall(String umiacCommand)
 	{
-		if (getLogger().isDebugEnabled())
+		if (log.isDebugEnabled())
 		{
-			getLogger().debug( this + ".makeCall: " + umiacCommand);
+			log.debug( this + ".makeCall: " + umiacCommand);
 		}
 		PrintWriter out = null;
 		BufferedReader in = null;
@@ -794,7 +781,7 @@ public class UmiacClientImpl
 		}
 		catch (Throwable e)
 		{
-			getLogger().warn("UMIAC: " + e.toString());
+			log.warn("UMIAC: " + e.toString());
 	//		Logger.warn("UMIAC: " + e.toString());
 		}
 		finally
@@ -806,7 +793,7 @@ public class UmiacClientImpl
 				if (out != null) out.close();
 				if (socket != null) socket.close();
 			}
-			catch (Exception ignore){getLogger().warn("UMIAC: " + ignore);}
+			catch (Exception ignore){log.warn("UMIAC: " + ignore);}
 //			catch (Exception ignore){Logger.warn("UMIAC: " + ignore);}
 		}
 		
