@@ -36,14 +36,11 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
     <echo> Extract ctools source ctools.extract.skip=[${ctools.extract.skip}]</echo>
     <execSvnCmd url="${ctools.svnurl}/ctools-apps" revision="${ctools.revision}"  destination="ctools-apps"/> 
     <execSvnCmd url="${ctools.svnurl}/ctools-providers" revision="${ctools.revision}"  destination="ctools-providers"/> 
+    <execSvnCmd url="${ctools.svnurl}/ctools-reference" revision="${ctools.revision}"  destination="ctools-reference"/> 
     <execSvnCmd url="${gradtools.svnurl}" revision="${ctools.revision}"  destination="gradtools" /> 
-    <!--
-    <execSvnCmd url="${gradtools.svnurl}" revision="${ctools.revision}"  additionalArguments="\-\-force" /> 
-    -->
+
     <antcall target="removeUnneededCtools" />
-    <!--
-    <place fromdir="${build.dir}/ctools" />
-    -->
+    <!--    <place fromdir="${build.dir}/ctools" />     -->
   </target>
 
   <!-- change source as required -->
