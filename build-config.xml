@@ -74,7 +74,7 @@
 	</tokenfilter>
 
 	<tokenfilter>
-	  <replaceregex pattern="^(bodyPath@org.sakaiproject.service.legacy.content.ContentHostingService\s*=\s*).*" replace="\1${bodyPath}"/>
+	  <replaceregex pattern="^(bodyPath@org.sakaiproject.content.api.ContentHostingService\s*=\s*).*" replace="\1${bodyPath}"/>
 	</tokenfilter>
 
 	<tokenfilter>
@@ -86,7 +86,7 @@
 	</tokenfilter>
 
 	<tokenfilter>
-	  <replaceregex pattern="^(bodyVolumes@org.sakaiproject.service.legacy.content.ContentHostingService\s*=\s*).*" replace="\1${bodyVolumes}"/>
+	  <replaceregex pattern="^(bodyVolumes@org.sakaiproject.content.api.ContentHostingService\s*=\s*).*" replace="\1${bodyVolumes}"/>
 	</tokenfilter>
 
 	<tokenfilter>
@@ -110,13 +110,28 @@
 	</tokenfilter>
 
 	<tokenfilter>
-	  <replaceregex pattern="^(smtp@org.sakaiproject.service.framework.email.EmailService\s*=\s*).*" 
-			replace="\1${smtp@org.sakaiproject.service.framework.email.EmailService}" />
+	  <replaceregex pattern="^(smtp@org.sakaiproject.email.api.EmailService\s*=\s*).*" 
+			replace="\1${smtp@org.sakaiproject.email.api.EmailService}" />
 	</tokenfilter>
 
 	<tokenfilter>
-	  <replaceregex pattern="^(stealthTools@org.sakaiproject.api.kernel.tool.ActiveToolManager\s*=\s*).*" 
-			replace="\1${stealthTools@org.sakaiproject.api.kernel.tool.ActiveToolManager}"/>
+	  <replaceregex pattern="^(stealthTools@org.sakaiproject.tool.api.ActiveToolManager\s*=\s*).*" 
+			replace="\1${stealthTools@org.sakaiproject.tool.api.ActiveToolManager}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(portal.error.email\s*=\s*).*" 
+			replace="\1${portal.error.email}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(mail.support\s*=\s*).*" 
+			replace="\1${mail.support}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(support.email\s*=\s*).*" 
+			replace="\1${support.email}"/>
 	</tokenfilter>
 
 
