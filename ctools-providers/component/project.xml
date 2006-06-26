@@ -76,6 +76,24 @@
 			<groupId>sakaiproject</groupId>
 			<artifactId>sakai-util</artifactId>
 			<version>${sakai.version}</version>
+			<!--
+			<properties>
+			<war.bundle>true</war.bundle>
+			</properties>
+			-->
+		</dependency>
+		
+
+		<dependency>
+			<groupId>sakaiproject</groupId>
+			<artifactId>sakai-site-manage-util</artifactId>
+			<version>${sakai.version}</version>
+			<!--
+			<properties>
+			<war.bundle>true</war.bundle>
+			</properties>
+			-->
+
 		</dependency>
 		
 			<dependency>
@@ -115,21 +133,16 @@
 			<artifactId>sakai-entity-api</artifactId>
 			<version>${sakai.version}</version>
 		</dependency>
-		
-			<dependency>
-			<groupId>sakaiproject</groupId>
-			<artifactId>sakai-tool-servlet</artifactId>
-			<version>${sakai.version}</version>
-		</dependency>
+
 		<dependency>
 			<groupId>sakaiproject</groupId>
 			<artifactId>sakai-site-manage-api</artifactId>
 			<version>${sakai.version}</version>
 		</dependency>
 		
-		<dependency>
+			<dependency>
 			<groupId>sakaiproject</groupId>
-			<artifactId>sakai-site-manage-util</artifactId>
+			<artifactId>sakai-tool-servlet</artifactId>
 			<version>${sakai.version}</version>
 		</dependency>
 		
