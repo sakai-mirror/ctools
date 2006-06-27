@@ -230,7 +230,7 @@ public class UnivOfMichUserDirectoryProvider
 	*/
 	public boolean getUser(UserEdit edit)
 	{
-		if (!userExists(edit.getId())) return false;
+		if (!userExists(edit.getEid())) return false;
 
 		// lookup the user in UMIAC
 		try

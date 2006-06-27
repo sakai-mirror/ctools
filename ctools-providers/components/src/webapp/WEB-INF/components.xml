@@ -27,7 +27,7 @@
 	<!--	<property name="logger"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property> -->
 	</bean>
 
-	<bean id="org.sakaiproject.authzGroup.api.GroupProvider"
+	<bean id="org.sakaiproject.authz.api.GroupProvider"
 			class="org.sakaiproject.component.legacy.realm.UnivOfMichRealmProvider"
 			init-method="init"
 			destroy-method="destroy"
@@ -36,7 +36,7 @@
 		 <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
 	</bean>
 
-	<bean id="org.sakaiproject.coursemanagement.api.CourseManagementProvider"
+	<bean id="org.sakaiproject.site.api.CourseManagementProvider"
 			class="org.sakaiproject.component.legacy.coursemanagement.UnivOfMichCourseManagementProvider"
 			init-method="init"
 			destroy-method="destroy"
