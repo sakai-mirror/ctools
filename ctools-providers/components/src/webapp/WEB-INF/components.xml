@@ -43,6 +43,7 @@
 			singleton="true">
 	<!--	<property name="logger"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property> -->
 		 <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
+         <property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
 	</bean>
 
 	<bean id="eventwatcher"

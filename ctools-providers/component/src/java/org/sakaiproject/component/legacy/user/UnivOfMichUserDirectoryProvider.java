@@ -240,10 +240,10 @@ public class UnivOfMichUserDirectoryProvider
 		catch (IdUnusedException e)
 		{
 			// if not known to UMIAC, leave firstName blank, last name set to id
-			edit.setLastName(edit.getId());
+			edit.setLastName(edit.getEid());
 		}
 
-		edit.setEmail(edit.getId() + "@umich.edu");
+		edit.setEmail(edit.getEid() + "@umich.edu");
 		edit.setType("uniqname");
 
 		return true;

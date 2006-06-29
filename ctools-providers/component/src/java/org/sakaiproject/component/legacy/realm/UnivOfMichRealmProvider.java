@@ -104,23 +104,23 @@ public class UnivOfMichRealmProvider implements GroupProvider
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getRole(String id, String user)
+	public String getRole(String eid, String user)
 	{
-		if (id == null) return null;
+		if (eid == null) return null;
 
 		String rv = null;
 
 		// compute the set of individual umiac ids that are packed into id
-		String ids[] = unpackId(id);
+		String eids[] = unpackId(eid);
 
 		// use the user's external list of sites : Map of provider id -> role for this user
 		Map map = getUmiac().getUserSections(user);
 		if (!map.isEmpty())
 		{
-			for (int i = 0; i < ids.length; i++)
+			for (int i = 0; i < eids.length; i++)
 			{
 				// does this one of my ids exist in the map?
-				String roleId = (String) map.get(ids[i]);
+				String roleId = (String) map.get(eids[i]);
 				if (roleId != null)
 				{
 					// prefer "Instructor" to "Student" in roles
@@ -138,17 +138,17 @@ public class UnivOfMichRealmProvider implements GroupProvider
 	/**
 	 * {@inheritDoc}
 	 */
-	public Map getUserRolesForGroup(String id)
+	public Map getUserRolesForGroup(String eid)
 	{
-		if (id == null) return new HashMap();
+		if (eid == null) return new HashMap();
 
 		// compute the set of individual umiac ids that are packed into id
-		String ids[] = unpackId(id);
+		String eids[] = unpackId(eid);
 
 		// get a Map of userId - role string (Student, Instructor) for these umiac ids
 		try
 		{
-			Map map = getUmiac().getGroupRoles(ids);
+			Map map = getUmiac().getGroupRoles(eids);
 
 			return map;
 		}
@@ -161,12 +161,12 @@ public class UnivOfMichRealmProvider implements GroupProvider
 	/**
 	 * {@inheritDoc}
 	 */
-	public Map getGroupRolesForUser(String userId)
+	public Map getGroupRolesForUser(String eid)
 	{
-		if (userId == null) return new HashMap();
+		if (eid == null) return new HashMap();
 
 		// get the user's external list of sites : Map of provider id -> role for this user
-		Map map = getUmiac().getUserSections(userId);
+		Map map = getUmiac().getUserSections(eid);
 
 		// transfer to our special map
 		MyMap rv = new MyMap();
@@ -178,12 +178,12 @@ public class UnivOfMichRealmProvider implements GroupProvider
 	/**
 	 * Unpack a multiple id that may contain many full ids connected with "+", each
 	 * of which may have multiple sections enclosed in []
-	 * @param id The multiple group id.
+	 * @param eid The multiple group id.
 	 * @return An array of strings of real umiac group ids, one for each in the multiple.
 	 */
-	public String[] unpackId(String id)
+	public String[] unpackId(String eid)
 	{
-		return m_umiac.unpackId(id);
+		return m_umiac.unpackId(eid);
 	}
 
 	/**
@@ -204,10 +204,10 @@ public class UnivOfMichRealmProvider implements GroupProvider
 			// otherwise break up key as a compound id and find what values we have for these
 			// the values are roles, and we prefer "Instructor" to "Student"
 			String rv = null;
-			String[] ids = unpackId((String) key);
-			for (int i = 0; i < ids.length; i++)
+			String[] eids = unpackId((String) key);
+			for (int i = 0; i < eids.length; i++)
 			{
-				value = super.get(ids[i]);
+				value = super.get(eids[i]);
 				if ((value != null) && !("Instructor".equals(rv)))
 				{
 					rv = (String) value;

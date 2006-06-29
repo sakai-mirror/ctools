@@ -47,6 +47,8 @@ import org.sakaiproject.site.api.Course;
 import org.sakaiproject.site.api.CourseManagementProvider;
 import org.sakaiproject.site.api.CourseMember;
 import org.sakaiproject.site.api.Term;
+import org.sakaiproject.user.api.UserDirectoryService;
+import org.sakaiproject.user.api.UserNotDefinedException;
 
 /**
 * <p>UnivOfMichCourseManagementProvider is CourseManagementProvider that provides a course for any
@@ -94,9 +96,29 @@ public class UnivOfMichCourseManagementProvider
 		m_configService = service;
 	}
 
+	/**
+	 * Dependency: UserDirectoryService.
+	 * *param service the UserDirectoryService.
+	 */
+	private UserDirectoryService m_userDirectoryService;
+	
+	public UserDirectoryService getUserDirectoryService() {
+		return m_userDirectoryService;
+	}
+
+	public void setUserDirectoryService(UserDirectoryService directoryService) {
+		m_userDirectoryService = directoryService;
+	}
+
+	
 	/** Configuration: kerberos or cosign. */
 	protected boolean m_useKerberos = true;
 
+	/**
+	 * Dependency: UmiacClient.
+	 * *param service the UmiacClient.
+	 */
+	
 	/** Dependency: UmiacClient */
 	private UmiacClient m_umiac; 
 	
@@ -297,7 +319,7 @@ public class UnivOfMichCourseManagementProvider
 	
 	/**
 	* Get all the course objects in specific term and with the user as the instructor
-	* @param instructorId The id for the instructor
+	* @param instructorEid The id for the instructor
 	* @param termYear The term year
 	* @param termTerm The term term
 	* @return The list of courses
@@ -306,13 +328,19 @@ public class UnivOfMichCourseManagementProvider
 	{
 		Vector rv = new Vector();
 		int i = 0;
-		
+		String instructorEid = null;
+		try {
+			instructorEid = m_userDirectoryService.getUserEid(instructorId);
+		} catch (UserNotDefinedException e1) {
+			log.warn("No eid for instructorId: "+instructorId,e1);
+			instructorEid = instructorId;
+		}
 		try
 		{
 			//getInstructorSections returns 12 strings: year, term_id, campus_code, 
 			//subject, catalog_nbr, class_section, title, url, component, role, 
 			//subrole, "CL" if cross-listed, blank if not
-			Vector courses = getUmiac().getInstructorSections (instructorId, termYear, (String) termIndex.get(termTerm));
+			Vector courses = getUmiac().getInstructorSections (instructorEid, termYear, (String) termIndex.get(termTerm));
 			
 			int count = courses.size();
 			for (i=0; i<courses.size(); i++)
@@ -362,6 +390,7 @@ public class UnivOfMichCourseManagementProvider
 		
 	}	// getInstructorCourses
 
+	
 }	// UnivOfMichCourseManagementProvider
 
 /**********************************************************************************

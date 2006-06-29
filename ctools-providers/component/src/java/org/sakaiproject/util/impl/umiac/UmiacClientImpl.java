@@ -203,17 +203,17 @@ public class UmiacClientImpl
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#userExists(java.lang.String)
 	 */
-	public boolean userExists(String id)
+	public boolean userExists(String eid)
 	{
-		return (getUserName(id) != null);
+		return (getUserName(eid) != null);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getUserName(java.lang.String)
 	 */
-	public String[] getUserName(String id)
+	public String[] getUserName(String eid)
 	{
-		String command = "getSortName," + id;
+		String command = "getSortName," + eid;
 
 		// check the cache - still use expired entries
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
@@ -385,9 +385,9 @@ public class UmiacClientImpl
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getUserSections(java.lang.String)
 	 */
-	public Map getUserSections(String id)
+	public Map getUserSections(String eid)
 	{
-		String command = "getUserSections," + id;
+		String command = "getUserSections," + eid;
 
 		// check the cache - still use expired entries
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
@@ -564,10 +564,10 @@ public class UmiacClientImpl
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getUserInformation(java.lang.String)
 	 */
-	public Vector getUserInformation (String ids)
+	public Vector getUserInformation (String eids)
 		throws Exception
 	{
-		String command = "getUserInfo," + ids + "\n\n";
+		String command = "getUserInfo," + eids + "\n\n";
 
 		// check the cache - still use expired entries
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
@@ -604,17 +604,17 @@ public class UmiacClientImpl
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getInstructorSections(java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public Vector getInstructorSections (String id, String term_year, String term)
+	public Vector getInstructorSections (String eid, String term_year, String term)
 		throws IdUnusedException
 	{
-		String command = "getInstructorSections," + id + "," + term_year + "," + term + "\n\n";
+		String command = "getInstructorSections," + eid + "," + term_year + "," + term + "\n\n";
 
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
 			Vector rv = (Vector) m_callCache.getExpiredOrNot(command);
 			if (rv == null)
 			{
-				throw new IdUnusedException(id);
+				throw new IdUnusedException(eid);
 			}
 
 			return (Vector) m_callCache.getExpiredOrNot(command);
@@ -629,7 +629,7 @@ public class UmiacClientImpl
 			// cache the miss for 60 minutes
 			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
 
-			throw new IdUnusedException(id);
+			throw new IdUnusedException(eid);
 		}
 
 		Vector rv = new Vector();
@@ -649,17 +649,17 @@ public class UmiacClientImpl
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getInstructorClasses(java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public Vector getInstructorClasses (String id, String term_year, String term)
+	public Vector getInstructorClasses (String eid, String term_year, String term)
 		throws IdUnusedException
 	{
-		String command = "getInstructorClasses," + id + "," + term_year + "," + term + "\n\n";
+		String command = "getInstructorClasses," + eid + "," + term_year + "," + term + "\n\n";
 
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
 			Vector rv = (Vector) m_callCache.getExpiredOrNot(command);
 			if (rv == null)
 			{
-				throw new IdUnusedException(id);
+				throw new IdUnusedException(eid);
 			}
 
 			return (Vector) m_callCache.getExpiredOrNot(command);
@@ -674,7 +674,7 @@ public class UmiacClientImpl
 			// cache the miss for 60 minutes
 			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
 
-			throw new IdUnusedException(id);
+			throw new IdUnusedException(eid);
 		}
 
 		Vector rv = new Vector();
