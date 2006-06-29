@@ -74,7 +74,37 @@ This should have nothing specific to a particular build type.
   <target name="buildImage" depends="assembleImage,modifyImage,bundleImage,summarizeBuild" />
 
 
+
+  <!-- Whice files are available? -->
+  <available property="image.exists.zip" file="${image.dest.dir}/image.${sakai.tag}.zip" />
+  <available property="image.exists.tar.gz" file="${image.dest.dir}/image.${sakai.tag}.tar.gz" />
+
+
   <!-- use zip not tar since the ant tar won't untar the files with long path names -->
+  <target name="installImageLocal" depends="installTomcatImage,installZipImage,installTgzImage" 
+    description="install the image to a local test directory" />
+
+  <target name="installTomcatImage" >
+    <unzip src="${tomcat.base.zip}"
+	   dest="${install.test.dir}/">
+    </unzip>
+  </target>
+
+  <target name="installZipImage" if="image.exists.zip" >
+    <unzip src="${image.dest.dir}/image.${sakai.tag}.zip"
+	   dest="${install.test.dir}/">
+    </unzip>
+
+  </target>
+
+  <target name="installTgzImage" if="image.exists.tar.gz" >
+    <untar src="${image.dest.dir}/image.${sakai.tag}.tar.gz"
+	   dest="${install.test.dir}/"
+	   compression="gzip" />
+  </target>
+
+  <!-- use zip not tar since the ant tar won't untar the files with long path names -->
+  <!--
   <target name="installTestImage"
 	  description="install the image to a local test directory">
     <unzip src="${tomcat.base.zip}"
@@ -85,6 +115,7 @@ This should have nothing specific to a particular build type.
     </unzip>
   </target>
 
+  -->
   <!--
       to uncompress a tar file into an existing tomcat directory you can use something like:
       tar \-\-gunzip -f sakai_2-1_4840.tar.gz -C ~/tomcats/image-test -x
