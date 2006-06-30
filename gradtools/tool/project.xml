@@ -2,7 +2,7 @@
 
 <project>
 	<pomVersion>3</pomVersion>
-	<extend>../../../master/project.xml</extend>
+	<extend>../../master/project.xml</extend>
 	<name>CTools GradTools Tool</name>
 	<groupId>sakaiproject</groupId>
 	<id>ctools-gradtools-tool</id>
