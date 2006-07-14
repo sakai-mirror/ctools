@@ -58,12 +58,13 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <!-- register pieces to build -->
   <import file="./build-ctools.xml" />
-  <import file="./build-mc.xml" /> 
+<!--   <import file="./build-mc.xml" />  -->
   <import file="./build-ufp-um.xml" />
   <import file="./build-melete.xml" />
   <import file="./build-sakai.xml" />
   <import file="./build-osp.xml" />
   <import file="./build-samigo.xml" />
+  <import file="./build-itunesu.xml" />
 
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
@@ -71,7 +72,7 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <!-- Assemble the desired source files. -->
   <target name="getSource" 
-	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getUfpUmSrc,getOSPSrc"
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getUfpUmSrc,getOSPSrc,getItunesuSrc"
 	  description="get the source for sakai and required tools."/>
 
   <!-- Make changes in the source that may be required for this installation. -->

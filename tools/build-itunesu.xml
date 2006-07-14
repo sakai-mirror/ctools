@@ -1,0 +1,48 @@
+<project name="build-itunesu" basedir="." default="info" >
+
+  <!--
+
+   $Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+   
+   Add itunesu podcast tool
+ 
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="itunesuInfo">
+    <echo>
+      This will extract the iTuneU podcasting tool. It should be called by the master build.xml not directly.
+
+      The configuration values are:
+      itunesu.install.skip = ${itunesu.install.skip}
+      itunesu.svnurl = ${itunesu.svnurl}
+      itunesu.revision = ${itunesu.revision}
+    </echo>
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--    deal with User Membership specific source       -->
+  <!-- ================================================== -->
+
+  <target name="getItunesuSrc" unless="itunesu.install.skip">
+    <echo>
+      Extracting itunesu tool: ${itunesu.svnurl} revision: ${itunesu.revision}.
+    </echo>
+    <execSvnCmd url="${itunesu.svnurl}" revision="${itunesu.revision}"/> 
+
+    <!-- take out the extra level of reference for the master/project.xml -->
+    <replaceregexp 
+	file="${build.dir}/itunesu-tool/tool/project.xml"  >
+      <regexp pattern="\.\./\.\./master/project.xml" />
+      <substitution  expression="../master/project.xml" />
+    </replaceregexp>
+
+  </target>
+
+</project>
