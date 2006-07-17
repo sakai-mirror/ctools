@@ -81,14 +81,37 @@ This should have nothing specific to a particular build type.
 
 
   <!-- use zip not tar since the ant tar won't untar the files with long path names -->
-  <target name="installImageLocal" depends="installTomcatImage,installZipImage,installTgzImage" 
+	<!--
+  <target name="installImageLocal" depends="installTomcatImage,installZipImage,installTgzImageZip,installTomcatImageTgz" 
+    description="install the image to a local test directory" />
+-->
+
+  <target name="installImageLocal" depends="installTomcatImageZip,installTomcatImageTgz,installZipImage,installTgzImage"
     description="install the image to a local test directory" />
 
+
+<!--
   <target name="installTomcatImage" >
     <unzip src="${tomcat.base.zip}"
 	   dest="${install.test.dir}/">
     </unzip>
   </target>
+	-->
+
+  <target name="installTomcatImageZip" if="tomcat.base.zip" >
+    <unzip src="${tomcat.base.zip}"
+	   dest="${install.test.dir}/">
+    </unzip>
+  </target>
+
+  <target name="installTomcatImageTgz" if="tomcat.base.gz" >
+	<echo>tomcat.base.gz: ${tomcat.base.gz}</echo>
+    <untar src="${tomcat.base.gz}"
+		compression="gzip"
+	   dest="${install.test.dir}/">
+    </untar>
+  </target>
+
 
   <target name="installZipImage" if="image.exists.zip" >
     <unzip src="${image.dest.dir}/image.${sakai.tag}.zip"
