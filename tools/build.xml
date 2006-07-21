@@ -20,7 +20,11 @@
        - add release "flavor" e.g. standard, pilot, debug (for better log messages)
   -->
 
+  <!--
   <property name="type" value="dummy" />
+  -->
+
+  <property file="./project.properties" />
 
   <import file="./build-type-${type}.xml" /> 
   <import file="./build-type-util.xml" /> 

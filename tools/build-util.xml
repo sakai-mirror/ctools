@@ -148,7 +148,7 @@
     <attribute name="dir" default="${build.dir}" />
     <attribute name="deleteDir" />
     <sequential>
-      <echo> print remove ${build.dir}/@{deleteDir} from build </echo>
+      <echo> remove ${build.dir}/@{deleteDir} from build </echo>
       <delete dir="${build.dir}/@{deleteDir}"  verbose="false" quiet="true" />
     </sequential>
   </macrodef>
