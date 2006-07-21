@@ -44,7 +44,7 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
   </target>
 
   <!-- change source as required -->
-  <target name="editCtools" depends="editGradTools,editDefaultTools" >
+  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades" >
     <!-- edit the files that need to be modified for ctools -->
   </target>
 
@@ -146,6 +146,12 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
       <substitution  expression="" />
     </replaceregexp>
 
+  </target>
+
+  <target name="editGrades">
+    <copy file="${reference.dir}/${gradebook.grades.config.sourcefile}"
+	  tofile="${gradebook.grades.config.tofile}"
+	  overwrite="true"/>
   </target>
 
 </project>
