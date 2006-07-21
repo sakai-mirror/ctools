@@ -44,8 +44,9 @@
 
   <target name="extractMelete" unless="melete.install.skip" >
     <echo> extracting melete:</echo>
-    <execSvnCmd url="${melete.svnurl}" revision="${melete.revision}"/> 
+    <execSvnCmd url="${melete.svnurl}" revision="${melete.revision}" destination="${melete.archivename}"/> 
     <untar src="${build.dir}/${melete.archivename}" dest="${build.dir}" compression="gzip" />
+    <delete file="${build.dir}/${melete.archivename}" />
   </target>
 
   <target name="editMelete" unless="melete.install.skip" >
