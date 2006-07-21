@@ -36,7 +36,7 @@ create table GB_GRADING_SCALE_PERCENTS_T (
    primary key (GRADING_SCALE_ID, LETTER_GRADE)
 );
 alter table GB_GRADE_MAP_T add (GB_GRADING_SCALE_T number(19,0));
-dalter table GB_GRADING_SCALE_GRADES_T add constraint FK5D3F0C955A72817B foreign key (GRADING_SCALE_ID) references GB_GRADING_SCALE_T;
+alter table GB_GRADING_SCALE_GRADES_T add constraint FK5D3F0C955A72817B foreign key (GRADING_SCALE_ID) references GB_GRADING_SCALE_T;
 alter table GB_GRADE_MAP_T add constraint FKADE11225108F4490 foreign key (GB_GRADING_SCALE_T) references GB_GRADING_SCALE_T;
 alter table GB_GRADING_SCALE_PERCENTS_T add constraint FKC98BE4675A72817B foreign key (GRADING_SCALE_ID) references GB_GRADING_SCALE_T;
 create sequence GB_PROPERTY_S;
