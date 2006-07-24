@@ -40,6 +40,8 @@
     <echo> applying patch patch_12711-12713 </echo>
     <echo> build.dir: ${build.dir} </echo>
     <echo> patches.dir: ${patches.dir} </echo>
+    <echo> user.dir: ${user.dir} </echo>
+    <echo> basedir: ${basedir} </echo>
     <exec executable="patch"
 	  dir="${build.dir}"
 	  failonerror="true"
