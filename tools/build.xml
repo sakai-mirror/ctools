@@ -28,6 +28,7 @@
 
   <import file="./build-type-${type}.xml" /> 
   <import file="./build-type-util.xml" /> 
+  <import file="./build-patch.xml" /> 
 
 
 </project>
