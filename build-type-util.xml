@@ -25,6 +25,7 @@ This should have nothing specific to a particular build type.
   <property name="config-file" value="dummy" /> 
 
   <property file="${config-file}" />
+  <property name="patches.dir" value="../../patches" />
   <property name="build.dir" value="./build" />
   <property name="logs.dir" value="./logs" />
   <property name="image.dir" value="./image" />
@@ -50,7 +51,7 @@ This should have nothing specific to a particular build type.
   <!-- There may be multiple targets to support multiple different build types. -->
   <!-- ========================= -->
 
-  <target name="buildCtoolsImage" depends="prepare,getSource,editSource,compileSakai,buildImage,buildConfig"
+  <target name="buildCtoolsImage" depends="prepare,getSource,applyPatches,editSource,compileSakai,buildImage,buildConfig"
 	  description="Build a ctools image based on the properties files specified.">
     <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
   </target>
