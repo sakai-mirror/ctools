@@ -15,7 +15,7 @@
        
   -->
 
-  <target name="meleteBuildInfo">
+  <target name="applyPatchesInfo">
     <echo>
       Apply patches to the exported source.  Should also work for checked out source.
       Note that the naming convention for the patch files is to use the revisions required to 
@@ -39,16 +39,19 @@
   <target name="patch_12711-12713" >
     <echo> applying patch patch_12711-12713 </echo>
     <echo> build.dir: ${build.dir} </echo>
+    <echo> patches.dir: ${patches.dir} </echo>
     <exec executable="patch"
 	  dir="${build.dir}"
 	  failonerror="true"
 	  output="${logs.dir}/${ant.project.name}.log"
 	  append="true">
       <arg value="-p0" />
-      <arg value="-verbose" />
+      <arg value="--verbose" />
       <arg value ="--ignore-whitespace" />
-      <arg value="--dry-run" /> 
-      <arg value="--input=../S.12711-12713.patch" />
+      <!--
+      <arg value="\-\-dry-run" /> 
+      -->
+      <arg value="--input=${patches.dir}/S.12711-12713.patch" />
       <arg value="--backup" />
     </exec>
   </target>
