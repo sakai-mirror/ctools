@@ -283,7 +283,8 @@ public class UnivOfMichUserDirectoryProvider
 
 		// split the string once at the first "@"
 		String parts[] = StringUtil.splitFirst(test, "@");
-		edit.setId(parts[0]);
+	//	edit.setId(parts[0]);
+		edit.setEid(parts[0]);
 		return getUser(edit);
 
 	}	// findUserByEmail
