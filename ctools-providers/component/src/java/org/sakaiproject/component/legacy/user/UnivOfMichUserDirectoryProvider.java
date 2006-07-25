@@ -49,6 +49,7 @@ import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.exception.IdUnusedException;
 // import org.sakaiproject.framework.current.CurrentService;
 import org.sakaiproject.thread_local.cover.ThreadLocalManager;
+import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryProvider;
 import org.sakaiproject.user.api.UserEdit;
 import org.sakaiproject.util.RequestFilter;
@@ -371,6 +372,23 @@ public class UnivOfMichUserDirectoryProvider
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getDisplayId(User user)
+	{
+		// returning eid for now
+		return user.getEid();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getDisplayName(User user)
+	{
+		// punt
+		return user.getDisplayName();
+	}
 	/*******************************************************************************
 	* Kerberos stuff
 	*******************************************************************************/
