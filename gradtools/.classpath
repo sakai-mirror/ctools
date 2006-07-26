@@ -103,7 +103,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/rwiki-tool"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/rwiki-util"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/sam"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/sample-tool-servlet"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/scheduler"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/search-api"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/search-impl"/>
