@@ -1,0 +1,43 @@
+Index: authz/trunk/authz-impl/impl/src/java/org/sakaiproject/authz/impl/BaseAuthzGroupService.java
+===================================================================
+--- authz/trunk/authz-impl/impl/src/java/org/sakaiproject/authz/impl/BaseAuthzGroupService.java	(revision 12555)
++++ authz/trunk/authz-impl/impl/src/java/org/sakaiproject/authz/impl/BaseAuthzGroupService.java	(revision 12556)
+@@ -802,7 +802,8 @@
+ 			{
+ 				String azGroupId = (String) i.next();
+ 				Reference ref = entityManager().newReference(azGroupId);
+-				if ((SiteService.APPLICATION_ID.equals(ref.getType())) && !SiteService.isSpecialSite(ref.getId())
++				if ((SiteService.APPLICATION_ID.equals(ref.getType())) && SiteService.SITE_SUBTYPE.equals(ref.getSubType())
++						&& !SiteService.isSpecialSite(ref.getId())
+ 						&& (!SiteService.isUserSite(ref.getId()) || userId.equals(SiteService.getSiteUserId(ref.getId()))))
+ 				{
+ 					updSites.add(ref.getId());
+@@ -814,7 +815,8 @@
+ 			{
+ 				String azGroupId = (String) i.next();
+ 				Reference ref = entityManager().newReference(azGroupId);
+-				if ((SiteService.APPLICATION_ID.equals(ref.getType())) && !SiteService.isSpecialSite(ref.getId())
++				if ((SiteService.APPLICATION_ID.equals(ref.getType())) && SiteService.SITE_SUBTYPE.equals(ref.getSubType())
++						&& !SiteService.isSpecialSite(ref.getId())
+ 						&& (!SiteService.isUserSite(ref.getId()) || userId.equals(SiteService.getSiteUserId(ref.getId()))))
+ 				{
+ 					unpSites.add(ref.getId());
+@@ -826,7 +828,8 @@
+ 			{
+ 				String azGroupId = (String) i.next();
+ 				Reference ref = entityManager().newReference(azGroupId);
+-				if ((SiteService.APPLICATION_ID.equals(ref.getType())) && !SiteService.isSpecialSite(ref.getId())
++				if ((SiteService.APPLICATION_ID.equals(ref.getType())) && SiteService.SITE_SUBTYPE.equals(ref.getSubType())
++						&& !SiteService.isSpecialSite(ref.getId())
+ 						&& (!SiteService.isUserSite(ref.getId()) || userId.equals(SiteService.getSiteUserId(ref.getId()))))
+ 				{
+ 					visitSites.add(ref.getId());
+@@ -872,7 +875,7 @@
+ 	{
+ 		// Special code for the site service
+ 		Reference ref = entityManager().newReference(azGroup.getId());
+-		if (ref.getType().equals(SiteService.APPLICATION_ID))
++		if (SiteService.APPLICATION_ID.equals(ref.getType()) && SiteService.SITE_SUBTYPE.equals(ref.getSubType()))
+ 		{
+ 			// no azGroup, no users
+ 			Set empty = new HashSet();

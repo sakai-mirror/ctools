@@ -136,22 +136,24 @@ INSERT INTO PERMISSIONS_SRC_TEMP values ('Instructor','content.revise');
 INSERT INTO PERMISSIONS_SRC_TEMP values ('Instructor','site.visit');
 INSERT INTO PERMISSIONS_SRC_TEMP values ('Instructor','site.visit.unp');
 
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','annc.delete.any');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','asn.delete');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','asn.grade');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','asn.new');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','asn.read');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','asn.revise');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','asn.submit');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','calendar.delete');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','calendar.new');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','calendar.read');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','calendar.revise');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','content.delete');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','content.new');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','content.read');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','content.revise');
-INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','site.visit');
+-- UMich has no teaching assistant.
+
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','annc.delete.any');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','asn.delete');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','asn.grade');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','asn.new');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','asn.read');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','asn.revise');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','asn.submit');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','calendar.delete');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','calendar.new');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','calendar.read');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','calendar.revise');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','content.delete');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','content.new');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','content.read');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','content.revise');
+-- INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','site.visit');
 
 -- lookup the role and function numbers
 CREATE TABLE PERMISSIONS_TEMP (ROLE_KEY INTEGER, FUNCTION_KEY INTEGER);
