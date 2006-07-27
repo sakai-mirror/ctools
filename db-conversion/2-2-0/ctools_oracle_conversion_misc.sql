@@ -1,7 +1,9 @@
-
 -- This is the Oracle Sakai 2.1.2 -> 2.2.0 conversion script
 -- This version is modified for the CTools 2.1.2->2.2.0 conversion.  Unmodified versions are in 
 -- the dist directory.
+
+-- $HeadURL:$
+-- $Id:$
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 --
