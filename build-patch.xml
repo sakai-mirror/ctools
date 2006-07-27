@@ -30,11 +30,57 @@
   <!--  -->
   <!-- ================================================== -->
 
-  <target name="applyPatches" depends="patch_12711-12713" />
+
+  <!--
+  <target name="applyPatches" depends="SAK-5548" />
+  -->
+
+  <target name="applyPatches" depends="applyPatches_p3" />
+
+  <target name="applyPatches_p3" >
+    <!-- included -->
+    <!-- <applyPatch patchFileName="SAK-5548.patch" /> -->
+    <applyPatch patchFileName="SAK-5549.patch" />
+    <applyPatch patchFileName="SAK-5551.patch" />
+    <!-- included -->
+    <!-- <applyPatch patchFileName="SAK-5580.patch" /> -->
+    <applyPatch patchFileName="SAK-5655.patch" />
+    <applyPatch patchFileName="SAK-5678.patch" />
+  </target>
+
+  <!--
+  <target name="applyPatchesOld" depends="patch_12555-12556,patch_12711-12713" />
+  -->
 
   <!-- this works.
   patch -p0 /-/-ignore-whitespace /-/-dry-run /-/-input=../S.12711-12713.patch /-/-backup
   -->
+
+  <!--
+  <target name="SAK-5548" ><applyPatch patchFileName="SAK-5548.patch" />  </target>
+  -->
+
+  <macrodef name="applyPatch">
+    <attribute name="patchFileName" />
+    <sequential>
+    <echo> applying patch @{patchFileName}</echo>
+    <echo> patches.dir: ${patches.dir} </echo>
+    <exec executable="patch"
+	  dir="${build.dir}"
+	  failonerror="true"
+	  output="${logs.dir}/${ant.project.name}.log"
+	  append="true">
+      <arg value="-p0" />
+      <arg value="--verbose" />
+      <arg value ="--ignore-whitespace" />
+      <!--
+      <arg value="\-\-dry-run" /> 
+      -->
+      <arg value="--input=${patches.dir}/@{patchFileName}" />
+      <arg value="--backup" />
+    </exec>
+    </sequential>
+  </macrodef>
 
   <target name="patch_12711-12713" >
     <echo> applying patch patch_12711-12713 </echo>
@@ -57,5 +103,51 @@
       <arg value="--backup" />
     </exec>
   </target>
-	   
+
+  <!--
+  <target name="patch_12711-12713" >
+    <echo> applying patch patch_12711-12713 </echo>
+    <echo> build.dir: ${build.dir} </echo>
+    <echo> patches.dir: ${patches.dir} </echo>
+    <echo> user.dir: ${user.dir} </echo>
+    <echo> basedir: ${basedir} </echo>
+    <exec executable="patch"
+	  dir="${build.dir}"
+	  failonerror="true"
+	  output="${logs.dir}/${ant.project.name}.log"
+	  append="true">
+      <arg value="-p0" />
+      <arg value="\-\-verbose" />
+      <arg value ="\-\-ignore-whitespace" />
+      <!\-\-
+      <arg value="\-\-dry-run" /> 
+      \-\->
+      <arg value="\-\-input=${patches.dir}/S.12711-12713.patch" />
+      <arg value="\-\-backup" />
+    </exec>
+  </target>
+
+
+  <target name="patch_12555-12556" >
+    <echo> applying patch patch_12555-12556 </echo>
+    <echo> build.dir: ${build.dir} </echo>
+    <echo> patches.dir: ${patches.dir} </echo>
+    <echo> user.dir: ${user.dir} </echo>
+    <echo> basedir: ${basedir} </echo>
+    <exec executable="patch"
+	  dir="${build.dir}"
+	  failonerror="true"
+	  output="${logs.dir}/${ant.project.name}.log"
+	  append="true">
+      <arg value="-p0" />
+      <arg value="\-\-verbose" />
+      <arg value ="\-\-ignore-whitespace" />
+      <!\-\-
+      <arg value="\-\-dry-run" /> 
+      \-\->
+      <arg value="\-\-input=${patches.dir}/S.12555-12556.patch" />
+      <arg value="\-\-backup" />
+    </exec>
+  </target>
+  -->
 </project>

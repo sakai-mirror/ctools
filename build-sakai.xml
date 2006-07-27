@@ -120,9 +120,9 @@
 	  <env key="MAVEN_OPTS" value="-Djava.net.preferIPv4Stack=true -Xmx512m" />
 
       <arg value="-b" />
-      <!--  sometimes needed with a new build -->
+      <!--  sometimes needed with a new build 
       <arg value="-o" />
-      <!-- -->
+       -->
       <arg value="sakai:clean" />
       <arg value="sakai:build" />
       <arg value="sakai:deploy-zip" />
