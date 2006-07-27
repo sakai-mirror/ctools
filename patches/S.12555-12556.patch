@@ -1,7 +1,7 @@
-Index: authz/trunk/authz-impl/impl/src/java/org/sakaiproject/authz/impl/BaseAuthzGroupService.java
+Index: authz/authz-impl/impl/src/java/org/sakaiproject/authz/impl/BaseAuthzGroupService.java
 ===================================================================
---- authz/trunk/authz-impl/impl/src/java/org/sakaiproject/authz/impl/BaseAuthzGroupService.java	(revision 12555)
-+++ authz/trunk/authz-impl/impl/src/java/org/sakaiproject/authz/impl/BaseAuthzGroupService.java	(revision 12556)
+--- authz/authz-impl/impl/src/java/org/sakaiproject/authz/impl/BaseAuthzGroupService.java	(revision 12555)
++++ authz/authz-impl/impl/src/java/org/sakaiproject/authz/impl/BaseAuthzGroupService.java	(revision 12556)
 @@ -802,7 +802,8 @@
  			{
  				String azGroupId = (String) i.next();
