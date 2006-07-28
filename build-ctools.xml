@@ -74,6 +74,7 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
     <replaceregexp >
 	<fileset dir="${build.dir}/site-manage" >
 	  <include name="**/webapp/tools/sakai.sitesetup.xml" />
+	  <include name="**/webapp/tools/sakai.siteinfo.xml" />
 	</fileset>
       <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
       <substitution 
@@ -83,6 +84,7 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
     <replaceregexp >
 	<fileset dir="${build.dir}/site-manage" >
 	  <include name="**/webapp/tools/sakai.sitesetup.xml" />
+	  <include name="**/webapp/tools/sakai.siteinfo.xml" />
 	</fileset>
 
       <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
@@ -104,6 +106,7 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
 	<include name="**/webapp/tools/sakai.discussion.xml" />
 	<include name="**/webapp/tools/sakai.iframe.xml" />
 	<include name="**/webapp/tools/sakai.resources.xml" />
+	<include name="**/webapp/tools/sakai.rwiki.xml" />
 	<include name="**/webapp/tools/sakai.schedule.xml" />
 	<include name="**/webapp/tools/sakai.siteinfo.xml" />
       </fileset>
