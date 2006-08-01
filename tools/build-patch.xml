@@ -57,7 +57,9 @@
     <applyPatch patchFileName="SAK-5655.patch" />
     <applyPatch patchFileName="SAK-5678.patch" />
     <applyPatch patchFileName="SAK-5681.patch" />
+    <!--  first hunk fails
     <applyPatch patchFileName="SAK-5756.patch" />
+    -->
   </target>
 
 
