@@ -1,0 +1,13 @@
+Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java
+===================================================================
+--- site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 13062)
++++ site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 13063)
+@@ -9330,7 +9330,7 @@
+ 				{
+ 					try
+ 					{
+-						User user = UserDirectoryService.getUser(userString);
++						User user = UserDirectoryService.getUserByEid(userString);
+ 						Participant participant = new Participant();
+ 						participant.name = user.getSortName();
+ 						participant.uniqname = user.getId();
