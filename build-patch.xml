@@ -76,7 +76,7 @@
     <!--  first hunk fails
     <applyPatch patchFileName="SAK-5756.patch" />
     -->
-    <!-- note that the patches should be applied in the revision
+    <!-- Note that the patches should be applied in the revision
     order, not the number of the ticket.
     -->
     <applyPatch patchFileName="SAK-4393.patch" />

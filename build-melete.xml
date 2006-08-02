@@ -50,21 +50,28 @@
   </target>
 
   <target name="editMelete" unless="melete.install.skip" >
-    <!-- update the directory value for the melete uploads. -->
-    <replaceregexp match="&gt;/melete&lt;param-value" replace="${melete.homeDir}" flags="g" >
+
+    <replaceregexp match="&gt;/var&lt;/param-value" replace="${melete.homedir}" flags="g" >
       <fileset dir="${build.dir}/${melete.dirname}">
 	<include name="meleteDocs.xml" />
 	<include name="**/web.xml" />
       </fileset>
     </replaceregexp>
 
-    <replaceregexp match="/melete/packagefiles" replace="${melete.packagingdir}" flags="g" >
+    <replaceregexp match="/var/meleteDocs" replace="${melete.docsdir}" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<include name="meleteDocs.xml" />
+	<include name="**/web.xml" />
+      </fileset>
+    </replaceregexp>
+
+    <replaceregexp match="/var/melete/packagefiles" replace="${melete.packagingdir}" flags="g" >
       <fileset dir="${build.dir}/${melete.dirname}">
 	<include name="**/web.xml" />
       </fileset>
     </replaceregexp>
 
-    <replaceregexp match="/melete/uploads" replace="${melete.uploadDir}" flags="g" >
+    <replaceregexp match="/var/uploads" replace="${melete.uploaddir}" flags="g" >
       <fileset dir="${build.dir}/${melete.dirname}">
 	<include name="meleteDocs.xml" />
 	<include name="**/web.xml" />
