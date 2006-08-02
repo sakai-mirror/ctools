@@ -2,16 +2,6 @@ Index: assignment/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool
 ===================================================================
 --- assignment/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java	(revision 13068)
 +++ assignment/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java	(revision 13069)
-@@ -46,9 +46,7 @@
- import org.sakaiproject.assignment.api.AssignmentSubmissionEdit;
- import org.sakaiproject.assignment.cover.AssignmentService;
- import org.sakaiproject.authz.api.AuthzGroup;
--import org.sakaiproject.authz.api.Member;
- import org.sakaiproject.authz.api.PermissionsHelper;
--import org.sakaiproject.authz.api.Role;
- import org.sakaiproject.authz.cover.AuthzGroupService;
- import org.sakaiproject.calendar.api.Calendar;
- import org.sakaiproject.calendar.api.CalendarEvent;
 @@ -498,9 +496,6 @@
  	/** The alert flag when doing global navigation from improper mode */
  	private static final String ALERT_GLOBAL_NAVIGATION = "alert_global_navigation";
