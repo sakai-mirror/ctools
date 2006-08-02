@@ -1,5 +1,53 @@
 Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java
 ===================================================================
+--- site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 13010)
++++ site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 13011)
+@@ -1410,6 +1410,7 @@
+ 				/*  buildContextForTemplate chef_site-siteInfo-list.vm
+ 				* 
+ 				*/
++				context.put("userDirectoryService", UserDirectoryService.getInstance());
+ 				try
+ 				{
+ 					siteProperties = site.getProperties();
+@@ -9306,7 +9307,7 @@
+ 			for (Iterator i = grants.iterator(); i.hasNext();)
+ 			{
+ 				Member g = (Member) i.next();
+-				String userString = g.getUserId();
++				String userString = g.getUserEid();
+ 				Role r = g.getRole();
+ 				
+ 				boolean alreadyInList = false;
+Index: site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-siteInfo-list.vm
+===================================================================
+--- site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-siteInfo-list.vm	(revision 13010)
++++ site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-siteInfo-list.vm	(revision 13011)
+@@ -322,7 +322,19 @@
+ 								#else
+ 									$participantName
+ 								#end
+-								($participant.getDisplayId())
++								(#set($displayId=false)
++								#set($displayId = $participant.getDisplayId())
++								#if ($!displayId)
++									## for those internal users as Participant objects
++									$displayId
++								#else
++									## for those external users as CourseMember objects
++									#set($user = $!userDirectoryService.getUserByEid($participant.getUniqname()))
++									#if ($!user)
++										#set($displayId=$user.getDisplayId())
++									#end
++									$!displayId
++								#end)
+ 							</h5>
+ 						</td>
+ 						#if ($!isCourseSite)
+
+
+Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java
+===================================================================
 --- site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 13062)
 +++ site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 13063)
 @@ -9330,7 +9330,7 @@
