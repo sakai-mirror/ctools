@@ -27,6 +27,7 @@
     </echo>
   </target>
 
+  <property file="./project.properties" />
   <property name="instance-type.file" value="instance.${instance-type}.properties" />
   <property file="${instance-type.file}" />
 
@@ -35,10 +36,16 @@
 
   <target name="copyConfig">
     <echo> copy from config.dir: ${config.dir} </echo>
+    <echo> copy keystore: ${keystore.dir}/${keystore} </echo>
     <copy todir="${instances.dir}/${instance-type}">
       <fileset dir="${config.dir}">
 	<exclude name="**/sakai.properties"/>
 	<exclude name="**/.project" />
+      </fileset>
+    </copy>
+    <copy todir="${instances.dir}/${instance-type}">
+      <fileset dir="${keystore.dir}">
+	<include name="${keystore}" />
       </fileset>
     </copy>
   </target>
