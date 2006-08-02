@@ -34,7 +34,7 @@
   <target name="applyPatches" depends="SAK-5548" />
   -->
 
-  <target name="applyPatches" depends="applyPatches_p4" />
+  <target name="applyPatches" depends="applyPatches_p5" />
 
   <target name="pplyPatches_p3.old" >
     <!-- included -->
@@ -60,6 +60,26 @@
     <!--  first hunk fails
     <applyPatch patchFileName="SAK-5756.patch" />
     -->
+  </target>
+
+  <target name="applyPatches_p5" >
+    <echo> applying patch level ${patchLevel} </echo>
+    <!-- included -->
+    <!-- <applyPatch patchFileName="SAK-5548.patch" />  -->
+    <applyPatch patchFileName="SAK-5549.patch" />
+    <applyPatch patchFileName="SAK-5551.patch" />
+    <!-- included -->
+    <!-- <applyPatch patchFileName="SAK-5580.patch" />  -->
+    <applyPatch patchFileName="SAK-5655.patch" />
+    <applyPatch patchFileName="SAK-5678.patch" />
+    <applyPatch patchFileName="SAK-5681.patch" />
+    <!--  first hunk fails
+    <applyPatch patchFileName="SAK-5756.patch" />
+    -->
+    <!-- note that the patches should be applied in the revision
+    order, not the number of the ticket.
+    -->
+    <applyPatch patchFileName="SAK-4393.patch" />
   </target>
 
 
