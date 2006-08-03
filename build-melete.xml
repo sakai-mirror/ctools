@@ -51,7 +51,7 @@
 
   <target name="editMelete" unless="melete.install.skip" >
 
-    <replaceregexp match="&gt;/var&lt;/param-value" replace="${melete.homedir}" flags="g" >
+    <replaceregexp match="&gt;/var&lt;/param-value" replace="&gt;${melete.homedir}&lt;/param-value" flags="g" >
       <fileset dir="${build.dir}/${melete.dirname}">
 	<include name="meleteDocs.xml" />
 	<include name="**/web.xml" />
