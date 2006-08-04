@@ -217,4 +217,26 @@
 
   </macrodef>
 
+
+  <!--
+  Set the value of a property to the value of a property with 
+  the name prefix.property.  This is useful if you have a set of 
+  possible alternative values for a property and want to set
+  the actual value at run time.  Create a properties file with 
+  the alternaties differentiated by a prefix and then use the
+  setProperty task (macro) to choose the particular value.
+
+  E.g.
+  mine.pronoun=me
+  yours.pronoun=you
+  <setProperty prefix="yours" name="pronoun" />
+
+  This sets the value of ${pronoun} to "you".
+  -->
+  <macrodef name="setProperty">
+    <attribute name="prefix" />
+    <attribute name="property" />
+    <sequential>
+      <property name="@{property}" value="${@{prefix}.@{property}}" />
+    </sequential>
 </project>
