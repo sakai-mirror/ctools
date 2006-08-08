@@ -233,10 +233,12 @@
 
   This sets the value of ${pronoun} to "you".
   -->
+  <!--
   <macrodef name="setProperty">
     <attribute name="prefix" />
     <attribute name="property" />
     <sequential>
       <property name="@{property}" value="${@{prefix}.@{property}}" />
     </sequential>
+ -->
 </project>
