@@ -1,0 +1,42 @@
+<project name="build-mc" basedir="." default="info" >
+
+  <!--
+
+   $Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+   
+   Add the message center.
+ 
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="messagecenterBuildInfo">
+    <echo>
+      This installs the message center tool.  Targets in this file should not be invoked directly
+      but should be called by the master build.xml.
+      The default values for the message center build are given below.  They are usually overridden by 
+      a properties file.
+
+      messagecenter.install.skip = ${messagecenter.install.skip}
+      messagecenter.svnurl = ${messagecenter.svnurl}
+      messagecenter.revision = ${messagecenter.revision}
+    </echo>
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--      deal with MessageCenter specific source       -->
+  <!-- ================================================== -->
+
+  <target name="getMessageCenterSrc" unless="messagecenter.install.skip">
+    <echo>
+      Extracting message center tool: ${messagecenter.svnurl} revision: ${messagecenter.revision}.
+    </echo>
+    <execSvnCmd url="${messagecenter.svnurl}" revision="${messagecenter.revision}"/> 
+  </target>
+
+</project>

@@ -1,0 +1,113 @@
+<project name="build-patches" basedir="." default="info" >
+
+  <!--
+
+   $Id$
+   $HeadURL$
+   
+   Apply patches to the code.  Note that the code has been exported, so that need to apply patch files.
+
+  -->
+
+  <!-- 
+       TTD:
+       
+  -->
+
+  <target name="applyPatchesInfo">
+    <echo>
+      Apply patches to the exported source.  Should also work for checked out source.
+      Note that the naming convention for the patch files is to use the revisions required to 
+      GENERATE the patch.  That means the first revision number will be 1 less than first revision
+      with a change, so that those differences will be extracted.
+      Note also that the patch should work in the environment of an extracted Sakai distribution.  
+      The '/trunk' element may need to be removed from the path.
+    </echo>
+  </target>
+
+  <!-- ================================================== -->
+  <!--  -->
+  <!-- ================================================== -->
+
+
+  <!--
+  <target name="applyPatches" depends="SAK-5548" />
+  -->
+
+  <target name="applyPatches" depends="applyPatches_p5" />
+
+  <target name="pplyPatches_p3.old" >
+    <!-- included -->
+    <!-- <applyPatch patchFileName="SAK-5548.patch" /> -->
+    <applyPatch patchFileName="SAK-5549.patch" />
+    <applyPatch patchFileName="SAK-5551.patch" />
+    <!-- included -->
+    <!-- <applyPatch patchFileName="SAK-5580.patch" /> -->
+    <applyPatch patchFileName="SAK-5655.patch" />
+    <applyPatch patchFileName="SAK-5678.patch" />
+  </target>
+
+  <target name="applyPatches_p4" >
+    <!-- included -->
+    <!-- <applyPatch patchFileName="SAK-5548.patch" /> -->
+    <applyPatch patchFileName="SAK-5549.patch" />
+    <applyPatch patchFileName="SAK-5551.patch" />
+    <!-- included -->
+    <!-- <applyPatch patchFileName="SAK-5580.patch" /> -->
+    <applyPatch patchFileName="SAK-5655.patch" />
+    <applyPatch patchFileName="SAK-5678.patch" />
+    <applyPatch patchFileName="SAK-5681.patch" />
+    <!--  first hunk fails
+    <applyPatch patchFileName="SAK-5756.patch" />
+    -->
+  </target>
+
+  <target name="applyPatches_p5" >
+    <echo> applying patch level ${patchLevel} </echo>
+    <!-- included -->
+    <!-- <applyPatch patchFileName="SAK-5548.patch" />  -->
+    <applyPatch patchFileName="SAK-5549.patch" />
+    <applyPatch patchFileName="SAK-5551.patch" />
+    <!-- included -->
+    <!-- <applyPatch patchFileName="SAK-5580.patch" />  -->
+    <applyPatch patchFileName="SAK-5655.patch" />
+    <applyPatch patchFileName="SAK-5678.patch" />
+    <applyPatch patchFileName="SAK-5681.patch" />
+    <!--  first hunk fails
+    <applyPatch patchFileName="SAK-5756.patch" />
+    -->
+    <!-- Note that the patches should be applied in the revision
+    order, not the number of the ticket.
+    -->
+    <applyPatch patchFileName="SAK-4393.patch" />
+  </target>
+
+
+  <!-- this command line works works.
+  patch -p0 /-/-ignore-whitespace /-/-dry-run /-/-input=../S.12711-12713.patch /-/-backup
+  -->
+
+
+  <macrodef name="applyPatch">
+    <attribute name="patchFileName" />
+    <sequential>
+    <echo> applying patch @{patchFileName}</echo>
+    <echo> patches.dir: ${patches.dir} </echo>
+    <exec executable="patch"
+	  dir="${build.dir}"
+	  failonerror="true"
+	  output="${logs.dir}/${ant.project.name}.log"
+	  append="true">
+      <arg value="-p0" />
+      <arg value="--verbose" />
+      <arg value ="--ignore-whitespace" />
+      <!--
+      <arg value="\-\-dry-run" /> 
+      -->
+      <arg value="--input=${patches.dir}/@{patchFileName}" />
+      <arg value="--backup" />
+    </exec>
+    </sequential>
+  </macrodef>
+
+</project>
