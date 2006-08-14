@@ -89,7 +89,7 @@
 	</bean>
 
 	<!-- Simple configuration handler. -->
-	<!-- comment out to prevent startup race condition -->
+	<!-- comment out to prevent startup race condition 
 	<bean id="org_sakaiproject_service_gradebook_GradebookConfiguration"
 		class="org.sakaiproject.tool.gradebook.facades.sakai2impl.GradebookConfigurationSakai"
 		init-method="init">
