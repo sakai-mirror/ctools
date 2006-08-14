@@ -4,7 +4,7 @@
 <beans>
 
   <!-- 
-       $HeadURL:$
+       $HeadURL$
        $ID:$
   -->
 	<!-- Hibernate mappings -->
@@ -89,6 +89,7 @@
 	</bean>
 
 	<!-- Simple configuration handler. -->
+	<!-- comment out to prevent startup race condition -->
 	<bean id="org_sakaiproject_service_gradebook_GradebookConfiguration"
 		class="org.sakaiproject.tool.gradebook.facades.sakai2impl.GradebookConfigurationSakai"
 		init-method="init">
@@ -98,7 +99,7 @@
 
 		<property name="gradebookService" ref="org.sakaiproject.service.gradebook.GradebookService"/>
 
-		<!-- Set up default system-wide grading scales. -->
+		<!/-/- Set up default system-wide grading scales. /-/->
 
 		<property name="availableGradingScales">
 			<list>
@@ -219,7 +220,7 @@
 					</property>
 				</bean>
 
-<bean class="org.sakaiproject.service.gradebook.shared.GradingScaleDefinition">
+				<bean class="org.sakaiproject.service.gradebook.shared.GradingScaleDefinition">
 					<property name="uid" value="SUS"/>
 					<property name="name" value="Satisfactory/Unsatisfactory (SUS)"/>
 					<property name="grades">
@@ -249,5 +250,7 @@
 		<property name="defaultGradingScale" value="GRD"/>
 
 	</bean>
+	
+	end of comment out to prevent gradebook startup race condition. -->
 </beans>
 
