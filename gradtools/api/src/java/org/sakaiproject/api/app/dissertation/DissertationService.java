@@ -1050,9 +1050,11 @@ public interface DissertationService
 	* Execute a long-running admin data upload in a separate thread.
 	* @param byte[] o OARD data extract upload.
 	* @param byte[] m OARD data extract upload.
+	* @param String oardFileName the OARD data file name or "none" if none
+	* @param String mpFileName the MP data file name or "none" if none
 	* @return String containing message re job execution report.
 	*/
-	public String executeUploadExtractsJob(String site, byte[] o, byte[] m)
+	public String executeUploadExtractsJob(String site, byte[] o, byte[] m, String oardFileName, String mpFileName)
 		throws JobExecutionException;
 
 }	// DissertationService

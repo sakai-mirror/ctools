@@ -99,7 +99,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 	
 	//execution parameters
 	private String m_currentUser = null;
+	private String m_oardFileName = null;
 	private String[] m_oardRecords;
+	private String m_mpFileName = null;
 	private String[] m_mpRecords;
 	
 	//TODO get from ServerConfiguration
@@ -182,6 +184,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			//validate String[]'s
 			//set CandidateInfo's
 			//set StepStatus's
+			
+			buf.append("The OARD Upload File is '" + m_oardFileName + "'." + NEWLINE);
+			buf.append("The MP Upload File is '" + m_mpFileName + "'." + NEWLINE);
 		
 			//note job is starting
 			buf.append(getTime() + " JOB NAME: " + jobName + " - START" + NEWLINE);
@@ -216,6 +221,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			//if there are no validation errors, convert and use the data
 			if(!vErrors)
 			{
+				buf.append("There were no validation errors, so the data will be used to update checklist status." + NEWLINE);
+				
 				//if we have no ids at this point bail out
 				if(!ids.elements().hasMoreElements())
 				{
@@ -244,8 +251,11 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			}
 			else
 			{	
+				
 				//there were validation errors
 				buf.append(getTime() + " JOB NAME: " + jobName + " - data validation errors" + NEWLINE);
+				buf.append("Because there were validation errors, the data have not be used to update checklist status." + NEWLINE);
+				buf.append("Please correct the errors and upload the data again." + NEWLINE);
 			}
 		}
 		catch(Exception e)
@@ -258,12 +268,6 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		}
 		finally
 		{
-			//add ids to job report
-			if(ids != null && !ids.isEmpty())
-			{
-				buf.append("ids of students in upload:" + NEWLINE);
-				buf.append(ids.toString() + NEWLINE);
-			}
 			
 			//note that job is done
 			buf.append(getTime() + " JOB NAME: " + jobName + " - DONE" + NEWLINE);
@@ -309,7 +313,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		//get job execution parameters from job data map
 		m_currentUser = (String)dataMap.get("CURRENT_USER");
 		m_schoolGroups = (Hashtable)dataMap.get("SCHOOL_GROUPS");
+		m_oardFileName = (String)dataMap.get("OARD_FILE_NAME");
 		m_oardRecords = (String[])dataMap.get("OARD_RECORDS");
+		m_mpFileName = (String)dataMap.get("MP_FILE_NAME");
 		m_mpRecords = (String[])dataMap.get("MP_RECORDS");
 		//m_currentSite = (String)dataMap.get("CURRENT_SITE");
 		
@@ -649,7 +655,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(rollup==null)
 						{
 							vErrors = true;
-							bufO.append(prefix + "1  Explanation: fos " + field_of_study + " does not match an existing group roll-up code.");
+							bufO.append(prefix + "1  Explanation: fos " + field_of_study + " does not match an existing group roll-up code." + NEWLINE);
 						}
 						if(!vErrors)
 						{
@@ -665,7 +671,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						//number of fields exception
 						lineNumber = i + 1;
 						message = "Source: OARD File: Location: line " + lineNumber + " Explanation: has " 
-							+ flds.length + " fields: 14 expected." + NEWLINE;
+							+ flds.length + " fields: 14 expected.";
 						if(m_logger.isInfoEnabled())
 							m_logger.info(this + ".validateOARD: " + message);
 						bufO.append(message);
@@ -1060,7 +1066,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 					}
 					catch(Exception e)
 					{
-						msg = "// CHECK FOR CHEF ID " + oneEmplid + NEWLINE + e.getMessage();
+						msg = "// CHECK FOR CHEF ID " + oneEmplid + NEWLINE + e.getMessage() + NEWLINE;
 						bufQ.append(msg + NEWLINE);
 						m_logger.warn(this + ".queryLists()  " + msg);
 						
@@ -1126,7 +1132,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 					}//check for student's Field of Study
 					catch(Exception e)
 					{
-						msg = "// CHECK FOR PROGRAM " + oneEmplid + NEWLINE + e.getMessage();
+						msg = "// CHECK FOR PROGRAM " + oneEmplid + NEWLINE + e.getMessage() + NEWLINE;
 						bufQ.append(msg + NEWLINE);
 						m_logger.warn(this + ".queryLists() " + msg);
 						
@@ -1239,7 +1245,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 				}
 				catch(Exception e)
 				{
-					msg = "// GET CANDIDATE INFO FOR ID " + oneEmplid + NEWLINE + e.getMessage();
+					msg = "// GET CANDIDATE INFO FOR ID " + oneEmplid + NEWLINE + e.getMessage() + NEWLINE;
 					bufQ.append(msg + NEWLINE);
 					m_logger.warn(this + ".queryLists() " + msg);
 					

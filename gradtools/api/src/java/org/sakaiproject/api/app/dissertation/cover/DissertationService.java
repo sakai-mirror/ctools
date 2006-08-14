@@ -997,14 +997,14 @@ public class DissertationService
 		return service.getDataFileProperties(param0);
 	}
 	
-	public static java.lang.String executeUploadExtractsJob(java.lang.String param0, byte[] param1, byte[] param2)
+	public static java.lang.String executeUploadExtractsJob(java.lang.String param0, byte[] param1, byte[] param2, String param3, String param4)
 		throws JobExecutionException
 	{
 		org.sakaiproject.api.app.dissertation.DissertationService service = getInstance();
 		if (service == null)
 			return null;
 
-		return service.executeUploadExtractsJob(param0, param1, param2);
+		return service.executeUploadExtractsJob(param0, param1, param2, param3, param4);
 	}
 
 	public static boolean isLoading()

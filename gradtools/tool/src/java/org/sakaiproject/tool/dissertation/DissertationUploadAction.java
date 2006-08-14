@@ -89,8 +89,10 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 	private final static String  STATE_INITIALIZED = "initialized";
 	private final static String  STATE_ACTION = "DisserationUploadAction";
 	private final static String  STATE_OARDFILE = "oardext";
+	private final static String  STATE_OARD_FILE_NAME = "oardfilename";
 	private final static String  STATE_OARD_CONTENT_STRING = "oard_content_string";
 	private final static String  STATE_MPFILE = "mpext";
+	private final static String  STATE_MP_FILE_NAME = "mpfilename";
 	private final static String  STATE_MP_CONTENT_STRING = "mp_content_string";
 	private final static String  STATE_LOAD_ERRORS = "load_errors";
 	private final static String  STATE_MAX_LOAD_MESSAGES_TO_DISPLAY = "max_load_errors";
@@ -1566,7 +1568,11 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 			
 			//put FileItem(s) in state pending confirmation
 			state.setAttribute(STATE_OARDFILE, OARDFileItem);
+			if(OARDFileItem != null)
+				state.setAttribute(STATE_OARD_FILE_NAME, OARDFileItem.getFileName());
 			state.setAttribute(STATE_MPFILE, MPFileItem);
+			if(MPFileItem != null)
+				state.setAttribute(STATE_MP_FILE_NAME, MPFileItem.getFileName());
 		}
 		else
 		{
@@ -2137,7 +2143,9 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		boolean MP = false;
 		boolean OARD = false;
 		String oardContent = null;
+		String oardFileName = (String)state.getAttribute(STATE_OARD_FILE_NAME);
 		String mpContent = null;
+		String mpFileName = (String)state.getAttribute(STATE_MP_FILE_NAME);
 		String msg = null;
 		//String currentSite = PortalService.getCurrentSiteId();
 		String currentSite = ToolManager.getCurrentPlacement().getContext();
@@ -2152,15 +2160,21 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		MP = (mpContent != null && mpContent.length()!=0) ? true:false;
 		OARD = (oardContent != null && oardContent.length()!=0) ? true:false;
 		
+		if(oardFileName == null || oardFileName == "")
+			oardFileName = "none";
+			
+		if(mpFileName == null || mpFileName == "")
+			mpFileName = "none";
+		
 		//upload the data
 		try
 		{
 			if(MP && OARD)
-				msg = DissertationService.executeUploadExtractsJob(currentSite, oardContent.getBytes(), mpContent.getBytes());
+				msg = DissertationService.executeUploadExtractsJob(currentSite, oardContent.getBytes(), mpContent.getBytes(), oardFileName, mpFileName);
 			else if (MP)
-				msg = DissertationService.executeUploadExtractsJob(currentSite, missing, mpContent.getBytes());
+				msg = DissertationService.executeUploadExtractsJob(currentSite, missing, mpContent.getBytes(), oardFileName, mpFileName);
 			else if (OARD)
-				msg = DissertationService.executeUploadExtractsJob(currentSite, oardContent.getBytes(), missing);
+				msg = DissertationService.executeUploadExtractsJob(currentSite, oardContent.getBytes(), missing, oardFileName, mpFileName);
 			else
 			{
 				//neither file had content

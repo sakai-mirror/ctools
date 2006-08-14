@@ -12372,7 +12372,7 @@ public abstract class BaseDissertationService
 	 *  (non-Javadoc)
 	 * @see org.sakaiproject.api.app.dissertation.DissertationService#executeUploadExtractsJob(byte[], byte[])
 	 */
-	public String executeUploadExtractsJob(String currentSite, byte[] o, byte[] m)
+	public String executeUploadExtractsJob(String currentSite, byte[] o, byte[] m, String oardFileName, String mpFileName)
 		throws JobExecutionException
 	{
 		/** replaces loadData()
@@ -12428,7 +12428,9 @@ public abstract class BaseDissertationService
 		JobDetail jobDetail = new JobDetail("UploadExtractJob",
 				jobGroup, m_uploadExtractsJob.getClass());
 		JobDataMap jobDataMap = jobDetail.getJobDataMap();
+		jobDataMap.put("OARD_FILE_NAME", oardFileName);
 		jobDataMap.put("OARD_RECORDS", (String[])oardRecords);
+		jobDataMap.put("MP_FILE_NAME", mpFileName);
 		jobDataMap.put("MP_RECORDS", (String[])mpRecords);
 		jobDataMap.put("SCHOOL_SITE", m_schoolSite);
 		jobDataMap.put("MUSIC_PERFORMANCE_SITE", m_musicPerformanceSite);
