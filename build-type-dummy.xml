@@ -5,11 +5,11 @@
   overridden to create a useful build file.
   -->
 
-  <target name="buildCtoolsImage">
+  <target name="buildCToolsImage">
 	<fail>
 	
   	Must specify a value for type on the command line.
-	e.g. ant -Dtype=production buildCtoolsImage
+	e.g. ant -Dtype=production buildCToolsImage
 
 	</fail>
   </target>

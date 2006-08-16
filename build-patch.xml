@@ -34,9 +34,13 @@
   <target name="applyPatches" depends="SAK-5548" />
   -->
 
-  <target name="applyPatches" depends="applyPatches_p5" />
+  <target name="applyPatches" depends="applyPatches_2-2-1_p1" />
 
-  <target name="pplyPatches_p3.old" >
+  <target name="applyPatches_none">
+    <echo> No patches to apply </echo>
+  </target>
+
+  <target name="applyPatches_p3.old" >
     <!-- included -->
     <!-- <applyPatch patchFileName="SAK-5548.patch" /> -->
     <applyPatch patchFileName="SAK-5549.patch" />
@@ -56,6 +60,9 @@
     <!-- <applyPatch patchFileName="SAK-5580.patch" /> -->
     <applyPatch patchFileName="SAK-5655.patch" />
     <applyPatch patchFileName="SAK-5678.patch" />
+
+
+
     <applyPatch patchFileName="SAK-5681.patch" />
     <!--  first hunk fails
     <applyPatch patchFileName="SAK-5756.patch" />
@@ -80,6 +87,10 @@
     order, not the number of the ticket.
     -->
     <applyPatch patchFileName="SAK-4393.patch" />
+  </target>
+
+  <target name="applyPatches_2-2-1_p1" >
+    <applyPatch patchFileName="SAK-5940.patch" />
   </target>
 
 
