@@ -23,7 +23,7 @@ Values particular to a specific build are kept in a properties file.
 The attribute name of file is "config-file" so a specific properties
 file can be set on the command line.  
 
-E.g. "ant -f build-pilot.xml -Dconfig-file=atestconfiguration.properties buildCtoolsImage."
+E.g. "ant -f build-pilot.xml -Dconfig-file=atestconfiguration.properties buildCToolsImage."
 
 It does not default to a useful file since you don't want to just
 build a default configuration for production.
