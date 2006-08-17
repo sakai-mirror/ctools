@@ -1,8 +1,9 @@
 -- This is the Oracle Sakai 2.2.0 -> 2.2.1 conversion script
 
 -- This version annotated for UMich.
--- $HeadURL:$
--- $Id:$
+
+-- $HeadURL$
+-- $Id$
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 --
