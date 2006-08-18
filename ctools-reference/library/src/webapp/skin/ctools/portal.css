@@ -93,7 +93,7 @@ site types are a local setting - adjust */
 }
 .sitenav-max{
 	/*user logged in */
-	height: 8.7em;
+	height: 140px;
 	max-height:140px;
 	min-height:100px;
 	width: 100%;
