@@ -1240,6 +1240,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						
 							//	COMM_CERT_DATE
 							infoEdit.setTimeCommitteeCert(parseTimeString(rec.m_comm_cert_date));
+							
+							//	Degree conferred date
+							infoEdit.setTimeDegreeConferred(parseTimeString(rec.m_degree_conferred_date));
 						}
 					}
 				}
@@ -1519,6 +1522,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 								statusEdit.setAuxiliaryText(memberRole);
 							}
 							
+							//apply the business logic for step completion
 							completionTime = info.getExternalValidation(autoValidNumber);
 							if(completionTime != null)
 							{
