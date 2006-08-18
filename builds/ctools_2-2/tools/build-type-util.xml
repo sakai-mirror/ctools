@@ -90,6 +90,13 @@ This should have nothing specific to a particular build type.
   <target name="installImageLocal" depends="assureTargetDir,installTomcatImageZip,installTomcatImageTgz,installZipImage,installTgzImage"
     description="install the image to a local test directory" />
 
+  <target name="installConfigLocal"
+	  description="install the chosen Sakai / CTools configuration.  Configurations are from the build-install-config.xml file." >
+    <!-- install an appropriate configuration for the desired installation.
+	 This needs to be specified in the build-install-config.xml file
+    -->
+    <!-- Run appropriate target from the build-install-config.xml file -->
+  </target>
 
 <!--
   <target name="installTomcatImage" >
