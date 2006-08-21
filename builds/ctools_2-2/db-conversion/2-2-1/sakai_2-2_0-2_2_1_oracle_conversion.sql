@@ -1,6 +1,9 @@
 -- This is the Oracle Sakai 2.2.0 -> 2.2.1 conversion script
 
 -- This version annotated for UMich CTools
+-- This was modified to correct spelling of Affiliate.
+-- 'varchar' changed to 'varchar2' globally from original script
+-- modify '/site/mercury' to '/site/~mercury'
 
 -- $HeadURL$
 -- $Id$
@@ -35,8 +38,9 @@ alter table osp_wizard modify site_id varchar2(99);
 -- Conversion script error: missing column DURATION in SAM_MEDIA_T
 
 -- UMICH: Use this.
+
 prompt SAK-5595 Alter Sam media table
-alter table SAM_MEDIA_T add (DURATION varchar(36)); 
+alter table SAM_MEDIA_T add (DURATION varchar2(36)); 
 
 ---------------------------------------------------------------------------------
 
@@ -48,28 +52,34 @@ prompt OSP-1289 (modified) add metaobj.delete permissions
 -- http://bugs.osportfolio.org/jira/browse/OSP-1289
 -- Need to add delete to the default metaobj permissions
 
--- This exists in testctools and production
+-- Insert even is shown in realm editor since appearance in realm editor doesn't mean it actually exists in the db yet.
 INSERT INTO SAKAI_REALM_FUNCTION VALUES (SAKAI_REALM_FUNCTION_SEQ.NEXTVAL, 'metaobj.delete');
--- There is no maintain role for UMich !site.template	
--- INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'maintain'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
 
+-- Site / role /realm changes.
+
+----  !site.template changes
+-- There is no maintain role for UMich !site.template	
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'maintain'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
 -- So give it to the other maintain role (Owner) in !site.template
--- !site.template changes
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Owner'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
 
--- !site.template.course
+---- !site.template.course
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.course'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Instructor'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
 -- These 2 added per John L.
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.course'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Owner'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.course'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Affilate'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.course'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Affiliate'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
 
+
+---- !site.template.project
 -- These 2 added per John L.
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.project'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Owner'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
+
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.project'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Organizer'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
 
 -- From original script
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '/site/mercury'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'maintain'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '/site/~mercury'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'maintain'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
 
+-- Per Drew, make sure those content changes stick.
 commit;
 
 ----------------------------------------------------------------------------------
@@ -84,3 +94,4 @@ prompt SAK-5564 Modify SAM ITEMGRADING SUBMITTEDDATE
 
 alter table SAM_ITEMGRADING_T modify (SUBMITTEDDATE date null);
 
+-- end
