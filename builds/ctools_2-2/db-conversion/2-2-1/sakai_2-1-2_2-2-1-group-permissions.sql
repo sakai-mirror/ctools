@@ -1,10 +1,15 @@
 ---------------------------------------------------------------------------------------------------------------
--- backfill new site permissions into existing site realms
+-- backfill new site permissions into existing site realms.
 ---------------------------------------------------------------------------------------------------------------
+-- This failed in the original 2.1.2 -> 2.2.0 conversion.  This is a fixed version of that sql.
+
+-- $HeadURL$
+-- $Id$
 
 
 
 -- for each realm that has a grant of the 'annc.all.groups', we add these others:
+prompt create temp permission table.
 CREATE TABLE PERMISSIONS_TEMP (FUNCTION_KEY INTEGER);
 INSERT INTO PERMISSIONS_TEMP VALUES ((SELECT FUNCTION_KEY FROM SAKAI_REALM_FUNCTION WHERE FUNCTION_NAME ='asn.all.groups'));
 INSERT INTO PERMISSIONS_TEMP VALUES ((SELECT FUNCTION_KEY FROM SAKAI_REALM_FUNCTION WHERE FUNCTION_NAME ='calendar.all.groups'));
@@ -40,6 +45,8 @@ INSERT INTO PERMISSIONS_TEMP VALUES ((SELECT FUNCTION_KEY FROM SAKAI_REALM_FUNCT
 --             FROM SAKAI_REALM_RL_FN SRRFI
 --             WHERE SRRFI.REALM_KEY=SRRF.REALM_KEY AND SRRFI.ROLE_KEY=SRRF.ROLE_KEY AND SRRFI.FUNCTION_KEY=TMP.FUNCTION_KEY)
 
+prompt update the *.all.groups permissions based on the occurance of annc.all.groups in a realm.
+
 insert  into SAKAI_REALM_RL_FN (REALM_KEY, ROLE_KEY, FUNCTION_KEY)
 select SRRF.REALM_KEY, SRRF.ROLE_KEY, TMP.FUNCTION_KEY
 from  SAKAI_REALM_RL_FN SRRF, PERMISSIONS_TEMP TMP
@@ -49,7 +56,12 @@ AND NOT EXISTS (
             FROM SAKAI_REALM_RL_FN SRRFI
             WHERE SRRFI.REALM_KEY=SRRF.REALM_KEY AND SRRFI.ROLE_KEY=SRRF.ROLE_KEY AND SRRFI.FUNCTION_KEY=TMP.FUNCTION_KEY)
 
+prompt delete temporary permissions table
 
 DROP TABLE PERMISSIONS_TEMP;
+
+prompt update finished.
+
+-- end
 
 
