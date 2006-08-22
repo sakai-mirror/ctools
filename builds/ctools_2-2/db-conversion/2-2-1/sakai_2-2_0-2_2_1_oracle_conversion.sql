@@ -52,14 +52,14 @@ prompt OSP-1289 (modified) add metaobj.delete permissions
 -- http://bugs.osportfolio.org/jira/browse/OSP-1289
 -- Need to add delete to the default metaobj permissions
 
--- Insert even is shown in realm editor since appearance in realm editor doesn't mean it actually exists in the db yet.
+-- Insert even if it is shown in realm editor since appearance in realm editor doesn't mean it actually exists in the db yet.
 INSERT INTO SAKAI_REALM_FUNCTION VALUES (SAKAI_REALM_FUNCTION_SEQ.NEXTVAL, 'metaobj.delete');
 
 -- Site / role /realm changes.
 
 ----  !site.template changes
 -- There is no maintain role for UMich !site.template	
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'maintain'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
+-- INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'maintain'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
 -- So give it to the other maintain role (Owner) in !site.template
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Owner'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'metaobj.delete'));
 
