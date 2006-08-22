@@ -4,5 +4,12 @@ Original scripts copied after release of 2.2.1 from https://source.sakaiproject.
 
 Current script is annotated version of original.  
 
-$HeadURL:$
-$Id:$
+The 2.1.2 -> 2.2.0 group permissions update failed since the update
+query was wrong.  The file sakai_2-1-2_2-2-1-group-permissions.sql in
+this directory contains a corrected version of the update sql and
+should be run on any db that was converted from 2.1.2 and has not had
+this run.
+
+------------------------------
+$HeadURL$
+$Id$
