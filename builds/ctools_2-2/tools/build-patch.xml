@@ -97,6 +97,7 @@
     <applyPatch patchFileName="SAK-5777.patch" />
     <applyPatch patchFileName="SAK-5940.patch" />
     <applyPatch patchFileName="SAK-6032.patch" />
+    <applyPatch patchFileName="CT-659.patch" />
   </target>
 
 
