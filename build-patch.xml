@@ -34,7 +34,7 @@
   <target name="applyPatches" depends="SAK-5548" />
   -->
 
-  <target name="applyPatches" depends="applyPatches_2-2-1_p2" />
+  <target name="applyPatches" depends="applyPatches_2-2-1_p3" />
 
   <target name="applyPatches_none">
     <echo> No patches to apply </echo>
@@ -98,6 +98,14 @@
     <applyPatch patchFileName="SAK-5940.patch" />
     <applyPatch patchFileName="SAK-6032.patch" />
     <applyPatch patchFileName="CT-659.patch" />
+  </target>
+
+  <target name="applyPatches_2-2-1_p3" >
+    <applyPatch patchFileName="SAK-5777.patch" />
+    <applyPatch patchFileName="SAK-5940.patch" />
+    <applyPatch patchFileName="SAK-6032.patch" />
+    <applyPatch patchFileName="CT-659.patch" />
+    <applyPatch patchFileName="SPEED.patch" />
   </target>
 
 
