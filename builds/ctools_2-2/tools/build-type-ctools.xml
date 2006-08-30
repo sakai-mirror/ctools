@@ -54,16 +54,18 @@ This doesn't supply the sakai.properties files you want to customize.
        - add release "flavor" e.g. standard, pilot, debug (for better log messages)
   -->
 
-  <import file="./build-type-util.xml" />
+
+
+  <import file="${script.dir}/build-type-util.xml" />
 
   <!-- register pieces to build -->
-  <import file="./build-ctools.xml" />
-  <import file="./build-mc.xml" /> 
-  <import file="./build-ufp-um.xml" />
-  <import file="./build-melete.xml" />
-  <import file="./build-sakai.xml" />
-  <import file="./build-osp.xml" />
-  <import file="./build-samigo.xml" />
+  <import file="${script.dir}/build-ctools.xml" />
+  <import file="${script.dir}/build-mc.xml" /> 
+  <import file="${script.dir}/build-ufp-um.xml" />
+  <import file="${script.dir}/build-melete.xml" />
+  <import file="${script.dir}/build-sakai.xml" />
+  <import file="${script.dir}/build-osp.xml" />
+  <import file="${script.dir}/build-samigo.xml" />
 
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->

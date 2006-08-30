@@ -47,6 +47,8 @@
   <target name="prepareBuildDirs"
 	  description="clean all the directories needed for a build." >
     <echo> build ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
+    <delete dir="${work.dir}" />
+    <mkdir dir="${work.dir}" />
     <delete dir="${build.dir}" />
     <mkdir dir="${build.dir}" />
     <delete dir="${logs.dir}" />
@@ -57,6 +59,7 @@
     <mkdir dir="${instances.dir}" />
     <delete dir="${install.test.dir}" />
     <mkdir dir="${install.test.dir}" />
+    
   </target>
 
   <target name="editMaster">

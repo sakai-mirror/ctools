@@ -36,6 +36,7 @@
 
   <target name="copyConfig">
     <echo> copy from config.dir: ${config.dir} </echo>
+    <echo> copy to instances.dir: ${instances.dir} </echo>
     <echo> copy keystore: ${keystore.dir}/${keystore} </echo>
     <copy todir="${instances.dir}/${instance-type}">
       <fileset dir="${config.dir}">

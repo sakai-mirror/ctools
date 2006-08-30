@@ -24,11 +24,16 @@
   <property name="type" value="dummy" />
   -->
 
-  <property file="./project.properties" />
+  <property name="scripts.dir" value="${basedir}/tools" />
+  <property name="work.dir" value="${basedir}/work" />
+  <property name="patches.dir" value="${basedir}/patches" />
 
-  <import file="./build-type-${type}.xml" /> 
-  <import file="./build-type-util.xml" /> 
-  <import file="./build-patch.xml" /> 
+  <property file="${basedir}/project.properties" />
+
+
+  <import file="${scripts.dir}/build-type-${type}.xml" /> 
+  <import file="${scripts.dir}/build-type-util.xml" /> 
+  <import file="${scripts.dir}/build-patch.xml" /> 
 
 
 </project>
