@@ -18,6 +18,7 @@ This should have nothing specific to a particular build type.
 
   <!-- include extra functional targets -->
   <import file="./build-util.xml" />
+
   <import file="./build-config.xml" />
 
   <!--  <property name="config-file" value="ctools-pilot-200602.properties" /> -->
@@ -25,12 +26,13 @@ This should have nothing specific to a particular build type.
   <property name="config-file" value="dummy" /> 
 
   <property file="${config-file}" />
+<!--  <property name="patches.dir" value="../patches" /> -->
 <!--  <property name="patches.dir" value="/home/dlhaines/ws/builds/ctools_2-2/ctools-summer-06/patches" />  -->
-  <property name="build.dir" value="./build" />
-  <property name="logs.dir" value="./logs" />
-  <property name="image.dir" value="./image" />
-  <property name="instances.dir" value="./instances" />
-  <property name="image.dest.dir" value="." />
+  <property name="build.dir" value="${work.dir}/build" />
+  <property name="logs.dir" value="${work.dir}/logs" />
+  <property name="image.dir" value="${work.dir}/image" />
+  <property name="instances.dir" value="${work.dir}/instances" />
+  <property name="image.dest.dir" value="${work.dir}" />
   <property name="reference.dir" value="${build.dir}/ctools-reference" />
   <property name="config.dir" value="${reference.dir}/config" />
   <property name="svnCmd" value="export" />
@@ -161,13 +163,15 @@ This should have nothing specific to a particular build type.
   <macrodef name="buildPropertiesFile">
     <attribute name="instanceName" />
     <sequential>
-      <ant antfile="build-config.xml" target="buildProperties" inheritAll="false" >
+      <ant antfile="${scripts.dir}/build-config.xml" target="buildProperties" inheritAll="false" >
 	<property name="sakai.properties" value="${sakai.properties}" />
 	<property name="instance-type" value="@{instanceName}" />
 	<property name="instances.dir" value="${instances.dir}" />
 	<property name="version.service" value="${version.service}" />
 	<property name="version.sakai" value="${version.sakai}" />
 	<property name="config.dir" value="${config.dir}" />
+	<property name="keystore.dir" value="${keystore.dir}" />
+	<property name="keystore" value="${keystore}" />
       </ant>
     </sequential>
 
