@@ -53,6 +53,7 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
     <!-- get rid of the ctools master directory since it should NOT 
 	 overwrite the sakai master directory.
     -->
+    <removeFromBuild deleteDir="osp/migration" />
     <!--
     <removeFromBuild deleteDir="ctools/master" />
     <removeFromBuild deleteDir="ctools/ctools-remote" />
