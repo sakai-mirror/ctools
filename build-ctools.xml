@@ -157,7 +157,7 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
 
   <target name="editGrades">
     <copy file="${reference.dir}/${gradebook.grades.config.sourcefile}"
-	  tofile="${gradebook.grades.config.tofile}"
+	  tofile="${build.dir}/${gradebook.grades.config.tofile}"
 	  overwrite="true"/>
   </target>
 
