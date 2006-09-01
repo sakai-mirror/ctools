@@ -34,11 +34,16 @@
   <target name="applyPatches" depends="SAK-5548" />
   -->
 
-  <target name="applyPatches" depends="applyPatches_2-2-1_p3" />
+  <target name="applyPatches" depends="applyPatches_2-2-1_p4" />
 
   <target name="applyPatches_none">
     <echo> No patches to apply </echo>
   </target>
+
+
+  <!-- ================= -->
+  <!-- old 2.2.0 patches -->
+  <!-- ================= -->
 
   <target name="applyPatches_p3.old" >
     <!-- included -->
@@ -89,6 +94,10 @@
     <applyPatch patchFileName="SAK-4393.patch" />
   </target>
 
+  <!-- ================= -->
+  <!--   2.2.1 patches   -->
+  <!-- ================= -->
+
   <target name="applyPatches_2-2-1_p1" >
     <applyPatch patchFileName="SAK-5940.patch" />
   </target>
@@ -98,6 +107,7 @@
     <applyPatch patchFileName="SAK-5940.patch" />
     <applyPatch patchFileName="SAK-6032.patch" />
     <applyPatch patchFileName="CT-659.patch" />
+
   </target>
 
   <target name="applyPatches_2-2-1_p3" >
@@ -105,6 +115,29 @@
     <applyPatch patchFileName="SAK-5940.patch" />
     <applyPatch patchFileName="SAK-6032.patch" />
     <applyPatch patchFileName="CT-659.patch" />
+    <applyPatch patchFileName="SAK-3564.patch" />
+  </target>
+
+  <target name="applyPatches_2-2-1_p4" >
+    <echo message="applying patch set 2-2-1_p4" />
+    <applyPatch patchFileName="SAK-5777.patch" />
+    <applyPatch patchFileName="SAK-5940.patch" />
+    <applyPatch patchFileName="SAK-6032.patch" />
+    <applyPatch patchFileName="CT-659.patch" />
+    
+    <!--
+	By default we build from 2.2.1 Sakai tag and 
+	most recent ctools source.  Since the ctools side of
+	the change is in CTools source, but the Sakai side isn't
+	in 2.2.1, we need to run either the patch (to add 
+	this to 2.2.1, or the undo, to take it out of CTools.
+	-->
+
+    <!--
+    <applyPatch patchFileName="SAK-3564.patch" />
+    -->
+    <applyPatch patchFileName="SAK-3564.undo.patch" />
+
     <applyPatch patchFileName="SPEED.patch" />
   </target>
 
