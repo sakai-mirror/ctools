@@ -34,7 +34,7 @@
   <target name="applyPatches" depends="SAK-5548" />
   -->
 
-  <target name="applyPatches" depends="applyPatches_2-2-1_p4" />
+  <target name="applyPatches" depends="applyPatches_2-2-1_p5" />
 
   <target name="applyPatches_none">
     <echo> No patches to apply </echo>
@@ -118,14 +118,9 @@
     <applyPatch patchFileName="SAK-3564.patch" />
   </target>
 
-  <target name="applyPatches_2-2-1_p4" >
-    <echo message="applying patch set 2-2-1_p4" />
-    <applyPatch patchFileName="SAK-5777.patch" />
-    <applyPatch patchFileName="SAK-5940.patch" />
-    <applyPatch patchFileName="SAK-6032.patch" />
-    <applyPatch patchFileName="CT-659.patch" />
-    
+
     <!--
+	applyPatches_2-2-1_p4
 	By default we build from 2.2.1 Sakai tag and 
 	most recent ctools source.  Since the ctools side of
 	the change is in CTools source, but the Sakai side isn't
@@ -136,13 +131,30 @@
     <!--
     <applyPatch patchFileName="SAK-3564.patch" />
     -->
-    <applyPatch patchFileName="SAK-3564.undo.patch" />
 
+  <target name="applyPatches_2-2-1_p4" >
+    <echo message="applying patch set 2-2-1_p4" />
+    <applyPatch patchFileName="SAK-5777.patch" />
+    <applyPatch patchFileName="SAK-5940.patch" />
+    <applyPatch patchFileName="SAK-6032.patch" />
+    <applyPatch patchFileName="CT-659.patch" />
+    <applyPatch patchFileName="SAK-3564.undo.patch" />
     <applyPatch patchFileName="SPEED.patch" />
   </target>
 
+  <target name="applyPatches_2-2-1_p5" >
+    <echo message="applying patch set 2-2-1_p4" />
+    <applyPatch patchFileName="SAK-5777.patch" />
+    <applyPatch patchFileName="SAK-5940.patch" />
+    <applyPatch patchFileName="SAK-6032.patch" />
+    <applyPatch patchFileName="CT-659.patch" />
+    <applyPatch patchFileName="SAK-3564.patch" />
+    <applyPatch patchFileName="SPEED.patch" />
+    <applyPatch patchFileName="SAK-6127.patch" />
+  </target>
 
-  <!-- this command line works works.
+
+  <!-- This command line works.
   patch -p0 /-/-ignore-whitespace /-/-dry-run /-/-input=../S.12711-12713.patch /-/-backup
   -->
 
