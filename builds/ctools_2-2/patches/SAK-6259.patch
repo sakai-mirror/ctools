@@ -1,0 +1,124 @@
+svn diff -r14331:14332 https://source.sakaiproject.org/svn
+Index: assignment/assignment-tool/tool/src/webapp/vm/assignment/chef_assignments_list_assignments.vm
+===================================================================
+--- assignment/assignment-tool/tool/src/webapp/vm/assignment/chef_assignments_list_assignments.vm	(revision 14331)
++++ assignment/assignment-tool/tool/src/webapp/vm/assignment/chef_assignments_list_assignments.vm	(revision 14332)
+@@ -366,11 +366,16 @@
+ 								#else
+ 									#set($count=1)
+ 									#foreach ($group in $assignment.Groups)
+-										#if ($count>1)
+-											#set($for=$for.concat(","))
++										## found the associated group
++										#set($groupFound=false)
++										#set($groupFound=$!site.getGroup($group))
++										#if($!groupFound)
++											#if ($count>1)
++												#set($for=$for.concat(","))
++											#end
++											#set($for= $for.concat($groupFound.Title))
++											#set($count=$count+1)
+ 										#end
+-										#set($for= $for.concat($!site.getGroup($group).Title))
+-										#set($count=$count+1)
+ 									#end
+ 								#end
+ 								<td  style="padding-bottom:0">
+
+svn diff -r14332:14333 https://source.sakaiproject.org/svn
+Index: assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java
+===================================================================
+--- assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java	(revision 14332)
++++ assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java	(revision 14333)
+@@ -896,29 +896,83 @@
+ 		
+ 		// check for the allowed groups of the current end use if we need it, and only once
+ 		Collection allowedGroups = null;
++		Site site = null;
++		try
++		{
++			site = SiteService.getSite(context);
++		}
++		catch (IdUnusedException e)
++		{
++			M_log.warn(this + e.getMessage() + " context=" + context);
++		}
+ 		
+ 		for (int x = 0; x < assignments.size(); x++)
+ 		{
+ 			Assignment tempAssignment = (Assignment) assignments.get(x);
+ 			if (tempAssignment.getAccess() == Assignment.AssignmentAccess.GROUPED)
+ 			{
++				
++				// Can at least one of the designated groups been found
++				boolean groupFound = false;
++				
+ 				// if grouped, check that the end user has get access to any of this assignment's groups; reject if not
+ 
+ 				// check the assignment's groups to the allowed (get) groups for the current user
+ 				Collection asgGroups = tempAssignment.getGroups();
+ 
+-				// we need the allowed groups, so get it if we have not done so yet
+-				if (allowedGroups == null)
++				for (Iterator iAsgGroups=asgGroups.iterator(); site!=null && !groupFound && iAsgGroups.hasNext();)
+ 				{
+-					allowedGroups = getGroupsAllowGetAssignment(context);
++					String groupId = (String) iAsgGroups.next();
++					try
++					{
++						if (site.getGroup(groupId) != null)
++						{
++							groupFound = true;
++						}
++					}
++					catch (Exception ee)
++					{
++						M_log.warn(this + ee.getMessage() + groupId);
++					}
++					
+ 				}
+ 				
+-				// reject if there is no intersection
+-				if (!isIntersectionGroupRefsToGroups(asgGroups, allowedGroups)) continue;
++				if (!groupFound)
++				{
++					// if none of the group exists, mark the assignment as draft and list it
++					String assignmentId = tempAssignment.getId();
++					try
++					{
++						AssignmentEdit aEdit = editAssignment(assignmentReference(context, assignmentId));
++						aEdit.setDraft(true);
++						commitEdit(aEdit);
++						rv.add(getAssignment(assignmentId));
++					}
++					catch (Exception e)
++					{
++						M_log.warn(this + e.getMessage() + " assignment id =" + assignmentId);
++						continue;
++					}
++				}
++				else
++				{
++					// we need the allowed groups, so get it if we have not done so yet
++					if (allowedGroups == null)
++					{
++						allowedGroups = getGroupsAllowGetAssignment(context);
++					}
++					
++					// reject if there is no intersection
++					if (!isIntersectionGroupRefsToGroups(asgGroups, allowedGroups)) continue;
++					
++					rv.add(tempAssignment);
++				}
+ 			}
+-			
+-			/// if not reject, add it
+-			rv.add(tempAssignment);
++			else
++			{
++				/// if not reject, add it
++				rv.add(tempAssignment);
++			}
+ 		}
+ 
+ 		return rv;
