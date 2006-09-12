@@ -128,8 +128,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 	private static Pattern m_patternAcademicPlan = Pattern.compile("(^\"[0-9]{4}[A-Z0-9]*\"|^\"[0-9]{4}[A-Z0-9]*\"\r?$|^\"\"$|^\"\"\r?$)");
 	private static Pattern m_patternRole = Pattern.compile("(^\".*\"$|^\"\"$|^\"#EMPTY\"$)"); //not restrictive
 	private static Pattern m_patternMember = Pattern.compile("(^\".*\"$|^\"\"$|^\"#EMPTY\"$)"); //not restrictive
-	private static Pattern m_patternEvalDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4} 0:00)\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4} 0:00)\"$|^\"#EMPTY\"$|^\"\"$|)");
-	private static Pattern m_patternCommitteeApprovedDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4} 0:00)\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4} 0:00)\"\r$|^\"#EMPTY\"\r$|^\"\"\r$|)");
+	private static Pattern m_patternEvalDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"#EMPTY\"$|^\"\"$|)");
+	private static Pattern m_patternCommitteeApprovedDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"\r$|^\"#EMPTY\"\r$|^\"\"\r$|)");
 		
 	//Rackham OARD database fields
 	private static Pattern 	m_patternFOS = Pattern.compile("(^\"[0-9]{4}\"$|^\"\"$)");
@@ -185,8 +185,10 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			//set CandidateInfo's
 			//set StepStatus's
 			
-			buf.append("The OARD Upload File is '" + m_oardFileName + "'." + NEWLINE);
-			buf.append("The MP Upload File is '" + m_mpFileName + "'." + NEWLINE);
+			if(m_oardFileName != null && m_oardFileName.length()>0)
+				buf.append("The OARD Upload File is '" + m_oardFileName + "'." + NEWLINE);
+			if(m_mpFileName != null && m_mpFileName.length()>0)
+				buf.append("The MP Upload File is '" + m_mpFileName + "'." + NEWLINE);
 		
 			//note job is starting
 			buf.append(getTime() + " JOB NAME: " + jobName + " - START" + NEWLINE);
@@ -442,9 +444,14 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		String prefix = "";
 		int lineNumber = 0;
 		StringBuffer bufO = new StringBuffer();
+		
+		//TODO REMOVE
+		m_logger.info(getTime() + " createOARDRecords data in: " + lns.toString());
 
 		for (int i = 0; i < lns.length; i++)
 		{
+			//TODO REMOVE
+			m_logger.info(getTime() + " createOARDRecords we're looping through lines");
 			try
 			{
 				//skip last line which contains a single hex value 0x1A
@@ -1049,12 +1056,13 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						commitEdit = true;
 					}
 					
-					//chefId contains Sakai id
+					//chefId contains Sakai id, so we need to translate eid of upload to id
 					try
 					{
-						chefId = infoEdit.getChefId();
-						if(chefId.equals(""))
-						{
+						//if old candidateinfo record has chefId = eid, update it to id
+						//chefId = infoEdit.getChefId();
+						//if(chefId.equals(""))
+						//{
 							//ids contain emplid, eid (campus_id, uniqname)
 							chefId = UserDirectoryService.getUserId((String)ids.get(oneEmplid));
 							if(chefId != null)
@@ -1062,7 +1070,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 							
 							//set flag to save it later
 							commitEdit = true;
-						}
+						//}
 					}
 					catch(Exception e)
 					{
