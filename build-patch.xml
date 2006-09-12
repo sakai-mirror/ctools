@@ -143,7 +143,7 @@
   </target>
 
   <target name="applyPatches_2-2-1_p5" >
-    <echo message="applying patch set 2-2-1_p4" />
+    <echo message="applying patch set 2-2-1_p5" />
     <applyPatch patchFileName="SAK-5777.patch" />
     <applyPatch patchFileName="SAK-5940.patch" />
     <applyPatch patchFileName="SAK-6032.patch" />
@@ -151,6 +151,14 @@
     <applyPatch patchFileName="SAK-3564.patch" />
     <applyPatch patchFileName="SPEED.patch" />
     <applyPatch patchFileName="SAK-6127.patch" />
+    <applyPatch patchFileName="SAK-6259.patch" />
+    <!-- try basic auth for rwiki rss -->
+    <!--
+    <applyPatch patchFileName="SAK-4295-basicauth.java.patch" />
+    <applyPatch patchFileName="SAK-4295-basicauth.patch" />
+    <applyPatch patchFileName="SAK-4295b.patch" />
+    <applyPatch patchFileName="SAK-6139.patch" />
+    -->
   </target>
 
 
