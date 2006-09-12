@@ -1316,6 +1316,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		Time completionTime = null;
 		StringBuffer bufD = new StringBuffer();
 		Vector memberRole = new Vector();
+		String studentIdentifier = null;
 		
 		//if there were errors creating CandidateInfos, note that
 		if(errors != null && !errors.equals(""))
@@ -1330,6 +1331,16 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 				 *  so no need to commit or cancel here */
 				
 				info = (CandidateInfoEdit)data.get(x);
+				try
+				{
+					//a string to identify the student by external identification
+					studentIdentifier = null;
+					studentIdentifier = info.getEmplid() + " " + 
+						UserDirectoryService.getUserEid(info.getChefId() + " ");
+				}
+				catch(Exception e)
+				{
+				}
 				
 				//get the candidate path for this student
 				path = DissertationService.getCandidatePathForCandidate(info.getChefId());
@@ -1356,7 +1367,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(dissertation == null)
 						{
 							m_logger.warn(this + ". dumpData dissertation for school is null");
-							bufD.append(info.getChefId() + ": cannot create student's path, because dissertation for school is null" + NEWLINE);
+							if(studentIdentifier != null)
+								bufD.append(NEWLINE + studentIdentifier + ": cannot create student's path, because dissertation for school is null" + NEWLINE);
 							
 							//note exception and continue with next student
 							continue;
@@ -1370,7 +1382,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(pathEdit == null)
 						{
 							m_logger.warn(this + ". dumpData pathEdit from addCandidatePath is null");
-							bufD.append(info.getChefId() + ": cannot create CandidatePath, because path from addCandidatePath was null" + NEWLINE);
+							if(studentIdentifier != null)
+								bufD.append(NEWLINE + studentIdentifier + ": cannot create CandidatePath, because path from addCandidatePath was null" + NEWLINE);
 							
 							//continue with next student
 							continue;
@@ -1385,8 +1398,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						//if sortletter can't be set, alphabetical candidate chooser
 						//won't show this student under a letter
 						if(pathEdit.getSortLetter().equals("") || !((String)pathEdit.getSortLetter()).matches("[A-Z]"))
-						{							
-							bufD.append(info.getChefId() + ": problem setting student's alphabetical letter, path was not created" + NEWLINE);
+						{	
+							if(studentIdentifier != null)
+								bufD.append(NEWLINE + studentIdentifier + ": problem setting student's alphabetical letter, path was not created" + NEWLINE);
 							
 							//clean up by removing step statuses
 							statusRefs = pathEdit.getOrderedStatus().values();
@@ -1412,7 +1426,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 							}
 							catch(Exception e)
 							{
-								bufD.append(info.getChefId() + ": problem removing corresponding CandidateInfo - " + NEWLINE + e.toString() + NEWLINE);
+								if(studentIdentifier != null)
+									bufD.append(NEWLINE + studentIdentifier + ": problem removing corresponding CandidateInfo - " + NEWLINE + e.toString() + NEWLINE);
 							}
 							
 							//continue with the next student
@@ -1423,7 +1438,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						pathEdit.setParentSite(info.getParentSite());
 						if(!(pathEdit.getParentSite().matches("^diss[0-9]*$")))
 						{
-							bufD.append(info.getChefId() + ": problem setting student's parent site" + NEWLINE);
+							if(studentIdentifier != null)
+								bufD.append(NEWLINE + studentIdentifier + ": problem setting student's parent site" + NEWLINE);
 						}
 						
 						//set dissertation steps type
@@ -1434,7 +1450,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 					}
 					catch(Exception e)
 					{
-						bufD.append(info.getChefId() + ": exception setting initial CandidatePath attributes: " + NEWLINE + e.toString() + NEWLINE);
+						if(studentIdentifier != null)
+							bufD.append(NEWLINE + studentIdentifier + ": exception setting initial CandidatePath attributes: " 
+								+ NEWLINE + e.toString() + NEWLINE);
 						if(pathEdit != null && pathEdit.isActiveEdit())
 							DissertationService.cancelEdit(pathEdit);
 						
@@ -1454,8 +1472,11 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 				path = DissertationService.getCandidatePathForCandidate(info.getChefId());
 				if(path == null)
 				{
-					m_logger.warn(this + ".dumpData path from getCandidatePathForCandidate for " + info.getChefId() + " is null");
-					bufD.append(info.getChefId() + ": the path from getCandidatePathForCandidate was null" + NEWLINE); 
+					if(studentIdentifier != null)
+					{
+						m_logger.warn(this + ".dumpData path from getCandidatePathForCandidate for " + studentIdentifier + " is null");
+						bufD.append(NEWLINE + studentIdentifier + ":  the path from getCandidatePathForCandidate was null" + NEWLINE);
+					}
 					
 					//continue with next student
 					continue;
@@ -1632,7 +1653,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						{
 							//note the exception
 							m_logger.warn("DISSERTATION : BASE SERVICE : DUMP DATA : EXCEPTION PROCESSING AUTOVALID NUMBER : " + autoValidationId + " " + nfe.toString());
-							bufD.append(info.getChefId() + ": exception processing step with autovalidation number " + autoValidationId + ": " + NEWLINE + nfe.toString() + NEWLINE);
+							if(studentIdentifier != null)
+								bufD.append(studentIdentifier + ": exception processing step with autovalidation number " + autoValidationId + ": " + NEWLINE + nfe.toString() + NEWLINE);
 							
 							if(statusEdit != null && statusEdit.isActiveEdit())
 								DissertationService.cancelEdit(statusEdit);
@@ -1642,9 +1664,11 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			}
 			catch(Exception e)
 			{
-				m_logger.warn("DISSERTATION : BASE SERVICE : DUMP DATA : EXCEPTION STORING DATA FOR : " + info.getChefId() + ": " + e.toString());
-				bufD.append(info.getChefId() + ": exception " + NEWLINE + e.toString() + NEWLINE);
-				
+				if(studentIdentifier != null)
+				{
+					m_logger.warn("DISSERTATION : BASE SERVICE : DUMP DATA : EXCEPTION STORING DATA FOR : " + studentIdentifier + ": " + e.toString());
+					bufD.append(studentIdentifier + ": exception " + NEWLINE + e.toString() + NEWLINE);
+				}
 				if(pathEdit != null && pathEdit.isActiveEdit())
 					DissertationService.commitEdit(pathEdit);
 				
