@@ -34,7 +34,7 @@
   <target name="applyPatches" depends="SAK-5548" />
   -->
 
-  <target name="applyPatches" depends="applyPatches_2-2-1_p5" />
+  <target name="applyPatches" depends="applyPatches_2-2-1_p6" />
 
   <target name="applyPatches_none">
     <echo> No patches to apply </echo>
@@ -163,6 +163,32 @@
     <applyPatch patchFileName="SAK-5295-6085-6210.patch" />
 
   </target>
+
+<target name="applyPatches_2-2-1_p6" >
+    <echo message="applying patch set 2-2-1_p6" />
+
+    <applyPatch patchFileName="SAK-5777.patch" />
+    <applyPatch patchFileName="SAK-5940.patch" />
+    <applyPatch patchFileName="SAK-6032.patch" />
+    <applyPatch patchFileName="CT-659.patch" />
+    <applyPatch patchFileName="SAK-3564.patch" />
+    <applyPatch patchFileName="SPEED.patch" />
+    <applyPatch patchFileName="SAK-6127.patch" />
+    <applyPatch patchFileName="SAK-6259.patch" />
+
+    <!-- basic auth for rss -->
+    <applyPatch patchFileName="SAK-4295-basicauth.java.patch" />
+    <applyPatch patchFileName="SAK-4295-basicauth.patch" />
+    <applyPatch patchFileName="SAK-4295b.patch" />
+    <applyPatch patchFileName="SAK-6139.patch" />
+
+    <applyPatch patchFileName="SAK-5295-6085-6210.patch" />
+
+    <applyPatch patchFileName="SAK-5115.patch" />
+
+  </target>
+
+  
 
 
   <!-- This command line works.
