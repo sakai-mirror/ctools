@@ -1,0 +1,17 @@
+svn diff -r14516:14517 https://source.sakaiproject.org/svn
+Index: user/user-tool/tool/src/webapp/vm/user/chef_users_edit.vm
+===================================================================
+--- user/user-tool/tool/src/webapp/vm/user/chef_users_edit.vm	(revision 14516)
++++ user/user-tool/tool/src/webapp/vm/user/chef_users_edit.vm	(revision 14517)
+@@ -20,7 +20,10 @@
+ 				<label #if(!$user) for="eid" #end>
+ 					$tlang.getString("useedi.useid")
+ 				</label>
+-				#if(!$user)<input type="text" name="eid" id="eid" #if($valueEid)value="$validator.escapeHtml($valueEid)"#end/>#else$validator.escapeHtml($user.Eid)#end
++				#if($user && !$valueEid)
++					#set($valueEid=$user.Eid)
++				#end
++				<input type="text" name="eid" id="eid" #if($valueEid)value="$validator.escapeHtml($valueEid)"#end/>
+ 			</p>	
+ 			<p class="shorttext">
+ 				<label for="first-name">

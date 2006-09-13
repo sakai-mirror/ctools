@@ -185,6 +185,7 @@
     <applyPatch patchFileName="SAK-5295-6085-6210.patch" />
 
     <applyPatch patchFileName="SAK-5115.patch" />
+    <applyPatch patchFileName="SAK-5705.patch" />
 
   </target>
 
