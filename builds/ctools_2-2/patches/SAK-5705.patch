@@ -15,3 +15,92 @@ Index: user/user-tool/tool/src/webapp/vm/user/chef_users_edit.vm
  			</p>	
  			<p class="shorttext">
  				<label for="first-name">
+
+svn diff -r14571:14572 https://source.sakaiproject.org/svn
+Index: user/user-tool/tool/src/java/org/sakaiproject/user/tool/UsersAction.java
+===================================================================
+--- user/user-tool/tool/src/java/org/sakaiproject/user/tool/UsersAction.java	(revision 14571)
++++ user/user-tool/tool/src/java/org/sakaiproject/user/tool/UsersAction.java	(revision 14572)
+@@ -306,6 +306,9 @@
+ 		// get the user to edit
+ 		UserEdit user = (UserEdit) state.getAttribute("user");
+ 		context.put("user", user);
++		
++		// is super user/admin user?
++		context.put("superUser", Boolean.valueOf(SecurityService.isSuperUser()));
+ 
+ 		// include the password fields?
+ 		context.put("incPw", state.getAttribute("include-password"));
+@@ -561,6 +564,8 @@
+ 			{
+ 				// TODO: this means the EID value is not unique... when we implement EID fully, we need to check this and send it back to the user
+ 				Log.warn("chef", "UsersAction.doSave()" + e);
++				addAlert(state, rb.getString("useact.theuseid1"));
++				return;
+ 			}
+ 		}
+ 
+@@ -833,6 +838,35 @@
+ 		// update
+ 		else
+ 		{
++			if (!user.isActiveEdit())
++			{
++				try
++				{
++					// add the user in one step so that all you need is add not update permission
++					// (the added might be "anon", and anon has add but not update permission)
++					user = UserDirectoryService.editUser(user.getId());
++	
++					// put the user in the state
++					state.setAttribute("user", user);
++				}
++				catch (UserLockedException e)
++				{
++					addAlert(state, rb.getString("useact.somels"));
++					return false;
++				}
++				catch (UserNotDefinedException e)
++				{
++					addAlert(state, rb.getString("useact.use") + " " + user.getId() + " " + rb.getString("useact.notfou"));
++					
++					return false;
++				}
++				catch (UserPermissionException e)
++				{
++					addAlert(state, rb.getString("useact.youdonot3"));
++					return false;
++				}
++			}
++			
+ 			// eid, pw, type might not be editable
+ 			if (eid != null) user.setEid(eid);
+ 			user.setFirstName(firstName);
+Index: user/user-tool/tool/src/webapp/vm/user/chef_users_edit.vm
+===================================================================
+--- user/user-tool/tool/src/webapp/vm/user/chef_users_edit.vm	(revision 14571)
++++ user/user-tool/tool/src/webapp/vm/user/chef_users_edit.vm	(revision 14572)
+@@ -20,10 +20,21 @@
+ 				<label #if(!$user) for="eid" #end>
+ 					$tlang.getString("useedi.useid")
+ 				</label>
+-				#if($user && !$valueEid)
++				#if($!user && !$valueEid)
+ 					#set($valueEid=$user.Eid)
+ 				#end
+-				<input type="text" name="eid" id="eid" #if($valueEid)value="$validator.escapeHtml($valueEid)"#end/>
++				#if(!$user)
++					## creating new account
++					<input type="text" name="eid" id="eid" #if($!valueEid)value="$validator.escapeHtml($!valueEid)"#end/>
++				#else
++					## modifying existing account
++					#if($!superUser)
++						## only admin type user can modify the eid field
++						<input type="text" name="eid" id="eid" #if($!valueEid)value="$validator.escapeHtml($!valueEid)"#end/>
++					#else
++						$validator.escapeHtml($!valueEid)
++					#end
++				#end
+ 			</p>	
+ 			<p class="shorttext">
+ 				<label for="first-name">
