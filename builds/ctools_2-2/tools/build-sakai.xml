@@ -67,6 +67,10 @@
     <removeFromBuild deleteDir="sam/tool/src/java/test" />
     <removeFromBuild deleteDir="providers" />
     <removeFromBuild deleteDir="wsrp" />
+    <removeFromBuild deleteDir="warehouse" />
+    <removeFromBuild deleteDir="reports/api-impl" />
+    <removeFromBuild deleteDir="reports/components" />
+    <removeFromBuild deleteDir="reports/tool" />
 
     <!-- remove for this build.  Find a better way. 
     <removeFromBuild deleteDir="sam" />
