@@ -187,9 +187,10 @@
     <applyPatch patchFileName="SAK-5115.patch" />
     <applyPatch patchFileName="SAK-5705.patch" />
 
+    <applyPatch patchFileName="SAK-6148.patch" />
+
   </target>
 
-  
 
 
   <!-- This command line works.
@@ -215,6 +216,7 @@
       -->
       <arg value="--input=${patches.dir}/@{patchFileName}" />
       <arg value="--backup" />
+      <arg value="--remove-empty-files" />
     </exec>
     </sequential>
   </macrodef>
