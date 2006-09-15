@@ -189,8 +189,16 @@
 
     <applyPatch patchFileName="SAK-6148.patch" />
 
+    <applyPatch patchFileName="SAK-6320.patch" />
+
   </target>
 
+  <!--
+      <target name="applyPatchesTEST" >
+      <echo message="test applying specific patches" />
+      <applyPatch patchFileName="SAK-6320.patch" />
+      </target>
+  -->
 
 
   <!-- This command line works.

@@ -1,0 +1,239 @@
+svn diff -r14676:14677 https://source.sakaiproject.org/svn
+Index: gradebook/app/business/src/java/org/sakaiproject/tool/gradebook/business/impl/GradebookManagerHibernateImpl.java
+===================================================================
+--- gradebook/app/business/src/java/org/sakaiproject/tool/gradebook/business/impl/GradebookManagerHibernateImpl.java	(revision 14676)
++++ gradebook/app/business/src/java/org/sakaiproject/tool/gradebook/business/impl/GradebookManagerHibernateImpl.java	(revision 14677)
+@@ -136,10 +136,9 @@
+                     return new ArrayList();
+                 }
+ 
+-				Query q = session.createQuery("from AbstractGradeRecord as agr where agr.gradableObject.removed=false and agr.gradableObject.id=:gradableObjectId and agr.studentId in (:studentUids) order by agr.pointsEarned");
++				Query q = session.createQuery("from AbstractGradeRecord as agr where agr.gradableObject.removed=false and agr.gradableObject.id=:gradableObjectId order by agr.pointsEarned");
+ 				q.setLong("gradableObjectId", go.getId().longValue());
+-				q.setParameterList("studentUids", studentUids);
+-				List records = q.list();
++				List records = filterGradeRecordsByStudents(q.list(), studentUids);
+ 
+ 				// If this is a course grade, calculate the point totals for the grade records
+ 				if(go.isCourseGrade()) {
+@@ -171,10 +170,9 @@
+                     return new ArrayList();
+                 } else {
+                     Query q = session.createQuery("from AbstractGradeRecord as agr where agr.gradableObject.removed=false and " +
+-                            "agr.gradableObject.gradebook.id=:gradebookId and agr.studentId in (:studentUids) order by agr.pointsEarned");
++                            "agr.gradableObject.gradebook.id=:gradebookId order by agr.pointsEarned");
+                     q.setLong("gradebookId", gradebookId.longValue());
+-                    q.setParameterList("studentUids", studentUids);
+-                    return q.list();
++                    return filterGradeRecordsByStudents(q.list(), studentUids);
+                 }
+             }
+         };
+@@ -211,11 +209,28 @@
+                 Set studentsWithUpdatedAssignmentGradeRecords = new HashSet();
+ 				Set studentsWithExcessiveScores = new HashSet();
+ 
+-				String hql = "select gr.studentId, gr.pointsEarned from AssignmentGradeRecord as gr where gr.gradableObject=:go and gr.studentId in (:studentIds)";
+-                Query q = session.createQuery(hql);
+-                q.setParameter("go", assignment);
+-                q.setParameterList("studentIds", studentIds);
+-				List persistentGradeRecords = q.list();
++				// In the following queries, we retrieve column values instead of
++				// mapped Java objects. This is to avoid a Hibernate NonUniqueObjectException
++				// due to conflicts with the input grade records.
++				List persistentGradeRecords;
++				if (studentIds.size() <= MAX_NUMBER_OF_SQL_PARAMETERS_IN_LIST) {
++					String hql = "select gr.studentId, gr.pointsEarned from AssignmentGradeRecord as gr where gr.gradableObject=:go and gr.studentId in (:studentIds)";
++					Query q = session.createQuery(hql);
++					q.setParameter("go", assignment);
++					q.setParameterList("studentIds", studentIds);
++					persistentGradeRecords = q.list();
++				} else {
++					String hql = "select gr.studentId, gr.pointsEarned from AssignmentGradeRecord as gr where gr.gradableObject=:go";
++					Query q = session.createQuery(hql);
++					q.setParameter("go", assignment);
++					persistentGradeRecords = new ArrayList();
++					for (Iterator iter = q.list().iterator(); iter.hasNext(); ) {
++						Object[] oa = (Object[])iter.next();
++						if (studentIds.contains(oa[0])) {
++							persistentGradeRecords.add(oa);
++						}
++					}
++				}
+ 
+ 				// Construct a map of student id to persistent grade record scores
+                 Map scoreMap = new HashMap();
+@@ -304,11 +319,29 @@
+ 				double totalPointsPossibleInGradebook = getTotalPoints(gb.getId());
+ 
+                 // Find the grade records for these students on this gradable object
+-                String hql = "select gr.studentId, gr.enteredGrade from CourseGradeRecord as gr where gr.gradableObject=:go and gr.studentId in (:studentIds)";
+-                Query q = session.createQuery(hql);
+-                q.setParameter("go", courseGrade);
+-                q.setParameterList("studentIds", gradeRecordSet.getAllStudentIds());
+-                List persistentGradeRecords = q.list();
++				// In the following queries, we retrieve column values instead of
++				// mapped Java objects. This is to avoid a Hibernate NonUniqueObjectException
++				// due to conflicts with the input grade records.
++                Set studentIds = gradeRecordSet.getAllStudentIds();
++				List persistentGradeRecords;
++				if (studentIds.size() <= MAX_NUMBER_OF_SQL_PARAMETERS_IN_LIST) {
++					String hql = "select gr.studentId, gr.enteredGrade from CourseGradeRecord as gr where gr.gradableObject=:go and gr.studentId in (:studentIds)";
++					Query q = session.createQuery(hql);
++					q.setParameter("go", courseGrade);
++					q.setParameterList("studentIds", studentIds);
++					persistentGradeRecords = q.list();
++				} else {
++					String hql = "select gr.studentId, gr.enteredGrade from CourseGradeRecord as gr where gr.gradableObject=:go";
++					Query q = session.createQuery(hql);
++					q.setParameter("go", courseGrade);
++					persistentGradeRecords = new ArrayList();
++					for (Iterator iter = q.list().iterator(); iter.hasNext(); ) {
++						Object[] oa = (Object[])iter.next();
++						if (studentIds.contains(oa[0])) {
++							persistentGradeRecords.add(oa);
++						}
++					}
++				}
+ 
+                 // Construct a map of student id to persistent grade record scores
+                 Map scoreMap = new HashMap();
+@@ -371,12 +404,27 @@
+ 
+         HibernateCallback hc = new HibernateCallback() {
+             public Object doInHibernate(Session session) throws HibernateException {
+-            	Query q = q = session.createQuery(
+-            		"select count(cgr) from CourseGradeRecord as cgr where cgr.enteredGrade is not null and cgr.gradableObject.gradebook.id=:gradebookId and cgr.studentId in (:studentUids)");
+-            	q.setLong("gradebookId", gradebookId.longValue());
+-            	q.setParameterList("studentUids", studentUids);
+-            	Integer total = (Integer)q.list().get(0);
+-                if (log.isInfoEnabled()) log.info("total number of explicitly entered course grade records = " + total);
++				Integer total;
++				if (studentUids.size() <= MAX_NUMBER_OF_SQL_PARAMETERS_IN_LIST) {
++					Query q = session.createQuery(
++						"select count(cgr) from CourseGradeRecord as cgr where cgr.enteredGrade is not null and cgr.gradableObject.gradebook.id=:gradebookId and cgr.studentId in (:studentUids)");
++					q.setLong("gradebookId", gradebookId.longValue());
++					q.setParameterList("studentUids", studentUids);
++					total = (Integer)q.list().get(0);
++					if (log.isInfoEnabled()) log.info("total number of explicitly entered course grade records = " + total);
++				} else {
++					total = new Integer(0);
++					Query q = session.createQuery(
++						"select cgr.studentId from CourseGradeRecord as cgr where cgr.enteredGrade is not null and cgr.gradableObject.gradebook.id=:gradebookId");
++					q.setLong("gradebookId", gradebookId.longValue());
++					for (Iterator iter = q.list().iterator(); iter.hasNext(); ) {
++						String studentId = (String)iter.next();
++						if (studentUids.contains(studentId)) {
++							total = new Integer(1);
++							break;
++						}
++					}
++				}
+                 return total;
+             }
+         };
+@@ -436,10 +484,24 @@
+                     studentIds.add(((EnrollmentRecord)iter.next()).getUser().getUserUid());
+                 }
+ 
+-                Query q = session.createQuery("from GradingEvent as ge where ge.gradableObject=:go and ge.studentId in (:students)");
+-                q.setParameter("go", gradableObject, Hibernate.entity(GradableObject.class));
+-                q.setParameterList("students", studentIds);
+-                return q.list();
++				List eventsList;
++				if (studentIds.size() <= MAX_NUMBER_OF_SQL_PARAMETERS_IN_LIST) {
++					Query q = session.createQuery("from GradingEvent as ge where ge.gradableObject=:go and ge.studentId in (:students)");
++					q.setParameter("go", gradableObject, Hibernate.entity(GradableObject.class));
++					q.setParameterList("students", studentIds);
++					eventsList = q.list();
++				} else {
++					Query q = session.createQuery("from GradingEvent as ge where ge.gradableObject=:go");
++					q.setParameter("go", gradableObject, Hibernate.entity(GradableObject.class));
++					eventsList = new ArrayList();
++					for (Iterator iter = q.list().iterator(); iter.hasNext(); ) {
++						GradingEvent event = (GradingEvent)iter.next();
++						if (studentIds.contains(event.getStudentId())) {
++							eventsList.add(event);
++						}
++					}
++				}
++				return eventsList;
+             }
+         };
+ 
+Index: gradebook/service/impl/src/java/org/sakaiproject/component/gradebook/GradebookServiceHibernateImpl.java
+===================================================================
+--- gradebook/service/impl/src/java/org/sakaiproject/component/gradebook/GradebookServiceHibernateImpl.java	(revision 14676)
++++ gradebook/service/impl/src/java/org/sakaiproject/component/gradebook/GradebookServiceHibernateImpl.java	(revision 14677)
+@@ -548,10 +548,17 @@
+ 
+ 		getHibernateTemplate().execute(new HibernateCallback() {
+ 			public Object doInHibernate(Session session) throws HibernateException {
+-				Query q = session.createQuery("from AssignmentGradeRecord as gr where gr.gradableObject=:go and gr.studentId in (:studentIds)");
+-                q.setParameter("go", assignment);
+-                q.setParameterList("studentIds", studentIds);
+-				List existingScores = q.list();
++				List existingScores;
++				if (studentIds.size() <= MAX_NUMBER_OF_SQL_PARAMETERS_IN_LIST) {
++					Query q = session.createQuery("from AssignmentGradeRecord as gr where gr.gradableObject=:go and gr.studentId in (:studentIds)");
++					q.setParameter("go", assignment);
++					q.setParameterList("studentIds", studentIds);
++					existingScores = q.list();
++				} else {
++					Query q = session.createQuery("from AssignmentGradeRecord as gr where gr.gradableObject=:go");
++					q.setParameter("go", assignment);
++					existingScores = filterGradeRecordsByStudents(q.list(), studentIds);
++				}
+ 
+ 				Set previouslyUnscoredStudents = new HashSet(studentIds);
+ 				Set changedStudents = new HashSet();
+Index: gradebook/service/impl/src/java/org/sakaiproject/component/gradebook/BaseHibernateManager.java
+===================================================================
+--- gradebook/service/impl/src/java/org/sakaiproject/component/gradebook/BaseHibernateManager.java	(revision 14676)
++++ gradebook/service/impl/src/java/org/sakaiproject/component/gradebook/BaseHibernateManager.java	(revision 14677)
+@@ -32,6 +32,7 @@
+ import org.sakaiproject.api.section.coursemanagement.EnrollmentRecord;
+ import org.sakaiproject.api.section.facade.Role;
+ import org.sakaiproject.service.gradebook.shared.GradebookNotFoundException;
++import org.sakaiproject.tool.gradebook.AbstractGradeRecord;
+ import org.sakaiproject.tool.gradebook.CourseGrade;
+ import org.sakaiproject.tool.gradebook.CourseGradeRecord;
+ import org.sakaiproject.tool.gradebook.Gradebook;
+@@ -46,6 +47,10 @@
+ public abstract class BaseHibernateManager extends HibernateDaoSupport {
+     private static final Log log = LogFactory.getLog(BaseHibernateManager.class);
+ 
++    // Oracle will throw a SQLException if we put more than this into a
++    // "WHERE tbl.col IN (:paramList)" query.
++    public static int MAX_NUMBER_OF_SQL_PARAMETERS_IN_LIST = 1000;
++
+     protected SectionAwareness sectionAwareness;
+     protected Authn authn;
+ 
+@@ -239,6 +244,26 @@
+ 		propertiesMap.put(name, value);
+ 	}
+ 
++	/**
++	 * Oracle has a low limit on the maximum length of a parameter list
++	 * in SQL queries of the form "WHERE tbl.col IN (:paramList)".
++	 * Since enrollment lists can sometimes be very long, we've replaced
++	 * such queries with full selects followed by filtering. This helper
++	 * method filters out unwanted grade records. (Typically they're not
++	 * wanted because they're either no longer officially enrolled in the
++	 * course or they're not members of the selected section.)
++	 */
++	protected List filterGradeRecordsByStudents(Collection gradeRecords, Collection studentUids) {
++		List filteredRecords = new ArrayList();
++		for (Iterator iter = gradeRecords.iterator(); iter.hasNext(); ) {
++			AbstractGradeRecord agr = (AbstractGradeRecord)iter.next();
++			if (studentUids.contains(agr.getStudentId())) {
++				filteredRecords.add(agr);
++			}
++		}
++		return filteredRecords;
++	}
++
+     public Authn getAuthn() {
+         return authn;
+     }
