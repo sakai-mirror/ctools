@@ -189,7 +189,9 @@
 
     <applyPatch patchFileName="SAK-6148.patch" />
 
+    <applyPatch patchFileName="SAK-6319.patch" />
     <applyPatch patchFileName="SAK-6320.patch" />
+    <applyPatch patchFileName="SAK-4549.patch" />
 
   </target>
 
