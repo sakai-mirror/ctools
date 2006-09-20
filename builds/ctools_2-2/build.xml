@@ -1,4 +1,4 @@
-<project name="ctoolsBuild" basedir="." default="info" >
+<project name="ctoolsBuild" basedir="." default="buildCToolsImage" >
 
   <!--
 
