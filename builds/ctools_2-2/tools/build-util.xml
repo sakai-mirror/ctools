@@ -46,7 +46,7 @@
 
   <target name="prepareBuildDirs"
 	  description="clean all the directories needed for a build." >
-    <echo> build ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
+    <echo> build ${type} release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
     <delete dir="${work.dir}" />
     <mkdir dir="${work.dir}" />
     <delete dir="${build.dir}" />

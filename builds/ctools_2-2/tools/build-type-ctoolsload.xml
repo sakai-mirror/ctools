@@ -1,4 +1,4 @@
-<project name="build-type-ctoolsload" basedir="." default="info" >
+<project name="build-type-prod" basedir="." default="info" >
 
   <!--
 
@@ -23,7 +23,7 @@ Values particular to a specific build are kept in a properties file.
 The attribute name of file is "config-file" so a specific properties
 file can be set on the command line.  
 
-E.g. "ant -f build-pilot.xml -Dconfig-file=atestconfiguration.properties buildCToolsImage."
+E.g. "ant -f build-pilot.xml -Dconfig-file=atestconfiguration.properties buildCtoolsImage."
 
 It does not default to a useful file since you don't want to just
 build a default configuration for production.
@@ -58,12 +58,8 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <!-- register pieces to build -->
   <import file="./build-ctools.xml" />
-<!--   <import file="./build-mc.xml" />  -->
-  <import file="./build-ufp-um.xml" />
   <import file="./build-melete.xml" />
   <import file="./build-sakai.xml" />
-  <import file="./build-osp.xml" />
-  <import file="./build-samigo.xml" />
   <import file="./build-itunesu.xml" />
 
   <!-- ========================= -->
@@ -72,11 +68,12 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <!-- Assemble the desired source files. -->
   <target name="getSource" 
-	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getUfpUmSrc,getOSPSrc,getItunesuSrc"
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getItunesuSrc"
 	  description="get the source for sakai and required tools."/>
 
+
   <!-- Make changes in the source that may be required for this installation. -->
-  <target name="editSource" depends="editCtools,editSamigo,editMelete" description="Modify/customize source as necessary."/>
+  <target name="editSource" depends="editCtools,editMelete" description="Modify/customize source as necessary."/>
 
 
   <!-- =============================== -->
@@ -94,11 +91,28 @@ This doesn't supply the sakai.properties files you want to customize.
     <buildPropertiesFile instanceName="ctoolsload" />
     <buildPropertiesFile instanceName="testctools" />
     <buildPropertiesFile instanceName="localhost" />
-    <!--
-    <buildPropertiesFile instanceName="whisk" />
-    -->
 
   </target>
 
+  <target name="removeUnneededSakai" >
+    <removeFromBuild deleteDir="portal/portal-mercury" />
+    <removeFromBuild deleteDir="common/common-composite-component/src/test" />
+    <removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
+    <removeFromBuild deleteDir="gradebook/testservice" />
+    <removeFromBuild deleteDir="metaobj/api-impl/src/test" />
+    <removeFromBuild deleteDir="osid/osid-unit-test" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/completetest" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/test" />
+    <removeFromBuild deleteDir="rwiki/radeox/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/testBundle" />
+    <removeFromBuild deleteDir="providers" />
+    <removeFromBuild deleteDir="wsrp" />
+    <removeFromBuild deleteDir="roster" />
+    <removeFromBuild deleteDir="webservices" />
+	<!--
+    <removeFromBuild deleteDir="search" />
+	-->
+  </target>
 
 </project>
