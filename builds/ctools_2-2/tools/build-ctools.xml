@@ -40,7 +40,7 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
     <execSvnCmd url="${gradtools.svnurl}" revision="${ctools.revision}"  destination="gradtools" /> 
 
     <antcall target="removeUnneededCtools" />
-    <!--    <place fromdir="${build.dir}/ctools" />     -->
+
   </target>
 
   <!-- change source as required -->
@@ -50,20 +50,11 @@ $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/bu
 
 
   <target name="removeUnneededCtools" >
-    <!-- get rid of the ctools master directory since it should NOT 
-	 overwrite the sakai master directory.
-    -->
     <removeFromBuild deleteDir="osp/migration" />
-    <!--
-    <removeFromBuild deleteDir="ctools/master" />
-    <removeFromBuild deleteDir="ctools/ctools-remote" />
-    -->
-
-    <!-- this gets rid of the ctools/melete directory, which is not necessary.
-	 Melete is handled separately.
-
-    <removeFromBuild deleteDir="ctools/melete" />
-    -->
+    <removeFromBuild deleteDir="osp/warehouse" />
+    <removeFromBuild deleteDir="osp/reports/api-impl" />
+    <removeFromBuild deleteDir="osp/reports/components" />
+    <removeFromBuild deleteDir="osp/reports/tool" />
   </target>
 
   <!-- add the gradtools configuration changes to the sakai code. -->
