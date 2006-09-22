@@ -2,8 +2,8 @@
 
 
 <!--
-# $Id: cleanupData.pl 47 2006-02-03 18:58:48Z dlhaines $
-# $HeadURL: file:///Volumes/UserData/Users/dlhaines/svn/repo/trunk/mytools/cleanupData.pl $
+# $Id$
+# $HeadURL$
 -->
 
 <target name="sakaiBuildInfo" >
