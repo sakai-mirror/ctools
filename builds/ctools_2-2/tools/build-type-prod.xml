@@ -58,15 +58,8 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <!-- register pieces to build -->
   <import file="./build-ctools.xml" />
-  <!--
-  <import file="./build-ufp-um.xml" />
-  -->
   <import file="./build-melete.xml" />
   <import file="./build-sakai.xml" />
-  <!--
-  <import file="./build-osp.xml" />
-  <import file="./build-samigo.xml" />
-  -->
   <import file="./build-itunesu.xml" />
 
   <!-- ========================= -->
@@ -74,11 +67,6 @@ This doesn't supply the sakai.properties files you want to customize.
   <!-- ========================= -->
 
   <!-- Assemble the desired source files. -->
-  <!--
-  <target name="getSource" 
-	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getUfpUmSrc,getOSPSrc,getItunesuSrc"
-	  description="get the source for sakai and required tools."/>
-  -->
 
   <target name="getSource" 
 	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getItunesuSrc"
@@ -86,7 +74,8 @@ This doesn't supply the sakai.properties files you want to customize.
 
 
   <!-- Make changes in the source that may be required for this installation. -->
-  <target name="editSource" depends="editCtools,editMelete" description="Modify/customize source as necessary."/>
+  <target name="editSource" depends="editCtools,editMelete" 
+	  description="Modify/customize source as necessary."/>
 
 
   <!-- =============================== -->
@@ -110,7 +99,11 @@ This doesn't supply the sakai.properties files you want to customize.
 
   </target>
 
-  <target name="removeUnneededSakai" >
+  <target name="deleteSamigo" if="remove.samigo">
+    <removeFromBuild deleteDir="sam" />
+  </target>
+
+  <target name="removeUnneededSakai" depends="deleteSamigo" >
     <removeFromBuild deleteDir="portal/portal-mercury" />
     <removeFromBuild deleteDir="common/common-composite-component/src/test" />
     <removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
@@ -122,7 +115,7 @@ This doesn't supply the sakai.properties files you want to customize.
     <removeFromBuild deleteDir="rwiki/radeox/src/test" />
     <removeFromBuild deleteDir="rwiki/rwiki/src/test" />
     <removeFromBuild deleteDir="rwiki/rwiki/src/testBundle" />
-    <removeFromBuild deleteDir="sam" />
+    <!-- <removeFromBuild deleteDir="sam" /> -->
     <removeFromBuild deleteDir="providers" />
     <removeFromBuild deleteDir="wsrp" />
     <removeFromBuild deleteDir="roster" />
