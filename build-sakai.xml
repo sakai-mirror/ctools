@@ -88,6 +88,10 @@
   <target name="editSakai" >
   </target>
 
+  <target name="removeSamigo" if="remove.samigo">
+    <removeWarFromImage deleteWar="sakai-samigo.war" />
+  </target>
+
   <target name="imageSakai" >
     <!--
     <removeWarFromImage deleteWar="sakai-wsrp-producer.war" />
@@ -100,18 +104,7 @@
     <removeWarFromImage deleteWar="sakai-sample-tools-browser.war" />
     <removeWarFromImage deleteWar="sakai-sample-tools-jsf1.war" />
     <removeWarFromImage deleteWar="sakai-sample-tools-qa-helper.war" />
-    <!--
-    <removeWarFromImage deleteWar="samigo.war" />
-    -->
     <removeWarFromImage deleteWar="sakai-wsrp-producer.war" />
-    <!--
-    <removeWarFromImage deleteWar="sakai-roster-components.war" />
-    <removeWarFromImage deleteWar="sakai-roster-tool.war" />
-    -->
-
-
-    <!-- added 2006/05/01 -->
-    <removeWarFromImage deleteWar="sakai-samigo.war" />
 
   </target>
 
