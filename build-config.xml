@@ -31,8 +31,8 @@
   <property name="instance-type.file" value="instance.${instance-type}.properties" />
   <property file="${instance-type.file}" />
 
-  <target name="buildProperties" depends="copyConfig, editInstanceSakaiProperties" 
-	  description="copy and edit the sakai.properties files." />
+  <target name="buildProperties" depends="copyConfig, editInstanceSakaiProperties, tarProperties" 
+	  description="copy, edit, and tar up the sakai.properties files." />
 
   <target name="copyConfig">
     <echo> copy from config.dir: ${config.dir} </echo>
@@ -148,6 +148,11 @@
       </filterchain> 
     </copy>
 
+  </target>
+
+  <target name="tarProperties">
+    <tar basedir="${instances.dir}" destfile="${image.dest.dir}/instanceProperties.${sakai.tag}.tar.gz" 
+	 longfile="gnu" compression="gzip" />
   </target>
 
 </project>
