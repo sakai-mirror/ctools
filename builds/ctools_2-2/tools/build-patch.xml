@@ -34,7 +34,7 @@
   <target name="applyPatches" depends="SAK-5548" />
   -->
 
-  <target name="applyPatches" depends="applyPatches_2-2-1_p6" />
+  <target name="applyPatches" depends="applyPatches_2-2-1_p7" />
 
   <target name="applyPatches_none">
     <echo> No patches to apply </echo>
@@ -192,6 +192,16 @@
     <applyPatch patchFileName="SAK-6319.patch" />
     <applyPatch patchFileName="SAK-6320.patch" />
     <applyPatch patchFileName="SAK-4549.patch" />
+
+  </target>
+
+  <!-- try adding just the new patches, and using the prior patch target for the rest -->
+  <target name="applyPatches_2-2-1_p7"  depends="applyPatches_2-2-1_p6" >
+    <echo message="applying patch set 2-2-1_p7" />
+
+    <applyPatch patchFileName="SAK-5765.patch" />
+    <applyPatch patchFileName="SAK-5853.patch" />
+    <applyPatch patchFileName="SAK-6385.patch" />
 
   </target>
 
