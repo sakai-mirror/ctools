@@ -122,8 +122,7 @@
     <attribute name="logdir" default="${logs.dir}" />
     <attribute name="revision" default="${defaultRevision}" />
 <!--    <attribute name="additionalArguments" default="-q" /> -->
-<!--    <attribute name="additionalArguments" default="\-\-force" />  -->
-    <attribute name="additionalArguments" default="${additionalArguments}" />  
+    <attribute name="additionalArguments" default="--force" /> 
     <!--
     adds an extra 'build' directory level
     <attribute name="destination" default="${build.dir}" />
