@@ -77,7 +77,8 @@ This should have nothing specific to a particular build type.
 
   <target name="buildImage" depends="assembleImage,modifyImage,bundleImage,summarizeBuild" />
 
-
+  <!-- what kind of extraction is it? -->
+  <property name="additionalArguments" value="--force" />
 
   <!-- Whice files are available? -->
   <available property="image.exists.zip" file="${image.dest.dir}/image.${sakai.tag}.zip" />
