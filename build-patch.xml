@@ -200,7 +200,11 @@
     <echo message="applying patch set 2-2-1_p7" />
 
     <applyPatch patchFileName="SAK-5765.patch" />
+    <!-- need to get the api change from gradebook 
+    <applyPatch patchFileName="SAK-5853B.patch" />
     <applyPatch patchFileName="SAK-5853.patch" />
+    It doesn't patch cleanly.
+    -->
     <applyPatch patchFileName="SAK-6385.patch" />
 
   </target>
