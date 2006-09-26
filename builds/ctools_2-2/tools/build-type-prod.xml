@@ -85,7 +85,17 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <target name="modifyImage"  depends="imageSakai,imageMelete" />
 
-  <target name="buildConfig" 
+
+  <target name="buildConfig" depends="createConfig,bundleConfig"
+	  description="Customize the properties files on an instance by instance basis."/>
+
+
+   <target name="bundleConfig">
+    <tar basedir="${instances.dir}" destfile="${image.dest.dir}/instanceProperties.${sakai.tag}.tar.gz" 
+	 longfile="gnu" compression="gzip" />
+   </target>
+
+  <target name="createConfig" 
 	  description="Customize the properties files on an instance by instance basis.">
 
     <buildPropertiesFile instanceName="ctools" />
@@ -95,7 +105,7 @@ This doesn't supply the sakai.properties files you want to customize.
     <!--
     <buildPropertiesFile instanceName="whisk" />
     -->
-
+    
   </target>
 
   <target name="deleteSamigo" if="remove.samigo">
