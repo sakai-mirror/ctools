@@ -123,7 +123,7 @@
       <arg value="sakai:clean" />
       <arg value="sakai:build" />
       <arg value="sakai:deploy-zip" />
-      <arg value="sakai:pack-src" />
+      <arg value="pack-src" />
     </exec>
   </target>
 
