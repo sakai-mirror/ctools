@@ -61,6 +61,7 @@ This doesn't supply the sakai.properties files you want to customize.
   <import file="./build-melete.xml" />
   <import file="./build-sakai.xml" />
   <import file="./build-itunesu.xml" />
+  <import file="./build-search2.xml" />
 
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
@@ -68,8 +69,16 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <!-- Assemble the desired source files. -->
 
+
+  <!--
   <target name="getSource" 
 	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getItunesuSrc"
+	  description="get the source for sakai and required tools."/>
+  -->
+
+
+  <target name="getSource" 
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getItunesuSrc,getSearchSrc"
 	  description="get the source for sakai and required tools."/>
 
 
