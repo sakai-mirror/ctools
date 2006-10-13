@@ -34,7 +34,7 @@
   <target name="applyPatches" depends="SAK-5548" />
   -->
 
-  <target name="applyPatches" depends="applyPatches_2-2-1_p7" />
+  <target name="applyPatches" depends="applyPatches_2-2-1_p8" />
 
   <target name="applyPatches_none">
     <echo> No patches to apply </echo>
@@ -209,13 +209,24 @@
 
   </target>
 
-  <!--
-      <target name="applyPatchesTEST" >
-      <echo message="test applying specific patches" />
-      <applyPatch patchFileName="SAK-6320.patch" />
-      </target>
-  -->
+  <target name="testOnePatch" description="target to test single patch application">
+    <applyPatch patchFileName="${patchfile}" />
+  </target>
 
+  <target name="applyPatches_2-2-1_p8"  depends="applyPatches_2-2-1_p7" >
+    <echo message="applying patch set 2-2-1_p8" />
+
+    <applyPatch patchFileName="SAK-6600.patch" />
+    <!--
+    <applyPatch patchFileName="SAK-6540.patch" /> 
+    <applyPatch patchFileName="SAK-6657.patch" /> 
+    <applyPatch patchFileName="SAK-5744.patch" /> 
+    -->
+    <applyPatch patchFileName="SAK-6623.patch" />
+    <applyPatch patchFileName="SAK-6527.patch" />
+    <applyPatch patchFileName="SAK-5105.patch" />
+
+  </target>
 
   <!-- This command line works.
   patch -p0 /-/-ignore-whitespace /-/-dry-run /-/-input=../S.12711-12713.patch /-/-backup
@@ -227,6 +238,11 @@
     <sequential>
     <echo> applying patch @{patchFileName}</echo>
     <echo> patches.dir: ${patches.dir} </echo>
+    <echo file="${logs.dir}/${ant.project.name}.log" append="true" >
+     ********************************************************** 
+     applying patch @{patchFileName}
+     ********************************************************** 
+    </echo>
     <exec executable="patch"
 	  dir="${build.dir}"
 	  failonerror="true"
