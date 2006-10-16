@@ -99,6 +99,9 @@ public class EventWatcher implements Observer
 	/** affiliates */
 	protected Vector m_affiliates = null;
 	
+	/** able to update url in umiac? */
+	protected boolean m_umiacUpdateUrl = false;
+	
 	/**
 	 * Final initialization, once all dependencies are set.
 	 */
@@ -113,6 +116,9 @@ public class EventWatcher implements Observer
 
 			// read affiliates info
 			setupSubjectAffiliates();
+			
+			// check the setting of umiac.updateUrl, default to be false unless set otherwise
+			m_umiacUpdateUrl = ServerConfigurationService.getBoolean("umiac.updateUrl", false);
 			
 			log.info(this +".init()");
 		}
@@ -189,7 +195,11 @@ public class EventWatcher implements Observer
 					List sList = new ArrayList(Arrays.asList(section.split(",")));
 					if (sList.size() == 6)
 					{
-						m_umiac.setGroupUrl((String) sList.get(0), (String) sList.get(1), (String) sList.get(2), (String) sList.get(3), (String) sList.get(4), (String) sList.get(5), "-");
+						if (m_umiacUpdateUrl)
+						{
+							// only update url when set to
+							m_umiac.setGroupUrl((String) sList.get(0), (String) sList.get(1), (String) sList.get(2), (String) sList.get(3), (String) sList.get(4), (String) sList.get(5), "-");
+						}
 					}
 				}
 			}
@@ -219,7 +229,11 @@ public class EventWatcher implements Observer
 								List sList = new ArrayList(Arrays.asList(section.split(",")));
 								if (sList.size() == 6)
 								{
-									m_umiac.setGroupUrl((String) sList.get(0), (String) sList.get(1), (String) sList.get(2), (String) sList.get(3), (String) sList.get(4), (String) sList.get(5), "-");
+									if (m_umiacUpdateUrl)
+									{
+										// only update the url when set to
+										m_umiac.setGroupUrl((String) sList.get(0), (String) sList.get(1), (String) sList.get(2), (String) sList.get(3), (String) sList.get(4), (String) sList.get(5), "-");
+									}
 									
 									// remove subject affiliates from the realm, using CAMPUS_SUBJECT as the key
 									modifySubjectAffliates((String) sList.get(2) + "_" + (String) sList.get(3), ref.getId(), false);
@@ -235,11 +249,14 @@ public class EventWatcher implements Observer
 							{
 								// for those sections inside provider id list but not marked with site url, update them with site url
 								List pIdList = new ArrayList(Arrays.asList(providerId.split(",")));
+								//year,term,campus,subject,course,section
 								if (pIdList.size() == 6)
 								{
-									// year,term,campus,subject,course,section
-									m_umiac.setGroupUrl((String) pIdList.get(0), (String) pIdList.get(1), (String) pIdList.get(2), (String) pIdList.get(3), (String) pIdList.get(4), (String) pIdList.get(5), url);
-									
+									if (m_umiacUpdateUrl)
+									{
+										// only update url when set to
+										m_umiac.setGroupUrl((String) pIdList.get(0), (String) pIdList.get(1), (String) pIdList.get(2), (String) pIdList.get(3), (String) pIdList.get(4), (String) pIdList.get(5), url);
+									}
 									// add subject affiliates to the realm, using CAMPUS_SUBJECT as the key
 									modifySubjectAffliates((String) pIdList.get(2) + "_" + (String) pIdList.get(3), ref.getId(), true);
 								}
