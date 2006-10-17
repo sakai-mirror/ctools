@@ -1,0 +1,63 @@
+<project name="build-patch-util" basedir="." default="info" >
+ 
+  <!--
+
+   $Id: build-patch.xml 17111 2006-10-13 15:43:13Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-2/tools/build-patch.xml $
+   
+   Apply patches to the code.  Note that the code has been exported, so that need to apply patch files.
+
+  -->
+
+  <!-- 
+       TTD:
+       
+  -->
+
+  <target name="applyPatchesInfo">
+    <echo>
+      Ant utility targets for applying patches to source code.  To use include this in the master build file.  Override the 
+      applyPatches target to specify which files to patch.
+    </echo>
+  </target>
+
+  <target name="applyPatches" depends="applyPatches_none" />
+
+  <target name="applyPatches_none">
+    <echo> No patches to apply </echo>
+  </target>
+
+  <!-- Target to apply a single patch.  Used to test patches.  -->
+  <target name="testOnePatch" description="target to test single patch application">
+    <applyPatch patchFileName="${patchfile}" />
+  </target>
+
+  <!-- Macro definition to invoce the patch utility -->
+  <macrodef name="applyPatch">
+    <attribute name="patchFileName" />
+    <sequential>
+    <echo> applying patch @{patchFileName}</echo>
+    <echo file="${logs.dir}/${ant.project.name}.log" append="true" >
+     ********************************************************** 
+     applying patch @{patchFileName}
+     ********************************************************** 
+    </echo>
+    <exec executable="patch"
+	  dir="${build.dir}"
+	  failonerror="true"
+	  output="${logs.dir}/${ant.project.name}.log"
+	  append="true">
+      <arg value="-p0" />
+      <arg value="--verbose" />
+      <arg value ="--ignore-whitespace" />
+      <!--
+      <arg value="\-\-dry-run" /> 
+      -->
+      <arg value="--input=${patches.dir}/@{patchFileName}" />
+      <!--      <arg value="\-\-backup" /> -->
+      <arg value="--remove-empty-files" />
+    </exec>
+    </sequential>
+  </macrodef>
+
+</project>

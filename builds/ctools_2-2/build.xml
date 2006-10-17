@@ -29,15 +29,26 @@
   <property name="patches.dir" value="${basedir}/patches" />
   <property name="configs.dir" value="${basedir}/configs" />
 
-  <property file="${basedir}/project.properties" />
+  <!-- <property file="${basedir}/project.properties" /> -->
+
+  <property file="${user.dir}/project.properties" /> 
 
 
   <!-- pickup any values not overridden in a particular build. -->
-  <property file="${configs.dir}/default.properties" />
+  <property file="${configs.dir}/default.properties" /> 
+
 
   <import file="${scripts.dir}/build-type-${type}.xml" /> 
   <import file="${scripts.dir}/build-type-util.xml" /> 
-  <import file="${scripts.dir}/build-patch.xml" /> 
+
+  <!--
+  <import file="./build-patch.xml" />  
+  -->
+  <import file="${scripts.dir}/build-patch-util.xml" />
+  <import file="${user.dir}/build-patch.xml" />  
 
 
+  <target name="info" >
+    <echo> basedir: ${basedir} user.dir: ${user.dir}</echo>
+  </target>
 </project>
