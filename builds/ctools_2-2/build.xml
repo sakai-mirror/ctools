@@ -29,13 +29,15 @@
   <property name="patches.dir" value="${basedir}/patches" />
   <property name="configs.dir" value="${basedir}/configs" />
 
+  <!-- pickup any values not overridden in a particular build. -->
+  <property file="${configs.dir}/default.properties" /> 
+
+
   <!-- <property file="${basedir}/project.properties" /> -->
 
   <property file="${user.dir}/project.properties" /> 
 
 
-  <!-- pickup any values not overridden in a particular build. -->
-  <property file="${configs.dir}/default.properties" /> 
 
 
   <import file="${scripts.dir}/build-type-${type}.xml" /> 
