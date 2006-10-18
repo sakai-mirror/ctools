@@ -1,5 +1,7 @@
 <project name="build-patch-util" basedir="." default="info" >
- 
+
+
+
   <!--
 
    $Id: build-patch.xml 17111 2006-10-13 15:43:13Z dlhaines@umich.edu $
@@ -14,6 +16,9 @@
        
   -->
 
+
+  <import file="${user.dir}/build-patch.xml" />  
+
   <target name="applyPatchesInfo">
     <echo>
       Ant utility targets for applying patches to source code.  To use include this in the master build file.  Override the 
@@ -21,11 +26,13 @@
     </echo>
   </target>
 
+  <!--
   <target name="applyPatches" depends="applyPatches_none" />
 
   <target name="applyPatches_none">
-    <echo> No patches to apply </echo>
+    <echo> No patches to apply (applyPatches_none) </echo>
   </target>
+  -->
 
   <!-- Target to apply a single patch.  Used to test patches.  -->
   <target name="testOnePatch" description="target to test single patch application">

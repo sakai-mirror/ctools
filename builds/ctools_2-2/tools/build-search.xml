@@ -38,11 +38,13 @@
     <execSvnCmd url="${search.svnurl}" revision="${search.revision}" dir="${build.dir}/search"/> 
 
     <!-- take out the extra level of reference for the master/project.xml -->
+    <!--
     <replaceregexp 
 	file="${build.dir}/search-tool/tool/project.xml"  >
       <regexp pattern="\.\./\.\./master/project.xml" />
       <substitution  expression="../master/project.xml" />
     </replaceregexp>
+    -->
 
   </target>
 

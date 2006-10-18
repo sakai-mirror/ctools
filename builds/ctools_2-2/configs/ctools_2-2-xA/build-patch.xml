@@ -4,25 +4,37 @@
 
    $Id: build-patch.xml 17111 2006-10-13 15:43:13Z dlhaines@umich.edu $
    $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-2/tools/build-patch.xml $
-   
-   Apply patches to the code.  Note that the code has been exported, so that need to apply patch files.
+
+   Apply patches to the code.  This is used to avoid having to have a UMich specific branch of Sakai.
 
   -->
 
+  <!-- ========================================================================== -->
+
+  <!-- Update the dependencies for this target to appropriate ones for this configuration. -->
+
+  <target name="applyPatches" 
+	  depends="applyPatches_2-2-x_p1"
+	  /> 
+  
+  <!-- ========================================================================== -->
+  <!-- ==                    Targets for specific patch sets.                  == -->
+  <!-- ========================================================================== -->
 
 
-
-  <target name="applyPatches" > 
-    <echo> No patches to apply </echo>
+  <target name="noPatches">
+    <echo>No patches to apply.</echo>
   </target>
 
+  <target name="applyPatches_2-2-x_p1" >
+    <echo message="applying patch set 2-2-1_p1" />
 
-  <!-- ================= -->
-  <!--   2.2.1 patches   -->
-  <!-- ================= -->
+    <applyPatch patchFileName="SPEED.patch" />
 
+  </target>
 
-<target name="applyPatches_2-2-1_p6" >
+  <!--
+  <target name="applyPatches_2-2-1_p6" >
     <echo message="applying patch set 2-2-1_p6" />
 
     <applyPatch patchFileName="SAK-5777.patch" />
@@ -34,7 +46,7 @@
     <applyPatch patchFileName="SAK-6127.patch" />
     <applyPatch patchFileName="SAK-6259.patch" />
 
-    <!-- basic auth for rss -->
+    <!/-/- basic auth for rss /-/->
     <applyPatch patchFileName="SAK-4295-basicauth.java.patch" />
     <applyPatch patchFileName="SAK-4295-basicauth.patch" />
     <applyPatch patchFileName="SAK-4295b.patch" />
@@ -52,17 +64,19 @@
     <applyPatch patchFileName="SAK-4549.patch" />
 
   </target>
+   -->
 
   <!-- try adding just the new patches, and using the prior patch target for the rest -->
+  <!--
   <target name="applyPatches_2-2-1_p7"  depends="applyPatches_2-2-1_p6" >
     <echo message="applying patch set 2-2-1_p7" />
 
     <applyPatch patchFileName="SAK-5765.patch" />
-    <!-- need to get the api change from gradebook 
-    <applyPatch patchFileName="SAK-5853B.patch" />
-    <applyPatch patchFileName="SAK-5853.patch" />
-    It doesn't patch cleanly.
-    -->
+    <!/-/- need to get the api change from gradebook 
+	 <applyPatch patchFileName="SAK-5853B.patch" />
+	 <applyPatch patchFileName="SAK-5853.patch" />
+	 It doesn't patch cleanly.
+    /-/->
     <applyPatch patchFileName="SAK-6385.patch" />
 
   </target>
@@ -71,16 +85,16 @@
     <echo message="applying patch set 2-2-1_p8" />
 
     <applyPatch patchFileName="SAK-6600.patch" />
-    <!--
-    <applyPatch patchFileName="SAK-6540.patch" /> 
-    <applyPatch patchFileName="SAK-6657.patch" /> 
-    <applyPatch patchFileName="SAK-5744.patch" /> 
-    -->
+    <!/-/-
+	<applyPatch patchFileName="SAK-6540.patch" /> 
+	<applyPatch patchFileName="SAK-6657.patch" /> 
+	<applyPatch patchFileName="SAK-5744.patch" /> 
+    /-/->
     <applyPatch patchFileName="SAK-6623.patch" />
     <applyPatch patchFileName="SAK-6527.patch" />
     <applyPatch patchFileName="SAK-5105.patch" />
 
   </target>
-
+  -->
 
 </project>

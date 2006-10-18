@@ -47,7 +47,7 @@
   <import file="./build-patch.xml" />  
   -->
   <import file="${scripts.dir}/build-patch-util.xml" />
-  <import file="${user.dir}/build-patch.xml" />  
+<!--  <import file="${user.dir}/build-patch.xml" />   -->
 
 
   <target name="info" >
