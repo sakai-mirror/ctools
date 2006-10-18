@@ -1,0 +1,247 @@
+<project name="build-util" basedir="." default="info" >
+
+  <!--
+
+  $Id$
+  $HeadURL$
+
+
+  Utility ant targets to help build the build scripts.
+
+  Ant script that will extract and configure sakai and ctools.
+  This will call subscripts to build parts
+
+  This will extract source, customize it, compile, create image.
+
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+  <target name="info-util">
+    <echo>
+
+      provide utility targets for building a ctools image.
+
+    macro tasks:
+    place - move contents of a directory to another one.  This
+    is useful since SVN will extract resources but will not
+    allow changing the parent directory.  E.g. if you want to
+    extract the sakai_2-1 release the contents will be put in
+    the sakai_2-1 directory even if you want it in the
+    "./build" directory.  This allows moving the contents of an
+    extracted directory to another directory.  That directory
+    defaults to the ${build.dir} directory.  
+    
+    </echo>
+  </target>
+
+  
+  <!-- utility targets -->
+  <target name="prepare" depends="prepareBuildDirs" >
+  </target>
+
+  <!-- utility -->
+
+  <target name="prepareBuildDirs"
+	  description="clean all the directories needed for a build." >
+    <echo> build ${type} release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
+    <delete dir="${work.dir}" />
+    <mkdir dir="${work.dir}" />
+    <delete dir="${build.dir}" />
+    <mkdir dir="${build.dir}" />
+    <delete dir="${logs.dir}" />
+    <mkdir dir="${logs.dir}" />
+    <delete dir="${image.dir}" />
+    <mkdir dir="${image.dir}" />
+    <delete dir="${instances.dir}" />
+    <mkdir dir="${instances.dir}" />
+    <delete dir="${install.test.dir}" />
+    <mkdir dir="${install.test.dir}" />
+    
+  </target>
+
+  <target name="editMaster">
+    <echo>change version in the ${build.dir}/master/project.properties file to ${sakai.tag}.</echo>
+    <replaceregexp file="${build.dir}/master/project.properties" >
+      <regexp pattern="sakai\.version=.*" />
+      <substitution 
+	  expression="sakai.version=${sakai.tag}" />
+    </replaceregexp>
+  </target>
+
+  <!-- create the image -->
+  <target name="assembleImage">
+    <untar src="${build.dir}/sakai.tar.gz" dest="${image.dir}" compression="gzip" />
+    <copy file="${dbdriver}" todir="${image.dir}/common/lib" />
+    <delete dir="${image.dir}/licenses" />
+  </target>
+
+  <target name="bundleImage" >
+  <!--
+  do not create zip by default
+    <zip basedir="${image.dir}" destfile="${image.dest.dir}/image.${sakai.tag}.zip" />
+    -->
+    <tar basedir="${image.dir}" destfile="${image.dest.dir}/image.${sakai.tag}.tar.gz" 
+	 longfile="gnu" compression="gzip" />
+  </target>
+
+  <target name="summarizeBuild">
+    <echo>
+      Now remember to setup the sakai directory and change the revision number for the footer.
+    </echo>
+  </target>
+
+
+
+  <!-- ========================================= -->
+  <!--             macro definitions             -->
+  <!-- ========================================= -->
+
+  <!-- run a svn command.  
+       
+       This wraps the execution of specific svn commands.  It supplies default
+       values for the cmd, svn url, output (build) directory, the directory to
+       contain the log file, and the svn revision to use.
+       
+       The commands likely to be useful are: ls, co (checkout), and export (get files
+       without svn information, useful for compilation).
+       
+       example:  <execSvnCmd url="${ctools.svnurl}"  /> 
+       example:  <execSvnCmd url="${ctools.svnurl}" revision="4444" /> 
+
+       This is a macro to support default values and to hide
+       the svn specific syntax.
+  -->
+
+  <macrodef name="execSvnCmd">
+    <attribute name="cmd" default="${svnCmd}" />
+    <attribute name="url" default="${sakai.svnurl}" />
+    <attribute name="dir" default="${build.dir}" />
+    <attribute name="logdir" default="${logs.dir}" />
+    <attribute name="revision" default="${defaultRevision}" />
+<!--    <attribute name="additionalArguments" default="-q" /> -->
+    <attribute name="additionalArguments" default="--force" /> 
+    <!--
+    adds an extra 'build' directory level
+    <attribute name="destination" default="${build.dir}" />
+    -->
+    <attribute name="destination" default="." />
+    <sequential>
+      <echo>Extract svn resource: via @{cmd} from @{url} revision: @{revision}.</echo>
+      <mkdir dir="@{dir}" />
+      <exec executable="svn"
+	    dir="@{dir}"
+	    failonerror="true"
+	    output="@{logdir}/${ant.project.name}.log"
+	    append="true" >
+	<arg value="-r@{revision}" />
+	<arg value="@{additionalArguments}" />
+	<arg value="@{cmd}" />
+	<arg value="@{url}" />
+	<arg value="@{destination}" />
+
+      </exec>
+    </sequential>
+  </macrodef>
+
+  <!-- remove files from build directory -->
+  <macrodef name="removeFromBuild">
+    <attribute name="dir" default="${build.dir}" />
+    <attribute name="deleteDir" />
+    <sequential>
+      <echo> remove ${build.dir}/@{deleteDir} from build </echo>
+      <delete dir="${build.dir}/@{deleteDir}"  verbose="false" quiet="true" />
+    </sequential>
+  </macrodef>
+
+  <!-- remove war files from image directory -->
+  <macrodef name="removeWarFromImage">
+    <attribute name="dir" default="${image.dir}/webapps" />
+    <attribute name="deleteWar" />
+    <sequential>
+    <echo> removeWarFromImage: delete war: @{dir}/@{deleteWar} </echo>
+      <delete file="@{dir}/@{deleteWar}"  />
+<!--      <delete dir="${dir}/@{deleteWar}"  verbose="false" quiet="true" /> -->
+    </sequential>
+  </macrodef>
+
+
+  <!-- Take files from one directory and put in another.  It is necessary
+       since a svn export or checkout will extract the directory specified,
+       but you often want the resources in the directory, not the directory
+       itself.  This is particularly an issue when you need to merge 
+       different resources.  E.g. the sakai_2-1 release with the
+       ctools specific tools.
+       
+       This is a macro to support default values.
+       
+       example:     <place fromdir="${build.dir}/sakai_2-1" />
+  -->
+
+  <target name="testPlace">
+    <place fromdir="${build.dir}/ctools" />
+  </target>
+
+  <macrodef name="placeUnixBroken" >
+    <attribute name="todir" default="${build.dir}" />
+    <attribute name="fromdir" />
+    <attribute name="verbose" default="no" />
+    <attribute name="logdir" default="." />
+
+    <sequential>
+      <echo> new: place files from @{fromdir} in @{todir}</echo>
+      <exec executable="/bin/bash"
+	    dir="${basedir}/@{fromdir}"
+	    failonerror="true"
+	    output="@{logdir}/${ant.project.name}.log"
+	    append="true" 
+	    searchpath="true" 
+	    >
+	<arg value="-c" />
+	<arg value="mv -a . ${basedir}/@{todir}" />
+      </exec>
+
+    </sequential>
+  </macrodef>
+
+  <macrodef name="place">
+    <attribute name="todir" default="${build.dir}" />
+    <attribute name="fromdir" />
+    <attribute name="verbose" default="no" />
+
+    <sequential>
+      <echo> place files from @{fromdir} in @{todir}</echo>
+      <move todir="@{todir}" verbose="@{verbose}" includeEmptyDirs="yes">
+	<fileset dir="@{fromdir}" defaultexcludes="no" />
+      </move>
+    </sequential>
+
+  </macrodef>
+
+
+  <!--
+  Set the value of a property to the value of a property with 
+  the name prefix.property.  This is useful if you have a set of 
+  possible alternative values for a property and want to set
+  the actual value at run time.  Create a properties file with 
+  the alternaties differentiated by a prefix and then use the
+  setProperty task (macro) to choose the particular value.
+
+  E.g.
+  mine.pronoun=me
+  yours.pronoun=you
+  <setProperty prefix="yours" name="pronoun" />
+
+  This sets the value of ${pronoun} to "you".
+  -->
+  <!--
+  <macrodef name="setProperty">
+    <attribute name="prefix" />
+    <attribute name="property" />
+    <sequential>
+      <property name="@{property}" value="${@{prefix}.@{property}}" />
+    </sequential>
+ -->
+</project>

@@ -1,0 +1,32 @@
+--- rwiki/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/DefaultPageTemplate.txt	2006-08-23 13:04:30.000000000 -0400
++++ rwiki/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/DefaultPageTemplate.txt	2006-08-23 13:10:01.000000000 -0400
+@@ -1,9 +1 @@
+-h2 Page Does not exist.
+-The page you just accessed does not exist, and so has been created for you. 
+-You may now edit this page to change its content
+ 
+-
+-h3 Default Template
+-This page [default_template] is used as a template for new pages. You may:
+-* Change it on a worksite basis by editing [default_template]
+-* Change it on a installation wide basis by changing DefaultPage.txt referenced in components.xml 
+--- rwiki/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/HomePage.txt	2006-08-23 13:05:59.000000000 -0400
++++ rwiki/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/HomePage.txt	2006-08-23 13:11:47.000000000 -0400
+@@ -1,8 +1,13 @@
+-h2 Welcome to the Wiki Tool
++h1 This is the home page of the wiki for this site.
+ 
+-This page is your [Home] page for this worksite. You can change it by clicking on the edit link above.
++h3 Quick Start
+ 
+-h3 Recently changed pages
++* Change the content of this page by clicking the Edit link above.
+ 
+-{recent-changes}
++* When you edit this page, you can create an additional page by typing the name of the new page in
++brackets.  The bracketed text will become the link to the new page, like this: [new page]
+ 
++* A link to a blank page has a question mark behind it.  Once you edit the contents of the new page, the
++question mark disappears.
++
++* Additional help tips are available in the Edit view.
