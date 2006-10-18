@@ -23,7 +23,7 @@ This should have nothing specific to a particular build type.
 
   <!--  <property name="config-file" value="ctools-pilot-200602.properties" /> -->
   <!-- set a default value -->
-  <property name="config-file" value="dummy" /> 
+  <property name="config-file" value="project.properties" /> 
 
   <property file="${config-file}" />
 <!--  <property name="patches.dir" value="../patches" /> -->
