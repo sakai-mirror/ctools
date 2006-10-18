@@ -30,7 +30,7 @@
   <property name="configs.dir" value="${basedir}/configs" />
 
   <!-- pickup any values not overridden in a particular build. -->
-  <property file="${configs.dir}/default.properties" /> 
+  <property file="${configs.dir}/shared.properties" /> 
 
 
   <!-- <property file="${basedir}/project.properties" /> -->
