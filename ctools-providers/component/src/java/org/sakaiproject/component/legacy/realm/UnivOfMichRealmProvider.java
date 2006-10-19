@@ -47,10 +47,6 @@ public class UnivOfMichRealmProvider implements GroupProvider
 	*******************************************************************************/
 
 	private static Log log = LogFactory.getLog(UnivOfMichRealmProvider.class);
-	
-	private static String INSTRUCTOR_ROLE_STRING = "Instructor";
-	
-	private static String STUDENT_ROLE_STRING = "Student";
 
 	/** My UMIAC client interface. */
 	//private IUmiacClient m_umiac = UmiacClient.getInstance();
@@ -128,7 +124,7 @@ public class UnivOfMichRealmProvider implements GroupProvider
 				if (roleId != null)
 				{
 					// prefer "Instructor" to "Student" in roles
-					if (!INSTRUCTOR_ROLE_STRING.equals(rv))
+					if (!"Instructor".equals(rv))
 					{
 						rv = roleId;
 					}
@@ -165,21 +161,6 @@ public class UnivOfMichRealmProvider implements GroupProvider
 	/**
 	 * {@inheritDoc}
 	 */
-	public String preferredRole(String one, String other)
-	{
-		// Instructor is better than Student
-		if ((one != null && INSTRUCTOR_ROLE_STRING.equals(one)) || (other != null && (INSTRUCTOR_ROLE_STRING.equals(other)))) return INSTRUCTOR_ROLE_STRING;
-		
-		// Student is better than nothing
-		if ((one != null && STUDENT_ROLE_STRING.equals(one)) || (other!= null &&STUDENT_ROLE_STRING.equals(other))) return STUDENT_ROLE_STRING;
-		
-		// something we don't know, so we just return the latest role found
-		return one;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public Map getGroupRolesForUser(String eid)
 	{
 		if (eid == null) return new HashMap();
@@ -188,7 +169,7 @@ public class UnivOfMichRealmProvider implements GroupProvider
 		Map map = getUmiac().getUserSections(eid);
 
 		// transfer to our special map
-		HashMap rv = new HashMap();
+		MyMap rv = new MyMap();
 		rv.putAll(map);
 
 		return rv;
@@ -205,6 +186,37 @@ public class UnivOfMichRealmProvider implements GroupProvider
 		return m_umiac.unpackId(eid);
 	}
 
+	/**
+	 * <p>MyMap is a Map that in get() recognizes compound keys.</p>
+	 */
+	public class MyMap extends HashMap
+	{
+		/**
+		 * {@inheritDoc}
+		 */
+		public Object get(Object key)
+		{
+			// if we have this key exactly, use it
+			Object value = super.get(key);
+			if (value != null)
+				return value;
+
+			// otherwise break up key as a compound id and find what values we have for these
+			// the values are roles, and we prefer "Instructor" to "Student"
+			String rv = null;
+			String[] eids = unpackId((String) key);
+			for (int i = 0; i < eids.length; i++)
+			{
+				value = super.get(eids[i]);
+				if ((value != null) && !("Instructor".equals(rv)))
+				{
+					rv = (String) value;
+				}
+			}
+
+			return rv;
+		}
+	}
 }
 
 /**********************************************************************************
