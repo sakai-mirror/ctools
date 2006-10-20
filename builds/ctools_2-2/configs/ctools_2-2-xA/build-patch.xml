@@ -29,7 +29,36 @@
   <target name="applyPatches_2-2-x_p1" >
     <echo message="applying patch set 2-2-1_p1" />
 
+
+    <applyPatch patchFileName="CT-659.patch" />
     <applyPatch patchFileName="SPEED.patch" />
+   <!--    <applyPatch patchFileName="SAK-6127.patch" /> -->
+
+    <!-- basic auth for rss -->
+    <!-- looks like basic auth is in there 
+    <applyPatch patchFileName="SAK-4295-basicauth.java.patch" />
+    <applyPatch patchFileName="SAK-4295-basicauth.patch" />
+    <applyPatch patchFileName="SAK-4295b.patch" />
+    -->
+    <!-- appears to be in 
+    <applyPatch patchFileName="SAK-6139.patch" />
+    -->
+
+    <applyPatch patchFileName="SAK-5295-6085-6210.patch" />
+
+    <!-- appears to be in 
+    <applyPatch patchFileName="SAK-5705.patch" /> -->
+    <applyPatch patchFileName="SAK-6148.patch" />
+
+    <applyPatch patchFileName="SAK-6320.patch" />
+    <applyPatch patchFileName="SAK-4549.patch" />
+
+    <!-- obsolete
+     <applyPatch patchFileName="SAK-5765.patch" /> -->
+
+    <applyPatch patchFileName="SAK-6623.patch" />
+    <applyPatch patchFileName="SAK-6527.patch" />
+    <applyPatch patchFileName="SAK-5105.patch" />
 
   </target>
 
