@@ -144,6 +144,11 @@
 			replace="\1${support.email}"/>
 	</tokenfilter>
 
+	<tokenfilter>
+	  <replaceregex pattern="^(umiac.updateUrl\s*=\s*).*" 
+			replace="\1${umiac.updateUrl}"/>
+	</tokenfilter>
+
 
       </filterchain> 
     </copy>
