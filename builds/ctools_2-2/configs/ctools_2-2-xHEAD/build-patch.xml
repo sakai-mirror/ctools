@@ -2,8 +2,8 @@
 
   <!--
 
-   $Id: build-patch.xml 17111 2006-10-13 15:43:13Z dlhaines@umich.edu $
-   $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-2/tools/build-patch.xml $
+   $Id: build-patch.xml 17327 2006-10-20 18:28:33Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/ctools/branches/ctools_2-2-x/builds/ctools_2-2/configs/ctools_2-2-xA/build-patch.xml $
 
    Apply patches to the code.  This is used to avoid having to have a UMich specific branch of Sakai.
 
@@ -29,7 +29,36 @@
   <target name="applyPatches_2-2-x_p1" >
     <echo message="applying patch set 2-2-1_p1" />
 
+
+    <applyPatch patchFileName="CT-659.patch" />
     <applyPatch patchFileName="SPEED.patch" />
+   <!--    <applyPatch patchFileName="SAK-6127.patch" /> -->
+
+    <!-- basic auth for rss -->
+    <!-- looks like basic auth is in there 
+    <applyPatch patchFileName="SAK-4295-basicauth.java.patch" />
+    <applyPatch patchFileName="SAK-4295-basicauth.patch" />
+    <applyPatch patchFileName="SAK-4295b.patch" />
+    -->
+    <!-- appears to be in 
+    <applyPatch patchFileName="SAK-6139.patch" />
+    -->
+
+    <applyPatch patchFileName="SAK-5295-6085-6210.patch" />
+
+    <!-- appears to be in 
+    <applyPatch patchFileName="SAK-5705.patch" /> -->
+    <applyPatch patchFileName="SAK-6148.patch" />
+
+    <applyPatch patchFileName="SAK-6320.patch" />
+    <applyPatch patchFileName="SAK-4549.patch" />
+
+    <!-- obsolete
+     <applyPatch patchFileName="SAK-5765.patch" /> -->
+
+    <applyPatch patchFileName="SAK-6623.patch" />
+    <applyPatch patchFileName="SAK-6527.patch" />
+    <applyPatch patchFileName="SAK-5105.patch" />
 
   </target>
 
