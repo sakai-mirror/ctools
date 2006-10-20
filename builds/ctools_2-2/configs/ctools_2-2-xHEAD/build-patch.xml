@@ -30,7 +30,7 @@
     <echo message="applying patch set 2-2-1_p1" />
 
 
-    <applyPatch patchFileName="CT-659.patch" />
+    <!-- <applyPatch patchFileName="CT-659.patch" /> -->
     <applyPatch patchFileName="SPEED.patch" />
    <!--    <applyPatch patchFileName="SAK-6127.patch" /> -->
 
