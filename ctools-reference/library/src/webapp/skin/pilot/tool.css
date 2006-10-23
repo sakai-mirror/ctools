@@ -519,18 +519,14 @@ textarea:focus{
 	padding:.3em;
 	margin: 0;
 	line-height: 1.5em;
-	border-bottom:1px solid #bbb;
+	border-bottom:1px solid #ddd;
 	text-align: left;
-	font-size: .9em;
+	font-size: .85em;
 	font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
 }
 
-/*ie does not understand font sizing well - so fix here with the star hack*/
-* html .navIntraTool{
-	font-size:.85em;
-}
 .navIntraTool:hover{
-	border-bottom:1px solid #fc0;
+	border-bottom:1px solid  #bbb;
 }
 .navIntraTool .searchField{
 	border:1px solid silver;
@@ -565,6 +561,7 @@ textarea:focus{
 /*see: create any item*/
 .instruction{
 	color: #555;
+	line-height: 1.4;
 }
 /*see: create a site*/
 .step{
@@ -746,10 +743,44 @@ you loose the native buttonishness affordance of the os/browser */
 	padding-left:.2em
 }
 
+
+/*a row that is being sorted - see resources in Sakai 2.3*/
+tr#selectedReorder{
+	color: #000;
+	background: #fff url(images/sel-back.gif) top left repeat-x;
+	
+}
+tr#selectedReorder:hover{
+	color: #000; !important
+	background: #fe6; !important
+}
+tr#selectedReorder h4{
+	font-weight:bold;
+}
+
+tr td.arrowHere{
+	width:0;
+	border-left:3px solid #fff;
+}
+
+tr#selectedReorder td.arrowHere{
+	border-left:3px solid #555;
+	background: transparent url(images/arrowhere.gif) center .5em no-repeat
+}
+.moveUp, .moveDown{
+	width:14px;
+	padding-right:0;
+		padding-left:0;
+
+	}
+.moveUp img, .moveDown img{
+	vertical-align: bottom;
+	padding-top:.5em;
+	width:13px
+}
 tr.selectedFound td{
 
 }
-
 
 .rosterImage{
 	border:1px solid #bbb;
@@ -810,65 +841,7 @@ width:auto !important
 
 
 
-/*SECTION 12 TOOL TITLE SELECTORS and other PORTAL THINGS*/
-.portletTitle{
-	background:#00338C;
-	width: 80%;
-}
-
-.portletTitle .title img{
-	margin:0;
-	vertical-align:text-bottom;
-	width:16px !important
-}
-
-.portletTitle .title{
-	padding:2px 4px 6px 4px;
-	height:1em;
-	font-size: 120%;
-	float: left;
-	color: #000;
-}
-
-.portletTitle .title h2{
-	display: inline;
-	margin: 0 0 0 .2em;
-	padding: 0;
-	vertical-align: middle;
-	color: #fff;
-	font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
-	font-weight: normal;
-	font-size: .8em;
-}
-
-.portletTitle .title a{
-	background: url(images/reload.gif) center left no-repeat;
-}
-
-.portletTitle .title a:hover{
-	background: url(images/reload_h.gif) center left no-repeat;
-}
-
-.portletTitle .action{
-	padding: 2px 4px 6px 2px;
-	text-align: right;
-	vertical-align: middle;
-	background: url(images/blue_tabcap_r.gif) top right no-repeat;
-}
-
-.portletTitle .action img{
-	margin: 0;
-	vertical-align: text-bottom;
-	width: 16px !important;
-}
-
-.portletTitle .action a{
-	background: url(images/help.gif) center right no-repeat;
-}
-
-.portletTitle .action a:hover{
-	background: url(images/help_h.gif) center right no-repeat;
-}
+/*SECTION 12 PORTAL THINGS*/
 
 /*below for "presence in chat" functionality*/
 .presenceList{
