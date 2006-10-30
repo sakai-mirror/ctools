@@ -1,0 +1,41 @@
+svn diff -r17079:17080 https://source.sakaiproject.org/svn
+Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java
+===================================================================
+--- site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 17079)
++++ site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 17080)
+@@ -4456,21 +4456,24 @@
+ 			}
+ 			else
+ 			{
+-				// check whether the group title has been used already
+-				boolean titleExist = false;
+-				for (Iterator iGroups = site.getGroups().iterator(); !titleExist && iGroups.hasNext(); )
++				if (group == null)
+ 				{
+-					Group iGroup = (Group) iGroups.next();
+-					if (iGroup.getTitle().equals(title))
++					// when adding a group, check whether the group title has been used already
++					boolean titleExist = false;
++					for (Iterator iGroups = site.getGroups().iterator(); !titleExist && iGroups.hasNext(); )
+ 					{
+-						// found same title
+-						titleExist = true;
++						Group iGroup = (Group) iGroups.next();
++						if (iGroup.getTitle().equals(title))
++						{
++							// found same title
++							titleExist = true;
++						}
+ 					}
++					if (titleExist)
++					{
++						addAlert(state, rb.getString("group.title.same"));
++					}
+ 				}
+-				if (titleExist)
+-				{
+-					addAlert(state, rb.getString("group.title.same"));
+-				}
+ 			}
+ 			
+ 			if (state.getAttribute(STATE_MESSAGE) == null)

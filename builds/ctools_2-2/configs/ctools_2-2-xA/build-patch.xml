@@ -30,100 +30,27 @@
     <echo message="applying patch set 2-2-1_p1" />
 
 
+    <!-- no revision number -->
     <applyPatch patchFileName="CT-659.patch" />
+
+    <!-- in order of revision number (based on first in patch file) -->
+    <!-- included already 
+    <applyPatch patchFileName="SAK-5844.patch" /> -->
     <applyPatch patchFileName="SPEED.patch" />
-   <!--    <applyPatch patchFileName="SAK-6127.patch" /> -->
-
-    <!-- basic auth for rss -->
-    <!-- looks like basic auth is in there 
-    <applyPatch patchFileName="SAK-4295-basicauth.java.patch" />
-    <applyPatch patchFileName="SAK-4295-basicauth.patch" />
-    <applyPatch patchFileName="SAK-4295b.patch" />
-    -->
-    <!-- appears to be in 
-    <applyPatch patchFileName="SAK-6139.patch" />
-    -->
-
     <applyPatch patchFileName="SAK-5295-6085-6210.patch" />
-
-    <!-- appears to be in 
-    <applyPatch patchFileName="SAK-5705.patch" /> -->
+    <!-- already applied <applyPatch patchFileName="SAK-6320.patch" /> -->
     <applyPatch patchFileName="SAK-6148.patch" />
-
-    <applyPatch patchFileName="SAK-6320.patch" />
     <applyPatch patchFileName="SAK-4549.patch" />
-
-    <!-- obsolete
-     <applyPatch patchFileName="SAK-5765.patch" /> -->
-
+    <applyPatch patchFileName="SAK-5853.patch" />
+    <!-- appears to already be applied <applyPatch patchFileName="SAK-6600.patch" /> -->
+    <applyPatch patchFileName="SAK-6657.patch" />
     <applyPatch patchFileName="SAK-6623.patch" />
     <applyPatch patchFileName="SAK-6527.patch" />
     <applyPatch patchFileName="SAK-5105.patch" />
+    <applyPatch patchFileName="SAK-6838.patch" />
+    <applyPatch patchFileName="SAK-6502.patch" />
 
   </target>
 
-  <!--
-  <target name="applyPatches_2-2-1_p6" >
-    <echo message="applying patch set 2-2-1_p6" />
-
-    <applyPatch patchFileName="SAK-5777.patch" />
-    <applyPatch patchFileName="SAK-5940.patch" />
-    <applyPatch patchFileName="SAK-6032.patch" />
-    <applyPatch patchFileName="CT-659.patch" />
-    <applyPatch patchFileName="SAK-3564.patch" />
-    <applyPatch patchFileName="SPEED.patch" />
-    <applyPatch patchFileName="SAK-6127.patch" />
-    <applyPatch patchFileName="SAK-6259.patch" />
-
-    <!/-/- basic auth for rss /-/->
-    <applyPatch patchFileName="SAK-4295-basicauth.java.patch" />
-    <applyPatch patchFileName="SAK-4295-basicauth.patch" />
-    <applyPatch patchFileName="SAK-4295b.patch" />
-    <applyPatch patchFileName="SAK-6139.patch" />
-
-    <applyPatch patchFileName="SAK-5295-6085-6210.patch" />
-
-    <applyPatch patchFileName="SAK-5115.patch" />
-    <applyPatch patchFileName="SAK-5705.patch" />
-
-    <applyPatch patchFileName="SAK-6148.patch" />
-
-    <applyPatch patchFileName="SAK-6319.patch" />
-    <applyPatch patchFileName="SAK-6320.patch" />
-    <applyPatch patchFileName="SAK-4549.patch" />
-
-  </target>
-   -->
-
-  <!-- try adding just the new patches, and using the prior patch target for the rest -->
-  <!--
-  <target name="applyPatches_2-2-1_p7"  depends="applyPatches_2-2-1_p6" >
-    <echo message="applying patch set 2-2-1_p7" />
-
-    <applyPatch patchFileName="SAK-5765.patch" />
-    <!/-/- need to get the api change from gradebook 
-	 <applyPatch patchFileName="SAK-5853B.patch" />
-	 <applyPatch patchFileName="SAK-5853.patch" />
-	 It doesn't patch cleanly.
-    /-/->
-    <applyPatch patchFileName="SAK-6385.patch" />
-
-  </target>
-
-  <target name="applyPatches_2-2-1_p8"  depends="applyPatches_2-2-1_p7" >
-    <echo message="applying patch set 2-2-1_p8" />
-
-    <applyPatch patchFileName="SAK-6600.patch" />
-    <!/-/-
-	<applyPatch patchFileName="SAK-6540.patch" /> 
-	<applyPatch patchFileName="SAK-6657.patch" /> 
-	<applyPatch patchFileName="SAK-5744.patch" /> 
-    /-/->
-    <applyPatch patchFileName="SAK-6623.patch" />
-    <applyPatch patchFileName="SAK-6527.patch" />
-    <applyPatch patchFileName="SAK-5105.patch" />
-
-  </target>
-  -->
 
 </project>

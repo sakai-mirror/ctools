@@ -27,7 +27,7 @@
   </target>
 
   <target name="applyPatches_2-2-x_p1" >
-    <echo message="applying patch set 2-2-1_p1" />
+    <echo message="applying patch set 2-2-x_p1" />
 
 
     <!-- <applyPatch patchFileName="CT-659.patch" /> -->
