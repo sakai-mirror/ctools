@@ -41,7 +41,7 @@
     <!-- already applied <applyPatch patchFileName="SAK-6320.patch" /> -->
     <applyPatch patchFileName="SAK-6148.patch" />
     <applyPatch patchFileName="SAK-4549.patch" />
-    <applyPatch patchFileName="SAK-5853.patch" />
+    <!-- Does not compile as is: <applyPatch patchFileName="SAK-5853.patch" /> -->
     <!-- appears to already be applied <applyPatch patchFileName="SAK-6600.patch" /> -->
     <applyPatch patchFileName="SAK-6657.patch" />
     <applyPatch patchFileName="SAK-6623.patch" />
