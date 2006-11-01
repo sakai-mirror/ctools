@@ -28,7 +28,7 @@
   <!--               deal with Sakai proper               -->
   <!-- ================================================== -->
 
-  <target name="getSakaiSrc" depends="prepareBuildDirs">
+  <target name="getSakaiSrc" depends="prepareBuildDirs" >
     <execSvnCmd url="${sakai.svnurl}" revision="${sakai.revision}"/>
     <!--
     <place fromdir="${build.dir}/${sakai.svndir}" />
