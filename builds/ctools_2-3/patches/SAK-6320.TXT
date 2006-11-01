@@ -1,5 +1,0 @@
-
-2006/09/15 dlh:
-Patch did not apply cleanly, there were a couple of places where
-changing a single blank line failed.  I delete those hunks from the
-patch. 
