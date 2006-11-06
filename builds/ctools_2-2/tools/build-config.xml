@@ -14,6 +14,8 @@
   -->
 
 
+  <!--
+      This information was not used, so this is misleading.
   <target name="configInfo" >
     <echo>
       This customizes the configuration information for a particular build.  Targets in here should
@@ -26,6 +28,7 @@
       build.configuration.revision = ${build.configuration.revision}
     </echo>
   </target>
+  -->
 
   <property file="./project.properties" />
   <property name="instance-type.file" value="instance.${instance-type}.properties" />
