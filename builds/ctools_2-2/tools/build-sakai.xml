@@ -94,8 +94,9 @@
 
 
   <target name="handleFavicon" if="favicon.name" >
+    <mkdir dir="${image.dir}/webapps/ROOT" />
     <copy file="${reference.dir}/${favicon.name}"
-	  tofile="${image.dir}/webapps/ROOT"
+	  todir="${image.dir}/webapps/ROOT"
 	  overwrite="true" />
   </target>
 
