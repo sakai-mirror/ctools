@@ -1,14 +1,3 @@
-This file lists the build tag, the subversion revision number, and the
-date.  There may be multiple lines per tag since the tag is a goal and
-there might be a lot of builds involved.
-
-If you check out a build with the revision number listed you can
-recreate that build.
-
-tag	 revision	date
-2-2-1F	 15159		2006/09/22
-2-2-1F	 15186		2006/09/24
-2-2-1F	 15245		2006/09/26
 
 ----------
 $HeadURL:$

@@ -14,7 +14,7 @@
   <!-- Update the dependencies for this target to appropriate ones for this configuration. -->
 
   <target name="applyPatches" 
-	  depends="applyPatches_2-2-x_p1"
+	  depends="applyPatches_2-3-0_p1"
 	  /> 
   
   <!-- ========================================================================== -->
@@ -26,29 +26,15 @@
     <echo>No patches to apply.</echo>
   </target>
 
-  <target name="applyPatches_2-2-x_p1" >
-    <echo message="applying patch set 2-2-1_p1" />
+  <target name="applyPatches_2-3-0_p1" >
+    <echo message="applying patch set 2-3-0_p1" />
 
+    <!-- change text for rwiki -->
+    <!-- FAILS: <applyPatch patchFileName="CT-659.patch" /> -->
 
-    <!-- no revision number -->
-    <applyPatch patchFileName="CT-659.patch" />
-
-    <!-- in order of revision number (based on first in patch file) -->
-    <!-- included already 
-    <applyPatch patchFileName="SAK-5844.patch" /> -->
+    
+    <!-- modify some queries to speed them up -->
     <applyPatch patchFileName="SPEED.patch" />
-    <applyPatch patchFileName="SAK-5295-6085-6210.patch" />
-    <!-- already applied <applyPatch patchFileName="SAK-6320.patch" /> -->
-    <applyPatch patchFileName="SAK-6148.patch" />
-    <applyPatch patchFileName="SAK-4549.patch" />
-    <!-- does not compile. <applyPatch patchFileName="SAK-5853.patch" />   -->
-    <!-- appears to already be applied <applyPatch patchFileName="SAK-6600.patch" /> -->
-    <!-- does not patch as is: <applyPatch patchFileName="SAK-6657.patch" />  Will need to do patch different way -->
-    <applyPatch patchFileName="SAK-6623.patch" />
-    <applyPatch patchFileName="SAK-6527.patch" />
-    <applyPatch patchFileName="SAK-5105.patch" />
-    <applyPatch patchFileName="SAK-6838.patch" />
-    <applyPatch patchFileName="SAK-6502.patch" />
 
   </target>
 

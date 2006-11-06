@@ -92,7 +92,14 @@
     <removeWarFromImage deleteWar="sakai-samigo.war" />
   </target>
 
-  <target name="imageSakai" >
+  <target name="handleFavicon" if="favicon.name" >
+    <mkdir dir="${image.dir}/webapps/ROOT" />
+    <copy file="${reference.dir}/${favicon.name}"
+	  todir="${image.dir}/webapps/ROOT"
+	  overwrite="true" />
+  </target>
+
+  <target name="imageSakai" depends="handleFavicon" >
     <!--
     <removeWarFromImage deleteWar="sakai-wsrp-producer.war" />
     -->
