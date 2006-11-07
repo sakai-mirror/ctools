@@ -1,0 +1,49 @@
+svn diff -r17115:17116 https://source.sakaiproject.org/svn
+Index: announcement/announcement-tool/tool/src/java/org/sakaiproject/announcement/tool/AnnouncementAction.java
+===================================================================
+--- announcement/announcement-tool/tool/src/java/org/sakaiproject/announcement/tool/AnnouncementAction.java	(revision 17115)
++++ announcement/announcement-tool/tool/src/java/org/sakaiproject/announcement/tool/AnnouncementAction.java	(revision 17116)
+@@ -1008,14 +1008,6 @@
+ 				context.put("groups", groups);
+ 			}
+ 		}
+-		
+-		// if there is a display limit on the number of announcement message, and the user can set option choice
+-		int displayLimit = state.getDisplayOptions().getNumberOfAnnouncements();
+-		if (!(displayLimit == AnnouncementActionState.DEFAULT_DISPLAY_NUMBER_OPTION) && isOkToShowOptionsButton(state.getStatus()))
+-		{
+-			context.put("displayLimit", new Integer(displayLimit));
+-		}
+-		
+ 
+ 		if (sstate.getAttribute(STATE_SELECTED_VIEW) != null)
+ 		{
+Index: announcement/announcement-tool/tool/src/java/org/sakaiproject/announcement/tool/AnnouncementActionState.java
+===================================================================
+--- announcement/announcement-tool/tool/src/java/org/sakaiproject/announcement/tool/AnnouncementActionState.java	(revision 17115)
++++ announcement/announcement-tool/tool/src/java/org/sakaiproject/announcement/tool/AnnouncementActionState.java	(revision 17116)
+@@ -396,7 +396,7 @@
+ 			setNumberOfDaysInThePast(parameters.getInt(varNameNumberOfDaysInPast));
+ 			setEnforceNumberOfDaysInThePastLimit(StringUtil.trimToNull(parameters.get(varNameNumberOfDaysInPast)) != null);
+ 
+-			setNumberOfAnnouncements(parameters.getInt(varNameNumberOfAnnouncements, numberOfAnnouncements));
++			setNumberOfAnnouncements(parameters.getInt(varNameNumberOfAnnouncements, DEFAULT_DISPLAY_NUMBER_OPTION));
+ 			setEnforceNumberOfAnnouncementsLimit(StringUtil.trimToNull(parameters.get(varNameNumberOfAnnouncements)) != null);
+ 
+ 			// setNumberOfCharsPerAnnouncement(parameters.getInt(varNameNumberCharsPerAnnouncement, numberOfCharsPerAnnouncement));
+Index: announcement/announcement-tool/tool/src/webapp/vm/announcement/chef_announcements.vm
+===================================================================
+--- announcement/announcement-tool/tool/src/webapp/vm/announcement/chef_announcements.vm	(revision 17115)
++++ announcement/announcement-tool/tool/src/webapp/vm/announcement/chef_announcements.vm	(revision 17116)
+@@ -26,11 +26,6 @@
+ 	#end
+ 	#end
+ 	
+-	## show the reminder message about display limit
+-	#if ($!displayLimit)
+-		$tlang.getString("displayLimitWarning_1")$!displayLimit $tlang.getString("displayLimitWarning_2")$displayLimit$tlang.getString("displayLimitWarning_3")
+-	#end
+-	
+ 	#if ($isOnWorkspaceTab.equals("true")) ##in workspace
+ 		<h3>$tlang.getString("gen.announcements")</h3>
+ 		#if ($alertMessage)<div class="alertMessage">$tlang.getString("gen.alert") $validator.escapeHtml($alertMessage)</div><div class="clear"></div>#end

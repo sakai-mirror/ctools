@@ -34,11 +34,12 @@
     <applyPatch patchFileName="CT-659.patch" />
 
     <!-- in order of revision number (based on first in patch file) -->
-    <!-- included already 
-    <applyPatch patchFileName="SAK-5844.patch" /> -->
+    <!-- included already  <applyPatch patchFileName="SAK-5844.patch" /> -->
     <applyPatch patchFileName="SPEED.patch" />
+
     <applyPatch patchFileName="SAK-5295-6085-6210.patch" />
     <!-- already applied <applyPatch patchFileName="SAK-6320.patch" /> -->
+    <applyPatch patchFileName="SAK-6320.patch" /> 
     <applyPatch patchFileName="SAK-6148.patch" />
     <applyPatch patchFileName="SAK-4549.patch" />
     <!-- does not compile. <applyPatch patchFileName="SAK-5853.patch" />   -->
@@ -49,6 +50,8 @@
     <applyPatch patchFileName="SAK-5105.patch" />
     <applyPatch patchFileName="SAK-6838.patch" />
     <applyPatch patchFileName="SAK-6502.patch" />
+
+    <applyPatch patchFileName="SAK-5115R.patch" />
 
   </target>
 
