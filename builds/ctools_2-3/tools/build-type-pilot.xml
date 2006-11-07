@@ -58,24 +58,40 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <!-- register pieces to build -->
   <import file="./build-ctools.xml" />
+  <!--
   <import file="./build-mc.xml" /> 
   <import file="./build-ufp-um.xml" />
+  -->
   <import file="./build-melete.xml" />
   <import file="./build-sakai.xml" />
+  <import file="./build-itunesu.xml" />
+  <import file="./build-search.xml" />
+
+  <!--
   <import file="./build-osp.xml" />
   <import file="./build-samigo.xml" />
+  -->
 
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
   <!-- ========================= -->
 
   <!-- Assemble the desired source files. -->
+  <!--
   <target name="getSource" 
 	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getUfpUmSrc,getOSPSrc"
 	  description="get the source for sakai and required tools."/>
+  -->
+
+  <target name="getSource" 
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getItunesuSrc,getSearchSrc"
+	  description="get the source for sakai and required tools."/>
 
   <!-- Make changes in the source that may be required for this installation. -->
-  <target name="editSource" depends="editCtools,editSamigo,editMelete" description="Modify/customize source as necessary."/>
+  <target name="editSource" depends="editCtools,editMelete" 
+	  description="Modify/customize source as necessary."/>
+
+  <!--  <target name="editSource" depends="editCtools,editSamigo,editMelete" description="Modify/customize source as necessary."/>   -->
 
 
   <!-- =============================== -->
@@ -85,23 +101,69 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <target name="modifyImage"  depends="imageSakai,imageMelete" />
 
+  <target name="buildConfig" depends="createConfig,bundleConfig"
+	  description="Customize the properties files on an instance by instance basis."/>
 
+
+   <target name="bundleConfig">
+    <tar basedir="${instances.dir}" destfile="${image.dest.dir}/instanceProperties.${sakai.tag}.tar.gz" 
+	 longfile="gnu" compression="gzip" />
+   </target>
+
+  <target name="createConfig" 
+	  description="Customize the properties files on an instance by instance basis.">
+
+    <!--    <buildPropertiesFile instanceName="ctools" /> -->
+    <buildPropertiesFile instanceName="ctoolsload" />
+    <buildPropertiesFile instanceName="testctools" />
+    <buildPropertiesFile instanceName="localhost" />
+    <buildPropertiesFile instanceName="ctpilot" />
+    <buildPropertiesFile instanceName="ctpitest" />
+    
+  </target>
+
+
+  <!--
   <target name="buildConfig" 
 	  description="Customize the properties files on an instance by instance basis.">
 
     <buildPropertiesFile instanceName="ctools" />
     <buildPropertiesFile instanceName="ctoolsload" />
     <buildPropertiesFile instanceName="testctools" />
-
-    <!--
-    <buildPropertiesFile instanceName="whisk" />
-    -->
     <buildPropertiesFile instanceName="ctpiload" />
+
     <buildPropertiesFile instanceName="ctpilot.whisk" />
     <buildPropertiesFile instanceName="ctpilot0" />
     <buildPropertiesFile instanceName="ctpitest" />
 
   </target>
+  -->
+
+  <target name="deleteSamigo" if="remove.samigo">
+    <removeFromBuild deleteDir="sam" />
+  </target>
+
+  <target name="removeUnneededSakai" depends="deleteSamigo" >
+    <removeFromBuild deleteDir="portal/portal-mercury" />
+    <removeFromBuild deleteDir="common/common-composite-component/src/test" />
+    <removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
+    <removeFromBuild deleteDir="gradebook/testservice" />
+    <removeFromBuild deleteDir="metaobj/api-impl/src/test" />
+    <removeFromBuild deleteDir="osid/osid-unit-test" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/completetest" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/test" />
+    <removeFromBuild deleteDir="rwiki/radeox/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/testBundle" />
+    <removeFromBuild deleteDir="providers" />
+    <removeFromBuild deleteDir="wsrp" />
+    <removeFromBuild deleteDir="roster" />
+    <removeFromBuild deleteDir="webservices" />
+	<!--
+    <removeFromBuild deleteDir="search" />
+	-->
+  </target>
+
 
 
 </project>

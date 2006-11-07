@@ -124,9 +124,11 @@
 	  <env key="MAVEN_OPTS" value="-Djava.net.preferIPv4Stack=true -Xmx512m" />
 
       <arg value="-b" />
-      <!--  sometimes needed with a new build 
+      <!--  An offline build avoids looking for the artifacts it is about to rebuild, and
+	   then deleting them, but if there are new dependencies in the build then it will fail.
+	   In that case the build must be done as an on-line build i.e. without the '-o' argument. -->
       <arg value="-o" />
-       -->
+
       <arg value="sakai:clean" />
       <arg value="sakai:build" />
       <arg value="sakai:deploy-zip" />
