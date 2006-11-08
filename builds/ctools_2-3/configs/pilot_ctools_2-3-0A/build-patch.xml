@@ -1,0 +1,42 @@
+<project name="build-patches" basedir="." default="info" >
+
+  <!--
+
+   $Id$
+   $HeadURL$
+
+   Apply patches to the code.  This is used to avoid having to have a UMich specific branch of Sakai.
+
+  -->
+
+  <!-- ========================================================================== -->
+
+  <!-- Update the dependencies for this target to appropriate ones for this configuration. -->
+
+  <target name="applyPatches" 
+	  depends="applyPatches_2-3-0_p1"
+	  /> 
+  
+  <!-- ========================================================================== -->
+  <!-- ==                    Targets for specific patch sets.                  == -->
+  <!-- ========================================================================== -->
+
+
+  <target name="noPatches">
+    <echo>No patches to apply.</echo>
+  </target>
+
+  <target name="applyPatches_2-3-0_p1" >
+    <echo message="applying patch set 2-3-0_p1" />
+
+    <!-- change text for rwiki -->
+    <!-- FAILS: <applyPatch patchFileName="CT-659.patch" /> -->
+
+    
+    <!-- modify some queries to speed them up -->
+    <applyPatch patchFileName="SPEED.patch" />
+
+  </target>
+
+
+</project>
