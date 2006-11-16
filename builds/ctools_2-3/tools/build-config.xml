@@ -119,6 +119,11 @@
 	</tokenfilter>
 
 	<tokenfilter>
+	  <replaceregex pattern="^(bottomnav.2\s*=\s*).*" replace="\1${bottomnav.2}"/>
+	</tokenfilter>
+
+
+	<tokenfilter>
 	  <replaceregex pattern="^(ui.service\s*=\s*).*" replace="\1${ui.service}"/>
 	</tokenfilter>
 
@@ -151,7 +156,6 @@
 	  <replaceregex pattern="^(umiac.updateUrl\s*=\s*).*" 
 			replace="\1${umiac.updateUrl}"/>
 	</tokenfilter>
-
 
       </filterchain> 
     </copy>
