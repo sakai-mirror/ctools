@@ -157,6 +157,11 @@
 			replace="\1${umiac.updateUrl}"/>
 	</tokenfilter>
 
+	<tokenfilter>
+	  <replaceregex pattern="^(samigo.answerUploadRepositoryPath\s*=\s*).*" 
+			replace="\1${samigo.answerUploadRepositoryPath}"/>
+	</tokenfilter>
+
       </filterchain> 
     </copy>
 
