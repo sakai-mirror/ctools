@@ -162,6 +162,26 @@
 			replace="\1${samigo.answerUploadRepositoryPath}"/>
 	</tokenfilter>
 
+	<tokenfilter>
+	  <replaceregex pattern="^(sharedSegments@org.sakaiproject.search.api.SearchService.SegmentStore\s*=\s*).*" 
+			replace="\1${search.sharedSegments}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(location@org.sakaiproject.search.api.SearchService.SegmentStore\s*=\s*).*" 
+			replace="\1${search.location}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(search.experimental\s*=\s*).*" 
+			replace="\1${search.experimental}"/>
+	</tokenfilter>
+
+	<!--
+	#sharedSegments@org.sakaiproject.search.api.SearchService.SegmentStore=/afs/umich.edu/group/ctpitest/fs102
+	#location@org.sakaiproject.search.api.SearchService.SegmentStore=/tmp/ctoolssearchindex/
+	-->
+
       </filterchain> 
     </copy>
 
