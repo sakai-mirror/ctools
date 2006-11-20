@@ -268,7 +268,7 @@ INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- syllabus
 
-ALTER TABLE sakai_syllabus_data RENAME COLUMN position TO position_c;
+-- ALTER TABLE sakai_syllabus_data RENAME COLUMN position TO position_c;
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- privacy manager
@@ -281,7 +281,7 @@ create sequence PrivacyRecordImpl_SEQ;
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- events
 
-ALTER TABLE SAKAI_EVENT MODIFY SESSION_ID VARCHAR2 (163);
+-- ALTER TABLE SAKAI_EVENT MODIFY SESSION_ID VARCHAR2 (163);
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
