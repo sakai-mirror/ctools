@@ -50,7 +50,23 @@
     -->
   </target>
 
-  <target name="removeUnneededSakai" >
+  <!-- remove things that should not be there.  
+          For entire tools that should be included for some builds but not others 
+	  use a separate target so that can have a property as a flag to include the tool or not.
+	  That allows setting the state of that tools from the properties file and doesn't require 
+	  seperate build scripts for the different versions.
+-->
+
+  <target name="deleteLinktool" if="linktool.install.skip">
+        <removeFromBuild deleteDir="linktool" />
+  </target>
+
+  <target name="deleteBlog" if="blog.install.skip">
+        <removeFromBuild deleteDir="blog" />
+  </target>
+
+  <target name="removeUnneededSakai" depends="deleteSamigo,deleteLinktool,deleteBlog" >
+
     <removeFromBuild deleteDir="portal/mercury" />
     <removeFromBuild deleteDir="common/common-composite-component/src/test" />
     <removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
@@ -71,19 +87,37 @@
     <removeFromBuild deleteDir="reports/api-impl" />
     <removeFromBuild deleteDir="reports/components" />
     <removeFromBuild deleteDir="reports/tool" />
-
-    <!-- remove for this build.  Find a better way. 
-    <removeFromBuild deleteDir="sam" />
-    -->
-
-    <!-- removed as of 4/28/06 -->
-    <!--
-    <removeFromBuild deleteDir="roster" />
-    -->
     <removeFromBuild deleteDir="webservices" />
 
+  </target>
+
+<!--
+  <target name="removeUnneededSakai" >
+
+    <removeFromBuild deleteDir="portal/mercury" />
+    <removeFromBuild deleteDir="common/common-composite-component/src/test" />
+    <removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
+    <removeFromBuild deleteDir="gradebook/testservice" />
+    <removeFromBuild deleteDir="metaobj/api-impl/src/test" />
+    <removeFromBuild deleteDir="osid/osid-unit-test" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/completetest" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/test" />
+    <removeFromBuild deleteDir="rwiki/radeox/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/testBundle" />
+    <removeFromBuild deleteDir="sam/testdata" />
+    <removeFromBuild deleteDir="sam/tests" />
+    <removeFromBuild deleteDir="sam/tool/src/java/test" />
+    <removeFromBuild deleteDir="providers" />
+    <removeFromBuild deleteDir="wsrp" />
+    <removeFromBuild deleteDir="warehouse" />
+    <removeFromBuild deleteDir="reports/api-impl" />
+    <removeFromBuild deleteDir="reports/components" />
+    <removeFromBuild deleteDir="reports/tool" />
+    <removeFromBuild deleteDir="webservices" />
 
   </target>
+-->
 
   <target name="editSakai" >
   </target>
@@ -93,9 +127,7 @@
   </target>
 
   <target name="imageSakai" >
-    <!--
-    <removeWarFromImage deleteWar="sakai-wsrp-producer.war" />
-    -->
+
     <removeWarFromImage deleteWar="sakai-comp-test-app1.war" />
     <removeWarFromImage deleteWar="sakai-group-test.war" />
     <removeWarFromImage deleteWar="sakai-osid-repo-test.war" />

@@ -94,6 +94,7 @@ This doesn't supply the sakai.properties files you want to customize.
 
   </target>
 
+  <!--
   <target name="removeUnneededSakai" >
     <removeFromBuild deleteDir="portal/portal-mercury" />
     <removeFromBuild deleteDir="common/common-composite-component/src/test" />
@@ -110,9 +111,10 @@ This doesn't supply the sakai.properties files you want to customize.
     <removeFromBuild deleteDir="wsrp" />
     <removeFromBuild deleteDir="roster" />
     <removeFromBuild deleteDir="webservices" />
-	<!--
+	<!/-/-
     <removeFromBuild deleteDir="search" />
-	-->
+	/-/->
   </target>
+  -->
 
 </project>

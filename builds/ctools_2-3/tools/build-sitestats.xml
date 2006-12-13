@@ -1,0 +1,54 @@
+<project name="build-sitestats" basedir="." default="info" >
+
+  <!--
+
+   $Id: build-sitestats.xml 15158 2006-09-22 20:13:42Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-3/tools/build-sitestats.xml $
+   
+   Add sitestats contrib tool.
+ 
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="sitestatsInfo">
+    <echo>
+      This will extract the Sitestats tool. It should be called by the master build.xml not directly.
+
+      The configuration values are:
+      sitestats.install.skip = ${sitestats.install.skip}
+      sitestats.svnurl = ${sitestats.svnurl}
+      sitestats.revision = ${sitestats.revision}
+    </echo>
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--    deal with User Membership specific source       -->
+  <!-- ================================================== -->
+
+  <target name="getSitestatsSrc" unless="sitestats.install.skip">
+    <echo>
+      Extracting sitestats tool: ${sitestats.svnurl} revision: ${sitestats.revision}.
+    </echo>
+    <!-- This is trying to pull out part of the contents of only one directory contained 
+    in sakai_2-2-x.  Since we specify the directory name and the default destination is '.' the
+    contents of the directory will be retrieved, not the entire directory.  To get it into
+    a single directory we specify an explicit destination directory rather than use the default. -->
+    <execSvnCmd url="${sitestats.svnurl}" revision="${sitestats.revision}" destination="${sitestats.svndir}"/> 
+
+    <!-- take out the extra level of reference for the master/project.xml -->
+    <!--
+    <replaceregexp 
+	file="${build.dir}/sitestats-tool/tool/project.xml"  >
+      <regexp pattern="\.\./\.\./master/project.xml" />
+      <substitution  expression="../master/project.xml" />
+    </replaceregexp>
+    -->
+
+  </target>
+
+</project>
