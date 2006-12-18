@@ -1,7 +1,7 @@
-Index: /Users/dlhaines/dev/sakai/resources/sakai_2-3-0/content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesAction.java
+Index: content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesAction.java
 ===================================================================
---- /Users/dlhaines/dev/sakai/resources/sakai_2-3-0/content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesAction.java	(revision 17928)
-+++ /Users/dlhaines/dev/sakai/resources/sakai_2-3-0/content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesAction.java	(working copy)
+--- content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesAction.java	(revision 17928)
++++ content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesAction.java	(working copy)
 @@ -10536,7 +10536,21 @@
  			folder.setUrl(url);
  			
