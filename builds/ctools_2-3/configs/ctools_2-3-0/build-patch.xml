@@ -38,7 +38,8 @@
     <applyPatch patchFileName="SAK-7239.patch" />
     <applyPatch patchFileName="SAK-7317.patch" />
     <applyPatch patchFileName="DIRLIST.patch" />
-    <applyPatch patchFileName="OpaqueAdminResources.patch" />
+    <!-- <applyPatch patchFileName="OpaqueAdminResources.patch" /> -->
+    <applyPatch patchFileName="SAK-7431.patch" /> 
 
   </target>
 
