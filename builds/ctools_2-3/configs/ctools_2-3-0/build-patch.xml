@@ -40,6 +40,7 @@
     <applyPatch patchFileName="DIRLIST.patch" />
     <applyPatch patchFileName="SAK-7431.patch" /> 
     <applyPatch patchFileName="SAK-7431B.patch" /> 
+    <applyPatch patchFileName="SAK-7431C.patch" /> 
 
   </target>
 
