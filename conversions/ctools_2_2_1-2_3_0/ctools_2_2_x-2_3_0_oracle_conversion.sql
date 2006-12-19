@@ -195,73 +195,77 @@ create sequence CM_MEMBER_CONATINER_S;
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------------------------------------------
--- SAM (SAK-4396)
 
-drop table SAM_ATTACHMENT_T cascade constraints;
-drop table SAM_PUBLISHEDATTACHMENT_T cascade constraints;
-drop sequence SAM_ATTACHMENT_ID_S;
-drop sequence SAM_PUBLISHEDATTACHMENT_ID_S;
-create table SAM_ATTACHMENT_T (ATTACHMENTID number(19,0) not null, ATTACHMENTTYPE varchar2(255 char) not null, RESOURCEID varchar(255), FILENAME varchar(255), MIMETYPE varchar(80), FILESIZE integer, DESCRIPTION varchar(4000), LOCATION varchar(4000), ISLINK integer, STATUS integer not null, CREATEDBY varchar(36) not null, CREATEDDATE timestamp not null, LASTMODIFIEDBY varchar(36) not null, LASTMODIFIEDDATE timestamp not null, ASSESSMENTID number(19,0), SECTIONID number(19,0), ITEMID number(19,0), primary key (ATTACHMENTID));
-create table SAM_PUBLISHEDATTACHMENT_T (ATTACHMENTID number(19,0) not null, ATTACHMENTTYPE varchar2(255 char) not null, RESOURCEID varchar(255), FILENAME varchar(255), MIMETYPE varchar(80), FILESIZE integer, DESCRIPTION varchar(4000), LOCATION varchar(4000), ISLINK integer, STATUS integer not null, CREATEDBY varchar(36) not null, CREATEDDATE timestamp not null, LASTMODIFIEDBY varchar(36) not null, LASTMODIFIEDDATE timestamp not null, ASSESSMENTID number(19,0), SECTIONID number(19,0), ITEMID number(19,0), primary key (ATTACHMENTID));
-alter table SAM_ATTACHMENT_T add constraint FK99FA8CB8CAC2365B foreign key (ASSESSMENTID) references SAM_ASSESSMENTBASE_T;
-alter table SAM_ATTACHMENT_T add constraint FK99FA8CB83288DBBD foreign key (ITEMID) references SAM_ITEM_T;
-alter table SAM_ATTACHMENT_T add constraint FK99FA8CB870CE2BD foreign key (SECTIONID) references SAM_SECTION_T;
-alter table SAM_PUBLISHEDATTACHMENT_T add constraint FK270998869482C945 foreign key (ASSESSMENTID) references SAM_PUBLISHEDASSESSMENT_T;
-alter table SAM_PUBLISHEDATTACHMENT_T add constraint FK2709988631446627 foreign key (ITEMID) references SAM_PUBLISHEDITEM_T;
-alter table SAM_PUBLISHEDATTACHMENT_T add constraint FK27099886895D4813 foreign key (SECTIONID) references SAM_PUBLISHEDSECTION_T;
-create sequence SAM_ATTACHMENT_ID_S;
-create sequence SAM_PUBLISHEDATTACHMENT_ID_S;
+-- commented out by dlh 2006/12/19
+-- Will recreate from scratch.
 
--- more SAM
+-- -- SAM (SAK-4396)
 
-INSERT INTO SAM_TYPE_T ("TYPEID" ,"AUTHORITY" ,"DOMAIN" ,"KEYWORD",
-    "DESCRIPTION" ,
-    "STATUS" ,"CREATEDBY" ,"CREATEDDATE" ,"LASTMODIFIEDBY" ,
-    "LASTMODIFIEDDATE" )
-    VALUES (11 , 'stanford.edu' , 'assessment.item' ,'Numeric Response' ,NULL ,1 ,1 ,
-    SYSDATE ,1 ,SYSDATE);
+-- drop table SAM_ATTACHMENT_T cascade constraints;
+-- drop table SAM_PUBLISHEDATTACHMENT_T cascade constraints;
+-- drop sequence SAM_ATTACHMENT_ID_S;
+-- drop sequence SAM_PUBLISHEDATTACHMENT_ID_S;
+-- create table SAM_ATTACHMENT_T (ATTACHMENTID number(19,0) not null, ATTACHMENTTYPE varchar2(255 char) not null, RESOURCEID varchar(255), FILENAME varchar(255), MIMETYPE varchar(80), FILESIZE integer, DESCRIPTION varchar(4000), LOCATION varchar(4000), ISLINK integer, STATUS integer not null, CREATEDBY varchar(36) not null, CREATEDDATE timestamp not null, LASTMODIFIEDBY varchar(36) not null, LASTMODIFIEDDATE timestamp not null, ASSESSMENTID number(19,0), SECTIONID number(19,0), ITEMID number(19,0), primary key (ATTACHMENTID));
+-- create table SAM_PUBLISHEDATTACHMENT_T (ATTACHMENTID number(19,0) not null, ATTACHMENTTYPE varchar2(255 char) not null, RESOURCEID varchar(255), FILENAME varchar(255), MIMETYPE varchar(80), FILESIZE integer, DESCRIPTION varchar(4000), LOCATION varchar(4000), ISLINK integer, STATUS integer not null, CREATEDBY varchar(36) not null, CREATEDDATE timestamp not null, LASTMODIFIEDBY varchar(36) not null, LASTMODIFIEDDATE timestamp not null, ASSESSMENTID number(19,0), SECTIONID number(19,0), ITEMID number(19,0), primary key (ATTACHMENTID));
+-- alter table SAM_ATTACHMENT_T add constraint FK99FA8CB8CAC2365B foreign key (ASSESSMENTID) references SAM_ASSESSMENTBASE_T;
+-- alter table SAM_ATTACHMENT_T add constraint FK99FA8CB83288DBBD foreign key (ITEMID) references SAM_ITEM_T;
+-- alter table SAM_ATTACHMENT_T add constraint FK99FA8CB870CE2BD foreign key (SECTIONID) references SAM_SECTION_T;
+-- alter table SAM_PUBLISHEDATTACHMENT_T add constraint FK270998869482C945 foreign key (ASSESSMENTID) references SAM_PUBLISHEDASSESSMENT_T;
+-- alter table SAM_PUBLISHEDATTACHMENT_T add constraint FK2709988631446627 foreign key (ITEMID) references SAM_PUBLISHEDITEM_T;
+-- alter table SAM_PUBLISHEDATTACHMENT_T add constraint FK27099886895D4813 foreign key (SECTIONID) references SAM_PUBLISHEDSECTION_T;
+-- create sequence SAM_ATTACHMENT_ID_S;
+-- create sequence SAM_PUBLISHEDATTACHMENT_ID_S;
 
--- more SAM
-INSERT INTO SAM_ASSESSMETADATA_T ("ASSESSMENTMETADATAID",
-"ASSESSMENTID","LABEL", "ENTRY")
-  VALUES(sam_assessMetaData_id_s.nextVal, 1, 'releaseTo', 'SITE_MEMBERS')
-;
-INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
-   ENTRY)
-   VALUES(sam_assessMetaData_id_s.nextVal, (SELECT ID FROM SAM_ASSESSMENTBASE_T WHERE TITLE='Formative Assessment'
-    AND TYPEID='142' AND ISTEMPLATE=1),
-     'releaseTo', 'SITE_MEMBERS')
-;
-INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
-   ENTRY)
-   VALUES(sam_assessMetaData_id_s.nextVal, (SELECT ID FROM SAM_ASSESSMENTBASE_T WHERE TITLE='Quiz'
-    AND TYPEID='142' AND ISTEMPLATE=1),
-     'releaseTo', 'SITE_MEMBERS')
-;
-INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
-   ENTRY)
-   VALUES(sam_assessMetaData_id_s.nextVal, (SELECT ID FROM SAM_ASSESSMENTBASE_T WHERE TITLE='Problem Set'
-    AND TYPEID='142' AND ISTEMPLATE=1),
-     'releaseTo', 'SITE_MEMBERS')
-;
-INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
-   ENTRY)
-   VALUES(sam_assessMetaData_id_s.nextVal, (SELECT ID FROM SAM_ASSESSMENTBASE_T WHERE TITLE='Survey'
-    AND TYPEID='142' AND ISTEMPLATE=1),
-     'releaseTo', 'SITE_MEMBERS')
-;
-INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
-   ENTRY)
-   VALUES(sam_assessMetaData_id_s.nextVal, (SELECT ID FROM SAM_ASSESSMENTBASE_T WHERE TITLE='Test'
-    AND TYPEID='142' AND ISTEMPLATE=1),
-     'releaseTo', 'SITE_MEMBERS')
-;
-INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
-   ENTRY)
-   VALUES(sam_assessMetaData_id_s.nextVal, (SELECT ID FROM SAM_ASSESSMENTBASE_T WHERE TITLE='Timed Test'
-    AND TYPEID='142' AND ISTEMPLATE=1),
-     'releaseTo', 'SITE_MEMBERS')
-;
+-- -- more SAM
+
+-- INSERT INTO SAM_TYPE_T ("TYPEID" ,"AUTHORITY" ,"DOMAIN" ,"KEYWORD",
+--     "DESCRIPTION" ,
+--     "STATUS" ,"CREATEDBY" ,"CREATEDDATE" ,"LASTMODIFIEDBY" ,
+--     "LASTMODIFIEDDATE" )
+--     VALUES (11 , 'stanford.edu' , 'assessment.item' ,'Numeric Response' ,NULL ,1 ,1 ,
+--     SYSDATE ,1 ,SYSDATE);
+
+-- -- more SAM
+-- INSERT INTO SAM_ASSESSMETADATA_T ("ASSESSMENTMETADATAID",
+-- "ASSESSMENTID","LABEL", "ENTRY")
+--   VALUES(sam_assessMetaData_id_s.nextVal, 1, 'releaseTo', 'SITE_MEMBERS')
+-- ;
+-- INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
+--    ENTRY)
+--    VALUES(sam_assessMetaData_id_s.nextVal, (SELECT ID FROM SAM_ASSESSMENTBASE_T WHERE TITLE='Formative Assessment'
+--     AND TYPEID='142' AND ISTEMPLATE=1),
+--      'releaseTo', 'SITE_MEMBERS')
+-- ;
+-- INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
+--    ENTRY)
+--    VALUES(sam_assessMetaData_id_s.nextVal, (SELECT ID FROM SAM_ASSESSMENTBASE_T WHERE TITLE='Quiz'
+--     AND TYPEID='142' AND ISTEMPLATE=1),
+--      'releaseTo', 'SITE_MEMBERS')
+-- ;
+-- INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
+--    ENTRY)
+--    VALUES(sam_assessMetaData_id_s.nextVal, (SELECT ID FROM SAM_ASSESSMENTBASE_T WHERE TITLE='Problem Set'
+--     AND TYPEID='142' AND ISTEMPLATE=1),
+--      'releaseTo', 'SITE_MEMBERS')
+-- ;
+-- INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
+--    ENTRY)
+--    VALUES(sam_assessMetaData_id_s.nextVal, (SELECT ID FROM SAM_ASSESSMENTBASE_T WHERE TITLE='Survey'
+--     AND TYPEID='142' AND ISTEMPLATE=1),
+--      'releaseTo', 'SITE_MEMBERS')
+-- ;
+-- INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
+--    ENTRY)
+--    VALUES(sam_assessMetaData_id_s.nextVal, (SELECT ID FROM SAM_ASSESSMENTBASE_T WHERE TITLE='Test'
+--     AND TYPEID='142' AND ISTEMPLATE=1),
+--      'releaseTo', 'SITE_MEMBERS')
+-- ;
+-- INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
+--    ENTRY)
+--    VALUES(sam_assessMetaData_id_s.nextVal, (SELECT ID FROM SAM_ASSESSMENTBASE_T WHERE TITLE='Timed Test'
+--     AND TYPEID='142' AND ISTEMPLATE=1),
+--      'releaseTo', 'SITE_MEMBERS')
+-- ;
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -327,7 +331,6 @@ create table GB_SPREADSHEET_T (
 create sequence GB_SPREADSHEET_S;
 
 alter table GB_GRADABLE_OBJECT_T add (RELEASED NUMBER(1,0) DEFAULT 1);
-
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 
