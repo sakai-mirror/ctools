@@ -144,6 +144,32 @@
 			replace="\1${support.email}"/>
 	</tokenfilter>
 
+	<tokenfilter>
+	  <replaceregex pattern="^(search.experimental\s*=\s*).*" 
+			replace="\1${search.experimental}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(sharedSegments@org.sakaiproject.search.api.SearchService.SegmentStore\s*=\s*).*" 
+			replace="\1${sharedSegments}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(location@org.sakaiproject.search.api.SearchService.SegmentStore\s*=\s*).*" 
+			replace="\1${location@org.sakaiproject.search.api.SearchService.SegmentStore}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(samigo.answerUploadRepositoryPath\s*=\s*).*" 
+			replace="\1${samigo.answerUploadRepositoryPath}"/>
+	</tokenfilter>
+
+<!--
+	#search.experimental=false
+	#sharedSegments@org.sakaiproject.search.api.SearchService.SegmentStore=${sakai.home}/search
+	#location@org.sakaiproject.search.api.SearchService.SegmentStore=${sakai.home}/searchtmp
+-->
+
 
       </filterchain> 
     </copy>
