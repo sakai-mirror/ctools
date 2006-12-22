@@ -1,6 +1,6 @@
 -- Provided by Nuno Fernandes to UMich on 2006/12/15.
 -- $HeadURL$
--- $Id:$
+-- $Id$
 
 drop table if exists SST_EVENTS;
 drop table if exists SST_PREFS;
