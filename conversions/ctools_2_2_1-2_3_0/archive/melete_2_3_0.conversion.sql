@@ -1,7 +1,7 @@
 -- Melete 2.2.1 -> 2.3.0 conversion sql
 -- Provided by Anthony Atkins of Virgina Tech on 2006/12/13.
 -- $HeadURL$
--- $Id:$
+-- $Id$
 
 alter table melete_course_module add delete_flag number(1);
 update melete_course_module set delete_flag=0;
