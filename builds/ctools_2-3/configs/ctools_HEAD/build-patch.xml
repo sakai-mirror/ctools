@@ -1,0 +1,47 @@
+<project name="build-patches" basedir="." default="info" >
+
+  <!--
+
+   $Id: build-patch.xml 17111 2006-10-13 15:43:13Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-2/tools/build-patch.xml $
+
+   Apply patches to the code.  This is used to avoid having to have a UMich specific branch of Sakai.
+
+  -->
+
+  <!-- ========================================================================== -->
+
+  <!-- Update the dependencies for this target to appropriate ones for this configuration. -->
+
+
+  <target name="applyPatches" 
+	  depends="applyPatches_2-3-0_p1"
+	  /> 
+
+
+  
+  <!-- ========================================================================== -->
+  <!-- ==                    Targets for specific patch sets.                  == -->
+  <!-- ========================================================================== -->
+
+
+  <target name="noPatches">
+    <echo>No patches to apply.</echo>
+  </target>
+
+  <target name="applyPatches_2-3-0_p1" >
+    <echo message="applying patch set 2-3-0_p1" />
+
+    <applyPatch patchFileName="SPEED.patch" />
+    <applyPatch patchFileName="SAK-7049.patch" />
+    <applyPatch patchFileName="SAK-7159.patch" />
+    <applyPatch patchFileName="SAK-7239.patch" />
+    <applyPatch patchFileName="SAK-7317.patch" />
+    <applyPatch patchFileName="DIRLIST.patch" />
+    <applyPatch patchFileName="SAK-7431.patch" /> 
+    <applyPatch patchFileName="SAK-7431B.patch" /> 
+    <applyPatch patchFileName="SAK-7431C.patch" /> 
+
+  </target>
+
+</project>
