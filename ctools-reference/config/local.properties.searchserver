@@ -1,0 +1,21 @@
+# local.properties - the CTools edition
+
+#serverId=whisk
+
+#showSql@org.sakaiproject.db.api.SqlService=true
+
+
+#############################
+# Search server configuration properties.
+# Set the server ones in local.properties for the search server.
+# The others should be set in sakai.properties.
+## Search Server ##
+# Let this node be a search server
+# searchServer@org.sakaiproject.sea4ch.api.SearchService=true
+# let this node build indices
+# search.indexbuild=true
+
+##  Search Client ##
+# See sakai.properties.  Values that have the same defaults for both a search client
+# and a search server are set there.  They can be overridden here.
+#############################
