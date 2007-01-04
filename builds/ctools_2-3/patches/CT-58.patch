@@ -1,8 +1,8 @@
 svn diff -r20058:20059 https://source.sakaiproject.org/svn
-Index: ctools/ctools-reference/library/src/webapp/skin/tool_base.css
+Index: ctools-reference/library/src/webapp/skin/tool_base.css
 ===================================================================
---- ctools/ctools-reference/library/src/webapp/skin/tool_base.css	(revision 20058)
-+++ ctools/trunk/ctools-reference/library/src/webapp/skin/tool_base.css	(revision 20059)
+--- ctools-reference/library/src/webapp/skin/tool_base.css	(revision 20058)
++++ ctools-reference/library/src/webapp/skin/tool_base.css	(revision 20059)
 @@ -646,6 +646,18 @@
  	height: 0;
  }
