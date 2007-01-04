@@ -41,6 +41,7 @@
     <applyPatch patchFileName="SAK-7431.patch" /> 
     <applyPatch patchFileName="SAK-7431B.patch" /> 
     <applyPatch patchFileName="SAK-7431C.patch" /> 
+    <applyPatch patchFileName="CT-58.patch" /> 
 
   </target>
 
