@@ -99,6 +99,10 @@ This doesn't supply the sakai.properties files you want to customize.
   <target name="buildConfig" depends="createConfig,bundleConfig"
 	  description="Customize the properties files on an instance by instance basis."/>
 
+  <target name="buildConfigSimple" depends="createConfigSimple,bundleConfig"
+	  description="Customize the properties files on an instance by instance basis."/>
+
+
 
    <target name="bundleConfig">
     <tar basedir="${instances.dir}" destfile="${image.dest.dir}/instanceProperties.${sakai.tag}.tar.gz" 
@@ -114,6 +118,18 @@ This doesn't supply the sakai.properties files you want to customize.
     <buildPropertiesFile instanceName="localhost" />
     <!--
     <buildPropertiesFile instanceName="whisk" />
+    -->
+    
+  </target>
+
+  <target name="createConfigSimple" 
+	  description="Customize the properties files on an instance by instance basis.">
+
+    <buildPropertiesFileSimple instanceName="ctools" />
+    <!--
+    <buildPropertiesFile instanceName="ctoolsload" />
+    <buildPropertiesFile instanceName="testctools" />
+    <buildPropertiesFile instanceName="localhost" />
     -->
     
   </target>

@@ -177,4 +177,22 @@ This should have nothing specific to a particular build type.
 
   </macrodef>
 
+
+  <macrodef name="buildPropertiesFileSimple">
+    <attribute name="instanceName" />
+    <sequential>
+      <ant antfile="${scripts.dir}/build-config.xml" target="buildPropertiesSimple" inheritAll="false" >
+	<property name="sakai.properties" value="${sakai.properties}" />
+	<property name="instance-type" value="@{instanceName}" />
+	<property name="instances.dir" value="${instances.dir}" />
+	<property name="version.service" value="${version.service}" />
+	<property name="version.sakai" value="${version.sakai}" />
+	<property name="config.dir" value="${config.dir}" />
+	<property name="keystore.dir" value="${keystore.dir}" />
+	<property name="keystore" value="${keystore}" />
+      </ant>
+    </sequential>
+
+  </macrodef>
+
 </project>
