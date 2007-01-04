@@ -34,6 +34,9 @@
   <target name="buildProperties" depends="copyConfig, editInstanceSakaiProperties"
 	  description="copy and edit the sakai.properties files." />
 
+  <target name="buildPropertiesSimple" depends="copyConfig, editInstanceSakaiPropertiesSimple"
+	  description="TEST: copy and edit the sakai.properties files." />
+
   <target name="copyConfig">
     <echo> copy from config.dir: ${config.dir} </echo>
     <echo> copy to instances.dir: ${instances.dir} </echo>
@@ -160,20 +163,211 @@
 	</tokenfilter>
 
 	<tokenfilter>
-	  <replaceregex pattern="^(samigo.answerUploadRepositoryPath\s*=\s*).*" 
-			replace="\1${samigo.answerUploadRepositoryPath}"/>
+	  <replaceregex pattern="^(location@org.sakaiproject.search.api.SearchService.SegmentStore\s*=\s*).*" 
+			replace="\1${location@org.sakaiproject.search.api.SearchService.SegmentStore}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(indexStorageName@org.sakaiproject.search.indexIndexStorage\s*=\s*).*" 
+			replace="\1${indexStorageName@org.sakaiproject.search.indexIndexStorage}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(searchServerUrl@org.sakaiproject.search.api.SearchService.SegmentStore\s*=\s*).*" 
+			replace="\1${searchServerUrl@org.sakaiproject.search.api.SearchService.SegmentStore}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(search.indexbuild\s*=\s*).*" 
+			replace="\1${search.indexbuild}"/>
+	</tokenfilter>
+
+
+	<tokenfilter>
+	  <replaceregex pattern="^(localSegmentsOnly@org.sakaiproject.search.api.SearchService.SegmentStorage\s*=\s*).*" 
+			replace="\1${localSegmentsOnly@org.sakaiproject.search.api.SearchService.SegmentStorage}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(onlyIndexSearchToolSites@org.sakaiproject.search.api.SearchIndexBuilder\s*=\s*).*" 
+			replace="\1${onlyIndexSearchToolSites@org.sakaiproject.search.api.SearchIndexBuilder}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(sharedKey@org.sakaiproject.search.api.SearchService\s*=\s*).*" 
+			replace="\1${sharedKey@org.sakaiproject.search.api.SearchService}"/>
 	</tokenfilter>
 
 <!--
-	#search.experimental=false
-	#sharedSegments@org.sakaiproject.search.api.SearchService.SegmentStore=${sakai.home}/search
-	#location@org.sakaiproject.search.api.SearchService.SegmentStore=${sakai.home}/searchtmp
+    model tokenfilter entry
+	<tokenfilter>
+	  <replaceregex pattern="^(
+XXXXX
+\s*=\s*).*" 
+			replace="\1${
+XXXXX
+}"/>
+	</tokenfilter>
 -->
+
+
+	<!--
+x	search.experimental=true
+x	sharedSegments=/afs/umich.edu/group/ctpitest/fs102/search
+x	location@org.sakaiproject.search.api.SearchService.SegmentStore=/tmp/ctoolssearchindex/
+X	indexStorageName@org.sakaiproject.search.index.IndexStorage=cluster
+x	searchServerUrl@org.sakaiproject.search.api.SearchService.SegmentStore=${sakai.home}/search
+x	search.indexbuild=false
+x	localSegmentsOnly@org.sakaiproject.search.api.SearchService.SegmentStorage=true
+x	onlyIndexSearchToolSites@org.sakaiproject.search.api.SearchIndexBuilder=true
+x	sharedKey@org.sakaiproject.search.api.SearchService=DONTYOUWISH
+	-->
+
+	<tokenfilter>
+	  <replaceregex pattern="^(samigo.answerUploadRepositoryPath\s*=\s*).*" 
+			replace="\1${samigo.answerUploadRepositoryPath}"/>
+	</tokenfilter>
 
 
       </filterchain> 
     </copy>
 
   </target>
+
+  <target name="editInstanceSakaiPropertiesSimple" >
+    <echo> sakai.properties: ${sakai.properties} </echo>
+    <echo> instance-type: ${instance-type} </echo>
+    <echo> instance file: ctools.properties.${instance-type} </echo>
+    <echo> instances.dir: ${instances.dir}</echo>
+    <echo> serverUrl: ${serverUrl} </echo>
+    <echo> version.service: ${version.service} </echo>
+    <echo> version.sakai: ${version.sakai} </echo>
+
+   <copy file="${sakai.properties}" 
+	  tofile="${instances.dir}/${instance-type}/sakai.properties" 
+	  overwrite="true"/>
+
+    <replace dir="${instances.dir}/${instance-type}"
+	     replacefilterfile="ctools.properties.${instance-type}"
+	     summary="yes">
+      <include name="**/*.properties"/>
+    </replace>
+
+
+ <!--
+     <replace dir="${build.dir}/properties" 
+     replacefilterfile="replace.properties.${env}">
+     <include name="**/*.properties"/>
+     <include name="**/*.xml"/>
+     </replace>
+ -->
+    <!-- to add a new property to be customized add a new token filter
+    entry below -->
+
+    <!--
+    <copy file="${sakai.properties}" 
+	  tofile="${instances.dir}/${instance-type}/sakai.properties" 
+	  overwrite="true">
+
+       <filterchain> 
+
+	<tokenfilter>
+	  <replaceregex pattern="^(serverUrl\s*=\s*).*" replace="\1${serverUrl}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(serverName\s*=\s*).*" replace="\1${serverName}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(loggedOutUrl\s*=\s*).*" replace="\1${loggedOutUrl}" />
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(bodyPath@org.sakaiproject.content.api.ContentHostingService\s*=\s*).*" replace="\1${bodyPath}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(version.service\s*=\s*).*" replace="\1${version.service}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(version.sakai\s*=\s*).*" replace="\1${version.sakai}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(bodyVolumes@org.sakaiproject.content.api.ContentHostingService\s*=\s*).*" replace="\1${bodyVolumes}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(storagePath@org.sakaiproject.archive.api.ArchiveService\s*=\s*).*" replace="\1${storagePath}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(skin.default\s*=\s*).*" replace="\1${skin.default}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(login.icon\s*=\s*).*" replace="\1${login.icon}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(bottomnav.1\s*=\s*).*" replace="\1${bottomnav.1}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(ui.service\s*=\s*).*" replace="\1${ui.service}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(smtp@org.sakaiproject.email.api.EmailService\s*=\s*).*" 
+			replace="\1${smtp@org.sakaiproject.email.api.EmailService}" />
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(stealthTools@org.sakaiproject.tool.api.ActiveToolManager\s*=\s*).*" 
+			replace="\1${stealthTools@org.sakaiproject.tool.api.ActiveToolManager}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(portal.error.email\s*=\s*).*" 
+			replace="\1${portal.error.email}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(mail.support\s*=\s*).*" 
+			replace="\1${mail.support}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(support.email\s*=\s*).*" 
+			replace="\1${support.email}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(search.experimental\s*=\s*).*" 
+			replace="\1${search.experimental}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(sharedSegments@org.sakaiproject.search.api.SearchService.SegmentStore\s*=\s*).*" 
+			replace="\1${sharedSegments}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(location@org.sakaiproject.search.api.SearchService.SegmentStore\s*=\s*).*" 
+			replace="\1${location@org.sakaiproject.search.api.SearchService.SegmentStore}"/>
+	</tokenfilter>
+
+	<tokenfilter>
+	  <replaceregex pattern="^(samigo.answerUploadRepositoryPath\s*=\s*).*" 
+			replace="\1${samigo.answerUploadRepositoryPath}"/>
+	</tokenfilter>
+
+      </filterchain> 
+    </copy>
+-->
+  </target>
+
 
 </project>
