@@ -198,6 +198,12 @@
 			replace="\1${sharedKey@org.sakaiproject.search.api.SearchService}"/>
 	</tokenfilter>
 
+	<tokenfilter>
+	  <replaceregex pattern="^(umiac.updateUrl\s*=\s*).*" 
+			replace="\1${umiac.updateUrl}"/>
+	</tokenfilter>
+
+
 <!--
     model tokenfilter entry
 	<tokenfilter>

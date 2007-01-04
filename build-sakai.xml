@@ -65,7 +65,11 @@
         <removeFromBuild deleteDir="blog" />
   </target>
 
-  <target name="removeUnneededSakai" depends="deleteSamigo,deleteLinktool,deleteBlog" >
+  <target name="deleteWebservices" if="webservices.install.skip">
+    <removeFromBuild deleteDir="webservices" />
+  </target>
+
+  <target name="removeUnneededSakai" depends="deleteSamigo,deleteLinktool,deleteBlog,deleteWebservices" >
 
     <removeFromBuild deleteDir="portal/mercury" />
     <removeFromBuild deleteDir="common/common-composite-component/src/test" />
@@ -87,7 +91,6 @@
     <removeFromBuild deleteDir="reports/api-impl" />
     <removeFromBuild deleteDir="reports/components" />
     <removeFromBuild deleteDir="reports/tool" />
-    <removeFromBuild deleteDir="webservices" />
 
   </target>
 
