@@ -34,9 +34,11 @@ $HeadURL$
   <!-- get the source -->
   <target name="getCtoolsSrc" unless="ctools.extract.skip" >
     <echo> Extract ctools source ctools.extract.skip=[${ctools.extract.skip}]</echo>
+    <echo> ctools url: ${ctools.svnurl} ctools.revision: ${ctools.revision} </echo>
     <execSvnCmd url="${ctools.svnurl}/ctools-apps" revision="${ctools.revision}"  destination="ctools-apps"/> 
     <execSvnCmd url="${ctools.svnurl}/ctools-providers" revision="${ctools.revision}"  destination="ctools-providers"/> 
     <execSvnCmd url="${ctools.svnurl}/ctools-reference" revision="${ctools.revision}"  destination="ctools-reference"/> 
+    <echo> gradtools url: ${ctools.svnurl} uses ctools.revision: ${ctools.revision} </echo>
     <execSvnCmd url="${gradtools.svnurl}" revision="${ctools.revision}"  destination="gradtools" /> 
 
     <antcall target="removeUnneededCtools" />
