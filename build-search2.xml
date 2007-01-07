@@ -16,7 +16,7 @@
 
   <target name="searchInfo">
     <echo>
-      This will extract the iTuneU podcasting tool. It should be called by the master build.xml not directly.
+      This will control extraction of the search tool.
 
       The configuration values are:
       search.install.skip = ${search.install.skip}
@@ -27,7 +27,7 @@
 
 
   <!-- ================================================== -->
-  <!--    deal with User Membership specific source       -->
+  <!--    deal with search specific source       -->
   <!-- ================================================== -->
 
   <target name="getSearchSrc" unless="search.install.skip">
@@ -39,41 +39,6 @@
     <delete file="${build.dir}/project.xml" />
 
     <execSvnCmd url="${search.svnurl}" revision="${search.revision}" dir="${build.dir}/search"/> 
-
-    <!--
-    Take these out individually since if take out as a group project.xml overwrites an important one.
-    -->
-<!--    <execSvnCmd url="${search.svnurl}" revision="${search.revision}" dir="${build.dir}"/>  -->
-<!--
-    <execSvnCmd url="${search.svnurl}/search-api" revision="${search.revision}" dir="${build.dir}/search-api"/> 
-    <execSvnCmd url="${search.svnurl}/search-help" revision="${search.revision}" dir="${build.dir}/search-help"/> 
-    <execSvnCmd url="${search.svnurl}/search-impl" revision="${search.revision}" dir="${build.dir}/search-impl"/> 
-    <execSvnCmd url="${search.svnurl}/search-integration-test" revision="${search.revision}" dir="${build.dir}/search-integration-test"/> 
-    <execSvnCmd url="${search.svnurl}/search-model" revision="${search.revision}" dir="${build.dir}/search-model"/> 
-    -->
-
-    <!-- take out the extra level of reference for the master/project.xml -->
-    <!-- 
-    <echo> search: adjust path to master project.xml</echo>
-    <echo> build.dir ${build.dir}</echo>
-
-    <replaceregexp>
-
-      <fileset dir="${build.dir}" >
-	<include name="search*/**/project.xml"/>
-      </fileset>
-
-      <regexp pattern="\.\./\.\./master/project.xml" />
-      <substitution  expression="../master/project.xml" />
-    </replaceregexp>
-    -->
-    <!--
-    <replaceregexp 
-	file="${build.dir}/search/tool/project.xml"  >
-      <regexp pattern="\.\./\.\./master/project.xml" />
-      <substitution  expression="../master/project.xml" />
-    </replaceregexp>
-     -->
 
   </target>
 

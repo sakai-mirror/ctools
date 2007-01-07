@@ -149,9 +149,10 @@
 	  failonerror="true"
 	  searchpath="true"
 	  >
-	  <env key="MAVEN_OPTS" value="-Djava.net.preferIPv4Stack=true -Xmx512m" />
+	  <env key="MAVEN_OPTS" value="-Djava.net.preferIPv4Stack=true -Xmx768m" />
 
       <arg value="-b" />
+      <!-- <arg value="-X" /> -->
       <!--  sometimes needed with a new build 
       <arg value="-o" />
        -->
