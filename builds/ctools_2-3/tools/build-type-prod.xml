@@ -83,7 +83,7 @@ This doesn't supply the sakai.properties files you want to customize.
 	  description="get the source for sakai and required tools." >
 
     <echo> Document which non-default source was extracted.  The source is extracted if property is
-           set.  The value of the property doesn't matter.
+           set.  The value of the property doesn't matter. </echo>
 	  <echo> ctools source ctools.extract.skip = [${ctools.extract.skip}]</echo>
 	  <echo> melete.extract.skip = [${melete.extract.skip}]</echo>
 	  <echo> itunesu.install.skip = [${itunesu.install.skip}]</echo>
