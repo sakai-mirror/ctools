@@ -15,10 +15,12 @@
 
 
   <target name="applyPatches" 
-	  depends="applyPatches_2-3-0_p1"
+	  depends="allPatches"
 	  /> 
 
-
+  <!-- use this seperate target so that can apply the patch sets individually (for testing). -->
+  <target name="allPatches" depends="applyPatches_2-3-0_p1,applyPatches_2-3-0_p2" >
+  </target>
   
   <!-- ========================================================================== -->
   <!-- ==                    Targets for specific patch sets.                  == -->
@@ -28,6 +30,7 @@
   <target name="noPatches">
     <echo>No patches to apply.</echo>
   </target>
+
 
   <target name="applyPatches_2-3-0_p1" >
     <echo message="applying patch set 2-3-0_p1" />
@@ -44,6 +47,17 @@
     <!--
     <applyPatch patchFileName="CT-58.patch" /> 
     -->
+
+  </target>
+
+  <target name="applyPatches_2-3-0_p2">
+    <echo message="applying patch set 2-3-0_p2" />
+
+    <applyPatch patchFileName="SAK-7133.patch" />
+    <applyPatch patchFileName="SAK-7442.patch" />
+    <applyPatch patchFileName="SAK-7518.patch" />
+    <applyPatch patchFileName="SAK-7522.patch" />
+    <applyPatch patchFileName="SAK-7527.patch" />
 
   </target>
 

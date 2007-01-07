@@ -36,7 +36,7 @@
 
   <!-- Target to apply a single patch.  Used to test patches.  -->
   <target name="testOnePatch" description="target to test single patch application">
-    <applyPatch patchFileName="${patchfile}" />
+    <applyPatch patchFileName="${patchFileName}" />
   </target>
 
   <!-- Macro definition to invoce the patch utility -->
