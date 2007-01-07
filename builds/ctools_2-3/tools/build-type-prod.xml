@@ -80,7 +80,17 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <target name="getSource" 
 	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc"
-	  description="get the source for sakai and required tools."/>
+	  description="get the source for sakai and required tools." >
+
+    <echo> Document which non-default source was extracted.  The source is extracted if property is
+           set.  The value of the property doesn't matter.
+	  <echo> ctools source ctools.extract.skip = [${ctools.extract.skip}]</echo>
+	  <echo> melete.extract.skip = [${melete.extract.skip}]</echo>
+	  <echo> itunesu.install.skip = [${itunesu.install.skip}]</echo>
+	  <echo> sitestats.install.skip = [${sitestats.install.skip}] </echo>
+	  <echo> search.install.skip = [${search.install.skip}] </echo>
+
+  </target>
 
 
   <!-- Make changes in the source that may be required for this installation. -->
