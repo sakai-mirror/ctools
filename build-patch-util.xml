@@ -57,9 +57,8 @@
       <arg value="-p0" />
       <arg value="--verbose" />
       <arg value ="--ignore-whitespace" />
-      <!--
-      <arg value="\-\-dry-run" /> 
-      -->
+      <!-- <arg value="\-\-debug=10" /> -->
+      <!-- <arg value="\-\-dry-run" />   -->
       <arg value="--input=${patches.dir}/@{patchFileName}" />
       <!--      <arg value="\-\-backup" /> -->
       <arg value="--remove-empty-files" />
