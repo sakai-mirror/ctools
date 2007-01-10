@@ -69,7 +69,7 @@ my $user = "admin";
 my $password = "admin";
 
 my $soap;
-my $trace;
+my $trace=1;
 
 ### If there is nothing to do, exit.
 
@@ -202,9 +202,35 @@ sub createUser {
 }
 
 
+sub changeUserPassword {
+  # change the password for a user.
+  my($user,$newpw) = @_;
+  my $result;
+  if ($user) {
+    print "cUP: changing: $user " if ($trace);
+    $tries++;
+    $result = $soap2->changeUserPassword(
+				 $session,
+				 $user,
+				 $newpw);
+    print "result: ",$result->result,"\n";
+    if ($result->fault) {
+      print join(", ",$result->faultcode,$result->faultstring);
+      print "\n";
+      $soapErrorCnt++;
+    } elsif ($result->result =~ /exception/i) {
+      $sakaiErrorCnt++;
+    } else {
+      $userCnt++;
+    }
+  }
+}
+
+
 sub printSummary {
   print "\n";
-#  print "lines: $lineCnt add attempts: $tries added: $userCnt soap errors: $soapErrorCnt sakai errors: $sakaiErrorCnt\n";
+  #  print "lines: $lineCnt add attempts: $tries added: $userCnt soap errors: $soapErrorCnt sakai errors: $sakaiErrorCnt\n";
+  #  print "add attempts: $tries added: $userCnt soap errors: $soapErrorCnt sakai errors: $sakaiErrorCnt\n";
   print "add attempts: $tries added: $userCnt soap errors: $soapErrorCnt sakai errors: $sakaiErrorCnt\n";
 }
 
