@@ -36,23 +36,7 @@
     </echo>
     <execSvnCmd url="${ocw.svnurl}" revision="${ocw.revision}"/> 
 
-    <!--
-   <fileset dir="${server.src}" casesensitive="yes">
-      <patternset id="non.test.sources">
-        <include name="**/*.java"/>
-        <exclude name="**/*Test*"/>
-      </patternset>
-    </fileset>
-    -->
-
-    <!--
-   <fileset dir="${build.dir}" >
-      <patternset id="ocw.project.xml">
-        <include name="**/ocw*/**/project.xml"/>
-      </patternset>
-    </fileset>
-    -->
-
+    <!-- take out the extra level of reference for the master/project.xml -->
 
     <replaceregexp> 
       <fileset dir="${build.dir}" >
@@ -64,28 +48,6 @@
       <substitution  expression="../master/project.xml" />
     </replaceregexp>
 
-
-
-    <!-- take out the extra level of reference for the master/project.xml -->
-    <!--
-    <replaceregexp 
-	file="${build.dir}/ocw-api/**/project.xml"  >
-      <regexp pattern="\.\./\.\./master/project.xml" />
-      <substitution  expression="../master/project.xml" />
-    </replaceregexp>
-
-    <replaceregexp 
-	file="${build.dir}/ocw-impl/**/project.xml"  >
-      <regexp pattern="\.\./\.\./master/project.xml" />
-      <substitution  expression="../master/project.xml" />
-    </replaceregexp>
-
-    <replaceregexp 
-	file="${build.dir}/ocw-tool/**/project.xml"  >
-      <regexp pattern="\.\./\.\./master/project.xml" />
-      <substitution  expression="../master/project.xml" />
-    </replaceregexp>
-    -->
   </target>
 
 </project>
