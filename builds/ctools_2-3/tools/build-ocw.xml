@@ -1,0 +1,60 @@
+<project name="build-ocw" basedir="." default="info" >
+
+  <!--
+
+   $Id: build-ocw.xml 15158 2006-09-22 20:13:42Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-3/tools/build-ocw.xml $
+   
+   Add ocw tool
+ 
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="ocwInfo">
+    <echo>
+      This will extract the iTuneU podcasting tool. It should be called by the master build.xml not directly.
+
+      The configuration values are:
+      ocw.install.skip = ${ocw.install.skip}
+      ocw.svnurl = ${ocw.svnurl}
+      ocw.revision = ${ocw.revision}
+    </echo>
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--          deal with OCW specific source             -->
+  <!-- ================================================== -->
+
+  <target name="getOcwSrc" unless="ocw.install.skip">
+    <echo>
+      Extracting ocw tool: ${ocw.svnurl} revision: ${ocw.revision}.
+    </echo>
+    <execSvnCmd url="${ocw.svnurl}" revision="${ocw.revision}"/> 
+
+    <!-- take out the extra level of reference for the master/project.xml -->
+    <replaceregexp 
+	file="${build.dir}/ocw-api/**/project.xml"  >
+      <regexp pattern="\.\./\.\./master/project.xml" />
+      <substitution  expression="../master/project.xml" />
+    </replaceregexp>
+
+    <replaceregexp 
+	file="${build.dir}/ocw-impl/**/project.xml"  >
+      <regexp pattern="\.\./\.\./master/project.xml" />
+      <substitution  expression="../master/project.xml" />
+    </replaceregexp>
+
+    <replaceregexp 
+	file="${build.dir}/ocw-tool/**/project.xml"  >
+      <regexp pattern="\.\./\.\./master/project.xml" />
+      <substitution  expression="../master/project.xml" />
+    </replaceregexp>
+
+  </target>
+
+</project>
