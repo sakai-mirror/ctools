@@ -58,24 +58,46 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <!-- register pieces to build -->
   <import file="./build-ctools.xml" />
-  <import file="./build-mc.xml" /> 
-  <import file="./build-ufp-um.xml" />
   <import file="./build-melete.xml" />
   <import file="./build-sakai.xml" />
-  <import file="./build-osp.xml" />
-  <import file="./build-samigo.xml" />
+  <import file="./build-itunesu.xml" />
+  <import file="./build-ocw.xml" />
+  <import file="./build-sitestats.xml" />
+  <import file="./build-search.xml" />
 
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
   <!-- ========================= -->
 
   <!-- Assemble the desired source files. -->
+
+
+  <!--
   <target name="getSource" 
-	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getUfpUmSrc,getOSPSrc"
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getItunesuSrc"
 	  description="get the source for sakai and required tools."/>
+  -->
+
+
+  <target name="getSource" 
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc,getOcwSrc"
+	  description="get the source for sakai and required tools." >
+
+    <echo> Document which non-default source was extracted.  The source is extracted if property is
+           set.  The value of the property doesn't matter. </echo>
+	  <echo> ctools source ctools.extract.skip = [${ctools.extract.skip}]</echo>
+	  <echo> melete.extract.skip = [${melete.extract.skip}]</echo>
+	  <echo> itunesu.install.skip = [${itunesu.install.skip}]</echo>
+	  <echo> ocw.install.skip = [${ocw.install.skip}]</echo>
+	  <echo> sitestats.install.skip = [${sitestats.install.skip}] </echo>
+	  <echo> search.install.skip = [${search.install.skip}] </echo>
+
+  </target>
+
 
   <!-- Make changes in the source that may be required for this installation. -->
-  <target name="editSource" depends="editCtools,editSamigo,editMelete" description="Modify/customize source as necessary."/>
+  <target name="editSource" depends="editCtools,editMelete" 
+	  description="Modify/customize source as necessary."/>
 
 
   <!-- =============================== -->
@@ -86,22 +108,68 @@ This doesn't supply the sakai.properties files you want to customize.
   <target name="modifyImage"  depends="imageSakai,imageMelete" />
 
 
-  <target name="buildConfig" 
+  <target name="buildConfig" depends="createConfig,bundleConfig"
+	  description="Customize the properties files on an instance by instance basis."/>
+
+  <target name="buildConfigSimple" depends="createConfigSimple,bundleConfig"
+	  description="Customize the properties files on an instance by instance basis."/>
+
+
+
+   <target name="bundleConfig">
+    <tar basedir="${instances.dir}" destfile="${image.dest.dir}/instanceProperties.${sakai.tag}.tar.gz" 
+	 longfile="gnu" compression="gzip" />
+   </target>
+
+  <target name="createConfig" 
 	  description="Customize the properties files on an instance by instance basis.">
 
     <buildPropertiesFile instanceName="ctools" />
     <buildPropertiesFile instanceName="ctoolsload" />
     <buildPropertiesFile instanceName="testctools" />
-
+    <buildPropertiesFile instanceName="localhost" />
     <!--
     <buildPropertiesFile instanceName="whisk" />
     -->
-    <buildPropertiesFile instanceName="ctpiload" />
-    <buildPropertiesFile instanceName="ctpilot.whisk" />
-    <buildPropertiesFile instanceName="ctpilot0" />
-    <buildPropertiesFile instanceName="ctpitest" />
-
+    
   </target>
 
+  <target name="createConfigSimple" 
+	  description="Customize the properties files on an instance by instance basis.">
 
+    <buildPropertiesFileSimple instanceName="ctools" />
+    <!--
+    <buildPropertiesFile instanceName="ctoolsload" />
+    <buildPropertiesFile instanceName="testctools" />
+    <buildPropertiesFile instanceName="localhost" />
+    -->
+    
+  </target>
+
+  <target name="deleteSamigo" if="remove.samigo">
+    <removeFromBuild deleteDir="sam" />
+  </target>
+
+  <!--
+  <target name="removeUnneededSakai" depends="deleteSamigo" >
+    <removeFromBuild deleteDir="portal/portal-mercury" />
+    <removeFromBuild deleteDir="common/common-composite-component/src/test" />
+    <removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
+    <removeFromBuild deleteDir="gradebook/testservice" />
+    <removeFromBuild deleteDir="metaobj/api-impl/src/test" />
+    <removeFromBuild deleteDir="osid/osid-unit-test" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/completetest" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/test" />
+    <removeFromBuild deleteDir="rwiki/radeox/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/testBundle" />
+    <removeFromBuild deleteDir="providers" />
+    <removeFromBuild deleteDir="wsrp" />
+    <removeFromBuild deleteDir="roster" />
+    <removeFromBuild deleteDir="webservices" />
+	<!/-/-
+    <removeFromBuild deleteDir="search" />
+	/-/->
+  </target>
+-->
 </project>
