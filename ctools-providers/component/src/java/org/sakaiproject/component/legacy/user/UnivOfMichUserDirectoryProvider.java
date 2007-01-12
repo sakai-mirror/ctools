@@ -76,6 +76,9 @@ public class UnivOfMichUserDirectoryProvider
 	implements UserDirectoryProvider
 {
 
+	// keep false, else someone might configure the server (CTOOLS_UDP_NOAUTH=true in sakai.properties) to allow authentication w/o password
+	private static boolean TEST_MODE = false;
+
 		private static Log log = LogFactory.getLog(UnivOfMichUserDirectoryProvider.class);
 //	/** Dependency: CurrentService */
 //	protected CurrentService m_currentService = null;
@@ -298,6 +301,18 @@ public class UnivOfMichUserDirectoryProvider
 	 */
 	public boolean authenticateUser(String userId, UserEdit edit, String password)
 	{
+		// if we are compiled in test mode
+		if (TEST_MODE)
+		{
+			// if we are configured to allow authentication w/o password
+			if (m_configService.getBoolean("CTOOLS_UDP_NOAUTH", false))
+			{
+				// make sure the user has an entry
+				boolean knownUmiac = getUmiac().userExists(userId);
+				return knownUmiac;
+			}
+		}
+
 		// check with kerberos / cosign
 		if (m_useKerberos)
 		{
