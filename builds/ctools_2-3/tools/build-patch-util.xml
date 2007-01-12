@@ -4,8 +4,8 @@
 
   <!--
 
-   $Id: build-patch.xml 17111 2006-10-13 15:43:13Z dlhaines@umich.edu $
-   $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-2/tools/build-patch.xml $
+   $Id$
+   $HeadURL$
    
    Apply patches to the code.  Note that the code has been exported, so that need to apply patch files.
 
