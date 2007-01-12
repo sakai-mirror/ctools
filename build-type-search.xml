@@ -4,8 +4,8 @@
 
 this should only have things specific to a type of build.
 
-$Id: build-type-prod.xml 15240 2006-09-26 15:53:54Z dlhaines@umich.edu $
-$HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-2/tools/build-type-prod.xml $
+$Id$
+$HeadURL$
 
 This ant script will control building an image for production with a
 specific configuration.  It calls a basic script, and calls
