@@ -124,10 +124,16 @@ This doesn't supply the sakai.properties files you want to customize.
   <target name="createConfig" 
 	  description="Customize the properties files on an instance by instance basis.">
 
+    <buildPropertiesFile instanceName="ctpilot" />
+    <buildPropertiesFile instanceName="ctpilot.testctools" />
+    <buildPropertiesFile instanceName="ctpilot.localhost" />
+
+    <!--
     <buildPropertiesFile instanceName="ctools" />
     <buildPropertiesFile instanceName="ctoolsload" />
     <buildPropertiesFile instanceName="testctools" />
     <buildPropertiesFile instanceName="localhost" />
+    -->
     <!--
     <buildPropertiesFile instanceName="whisk" />
     -->
