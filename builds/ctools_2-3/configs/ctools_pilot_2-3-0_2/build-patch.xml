@@ -14,20 +14,13 @@
   <!-- Update the dependencies for this target to appropriate ones for this configuration. -->
 
 
-
-  <!--
   <target name="applyPatches" 
 	  depends="allPatches"
 	  /> 
--->
-  <target name="applyPatches" depends="noPatches">
-    <echo> temp to see if compiles. </echo>
-  </target>
 
   <!-- use this seperate target so that can apply the patch sets individually (for testing). -->
   <target name="allPatches" depends="applyPatches_2-3-0_p1,applyPatches_2-3-0_p2" >
   </target>
-
   
   <!-- ========================================================================== -->
   <!-- ==                    Targets for specific patch sets.                  == -->
