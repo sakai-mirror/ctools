@@ -23,6 +23,10 @@
     <echo>
       Ant utility targets for applying patches to source code.  To use include this in the master build file.  Override the 
       applyPatches target to specify which files to patch.
+      The only target is: testOnePatch.  The file to apply is specified via the command line property patchFileName.  That file
+      should be in the same patches directory as any other patches to be applied.
+      A sample command invocation would be:
+      "ant -s build.xml testOnePatch -DpatchFileName=testPatch.patch".
     </echo>
   </target>
 
