@@ -32,7 +32,8 @@ This should have nothing specific to a particular build type.
   <property name="logs.dir" value="${work.dir}/logs" />
   <property name="image.dir" value="${work.dir}/image" />
   <property name="instances.dir" value="${work.dir}/instances" />
-  <property name="image.dest.dir" value="${work.dir}" />
+<!--  <property name="image.dest.dir" value="${work.dir}" /> -->
+  <property name="image.dest.dir" value="${artifacts.dir}" /> 
   <property name="reference.dir" value="${build.dir}/ctools-reference" />
   <property name="config.dir" value="${reference.dir}/config" />
   <property name="svnCmd" value="export" />

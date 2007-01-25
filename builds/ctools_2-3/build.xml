@@ -16,6 +16,7 @@
 
   <property name="scripts.dir" value="${basedir}/tools" />
   <property name="work.dir" value="${basedir}/work" />
+
   <property name="patches.dir" value="${basedir}/patches" />
   <property name="configs.dir" value="${basedir}/configs" />
 
@@ -23,6 +24,7 @@
   <property file="${configs.dir}/shared.properties" /> 
 
   <property file="${user.dir}/project.properties" /> 
+  <property name="artifacts.dir" value="${basedir}/artifacts/${sakai.tag}" />
 
   <import file="${scripts.dir}/build-type-${type}.xml" /> 
   <import file="${scripts.dir}/build-type-util.xml" /> 

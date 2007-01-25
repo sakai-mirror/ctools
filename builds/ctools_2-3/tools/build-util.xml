@@ -49,6 +49,8 @@
     <echo> build ${type} release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
     <delete dir="${work.dir}" />
     <mkdir dir="${work.dir}" />
+    <delete dir="${artifacts.dir}" />
+    <mkdir dir="${artifacts.dir}" />
     <delete dir="${build.dir}" />
     <mkdir dir="${build.dir}" />
     <delete dir="${logs.dir}" />
@@ -79,7 +81,8 @@
   </target>
 
   <target name="moveSrcTar" >
-    <move todir="${image.dest.dir}" file="${build.dir}/sakai-src.tar.gz" />
+<!--    <move todir="${image.dest.dir}" file="${build.dir}/sakai-src.tar.gz" /> -->
+    <move tofile="${image.dest.dir}/sakai-src.${sakai.tag}.tar.gz" file="${build.dir}/sakai-src.tar.gz" /> 
   </target>
 
   <target name="bundleImage" depends="moveSrcTar">
