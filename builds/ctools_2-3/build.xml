@@ -24,7 +24,7 @@
   <property file="${configs.dir}/shared.properties" /> 
 
   <property file="${user.dir}/project.properties" /> 
-  <property name="artifacts.dir" value="${basedir}/artifacts/${sakai.tag}" />
+  <property name="artifacts.dir" value="${basedir}/artifacts/${sakai.tag}.${type}" />
 
   <import file="${scripts.dir}/build-type-${type}.xml" /> 
   <import file="${scripts.dir}/build-type-util.xml" /> 
