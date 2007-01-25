@@ -78,7 +78,11 @@
     <delete dir="${image.dir}/licenses" />
   </target>
 
-  <target name="bundleImage" >
+  <target name="moveSrcTar" >
+    <move todir="${image.dest.dir}" file="${build.dir}/sakai-src.tar.gz" />
+  </target>
+
+  <target name="bundleImage" depends="moveSrcTar">
   <!--
   do not create zip by default
     <zip basedir="${image.dir}" destfile="${image.dest.dir}/image.${sakai.tag}.zip" />
