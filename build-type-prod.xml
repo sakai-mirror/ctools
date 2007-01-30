@@ -63,6 +63,7 @@ This doesn't supply the sakai.properties files you want to customize.
   <import file="./build-itunesu.xml" />
   <import file="./build-sitestats.xml" />
   <import file="./build-search.xml" />
+  <import file="./build-rwiki.xml" />
 
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
@@ -79,7 +80,7 @@ This doesn't supply the sakai.properties files you want to customize.
 
 
   <target name="getSource" 
-	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc"
+	  depends="getSakaiSrc,getCtoolsSrc,extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc,getRwikiSrc"
 	  description="get the source for sakai and required tools." >
 
     <echo> Document which non-default source was extracted.  The source is extracted if property is
@@ -89,6 +90,7 @@ This doesn't supply the sakai.properties files you want to customize.
 	  <echo> itunesu.install.skip = [${itunesu.install.skip}]</echo>
 	  <echo> sitestats.install.skip = [${sitestats.install.skip}] </echo>
 	  <echo> search.install.skip = [${search.install.skip}] </echo>
+	  <echo> rwiki.install.skip = [${rwiki.install.skip}] </echo>
 
   </target>
 
