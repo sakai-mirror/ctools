@@ -37,7 +37,7 @@
 
     <applyPatch patchFileName="SPEED.patch" />
     <applyPatch patchFileName="SAK-7049.patch" />
-    <applyPatch patchFileName="SAK-7159.patch" />
+    <!--     <applyPatch patchFileName="SAK-7159.patch" /> -->
     <applyPatch patchFileName="SAK-7239.patch" />
     <applyPatch patchFileName="SAK-7317.patch" />
     <applyPatch patchFileName="DIRLIST.patch" />
