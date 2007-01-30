@@ -54,10 +54,6 @@
     <echo message="applying patch set 2-3-0_p2" />
 
     <applyPatch patchFileName="SAK-7133.patch" />
-    <!--
-    <applyPatch patchFileName="SAK-7451A.patch" /> 
-    <applyPatch patchFileName="SAK-7451B.patch" /> 
-    -->
     <applyPatch patchFileName="SAK-7442.patch" />
     <applyPatch patchFileName="SAK-7518.patch" />
     <applyPatch patchFileName="SAK-7522.patch" />
@@ -68,8 +64,13 @@
   <target name="applyPatches_2-3-0_p3">
     <echo message="applying patch set 2-3-0_p3" />
 
-    <applyPatch patchFileName="SAK-7615.patch" />
+    <applyPatch patchFileName="SAK-7615A.patch" />
+    <applyPatch patchFileName="SAK-7615B.patch" />
     <applyPatch patchFileName="SAK-7672.patch" />
+    <applyPatch patchFileName="SAK-7489.patch" />
+    <!--
+    <applyPatch patchFileName="SAK-6256.patch" />
+    -->
 
   </target>
 
