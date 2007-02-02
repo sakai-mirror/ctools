@@ -29,7 +29,8 @@
 
   <target name="getRwikiSrc" depends="deleteDefaultRwikiSrc,getCustomRwikiSrc" />
   
-  <target name="deleteDefaultRwikiSrc">
+  <!-- delete old source only if installing new source -->
+  <target name="deleteDefaultRwikiSrc" unless="rwiki.install.skip" >
     <delete dir="${build.dir}/rwiki" />
   </target>
 

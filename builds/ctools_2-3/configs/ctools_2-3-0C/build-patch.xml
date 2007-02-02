@@ -68,9 +68,9 @@
     <applyPatch patchFileName="SAK-7615B.patch" />
     <applyPatch patchFileName="SAK-7672.patch" />
     <applyPatch patchFileName="SAK-7489.patch" />
-    <!--
-    <applyPatch patchFileName="SAK-6256.patch" />
-    -->
+    <applyPatch patchFileName="CT-659.patch" />
+    <!-- <applyPatch patchFileName="SAK-7423.patch" /> -->
+    <!--    <applyPatch patchFileName="SAK-6256.patch" />     -->
 
   </target>
 
