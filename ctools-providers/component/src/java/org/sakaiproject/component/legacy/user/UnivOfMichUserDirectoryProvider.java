@@ -77,7 +77,11 @@ public class UnivOfMichUserDirectoryProvider
 {
 
 	// keep false, else someone might configure the server (CTOOLS_UDP_NOAUTH=true in sakai.properties) to allow authentication w/o password
-	private static boolean TEST_MODE = false;
+	protected static boolean TEST_MODE = false;
+	
+	protected void initTestMode() {
+		TEST_MODE=false;
+	}
 
 		private static Log log = LogFactory.getLog(UnivOfMichUserDirectoryProvider.class);
 //	/** Dependency: CurrentService */
@@ -92,6 +96,7 @@ public class UnivOfMichUserDirectoryProvider
 //		m_currentService = service;
 //	}
 
+		
 	/** Dependency: ServerConfigurationService*/
 	protected org.sakaiproject.component.api.ServerConfigurationService m_configService = null;
 
@@ -142,9 +147,14 @@ public class UnivOfMichUserDirectoryProvider
 	 */
 	public void init()
 	{
+		// call so that will set the value of test_mode for later calls.
+		// Use a method so that can override it in class used only for 
+		// safe testing environments.
+		initTestMode();
 		try
 		{
 			log.info(this +".init()");
+			log.info(this +" user directory provider TEST_MODE="+TEST_MODE);
 		}
 		catch (Throwable t)
 		{
