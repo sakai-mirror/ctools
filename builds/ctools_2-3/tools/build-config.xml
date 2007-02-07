@@ -208,6 +208,11 @@
 			replace="\1${siteQuota}"/>
 	</tokenfilter>
 
+	<tokenfilter>
+	  <replaceregex pattern="^(CTOOLS_UDP_NOAUTH\s*=\s*).*" 
+			replace="\1${CTOOLS_UDP_NOAUTH}"/>
+	</tokenfilter>
+
 
 
 <!--
