@@ -203,6 +203,12 @@
 			replace="\1${umiac.updateUrl}"/>
 	</tokenfilter>
 
+	<tokenfilter>
+	  <replaceregex pattern="^(siteQuota@org.sakaiproject.content.api.ContentHostingService\s*=\s*).*" 
+			replace="\1${siteQuota}"/>
+	</tokenfilter>
+
+
 
 <!--
     model tokenfilter entry
