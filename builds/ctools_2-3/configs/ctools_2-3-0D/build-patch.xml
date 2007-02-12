@@ -19,7 +19,7 @@
 	  /> 
 
   <!-- use this seperate target so that can apply the patch sets individually (for testing). -->
-  <target name="allPatches" depends="applyPatches_2-3-0_p1,applyPatches_2-3-0_p2,applyPatches_2-3-0_p3" >
+  <target name="allPatches" depends="applyPatches_2-3-0_p1,applyPatches_2-3-0_p2,applyPatches_2-3-0_p3,applyPatches_2-3-0_p4" >
   </target>
   
   <!-- ========================================================================== -->
@@ -71,6 +71,13 @@
     <applyPatch patchFileName="CT-659.patch" />
     <!-- <applyPatch patchFileName="SAK-7423.patch" /> -->
     <!--    <applyPatch patchFileName="SAK-6256.patch" />     -->
+
+  </target>
+
+  <target name="applyPatches_2-3-0_p4">
+    <echo message="applying patch set 2-3-0_p4" />
+
+    <applyPatch patchFileName="SAK-8196.patch" />
 
   </target>
 
