@@ -1,0 +1,149 @@
+Index: assignment/assignment-api/api/src/java/org/sakaiproject/assignment/api/AssignmentSubmission.java
+===================================================================
+--- assignment/assignment-api/api/src/java/org/sakaiproject/assignment/api/AssignmentSubmission.java	(revision 17928)
++++ assignment/assignment-api/api/src/java/org/sakaiproject/assignment/api/AssignmentSubmission.java	(working copy)
+@@ -180,4 +180,5 @@
+ 	 * @return The Submission's status.
+ 	 */
+ 	public String getStatus();
++	
+ }
+Index: assignment/assignment-api/api/src/java/org/sakaiproject/assignment/api/AssignmentService.java
+===================================================================
+--- assignment/assignment-api/api/src/java/org/sakaiproject/assignment/api/AssignmentService.java	(revision 17928)
++++ assignment/assignment-api/api/src/java/org/sakaiproject/assignment/api/AssignmentService.java	(working copy)
+@@ -688,4 +688,9 @@
+ 	 */
+ 	public boolean getAllowGroupAssignmentsInGradebook();
+ 	
++	/**
++	* Whether the current user can submit
++	*/
++	public boolean canSubmit(String context, Assignment a);
++	
+ }
+Index: assignment/assignment-api/api/src/java/org/sakaiproject/assignment/cover/AssignmentService.java
+===================================================================
+--- assignment/assignment-api/api/src/java/org/sakaiproject/assignment/cover/AssignmentService.java	(revision 17928)
++++ assignment/assignment-api/api/src/java/org/sakaiproject/assignment/cover/AssignmentService.java	(working copy)
+@@ -596,4 +596,12 @@
+ 
+ 		return service.getAllowGroupAssignmentsInGradebook();
+ 	}
++	
++	public static boolean canSubmit(String param0, org.sakaiproject.assignment.api.Assignment param1) {
++		org.sakaiproject.assignment.api.AssignmentService service = getInstance();
++		if (service == null)
++		return false;
++		
++		return service.canSubmit(param0, param1);
++	}
+ }
+Index: assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java
+===================================================================
+--- assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java	(revision 17928)
++++ assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java	(working copy)
+@@ -106,6 +106,7 @@
+ import org.sakaiproject.tool.cover.SessionManager;
+ import org.sakaiproject.tool.cover.ToolManager;
+ import org.sakaiproject.user.api.User;
++import org.sakaiproject.user.api.UserNotDefinedException;
+ import org.sakaiproject.user.cover.UserDirectoryService;
+ import org.sakaiproject.util.BaseResourcePropertiesEdit;
+ import org.sakaiproject.util.Blob;
+@@ -4045,6 +4046,95 @@
+ 	{
+ 		return null;
+ 	}
++	
++	/**
++	 * {@inheritDoc}
++	 */
++	public boolean canSubmit(String context, Assignment a)
++	{
++		// return false if not allowed to submit at all
++		if (!allowAddSubmission(context)) return false;
++		
++		String userId = SessionManager.getCurrentSessionUserId();
++		try
++		{
++			// get user
++			User u = UserDirectoryService.getUser(userId);
++			
++			Time currentTime = TimeService.newTime();
++			
++			// return false if the assignment is draft or is not open yet
++			Time openTime = a.getOpenTime();
++			if (a.getDraft() || (openTime != null && openTime.after(currentTime)))
++			{
++				return false;
++			}
++			
++			// return false if the current time has passed the assignment close time
++			Time closeTime = a.getCloseTime();
++			if (closeTime != null && currentTime.after(closeTime))
++				return false;
++			
++			// get user's submission
++			AssignmentSubmission submission = null;
++			
++			try
++			{
++				submission = getSubmission(a.getReference(), u);
++			}
++			catch (IdUnusedException e)
++			{
++				M_log.warn(e.getMessage(), e);
++			}
++			catch (PermissionException e)
++			{
++				M_log.warn(e.getMessage(), e);
++			}
++			
++			if (submission == null)
++			{
++				// return true if there is no submission yet
++				return true;
++			}
++			else
++			{
++				if (!submission.getSubmitted())
++				{
++					// return true for drafted submissions
++					return true;
++				}
++				else
++				{
++					if (!submission.getReturned())
++					{
++						// return false if the submission has been submitted, but not returned yet
++						return false;
++					}
++					else
++					{
++						// returned
++						String allowSubmitProperty = submission.getProperties().getProperty("grade_submission_allow_resubmit");
++						if (submission.getTimeReturned().after(submission.getTimeSubmitted()) && allowSubmitProperty != null && allowSubmitProperty.equals(Boolean.TRUE.toString()))
++						{
++							// return true for returned submission but allow for resubmit
++							return true;
++						}
++						else
++						{
++							// return false otherwise
++							return false;
++						}
++					}
++				}
++			}
++		}
++		catch (UserNotDefinedException e)
++		{
++			// cannot find user
++			M_log.warn(e.getMessage(), e);
++			return false;
++		}
++	}
+ 
+ 	/**********************************************************************************************************************************************************************************************************************************************************
+ 	 * Assignment Implementation
