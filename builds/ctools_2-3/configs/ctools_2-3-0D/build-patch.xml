@@ -78,7 +78,7 @@
     <echo message="applying patch set 2-3-0_p4" />
 
     <applyPatch patchFileName="SAK-8196.patch" />
-    <applyPatch patchFileName="SAK-8315.patch" />
+    <!-- <applyPatch patchFileName="SAK-8315.patch" /> -->
     <applyPatch patchFileName="SAK-8302.patch" /> 
 
   </target>
