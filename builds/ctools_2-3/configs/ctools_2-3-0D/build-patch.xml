@@ -80,6 +80,7 @@
     <applyPatch patchFileName="SAK-8196.patch" />
     <!-- <applyPatch patchFileName="SAK-8315.patch" /> -->
     <applyPatch patchFileName="SAK-8302.patch" /> 
+    <applyPatch patchFileName="CT-82.patch" /> 
 
   </target>
 
