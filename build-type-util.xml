@@ -16,10 +16,6 @@ This should have nothing specific to a particular build type.
   <property file="./project.properties" />
   <property file="${user.home}/build.properties" />
 
-  <!-- include extra functional targets -->
-  <import file="./build-util.xml" />
-
-  <import file="./build-config.xml" />
 
   <!--  <property name="config-file" value="ctools-pilot-200602.properties" /> -->
   <!-- set a default value -->
@@ -41,6 +37,12 @@ This should have nothing specific to a particular build type.
   <property name="install.test.dir" value="tomcat" />
 
   <property name="sakai.properties" value="${config.dir}/sakai.properties" />
+
+
+  <!-- include extra functional targets -->
+  <import file="./build-util.xml" />
+
+  <import file="./build-config.xml" />
 
   <target name="info">
     <echo>
