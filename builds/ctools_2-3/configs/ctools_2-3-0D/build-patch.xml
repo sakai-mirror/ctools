@@ -82,6 +82,7 @@
     <applyPatch patchFileName="SAK-8302.patch" /> 
 <!--    <applyPatch patchFileName="CT-82.patch" /> -->
     <applyPatch patchFileName="cross-site-searchB.patch" />
+    <applyPatch patchFileName="debugResponse.patch" />
 
   </target>
 
