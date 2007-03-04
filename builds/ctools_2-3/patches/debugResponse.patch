@@ -1,0 +1,16 @@
+Index: search/search-impl/impl/src/java/org/sakaiproject/search/component/service/impl/SearchListReponseImpl.java
+===================================================================
+--- search/search-impl/impl/src/java/org/sakaiproject/search/component/service/impl/SearchListReponseImpl.java	(revision 21914)
++++ search/search-impl/impl/src/java/org/sakaiproject/search/component/service/impl/SearchListReponseImpl.java	(working copy)
+@@ -100,7 +100,11 @@
+ 		this.searchIndexBuilder = searchIndexBuilder;
+ 		this.searchService = searchService;
+ 
++		if (log.isDebugEnabled()) {
++			log.debug("search response: ["+response+"]");
++		}
++		
+ 		XMLReader xr = XMLReaderFactory.createXMLReader();
+ 		xr.setContentHandler(this);
+ 		InputSource is = new InputSource(new StringReader(response));
+ 
