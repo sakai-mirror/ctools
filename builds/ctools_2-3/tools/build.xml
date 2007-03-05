@@ -1,0 +1,34 @@
+<project name="ctoolsBuild" basedir="." default="buildCToolsImage" >
+
+  <!--
+
+  $Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+  $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+  <property name="scripts.dir" value="${basedir}/tools" />
+  <property name="work.dir" value="${basedir}/work" />
+
+  <property name="patches.dir" value="${basedir}/patches" />
+  <property name="configs.dir" value="${basedir}/configs" />
+
+  <!-- Somethings are shared by every build -->
+  <property file="${configs.dir}/shared.properties" /> 
+
+  <property file="${user.dir}/project.properties" /> 
+  <property name="artifacts.dir" value="${basedir}/artifacts/${sakai.tag}.${type}" />
+
+  <import file="${scripts.dir}/build-type-${type}.xml" />  
+  <import file="${scripts.dir}/build-type-util.xml" /> 
+  <import file="${scripts.dir}/build-patch-util.xml" />
+
+  <target name="info" >
+    <echo> Base ant script to build CTools releases.</echo>
+  </target>
+
+</project>
