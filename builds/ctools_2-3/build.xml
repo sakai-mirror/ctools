@@ -9,9 +9,6 @@
 
   <!-- 
        TTD:
-       - remote execution either from here, or make this so one command can run it on a remote host.
-       - automate installing / populating the tomcat
-       - order is first gets it, so read local project.properties first
   -->
 
   <property name="scripts.dir" value="${basedir}/tools" />
@@ -26,7 +23,7 @@
   <property file="${user.dir}/project.properties" /> 
   <property name="artifacts.dir" value="${basedir}/artifacts/${sakai.tag}.${type}" />
 
-  <import file="${scripts.dir}/build-type-${type}.xml" /> 
+  <import file="${scripts.dir}/build-type-${type}.xml" />  
   <import file="${scripts.dir}/build-type-util.xml" /> 
   <import file="${scripts.dir}/build-patch-util.xml" />
 
