@@ -87,7 +87,7 @@
     <applyPatch patchFileName="escapeUrl.patch" />
     <applyPatch patchFileName="searchD.patch" />
 -->
-    <applyPatch patchFileName="searchF.patch" />
+    <applyPatch patchFileName="searchG.patch" />
   </target>
 
 </project>
