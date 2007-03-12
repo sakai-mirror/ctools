@@ -66,7 +66,7 @@ createConfig - add dependencies to customize which instances have properties fil
   </target>
 
   <!-- Make changes in the source that may be required for this installation. -->
-  <target name="editSource" depends="editCtools,editBuildType"
+  <target name="editSource" depends="editCtools,editBuildTypeSrc"
 	  description="Modify/customize source as necessary."/>
 
   <target name="modifyImage"  depends="imageSakai,imageBuildType" />
@@ -112,9 +112,9 @@ createConfig - add dependencies to customize which instances have properties fil
   </target>
 
 
-  <target name="editBuildType" 
+  <target name="editBuildTypeSrc" 
 	  description="override to include editing for specific type of build." >
-    <echo> Use defauilt editBuildTypeSrc</echo>
+    <echo> Use default editBuildTypeSrc</echo>
   </target>
 
 

@@ -92,7 +92,7 @@ This doesn't supply the sakai.properties files you want to customize.
 
 
   <!-- Make changes in the source that may be required for this installation. -->
-  <target name="editSrcBuildType" depends="editMelete" 
+  <target name="editBuildTypeSrc" depends="editMelete" 
 	  description="Modify/customize source as necessary."/>
 
   <target name="imageBuildType"  depends="imageMelete" />
