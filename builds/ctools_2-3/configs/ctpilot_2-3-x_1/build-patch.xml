@@ -38,12 +38,12 @@
     <applyPatch patchFileName="SPEED.patch" />
     <applyPatch patchFileName="SAK-7049.patch" />
     <!--     <applyPatch patchFileName="SAK-7159.patch" /> -->
-    <applyPatch patchFileName="SAK-7239.patch" />
-    <applyPatch patchFileName="SAK-7317.patch" />
-    <applyPatch patchFileName="DIRLIST.patch" />
-    <applyPatch patchFileName="SAK-7431.patch" /> 
-    <applyPatch patchFileName="SAK-7431B.patch" /> 
-    <applyPatch patchFileName="SAK-7431C.patch" /> 
+    <!-- <applyPatch patchFileName="SAK-7239.patch" /> reversed -->
+    <!-- <applyPatch patchFileName="SAK-7317.patch" /> not clean -->
+    <!-- <applyPatch patchFileName="DIRLIST.patch" /> not clean -->
+    <!-- <applyPatch patchFileName="SAK-7431.patch" /> reversed -->
+    <!-- <applyPatch patchFileName="SAK-7431B.patch" /> not clean -->
+    <!-- <applyPatch patchFileName="SAK-7431C.patch" />  not clean  -->
     <!--
     <applyPatch patchFileName="CT-58.patch" /> 
     -->
@@ -53,24 +53,27 @@
   <target name="applyPatches_2-3-0_p2">
     <echo message="applying patch set 2-3-0_p2" />
 
-    <applyPatch patchFileName="SAK-7133.patch" />
-    <applyPatch patchFileName="SAK-7442.patch" />
-    <applyPatch patchFileName="SAK-7518.patch" />
-    <applyPatch patchFileName="SAK-7522.patch" />
-    <applyPatch patchFileName="SAK-7527.patch" />
+    <!-- <applyPatch patchFileName="SAK-7133.patch" /> unclear if necessary -->
+    <!-- <applyPatch patchFileName="SAK-7442.patch" /> reversed -->
+    <applyPatch patchFileName="SAK-7518.patch" /> <!-- keep -->
+    <!-- <applyPatch patchFileName="SAK-7522.patch" /> reversed -->
+    <!-- <applyPatch patchFileName="SAK-7527.patch" /> reversed -->
 
   </target>
 
   <target name="applyPatches_2-3-0_p3">
     <echo message="applying patch set 2-3-0_p3" />
 
+    <!--
+	these fail
     <applyPatch patchFileName="SAK-7615A.patch" />
     <applyPatch patchFileName="SAK-7615B.patch" />
     <applyPatch patchFileName="SAK-7672.patch" />
-    <applyPatch patchFileName="SAK-7489.patch" />
+    -->
+    <applyPatch patchFileName="SAK-7489.patch" /> <!-- works -->
+    <!-- fail
     <applyPatch patchFileName="CT-659.patch" />
-    <!-- <applyPatch patchFileName="SAK-7423.patch" /> -->
-    <!--    <applyPatch patchFileName="SAK-6256.patch" />     -->
+    -->
 
   </target>
 
@@ -78,10 +81,8 @@
     <echo message="applying patch set 2-3-0_p4" />
 
     <applyPatch patchFileName="SAK-8196.patch" />
-    <!-- <applyPatch patchFileName="SAK-8315.patch" /> -->
     <applyPatch patchFileName="SAK-8302.patch" /> 
-<!--    <applyPatch patchFileName="CT-82.patch" /> -->
-    <applyPatch patchFileName="cross-site-searchB.patch" />
+    <applyPatch patchFileName="searchF.patch" />
 
   </target>
 
