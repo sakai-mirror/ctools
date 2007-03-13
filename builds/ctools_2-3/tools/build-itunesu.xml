@@ -39,8 +39,8 @@
     <!-- take out the extra level of reference for the master/project.xml -->
     <replaceregexp 
 	file="${build.dir}/itunesu-tool/tool/project.xml"  >
-      <regexp pattern="\.\./\.\./master/project.xml" />
-      <substitution  expression="../master/project.xml" />
+      <regexp pattern="\.\./\.\./\.\./master/project.xml" />
+      <substitution  expression="../../master/project.xml" />
     </replaceregexp>
 
   </target>

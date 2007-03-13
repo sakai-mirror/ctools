@@ -65,7 +65,6 @@ This doesn't supply the sakai.properties files you want to customize.
   <import file="./build-rwiki.xml" />
 
 
-whatever, make this a pilot build.
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
   <!-- ========================= -->
@@ -94,7 +93,7 @@ whatever, make this a pilot build.
 
 
   <!-- Make changes in the source that may be required for this installation. -->
-  <target name="editSrcBuildType" depends="editMelete" 
+  <target name="editBuildTypeSrc" depends="editMelete" 
 	  description="Modify/customize source as necessary."/>
 
   <target name="imageBuildType"  depends="imageMelete" />
