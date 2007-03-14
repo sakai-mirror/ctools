@@ -198,4 +198,49 @@ This should have nothing specific to a particular build type.
 
   </macrodef>
 
+
+  Set list of files to include from properties file?
+  
+  <target name="buildPropertiesFileConcat"> 
+    <concat destfile="${instances.dir}/${instance-type}/sakai.properties">
+      <filelist dir="??" files="${propertiesFiles}" />
+    </concat>
+  </target>
+
+<!--
+<filelist 
+    id="docfiles" 
+    dir="${doc.src}"
+    files="foo.xml,bar.xml"/> 
+-->
+
+  <!--
+  <target name="copyConfig">
+    <echo> copy from config.dir: ${config.dir} </echo>
+    <echo> copy to instances.dir: ${instances.dir} </echo>
+    <echo> copy keystore: ${keystore.dir}/${keystore} </echo>
+    <copy todir="${instances.dir}/${instance-type}">
+      <fileset dir="${config.dir}">
+	<exclude name="**/sakai.properties"/>
+	<exclude name="**/.project" />
+      </fileset>
+    </copy>
+    <copy todir="${instances.dir}/${instance-type}">
+      <fileset dir="${keystore.dir}">
+	<include name="${keystore}" />
+      </fileset>
+    </copy>
+  </target>
+-->
+
+<!--     <concat destfile="${docbook.dir}/all-sections.xml" -->
+<!--           force="no"> -->
+<!--     <filelist dir="${docbook.dir}/sections"  -->
+<!--          files="introduction.xml,overview.xml"/> -->
+<!--     <fileset dir="${docbook.dir}"  -->
+<!--          includes="sections/*.xml"  -->
+<!--          excludes="introduction.xml,overview.xml"/> -->
+<!--   </concat> -->
+
+
 </project>

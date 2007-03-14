@@ -105,7 +105,6 @@ This doesn't supply the sakai.properties files you want to customize.
   <target name="createConfig" 
 	  description="Customize the properties files on an instance by instance basis.">
 
-
     <buildPropertiesFile instanceName="ctpilot" />
     <buildPropertiesFile instanceName="testctools" />
     <buildPropertiesFile instanceName="ctpilot.testctools" />
@@ -113,6 +112,6 @@ This doesn't supply the sakai.properties files you want to customize.
     
   </target>
 
-
+  
 
 </project>
