@@ -1,0 +1,28 @@
+svn diff -r17761:17762 https://source.sakaiproject.org/svn
+Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java
+===================================================================
+--- site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 17761)
++++ site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 17762)
+@@ -7159,6 +7159,11 @@
+ 			try
+ 			{
+ 				AuthzGroup realmEdit = AuthzGroupService.getAuthzGroup(realmId);
++				
++				// does the site has maintain type user(s) before updating participants?
++				String maintainRoleString = realmEdit.getMaintainRole();
++				boolean hadMaintainUser = realmEdit.getUsersHasRole(maintainRoleString).isEmpty();
++				
+ 				// update participant roles
+ 				List participants = (List) state.getAttribute(STATE_PARTICIPANT_LIST);;
+ 				// remove all roles and then add back those that were checked
+@@ -7198,10 +7203,6 @@
+ 					}
+ 				}
+ 				
+-				// does the site has maintain type user(s) before the removing of selected participant?
+-				String maintainRoleString = realmEdit.getMaintainRole();
+-				boolean hadMaintainUser = realmEdit.getUsersHasRole(maintainRoleString).isEmpty();
+-				
+ 				//remove selected users
+ 				if (params.getStrings ("selectedUser") != null)
+ 				{

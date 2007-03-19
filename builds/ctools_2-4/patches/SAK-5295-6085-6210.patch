@@ -1,0 +1,99 @@
+svn diff -r14492:14493 https://source.sakaiproject.org/svn
+Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java
+===================================================================
+--- content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java	(revision 14492)
++++ content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java	(revision 14493)
+@@ -1869,10 +1869,6 @@
+ 		// complete the edit
+ 		m_storage.removeCollection(edit);
+ 
+-		// track it (no notification)
+-		EventTrackingService.post(EventTrackingService.newEvent(EVENT_RESOURCE_REMOVE, edit.getReference(), true,
+-				NotificationService.NOTI_NONE));
+-
+ 		// close the edit object
+ 		((BaseCollectionEdit) edit).closeEdit();
+ 
+@@ -1895,6 +1891,10 @@
+ 		{
+ 		}
+ 
++		// track it (no notification)
++		EventTrackingService.post(EventTrackingService.newEvent(EVENT_RESOURCE_REMOVE, edit.getReference(), true,
++				NotificationService.NOTI_NONE));
++
+ 	} // removeCollection
+ 
+ 	/**
+@@ -2053,18 +2053,17 @@
+ 		// complete the edit
+ 		m_storage.commitCollection(edit);
+ 
+-		// track it (no notification)
+-		EventTrackingService.post(EventTrackingService.newEvent(((BaseCollectionEdit) edit).getEvent(), edit.getReference(), true,
+-				NotificationService.NOTI_NONE));
+-
+ 		// close the edit object
+ 		((BaseCollectionEdit) edit).closeEdit();
+ 
+-		// the collection has changed so we must remove
+-		// the old version from thread-local cache.
++		// the collection has changed so we must remove the old version from thread-local cache
+ 		String ref = edit.getReference();
+ 		ThreadLocalManager.set("findCollection@" + ref, null);
+-		
++
++		// track it (no notification)
++		EventTrackingService.post(EventTrackingService.newEvent(((BaseCollectionEdit) edit).getEvent(), edit.getReference(), true,
++				NotificationService.NOTI_NONE));
++
+ 	} // commitCollection
+ 
+ 	/**
+@@ -3466,10 +3465,6 @@
+ 		// complete the edit
+ 		m_storage.removeResource(edit);
+ 
+-		// track it (no notification)
+-		EventTrackingService.post(EventTrackingService.newEvent(EVENT_RESOURCE_REMOVE, edit.getReference(), true,
+-				NotificationService.NOTI_NONE));
+-
+ 		// close the edit object
+ 		((BaseResourceEdit) edit).closeEdit();
+ 
+@@ -3492,6 +3487,10 @@
+ 		{
+ 		}
+ 
++		// track it (no notification)
++		EventTrackingService.post(EventTrackingService.newEvent(EVENT_RESOURCE_REMOVE, edit.getReference(), true,
++				NotificationService.NOTI_NONE));
++
+ 	} // removeResource
+ 
+ 	/**
+@@ -4573,18 +4572,18 @@
+ 		// complete the edit
+ 		m_storage.commitResource(edit);
+ 
+-		// track it
+-		EventTrackingService.post(EventTrackingService.newEvent(((BaseResourceEdit) edit).getEvent(), edit.getReference(), true,
+-				priority));
+-
+ 		// close the edit object
+ 		((BaseResourceEdit) edit).closeEdit();
+-		
++
+ 		// must remove old version of this edit from thread-local cache
+ 		// so we get new version if we try to retrieve it in same thread
+ 		String ref = edit.getReference();
+ 		ThreadLocalManager.set("findResource@" + ref, null);
+-		
++
++		// track it
++		EventTrackingService.post(EventTrackingService.newEvent(((BaseResourceEdit) edit).getEvent(), edit.getReference(), true,
++				priority));
++
+ 	} // commitResourceEdit
+ 	
+ 	/**

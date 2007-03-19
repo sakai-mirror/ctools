@@ -1,0 +1,27 @@
+svn diff -r17062:17063 https://source.sakaiproject.org/svn
+Index: access/access-impl/impl/src/java/org/sakaiproject/access/tool/AccessServlet.java
+===================================================================
+--- access/access-impl/impl/src/java/org/sakaiproject/access/tool/AccessServlet.java	(revision 17062)
++++ access/access-impl/impl/src/java/org/sakaiproject/access/tool/AccessServlet.java	(revision 17063)
+@@ -273,8 +273,8 @@
+ 			setVmReference("props", props, req);
+ 			setVmReference("tlang", rb, req);
+ 
+-			String acceptPath = Web.returnUrl(req, COPYRIGHT_ACCEPT + "?" + COPYRIGHT_ACCEPT_REF + "=" + aRef.getReference() + "&"
+-					+ COPYRIGHT_ACCEPT_URL + "=" + returnPath);
++			String acceptPath = Web.returnUrl(req, COPYRIGHT_ACCEPT + "?" + COPYRIGHT_ACCEPT_REF + "=" + Validator.escapeUrl(aRef.getReference()) + "&"
++					+ COPYRIGHT_ACCEPT_URL + "=" + Validator.escapeUrl(returnPath));
+ 
+ 			setVmReference("accept", acceptPath, req);
+ 			res.setContentType("text/html; charset=UTF-8");
+@@ -372,8 +372,8 @@
+ 			{
+ 				// TODO: send back using a form of the request URL, encoding the real reference, and the requested reference
+ 				// Note: refs / requests with servlet parameters (?x=y...) are NOT supported -ggolden
+-				String redirPath = COPYRIGHT_REQUIRE + "?" + COPYRIGHT_ACCEPT_REF + "=" + e.getReference() + "&" + COPYRIGHT_ACCEPT_URL
+-						+ "=" + req.getPathInfo();
++				String redirPath = COPYRIGHT_REQUIRE + "?" + COPYRIGHT_ACCEPT_REF + "=" + Validator.escapeUrl(e.getReference()) + "&" + COPYRIGHT_ACCEPT_URL
++						+ "=" + Validator.escapeUrl(req.getPathInfo());
+ 				res.sendRedirect(Web.returnUrl(req, redirPath));
+ 			}
+ 			catch (IOException ee)

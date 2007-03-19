@@ -1,0 +1,26 @@
+svn diff -r15094:15095 https://source.sakaiproject.org/svn
+Index: assignment/assignment-tool/tool/src/webapp/tools/sakai.assignment.grades.xml
+===================================================================
+--- assignment/assignment-tool/tool/src/webapp/tools/sakai.assignment.grades.xml	(revision 15094)
++++ assignment/assignment-tool/tool/src/webapp/tools/sakai.assignment.grades.xml	(revision 15095)
+@@ -10,6 +10,7 @@
+ 		<category name="course" />
+ 		<category name="project" />
+ 		
++		<configuration name="pagesize" value="200" />
+ 		<configuration name="withGrades" value="TRUE" type="final" />
+ 		<configuration name="help.id" value="sakai.assignment" type="final" />
+ 
+Index: assignment/assignment-tool/tool/src/webapp/tools/sakai.assignment.xml
+===================================================================
+--- assignment/assignment-tool/tool/src/webapp/tools/sakai.assignment.xml	(revision 15094)
++++ assignment/assignment-tool/tool/src/webapp/tools/sakai.assignment.xml	(revision 15095)
+@@ -6,6 +6,8 @@
+ 			id="sakai.assignment"
+ 			title="Assignments"
+ 			description="For posting and submitting assignment(s) online.">
++		
++		<configuration name="pagesize" value="200" />
+ 		<configuration name="withGrades" value="FALSE" />
+ 
+ 		<category name="course" />

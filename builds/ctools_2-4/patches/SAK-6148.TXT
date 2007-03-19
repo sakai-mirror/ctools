@@ -1,0 +1,4 @@
+2006/09/15: dlh
+It turns out that svn 1.3 can't generate a patch that will delete a
+file, so that part of the patch was deleted.
+

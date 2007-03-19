@@ -1,0 +1,13 @@
+Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java
+===================================================================
+--- site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 12016)
++++ site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 12017)
+@@ -8384,7 +8384,7 @@
+ 		
+ 											List pageToolList = page.getTools();
+ 											String toolId = ((ToolConfiguration)pageToolList.get(0)).getTool().getId();
+-											transferCopyEntities(toolId, oSiteId, nSiteId);
++											transferCopyEntities(toolId, ContentHostingService.getSiteCollection(oSiteId), ContentHostingService.getSiteCollection(nSiteId));
+ 										}
+ 									}
+ 								} 

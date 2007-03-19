@@ -1,0 +1,175 @@
+<project name="build-sakai" basedir="." default="info" >
+
+
+<!--
+# $Id$
+# $HeadURL$
+-->
+
+<target name="sakaiBuildInfo" >
+  <echo>
+    This installs and compiles the sakai code.  Targets in this file should not be invoked directly
+    but should be called by the master build.xml.
+
+    The default values for the sakai build are given below.  They are usually overridden by a properties file.
+
+    sakai.svndir = ${sakai.svndir}
+    sakai.svnurl = ${sakai.svnurl}
+    sakai.revision = ${sakai.revision}
+  </echo>
+</target>
+
+
+  <!-- ================================================== -->
+  <!--             construct the source                   -->
+  <!-- ================================================== -->
+
+  <!-- ================================================== -->
+  <!--               deal with Sakai proper               -->
+  <!-- ================================================== -->
+
+  <target name="getSakaiSrc" depends="prepareBuildDirs">
+    <execSvnCmd url="${sakai.svnurl}" revision="${sakai.revision}"/>
+    <!--
+    <place fromdir="${build.dir}/${sakai.svndir}" />
+    -->
+    <antcall target="removeUnneededSakai" />
+  </target>
+
+  <target name="getConfigurationSrc"
+	  description="update the configuration information (not the executable files)." >
+    <echo> update configuration from ${build.configuration.svnurl}/${build.configuration.configdir} revision: ${build.configuration.revision}</echo>
+<!--    <echo>  fromdir="${build.dir}/${sakai.svndir}" </echo> -->
+<!-- force is added since this will checkout over existing files -->
+    <execSvnCmd url="${build.configuration.svnurl}/${build.configuration.configdir}" revision="${build.configuration.revision}"
+		additionalArguments="--force" />
+    <!--
+    <place fromdir="${build.dir}/${build.configuration.configdir}" 
+	   todir="${build.dir}/${build.configuration.configdir}"
+	   verbose="yes" />
+    -->
+  </target>
+
+  <!-- remove things that should not be there.  
+          For entire tools that should be included for some builds but not others 
+	  use a separate target so that can have a property as a flag to include the tool or not.
+	  That allows setting the state of that tools from the properties file and doesn't require 
+	  seperate build scripts for the different versions.
+-->
+
+  <target name="deleteLinktool" if="linktool.install.skip">
+        <removeFromBuild deleteDir="linktool" />
+  </target>
+
+  <target name="deleteBlog" if="blog.install.skip">
+        <removeFromBuild deleteDir="blog" />
+  </target>
+
+  <target name="deleteWebservices" if="webservices.install.skip">
+    <removeFromBuild deleteDir="webservices" />
+  </target>
+
+  <target name="removeUnneededSakai" depends="deleteSamigo,deleteLinktool,deleteBlog,deleteWebservices" >
+
+    <removeFromBuild deleteDir="portal/mercury" />
+    <removeFromBuild deleteDir="common/common-composite-component/src/test" />
+    <removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
+    <removeFromBuild deleteDir="gradebook/testservice" />
+    <removeFromBuild deleteDir="metaobj/api-impl/src/test" />
+    <removeFromBuild deleteDir="osid/osid-unit-test" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/completetest" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/test" />
+    <removeFromBuild deleteDir="rwiki/radeox/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/testBundle" />
+    <removeFromBuild deleteDir="sam/testdata" />
+    <removeFromBuild deleteDir="sam/tests" />
+    <removeFromBuild deleteDir="sam/tool/src/java/test" />
+    <removeFromBuild deleteDir="providers" />
+    <removeFromBuild deleteDir="wsrp" />
+    <removeFromBuild deleteDir="warehouse" />
+    <removeFromBuild deleteDir="reports/api-impl" />
+    <removeFromBuild deleteDir="reports/components" />
+    <removeFromBuild deleteDir="reports/tool" />
+
+  </target>
+
+<!--
+  <target name="removeUnneededSakai" >
+
+    <removeFromBuild deleteDir="portal/mercury" />
+    <removeFromBuild deleteDir="common/common-composite-component/src/test" />
+    <removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
+    <removeFromBuild deleteDir="gradebook/testservice" />
+    <removeFromBuild deleteDir="metaobj/api-impl/src/test" />
+    <removeFromBuild deleteDir="osid/osid-unit-test" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/completetest" />
+    <removeFromBuild deleteDir="rwiki/jrcs/src/test" />
+    <removeFromBuild deleteDir="rwiki/radeox/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/test" />
+    <removeFromBuild deleteDir="rwiki/rwiki/src/testBundle" />
+    <removeFromBuild deleteDir="sam/testdata" />
+    <removeFromBuild deleteDir="sam/tests" />
+    <removeFromBuild deleteDir="sam/tool/src/java/test" />
+    <removeFromBuild deleteDir="providers" />
+    <removeFromBuild deleteDir="wsrp" />
+    <removeFromBuild deleteDir="warehouse" />
+    <removeFromBuild deleteDir="reports/api-impl" />
+    <removeFromBuild deleteDir="reports/components" />
+    <removeFromBuild deleteDir="reports/tool" />
+    <removeFromBuild deleteDir="webservices" />
+
+  </target>
+-->
+
+  <target name="editSakai" >
+  </target>
+
+  <target name="removeSamigo" if="remove.samigo">
+    <removeWarFromImage deleteWar="sakai-samigo.war" />
+  </target>
+
+
+  <target name="handleFavicon" if="favicon.name" >
+    <mkdir dir="${image.dir}/webapps/ROOT" />
+    <copy file="${reference.dir}/${favicon.name}"
+	  todir="${image.dir}/webapps/ROOT"
+	  overwrite="true" />
+  </target>
+
+  <target name="imageSakai" depends="handleFavicon" >
+
+    <removeWarFromImage deleteWar="sakai-comp-test-app1.war" />
+    <removeWarFromImage deleteWar="sakai-group-test.war" />
+    <removeWarFromImage deleteWar="sakai-osid-repo-test.war" />
+    <removeWarFromImage deleteWar="sakai-sections-testservice.war" />
+    <removeWarFromImage deleteWar="sakai-jsf-example.war" />
+    <removeWarFromImage deleteWar="sakai-sample-tools-browser.war" />
+    <removeWarFromImage deleteWar="sakai-sample-tools-jsf1.war" />
+    <removeWarFromImage deleteWar="sakai-sample-tools-qa-helper.war" />
+    <removeWarFromImage deleteWar="sakai-wsrp-producer.war" />
+
+  </target>
+
+  <target name="compileSakai" depends="editMaster">
+    <exec executable="maven"
+	  dir="${build.dir}"
+	  failonerror="true"
+	  searchpath="true"
+	  >
+	  <env key="MAVEN_OPTS" value="-Djava.net.preferIPv4Stack=true -Xmx768m" />
+
+      <arg value="-b" />
+      <!-- <arg value="-X" /> -->
+      <!--  sometimes needed with a new build 
+      <arg value="-o" />
+       -->
+      <arg value="sakai:clean" />
+      <arg value="sakai:build" />
+      <arg value="sakai:deploy-zip" />
+      <arg value="pack-src" />
+    </exec>
+  </target>
+
+
+</project>
