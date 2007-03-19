@@ -38,9 +38,9 @@
   </target>
   -->
 
-  <target name="getSearchSrc" depends="deleteDefaultSearchSrc,getCustomSearchSrc" />
+  <target name="getSearchSrc" depends="deleteDefaultSearchSrc,getCustomSearchSrc" unless="search.install.skip" />
   
-  <target name="deleteDefaultSearchSrc">
+  <target name="deleteDefaultSearchSrc" unless="search.install.skip">
     <delete dir="${build.dir}/search" />
   </target>
 
