@@ -193,12 +193,13 @@ This should have nothing specific to a particular build type.
 	<property name="config.dir" value="${config.dir}" />
 	<property name="keystore.dir" value="${keystore.dir}" />
 	<property name="keystore" value="${keystore}" />
+	<property name="propertiesfileslist" value="${propertiesfileslist}" />
       </ant>
     </sequential>
 
   </macrodef>
 
-
+<!--
   Set list of files to include from properties file?
   
   <target name="buildPropertiesFileConcat"> 
@@ -206,7 +207,7 @@ This should have nothing specific to a particular build type.
       <filelist dir="??" files="${propertiesFiles}" />
     </concat>
   </target>
-
+-->
 <!--
 <filelist 
     id="docfiles" 

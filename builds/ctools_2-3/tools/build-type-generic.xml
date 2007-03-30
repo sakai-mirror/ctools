@@ -85,13 +85,24 @@ createConfig - add dependencies to customize which instances have properties fil
 	 longfile="gnu" compression="gzip" />
   </target>
 
-  <target name="createConfig" 
+  <target name="createConfigOld" 
 	  description="Customize the properties files on an instance by instance basis.">
 
     <buildPropertiesFile instanceName="ctools" />
     <buildPropertiesFile instanceName="ctoolsload" />
     <buildPropertiesFile instanceName="testctools" />
     <buildPropertiesFile instanceName="localhost" />
+    
+  </target>
+
+
+  <target name="createConfig" 
+	  description="Customize the properties files on an instance by instance basis.">
+
+    <buildPropertiesFileSimple instanceName="ctools" />
+    <buildPropertiesFileSimple instanceName="ctoolsload" />
+    <buildPropertiesFileSimple instanceName="testctools" />
+    <buildPropertiesFileSimple instanceName="localhost" />
     
   </target>
 
@@ -108,7 +119,7 @@ createConfig - add dependencies to customize which instances have properties fil
 
   <target name="getBuildTypeSrc"
 	  description="override to include source for specific type of build." >
-    <echo> Use defauilt getBuildTypeSrc</echo>
+    <echo> Use default getBuildTypeSrc</echo>
   </target>
 
 
@@ -120,7 +131,7 @@ createConfig - add dependencies to customize which instances have properties fil
 
   <target name="imageBuildType"
 	  description="override to affect image build for specific build type." >
-    <echo> Use defauilt imageBuildTypeSrc</echo>
+    <echo> Use default imageBuildTypeSrc</echo>
   </target>
 
 
