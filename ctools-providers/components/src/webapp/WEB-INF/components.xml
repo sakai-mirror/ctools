@@ -36,14 +36,60 @@
 		 <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
 	</bean>
 
-	<bean id="org.sakaiproject.site.api.CourseManagementProvider"
+	<!--<bean id="org.sakaiproject.site.api.CourseManagementProvider"
 			class="org.sakaiproject.component.legacy.coursemanagement.UnivOfMichCourseManagementProvider"
 			init-method="init"
 			destroy-method="destroy"
 			singleton="true">
-	<!--	<property name="logger"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property> -->
+			<property name="logger"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property>
 		 <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
          <property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
+	</bean>-->
+	
+	<bean id="org.sakaiproject.coursemanagement.api.CourseManagementService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager">
+			<ref bean="org.sakaiproject.springframework.orm.hibernate.GlobalTransactionManager" />
+		</property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">PROPAGATION_REQUIRED,readOnly,+org.sakaiproject.coursemanagement.api.exception.IdNotFoundException</prop>
+            </props>
+        </property>
+        <property name="target">
+            <bean class="org.sakaiproject.coursemanagement.impl.CourseManagementServiceUnivOfMichImpl">
+            	<property name="implList">
+            		<!-- List the implementations here, in descending order of authority -->
+            		<list>
+			            <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
+			            <property name="cmAdmin"><ref bean="org.sakaiproject.coursemanagement.api.CourseManagementAdministration"/></property>
+					</list>
+            	</property>
+            </bean>
+        </property>
+	</bean>
+	
+		<!-- A DataLoader to load sample CM data into Sakai's CM reference impl. -->
+
+	<bean id="org.sakaiproject.coursemanagement.impl.DataLoader"
+			class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager">
+			<ref bean="org.sakaiproject.springframework.orm.hibernate.GlobalTransactionManager" />
+		</property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+        <property name="target">
+			<bean class="org.sakaiproject.coursemanagement.impl.SampleDataLoader"
+				init-method="init" destroy-method="destroy">
+				<property name="cmAdmin"><ref bean="org.sakaiproject.coursemanagement.api.CourseManagementAdministration"/></property>
+				<property name="cmService"><ref bean="org.sakaiproject.coursemanagement.api.CourseManagementService"/></property>
+				<property name="scs"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property>
+				<property name="loadSampleData"><value>true</value></property>
+			</bean>
+		</property>
 	</bean>
 
 	<bean id="eventwatcher"

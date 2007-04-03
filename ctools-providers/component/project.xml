@@ -31,7 +31,31 @@
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>sakaiproject</groupId>
+			<artifactId>sakai-coursemanagement-api</artifactId>
+			<version>${sakai.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>sakaiproject</groupId>
+			<artifactId>sakai-tool-api</artifactId>
+			<version>${sakai.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>${sakai.spring.groupId}</groupId>
+			<artifactId>${sakai.spring.artifactId}</artifactId>
+			<version>${sakai.spring.version}</version>
+		</dependency>
 
+ 		<dependency>
+			<groupId>${sakai.spring.groupId}</groupId>
+			<artifactId>${sakai.spring.mock.artifactId}</artifactId>
+			<version>${sakai.spring.mock.version}</version>
+		</dependency>
+		
 		<!--
 		<dependency>
 			<groupId>sakaiproject</groupId>
@@ -83,20 +107,7 @@
 			-->
 		</dependency>
 		
-
 		<dependency>
-			<groupId>sakaiproject</groupId>
-			<artifactId>sakai-site-manage-util</artifactId>
-			<version>${sakai.version}</version>
-			<!--
-			<properties>
-			<war.bundle>true</war.bundle>
-			</properties>
-			-->
-
-		</dependency>
-		
-			<dependency>
 			<groupId>sakaiproject</groupId>
 			<artifactId>sakai-user-api</artifactId>
 			<version>${sakai.version}</version>
@@ -136,7 +147,7 @@
 
 		<dependency>
 			<groupId>sakaiproject</groupId>
-			<artifactId>sakai-site-manage-api</artifactId>
+			<artifactId>sakai-coursemanagement-api</artifactId>
 			<version>${sakai.version}</version>
 		</dependency>
 		

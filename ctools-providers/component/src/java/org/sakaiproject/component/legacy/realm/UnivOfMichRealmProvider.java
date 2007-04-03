@@ -204,6 +204,14 @@ public class UnivOfMichRealmProvider implements GroupProvider
 	{
 		return m_umiac.unpackId(eid);
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public String packId(String[] ids)
+	{
+		return m_umiac.packId(ids);
+	}
 
 }
 

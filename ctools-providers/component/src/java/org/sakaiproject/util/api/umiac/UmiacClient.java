@@ -163,6 +163,13 @@ public interface UmiacClient {
 	public void setGroupUrl(String year, String term, String campus, String subject, String course, String section, String url)	;	//setGroupUrl
 	
 	/**
+	 * 
+	 * @param ids
+	 * @return
+	 */
+	public String packId(String[] ids);
+	
+	/**
 	 * Unpack a multiple id that may contain many full ids connected with "+", each
 	 * of which may have multiple sections enclosed in []
 	 * @param id The multiple group id.

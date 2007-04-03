@@ -802,6 +802,33 @@ public class UmiacClientImpl
 	}	// makeRawCall
 	
 	/**
+	 * @inherit
+	 */
+	public String packId(String[] ids)
+	{
+		if(ids == null || ids.length == 0)
+		{
+			return null;
+		}
+		
+		if(ids.length == 1)
+		{
+			return ids[0];
+		}
+		
+		StringBuffer sb = new StringBuffer();
+		for(int i=0; i<ids.length; i++)
+		{
+			sb.append(ids[i]);
+			if(i < ids.length - 1)
+			{
+				sb.append("+");
+			}
+		}
+		return sb.toString();
+	}
+	
+	/**
 	 * Unpack a multiple id that may contain many full ids connected with "+", each
 	 * of which may have multiple sections enclosed in []
 	 * @param id The multiple group id.
