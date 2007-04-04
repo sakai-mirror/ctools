@@ -31,8 +31,10 @@
   <property name="instance-type.file" value="instance.${instance-type}.properties" />
   <property file="${instance-type.file}" />
 
+  <!--
   <target name="buildProperties" depends="copyConfig, editInstanceSakaiProperties"
 	  description="copy and edit the sakai.properties files." />
+  -->
 
   <target name="buildPropertiesSimple" depends="copyConfig, buildPropertiesFileConcat"
 	  description="TEST: copy and edit the sakai.properties files." />
@@ -67,6 +69,7 @@
   </target>
 
 
+  <!--
   <target name="editInstanceSakaiProperties" >
     <echo> sakai.properties: ${sakai.properties} </echo>
     <echo> instance-type: ${instance-type} </echo>
@@ -75,8 +78,8 @@
     <echo> version.service: ${version.service} </echo>
     <echo> version.sakai: ${version.sakai} </echo>
 
-    <!-- to add a new property to be customized add a new token filter
-    entry below -->
+    <!/-/- to add a new property to be customized add a new token filter
+    entry below /-/->
 
     <copy file="${sakai.properties}" 
 	  tofile="${instances.dir}/${instance-type}/sakai.properties" 
@@ -113,9 +116,7 @@
 	</tokenfilter>
 
 	<tokenfilter>
-<!-- storagePath@org.sakaiproject.archive.api.ArchiveService -->
 	  <replaceregex pattern="^(storagePath@org.sakaiproject.archive.api.ArchiveService\s*=\s*).*" replace="\1${storagePath}"/>
-<!--	  <replaceregex pattern="^(storagePath\s*=\s*).*" replace="\1${storagePath}"/> -->
 	</tokenfilter>
 
 	<tokenfilter>
@@ -234,7 +235,7 @@
     </copy>
 
   </target>
-
+-->
  <target name="buildPropertiesFileConcat"> 
     <concat destfile="${instances.dir}/${instance-type}/sakai.properties">
       <filelist dir="${config.dir}" files="sakai.properties" />
