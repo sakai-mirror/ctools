@@ -28,6 +28,7 @@ package org.sakaiproject.util.impl.umiac;
 // imports
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
@@ -71,16 +72,13 @@ public class UmiacClientImpl
 	/** The one and only Umiac client. */
 	protected static UmiacClient M_instance = null;
 	
-	private static Log log = LogFactory.getLog(UmiacClientImpl.class);
-
+	/** Socket timeout for Umiac response. This is the time 
+	 * to wait before a failure for Umiac to respond is considered an error.
+	 * This can be large since it won't have any effect during normal usage. */
 	
-	/** Get the umiac client. */
-//	private static IUmiacClient getInstance()
-//	{
-//		if (M_instance == null) new UmiacClient();
-//		return M_instance;
-//
-//	}	// getInstance
+	protected int m_umiacSocketTimeout = 3000;
+	
+	private static Log log = LogFactory.getLog(UmiacClientImpl.class);
 
 	/**
 	* Construct, using the default production UMIAC instance.
@@ -98,7 +96,6 @@ public class UmiacClientImpl
 		if (m_host == null)
 		{
 			log.warn(this + " - no 'umiac.address' in configuration");
-//			Log.warn("chef", this + " - no 'umiac.address' in configuration");
 		}
 		if (m_port == -1)
 		{
@@ -122,12 +119,10 @@ public class UmiacClientImpl
 	{
 		try
 		{
-	//		if (Log.getLogger("chef").isDebugEnabled())
 			if (log.isDebugEnabled())
 			{
 				log.debug(this +".init()");
 			}
-		//	m_logger.info(this +".init()");
 		}
 		catch (Throwable t)
 		{
@@ -135,7 +130,6 @@ public class UmiacClientImpl
 			{
 				log.debug(this +".init(): ", t);
 			}
-		//	m_logger.warn(this +".init(): ", t);
 		}
 	}
 
@@ -148,7 +142,6 @@ public class UmiacClientImpl
 		{
 			log.debug(this +".destroy()");
 		}
-	//	m_logger.info(this +".destroy()");
 	}
 
 	
@@ -199,6 +192,10 @@ public class UmiacClientImpl
 		return m_host;
 
 	}	// getHost
+
+	public void setUmiacSocketTimeout(int umiacSocketTimeout) {
+		m_umiacSocketTimeout = umiacSocketTimeout;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#userExists(java.lang.String)
@@ -760,6 +757,7 @@ public class UmiacClientImpl
 		try
 		{
 			socket = new Socket(m_host,m_port);
+			socket.setSoTimeout(m_umiacSocketTimeout);
 			out = new PrintWriter(socket.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out.println(umiacCommand);
@@ -779,10 +777,15 @@ public class UmiacClientImpl
 				inString = in.readLine();
 			}
 		}
+		catch (InterruptedIOException e)
+		{
+			// Catch problem if Umiac doesn't respond.  This approach will at least 
+			// not leave us stuck waiting forever.
+			log.warn("UMIAC: timeout on socket read: " + e.toString());
+		}
 		catch (Throwable e)
 		{
 			log.warn("UMIAC: " + e.toString());
-	//		Logger.warn("UMIAC: " + e.toString());
 		}
 		finally
 		{
@@ -794,7 +797,6 @@ public class UmiacClientImpl
 				if (socket != null) socket.close();
 			}
 			catch (Exception ignore){log.warn("UMIAC: " + ignore);}
-//			catch (Exception ignore){Logger.warn("UMIAC: " + ignore);}
 		}
 		
 		return v;
