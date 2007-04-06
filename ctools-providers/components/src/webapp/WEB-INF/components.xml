@@ -32,7 +32,7 @@
 	</bean>
 	
 	
-		<bean class="org.sakaiproject.coursemanagement.impl.CourseManagementServiceUnivOfMichImpl" init-method="init" destroy-method="destroy">
+		<bean id="org.sakaiproject.coursemanagement.api.CourseManagementService" class="org.sakaiproject.coursemanagement.impl.CourseManagementServiceUnivOfMichImpl" init-method="init" destroy-method="destroy">
             	<property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
             </bean>
 
