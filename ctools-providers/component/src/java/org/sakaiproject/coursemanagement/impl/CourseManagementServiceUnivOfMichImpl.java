@@ -20,6 +20,7 @@
  **********************************************************************************/
 package org.sakaiproject.coursemanagement.impl;
 
+import java.sql.ResultSet;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,10 +35,14 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.coursemanagement.api.AcademicSession;
+import org.sakaiproject.coursemanagement.impl.AcademicSessionCmImpl;
+import org.sakaiproject.coursemanagement.impl.SectionCmImpl;
 import org.sakaiproject.coursemanagement.api.CanonicalCourse;
+import org.sakaiproject.coursemanagement.impl.CanonicalCourseCmImpl;
 import org.sakaiproject.coursemanagement.api.CourseManagementAdministration;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
 import org.sakaiproject.coursemanagement.api.CourseOffering;
+import org.sakaiproject.coursemanagement.impl.CourseOfferingCmImpl;
 import org.sakaiproject.coursemanagement.api.CourseSet;
 import org.sakaiproject.coursemanagement.api.Enrollment;
 import org.sakaiproject.coursemanagement.api.EnrollmentSet;
@@ -47,10 +52,14 @@ import org.sakaiproject.coursemanagement.api.SectionCategory;
 import org.sakaiproject.coursemanagement.api.exception.IdExistsException;
 import org.sakaiproject.coursemanagement.api.exception.IdNotFoundException;
 import org.sakaiproject.coursemanagement.impl.facade.Authentication;
+import org.sakaiproject.db.api.SqlReader;
+import org.sakaiproject.db.api.SqlService;
 import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
 
 import org.sakaiproject.util.api.umiac.UmiacClient;
+import org.sakaiproject.db.api.SqlReader;
+import org.sakaiproject.db.api.SqlService;
 
 /**
  * Provides access to course and enrollment data stored in UMIAC's 
@@ -94,6 +103,20 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 
 	public UmiacClient getUmiac() {
 		return m_umiac;
+	}
+	
+	/** Dependency: SqlService */
+	protected SqlService m_sqlService = null;
+
+	public void setSqlService(SqlService service)
+	{
+		m_sqlService = service;
+	}
+	
+	/** Dependency: */
+	protected CourseManagementAdministration cmAdmin;
+	public void setCmAdmin(CourseManagementAdministration cmAdmin) {
+		this.cmAdmin = cmAdmin;
 	}
 	
 	private Object getObjectByEid(final String eid, final String className) throws IdNotFoundException {
@@ -160,16 +183,97 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public List<AcademicSession> getAcademicSessions() {
+		// send to database
+		String statement = null;
+		Object[] fields = null;
 		
-		return new Vector();
+		// if a record with courseId exists
+		statement = "SELECT ACADEMIC_SESSION_ID, VERSION, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, CREATED_BY, CREATED_DATE, ENTERPRISE_ID, TITLE, DESCRIPTION, START_DATE	, END_DATE FROM CM_ACADEMIC_SESSION_T";
+		
+		List results = m_sqlService.dbRead(statement, null, new SqlReader()
+			{
+				public Object readSqlResultRecord(ResultSet result)
+				{
+					try
+					{
+						// create the Resource from the db xml
+						String academic_session_id = result.getString(1);
+						String version = result.getString(2);
+						String lastModifiedBy = result.getString(3);
+						String lastModifiedDate = result.getString(4);
+						String createdBy= result.getString(5);
+						String createdDate= result.getString(6);
+						String eid= result.getString(7);
+						String title = result.getString(8);
+						String description = result.getString(9);
+						Date startDate = result.getDate(10);
+						Date endDate = result.getDate(11);
+						AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
+						
+						return ac;
+					}
+					catch (Throwable ignore) { return null;}
+				}
+			} );
+		
+		if (results != null && results.size()>0)
+		{
+			return results;
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	public List<AcademicSession> getCurrentAcademicSessions() {
-		return new Vector();
+		return getAcademicSessions();
 	}
 
 	public AcademicSession getAcademicSession(final String eid) throws IdNotFoundException {
-		return (AcademicSession)getObjectByEid(eid, AcademicSession.class.getName());
+		
+		// send to database
+		String statement = null;
+		Object[] fields = new Object[1];
+		fields[0] = eid;
+		
+		// if a record with courseId exists
+		statement = "SELECT ACADEMIC_SESSION_ID, VERSION, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, CREATED_BY, CREATED_DATE, ENTERPRISE_ID, TITLE, DESCRIPTION, START_DATE	, END_DATE FROM CM_ACADEMIC_SESSION_T WHERE ENTERPRISE_ID=?";
+		
+		List results = m_sqlService.dbRead(statement, fields, new SqlReader()
+			{
+				public Object readSqlResultRecord(ResultSet result)
+				{
+					try
+					{
+						// create the Resource from the db xml
+						String academic_session_id = result.getString(1);
+						String version = result.getString(2);
+						String lastModifiedBy = result.getString(3);
+						String lastModifiedDate = result.getString(4);
+						String createdBy= result.getString(5);
+						String createdDate= result.getString(6);
+						String eid= result.getString(7);
+						String title = result.getString(8);
+						String description = result.getString(9);
+						Date startDate = result.getDate(10);
+						Date endDate = result.getDate(11);
+						AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
+						
+						return ac;
+					}
+					catch (Throwable ignore) { return null;}
+				}
+			} );
+		
+		if (results != null && results.size()>0)
+		{
+			return (AcademicSession) results.get(0);
+		}
+		else
+		{
+			return null;
+		}
 	}
 	
 	public CourseOffering getCourseOffering(String eid) throws IdNotFoundException {
@@ -319,8 +423,18 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 				{
 					String[] res = (String[]) courses.get(i);
 					String cEid = res[0] + "," + res[1] + "," + res[2] + "," + res[3] + "," + res[4] + "," + res[5];
-					//CourseOffering co = createCourseOffering( cEid + academicSessionEid, res[6], res[2] + "_" + res[3]/*description*/, "open"/*status*/, academicSessionEid, cEid, as.getStartDate(), as.getEndDate());
-					//s.add(co);
+					
+					CourseOfferingCmImpl co = new CourseOfferingCmImpl(cEid + academicSessionEid, res[6], res[2] + "_" + res[3],"open", as, new CanonicalCourseCmImpl(cEid, cEid, res[2] + "_" + res[3]), as.getStartDate(),as.getEndDate());
+					
+					SectionCmImpl section = new SectionCmImpl();
+					section.setCategory("lct");
+					section.setCourseOffering(co);
+					section.setDescription(co.getDescription());
+					section.setEid(co.getEid());
+					section.setTitle(co.getTitle());
+			        section.setMaxSize(new Integer(100));
+		        	
+					s.add(section);
 				}
 			}
 			catch (Exception ee)
@@ -358,7 +472,16 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 
 
 	public Map<String, String> findSectionRoles(final String userEid) {
-		return null;
+		if (userEid == null) return new HashMap();
+
+		// get the user's external list of sites : Map of provider id -> role for this user
+		Map map = m_umiac.getUserSections(userEid);
+
+		// transfer to our special map
+		HashMap rv = new HashMap();
+		rv.putAll(map);
+
+		return rv;
 	}
 
 
