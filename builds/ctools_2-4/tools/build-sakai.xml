@@ -85,7 +85,19 @@
     <removeFromBuild deleteDir="sam/testdata" />
     <removeFromBuild deleteDir="sam/tests" />
     <removeFromBuild deleteDir="sam/tool/src/java/test" />
-    <removeFromBuild deleteDir="providers" />
+    <!-- 
+	 many now have multiple providers, so need to pick and choose, not just
+	 replace with ctools ones.
+    -->
+    <!-- <removeFromBuild deleteDir="providers" />  -->
+    <removeFromBuild deleteDir="providers/allhands" /> 
+    <removeFromBuild deleteDir="providers/federating" /> 
+    <removeFromBuild deleteDir="providers/imsent" /> 
+    <removeFromBuild deleteDir="providers/jldap" /> 
+    <removeFromBuild deleteDir="providers/kerberos" /> 
+    <removeFromBuild deleteDir="providers/openldap" /> 
+    <!-- <removeFromBuild deleteDir="providers/sample" />  -->
+
     <removeFromBuild deleteDir="wsrp" />
     <removeFromBuild deleteDir="warehouse" />
     <removeFromBuild deleteDir="reports/api-impl" />
