@@ -342,7 +342,7 @@ public class UnivOfMichUserDirectoryProvider
 	public String getDisplayName(User user)
 	{
 		// punt
-		return user.getDisplayName();
+		return "";
 	}
 	
 	/**
@@ -350,7 +350,7 @@ public class UnivOfMichUserDirectoryProvider
 	 */
 	public String getDisplayId(User user)
 	{
-		return  user.getDisplayId();
+		return user.getEid();
 	}
 
 	/**
