@@ -305,7 +305,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public Set getSectionMemberships(String sectionEid) throws IdNotFoundException {
-		return null;
+		return new HashSet();
 	}
 
 	public EnrollmentSet getEnrollmentSet(String eid) throws IdNotFoundException {
@@ -358,14 +358,18 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	 */
 	public Set<Section> findInstructingSections(final String userId) 
 	{
-		HashSet set = new HashSet();
+		HashSet set = new HashSet<Section>();
 		
 		// iterating through all sessions
 		List sessions = getAcademicSessions();
 		for (int i = 0; i<sessions.size(); i++)
 		{
 			AcademicSession session = (AcademicSession) sessions.get(i);
-			set.add(findInstructingSections(userId, session.getEid()));
+			Set set1 = findInstructingSections(userId, session.getEid());
+			for(Iterator iter = set1.iterator(); iter.hasNext();) {
+				Section section = (Section)iter.next();
+				set.add(section);
+			}
 		}
 		
 		return set;
@@ -463,11 +467,21 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 
 
 	public Map<String, String> findCourseOfferingRoles(final String userEid) {
-		return null;
+		Map map = new HashMap();
+		
+		if (userEid == null) return map;
+
+		// get the user's external list of sites : Map of provider id -> role for this user
+		return getUmiac().getUserSections(userEid);
 	}
 
 	public Map<String, String> findCourseSetRoles(final String userEid) {
-		return null;
+		Map map = new HashMap();
+		
+		if (userEid == null) return map;
+
+		// get the user's external list of sites : Map of provider id -> role for this user
+		return getUmiac().getUserSections(userEid);
 	}
 
 
@@ -540,15 +554,5 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		map.put("member", "Member");
 		map.put("guest", "Guest");
 		return map;
-	}
-
-	private AcademicSession createAcademicSession(String eid, String title,
-			String description, Date startDate, Date endDate) throws IdExistsException {
-		return null;
-		
-	}
-
-	private void updateAcademicSession(AcademicSession academicSession) {
-		
 	}
 }
