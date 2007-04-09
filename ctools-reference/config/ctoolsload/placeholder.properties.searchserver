@@ -1,0 +1,65 @@
+# placeholder.properties - the testctools edition
+
+# set the hibernate dialect (for shared datasource) to Oracle
+hibernate.dialect=org.hibernate.dialect.Oracle9Dialect
+
+# disable auto.ddl
+#auto.ddl=true
+auto.ddl=false
+
+
+# these need to be set
+
+ctools.oracle.driver=
+ctools.oracle.password=
+ctools.oracle.user=
+
+# iTunes U UMich official site configurations 
+# iTunes U site id
+iTunesU_site_id=
+iTunesU_site_sharedSecret=
+
+############# Search Server #############
+# We want search.
+search.experimental=true
+webservices.allowlogin=true
+sharedKey@org.sakaiproject.search.api.SearchService=
+
+# Location of search server
+searchServerUrl@org.sakaiproject.search.api.SearchService=http://ctoolsload.ds.itd.umich.edu/sakai-search-tool/xmlsearch/
+
+#### Server
+searchServer@org.sakaiproject.search.api.SearchService=true
+
+## currently build indices only on the search server.
+search.indexbuild=true
+# Only index sites with search tools. 
+onlyIndexSearchToolSites@org.sakaiproject.search.api.SearchIndexBuilder=true
+
+## index type and location
+indexStorageName@org.sakaiproject.search.index.IndexStorage=filesystem
+localSegmentsOnly@org.sakaiproject.search.api.SearchService.SegmentStore=true
+
+location@org.sakaiproject.search.api.SearchService.SegmentStore=/afs/umich.edu/group/ctsearch/fs201/search/searchindex
+recoverCorruptedIndex@org.sakaiproject.search.index.IndexStorage=true
+location@org.sakaiproject.search.index.IndexStorage=/afs/umich.edu/group/ctsearch/fs201/search/searchindex
+
+## Must override these directly for the time being.
+recoverCorruptedIndex@filesystemSearchStorageImpl=true
+location@filesystemSearchStorageImpl=/afs/umich.edu/group/ctsearch/fs201/search/searchindex
+
+#########
+## Set limits on file sizes when indexing.
+
+# stream files in when they are larger than this.  Default 2M
+#readerSizeLimit@org.sakaiproject.search.component.adapter.contenthosting.ContentHostingContentProvider=2M
+
+# pass to a char stream parser not the file type parser above this limit
+#digesterSizeLimit@org.sakaiproject.search.component.adapter.contenthosting.ContentHostingContentProvider=5M
+
+# The maximum size of a file that will be indexed.  Not sure if this
+# is the limit on the amount of a file that will be indexed or on the
+# files that will be indexed.
+
+#maxDigestSize@org.sakaiproject.search.component.adapter.contenthosting.DefaultContentDigester=30M
+### end ###
