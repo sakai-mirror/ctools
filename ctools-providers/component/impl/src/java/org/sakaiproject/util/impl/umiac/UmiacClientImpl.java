@@ -606,7 +606,7 @@ public class UmiacClientImpl
 	{
 		String command = "getInstructorSections," + eid + "," + term_year + "," + term + "\n\n";
 
-		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
+		/*if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
 			Vector rv = (Vector) m_callCache.getExpiredOrNot(command);
 			if (rv == null)
@@ -615,7 +615,7 @@ public class UmiacClientImpl
 			}
 
 			return (Vector) m_callCache.getExpiredOrNot(command);
-		}
+		}*/
 
 		Vector result = makeRawCall(command);
 		

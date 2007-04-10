@@ -60,6 +60,8 @@ import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.util.api.umiac.UmiacClient;
 import org.sakaiproject.db.api.SqlReader;
 import org.sakaiproject.db.api.SqlService;
+import org.sakaiproject.util.StringUtil;
+import org.sakaiproject.exception.IdUnusedException;
 
 /**
  * Provides access to course and enrollment data stored in UMIAC's 
@@ -277,7 +279,33 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 	
 	public CourseOffering getCourseOffering(String eid) throws IdNotFoundException {
-		return (CourseOffering)getObjectByEid(eid, CourseOffering.class.getName());
+		// 2007,3,A,SUBJECT,SECTION,COURSE
+		String[] eidParts = eid.split(",");
+		String foundTermString = null;
+		for (Iterator iTerm = termIndex.keySet().iterator(); foundTermString == null && iTerm.hasNext();)
+		{
+			String termString = (String) iTerm.next();
+			if (termIndex.get(termString).equals(eidParts[1]))
+			{
+				foundTermString = termString;
+			}
+		}
+		String academicSessionId = foundTermString.concat(" ").concat(eidParts[0]);
+		AcademicSession as = getAcademicSession(academicSessionId);
+		
+		// construct CourseOffering object
+		if (as != null)
+		{
+			CourseOfferingCmImpl co = new CourseOfferingCmImpl(eid, eid, "","open", as, new CanonicalCourseCmImpl(eid, eid, eid), as.getStartDate(),as.getEndDate());
+			
+			return co;
+		}
+		else
+		{
+			CourseOfferingCmImpl co = new CourseOfferingCmImpl();
+			co.setEid(eid);
+			return co;
+		}
 	}
 
 	public Set getCourseOfferingsInCourseSet(final String courseSetEid) throws IdNotFoundException {
@@ -293,7 +321,25 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public Section getSection(String eid) throws IdNotFoundException {
-		return (Section)getObjectByEid(eid, Section.class.getName());
+		AcademicSession as = getAcademicSession("WINTER 2007");
+		
+		CourseOfferingCmImpl co = new CourseOfferingCmImpl(eid, eid, "","open", as, new CanonicalCourseCmImpl(eid, eid, eid), as.getStartDate(),as.getEndDate());
+		
+		Set instructors = new HashSet();
+		instructors.add("instructorOne");
+		
+		EnrollmentSet eSet = new EnrollmentSetCmImpl(eid,eid,eid, "lct","3", co, instructors);
+		
+		SectionCmImpl section = new SectionCmImpl();
+		section.setCategory("lct");
+		section.setCourseOffering(co);
+		section.setDescription(co.getDescription());
+		section.setEid(co.getEid());
+		section.setTitle(co.getTitle());
+        section.setMaxSize(new Integer(100));
+        section.setEnrollmentSet(eSet);
+        
+        return section;
 	}
 
 	public Set getSections(String courseOfferingEid) throws IdNotFoundException {
@@ -309,7 +355,30 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public EnrollmentSet getEnrollmentSet(String eid) throws IdNotFoundException {
-		return (EnrollmentSet)getObjectByEid(eid, EnrollmentSet.class.getName());
+		
+		Set instructors = new HashSet();
+		
+		try
+		{
+			Map members = getUmiac().getGroupRoles(eid);
+			for (Iterator i=members.keySet().iterator(); i.hasNext();)
+			{
+				String eId = (String) i.next();
+				String roleString = (String) members.get(eid);
+				if (roleString != null && roleString.equals("Instructor"))
+				{
+					instructors.add(eId);
+				}
+			}
+		}
+		catch (IdUnusedException e)
+		{
+			log.warn(this + "could not find an enrollment set for " + eid);
+		}
+		
+		EnrollmentSet eSet = new EnrollmentSetCmImpl(eid, eid, eid, "lct","3", getCourseOffering(eid), instructors);
+		
+		return eSet;
 	}
 
 	public Set getEnrollmentSets(final String courseOfferingEid) throws IdNotFoundException {
@@ -331,11 +400,34 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	
 	public Enrollment findEnrollment(final String userId, final String enrollmentSetEid) {
 		if( ! isEnrollmentSetDefined(enrollmentSetEid)) {
-			log.warn("Could not find an enrollment set with eid=" + enrollmentSetEid);
+			log.warn(this + "Could not find an enrollment set with eid=" + enrollmentSetEid);
 			return null;
 		}
 		
+		// compute the set of individual umiac ids that are packed into id
+		String eids[] = unpackId(enrollmentSetEid);
+		
+		try
+		{
+			Map members = getUmiac().getGroupRoles(eids);
+			String roleString = null;
+			for (Iterator i = members.keySet().iterator(); i.hasNext();)
+			{
+				String memberEid = (String) i.next();
+				if (memberEid.equals(userId))
+				{
+					roleString = (String) members.get(memberEid);
+				}
+			}
+			return new EnrollmentCmImpl(userId, getEnrollmentSet(enrollmentSetEid), "enrolled", "3", "gradeScheme");
+		}
+		catch (IdUnusedException e)
+		{
+			log.warn(this + "could not find an enrollment set for " + enrollmentSetEid);
+		}
 		return null;
+		
+		
 	}
 	
 	public Set getInstructorsOfRecordIds(String enrollmentSetEid) throws IdNotFoundException {
@@ -387,7 +479,30 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 
 		// get the user's external list of sites : Map of provider id -> role for this user
 		Map map = getUmiac().getUserSections(userId);
-		set.addAll(map.keySet());
+		Set sectionIds = map.keySet();
+		for (Iterator itr = sectionIds.iterator(); itr.hasNext();)
+		{
+			AcademicSession as = getAcademicSession("WINTER 2007");
+			
+			String sectionId = (String) itr.next();
+			CourseOfferingCmImpl co = new CourseOfferingCmImpl(sectionId, sectionId, "","open", as, new CanonicalCourseCmImpl(sectionId, sectionId, sectionId), as.getStartDate(),as.getEndDate());
+			
+			Set instructors = new HashSet();
+			instructors.add(userId);
+			
+			EnrollmentSet eSet = new EnrollmentSetCmImpl(sectionId, sectionId, sectionId, "lct","3", co, instructors);
+			
+			SectionCmImpl section = new SectionCmImpl();
+			section.setCategory("lct");
+			section.setCourseOffering(co);
+			section.setDescription(co.getDescription());
+			section.setEid(co.getEid());
+			section.setTitle(co.getTitle());
+	        section.setMaxSize(new Integer(100));
+	        section.setEnrollmentSet(eSet);
+	        
+	        set.add(section);
+		}
 		
 		return set;
 	}
@@ -405,30 +520,27 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 			// get the instructor courses 
 			Vector rv = new Vector();
 			int i = 0;
-			String instructorEid = null;
-			try 
-			{
-				instructorEid = UserDirectoryService.getUserEid(userId);
-			} 
-			catch (UserNotDefinedException e1) 
-			{
-				log.warn("No eid for instructorId: "+userId,e1);
-				instructorEid = userId;
-			}
+			
 			try
 			{
 				//getInstructorSections returns 12 strings: year, term_id, campus_code, 
 				//subject, catalog_nbr, class_section, title, url, component, role, 
 				//subrole, "CL" if cross-listed, blank if not
-				Vector courses = getUmiac().getInstructorSections (instructorEid, acTitleParts[1], (String) termIndex.get(acTitleParts[0]));
+				Vector courses = getUmiac().getInstructorSections (userId, acTitleParts[1], (String) termIndex.get(acTitleParts[0]));
 				
 				int count = courses.size();
 				for (i=0; i<courses.size(); i++)
 				{
 					String[] res = (String[]) courses.get(i);
 					String cEid = res[0] + "," + res[1] + "," + res[2] + "," + res[3] + "," + res[4] + "," + res[5];
+					String title = res[3] + "," + res[4] + "," + res[5];
 					
-					CourseOfferingCmImpl co = new CourseOfferingCmImpl(cEid + academicSessionEid, res[6], res[2] + "_" + res[3],"open", as, new CanonicalCourseCmImpl(cEid, cEid, res[2] + "_" + res[3]), as.getStartDate(),as.getEndDate());
+					CourseOfferingCmImpl co = new CourseOfferingCmImpl(cEid, title, title + " " + as.getTitle(),"open", as, new CanonicalCourseCmImpl(title, title, title), as.getStartDate(),as.getEndDate());		
+					
+					Set instructors = new HashSet();
+					instructors.add(userId);
+					
+					EnrollmentSet eSet = new EnrollmentSetCmImpl(co.getEid(), co.getEid(), co.getEid(), "lct","3", co, instructors);
 					
 					SectionCmImpl section = new SectionCmImpl();
 					section.setCategory("lct");
@@ -437,13 +549,14 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 					section.setEid(co.getEid());
 					section.setTitle(co.getTitle());
 			        section.setMaxSize(new Integer(100));
+			        section.setEnrollmentSet(eSet);
 		        	
 					s.add(section);
 				}
 			}
 			catch (Exception ee)
 			{
-				log.warn(this + " Cannot find any course in record for the instructor with id " + instructorEid + ". ");
+				log.warn(this + " Cannot find any course in record for the instructor with id " + userId + ". ");
 			}
 		}
 		catch (IdNotFoundException e)
@@ -520,7 +633,22 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public boolean isEnrollmentSetDefined(String eid) {
-		return false;
+		try
+		{
+			String name = StringUtil.trimToNull(getUmiac().getGroupName(eid));
+			if (name != null)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
 	}
 
 	public boolean isSectionDefined(String eid) {
@@ -554,5 +682,16 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		map.put("member", "Member");
 		map.put("guest", "Guest");
 		return map;
+	}
+	
+	/**
+	 * Unpack a multiple id that may contain many full ids connected with "+", each
+	 * of which may have multiple sections enclosed in []
+	 * @param eid The multiple group id.
+	 * @return An array of strings of real umiac group ids, one for each in the multiple.
+	 */
+	public String[] unpackId(String eid)
+	{
+		return getUmiac().unpackId(eid);
 	}
 }
