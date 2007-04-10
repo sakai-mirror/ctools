@@ -4,23 +4,23 @@
 # $Id$
 
 # set the hibernate dialect (for shared datasource) to Oracle
-hibernate.dialect=org.hibernate.dialect.Oracle9Dialect
+#hibernate.dialect=org.hibernate.dialect.Oracle9Dialect
 
 # disable auto.ddl
 #auto.ddl=true
-auto.ddl=false
+# auto.ddl=false
 
 
-# these need to be set
+# # these need to be set
 
-ctools.oracle.driver=
-ctools.oracle.password=
-ctools.oracle.user=
+# ctools.oracle.driver=
+# ctools.oracle.password=
+# ctools.oracle.user=
 
-# iTunes U UMich official site configurations 
-# iTunes U site id
-iTunesU_site_id=
-iTunesU_site_sharedSecret=
+# # iTunes U UMich official site configurations 
+# # iTunes U site id
+# iTunesU_site_id=
+# iTunesU_site_sharedSecret=
 
 ############# Search Server #############
 # We want search.
