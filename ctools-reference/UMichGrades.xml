@@ -5,7 +5,7 @@
 
   <!-- 
        $HeadURL$
-       $ID:$
+       $Id:$
   -->
   <!-- Hibernate mappings -->
   <bean id="org.sakaiproject.service.gradebook.hibernateMappings"
