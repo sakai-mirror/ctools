@@ -1,3 +1,4 @@
+###############################################################
 # placeholder.properties - the testctools edition
 
 # $HeadURL$
@@ -66,3 +67,4 @@ location@filesystemSearchStorageImpl=/afs/umich.edu/group/ctsearch/fs201/search/
 
 #maxDigestSize@org.sakaiproject.search.component.adapter.contenthosting.DefaultContentDigester=30M
 ### end ###
+###############################################################
