@@ -74,7 +74,9 @@
     <removeFromBuild deleteDir="portal/mercury" />
     <removeFromBuild deleteDir="common/common-composite-component/src/test" />
     <removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
-    <removeFromBuild deleteDir="gradebook/testservice" />
+    <!--    <removeFromBuild deleteDir="gradebook/testservice" /> -->
+    <removeFromBuild deleteDir="gradebook/sample-course-grade-converter" />
+    <removeFromBuild deleteDir="gradebook/testservice-tool" />
     <removeFromBuild deleteDir="metaobj/api-impl/src/test" />
     <removeFromBuild deleteDir="osid/osid-unit-test" />
     <removeFromBuild deleteDir="rwiki/jrcs/src/completetest" />

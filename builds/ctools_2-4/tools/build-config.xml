@@ -49,6 +49,7 @@
       <fileset dir="${config.dir}">
 	<include name="local.properties"/>
 	<include name="placeholder.properties"/>
+	<include name="search*.properties"/>
 	<include name="toolOrder.xml"/>
       </fileset>
     </copy>
@@ -71,7 +72,7 @@
  <target name="buildPropertiesFileConcat"> 
     <concat destfile="${instances.dir}/${instance-type}/sakai.properties">
       <filelist dir="${config.dir}" files="sakai.properties" />
-      <!-- <filelist dir="${config.dir}" files="${propertiesfileslist}" /> -->
+      <filelist dir="${config.dir}" files="${propertiesfileslist}" /> 
       <filelist dir="${config.dir}/${instance-type}" files="${propertiesfileslist}" />
     </concat>
   </target>

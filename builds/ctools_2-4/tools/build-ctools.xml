@@ -47,7 +47,7 @@ $HeadURL$
   </target>
 
   <!-- change source as required -->
-  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades" >
+  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades,editCourseManagement" >
     <!-- edit the files that need to be modified for ctools -->
   </target>
 
@@ -152,6 +152,12 @@ $HeadURL$
   <target name="editGrades">
     <copy file="${reference.dir}/${gradebook.grades.config.sourcefile}"
 	  tofile="${build.dir}/${gradebook.grades.config.tofile}"
+	  overwrite="true"/>
+  </target>
+
+  <target name="editCourseManagement">
+    <copy file="${reference.dir}/${CM.groups.config.sourcefile}"
+	  tofile="${build.dir}/${CM.groups.config.tofile}"
 	  overwrite="true"/>
   </target>
 
