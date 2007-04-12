@@ -87,17 +87,24 @@
     <removeFromBuild deleteDir="sam/testdata" />
     <removeFromBuild deleteDir="sam/tests" />
     <removeFromBuild deleteDir="sam/tool/src/java/test" />
+
+    <!-- currently looks like only need to have CTools providers so get 
+    rid of course-management and provided providers. -->
+    <removeFromBuild deleteDir="providers" /> 
+ <!--    <removeFromBuild deleteDir="course-management" /> -->
     <!-- 
 	 many now have multiple providers, so need to pick and choose, not just
 	 replace with ctools ones.
     -->
     <!-- <removeFromBuild deleteDir="providers" />  -->
+    <!--
     <removeFromBuild deleteDir="providers/allhands" /> 
     <removeFromBuild deleteDir="providers/federating" /> 
     <removeFromBuild deleteDir="providers/imsent" /> 
     <removeFromBuild deleteDir="providers/jldap" /> 
     <removeFromBuild deleteDir="providers/kerberos" /> 
     <removeFromBuild deleteDir="providers/openldap" /> 
+    -->
     <!-- <removeFromBuild deleteDir="providers/sample" />  -->
 
     <removeFromBuild deleteDir="wsrp" />

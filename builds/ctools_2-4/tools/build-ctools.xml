@@ -47,7 +47,8 @@ $HeadURL$
   </target>
 
   <!-- change source as required -->
-  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades,editCourseManagement" >
+ <!--  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades,editCourseManagement" > at the moment don't need to do course management -->
+  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades" >
     <!-- edit the files that need to be modified for ctools -->
   </target>
 
@@ -155,10 +156,12 @@ $HeadURL$
 	  overwrite="true"/>
   </target>
 
+  <!--
   <target name="editCourseManagement">
     <copy file="${reference.dir}/${CM.groups.config.sourcefile}"
 	  tofile="${build.dir}/${CM.groups.config.tofile}"
 	  overwrite="true"/>
   </target>
+  -->
 
 </project>
