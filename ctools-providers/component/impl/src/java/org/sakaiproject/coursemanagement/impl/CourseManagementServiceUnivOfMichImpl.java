@@ -304,6 +304,11 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		{
 			CourseOfferingCmImpl co = new CourseOfferingCmImpl();
 			co.setEid(eid);
+			List aSessions = getCurrentAcademicSessions();
+			if (aSessions != null && aSessions.size() >0)
+			{
+				co.setAcademicSession((AcademicSession)aSessions.get(0));
+			}
 			return co;
 		}
 	}
