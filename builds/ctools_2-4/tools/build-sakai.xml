@@ -91,6 +91,7 @@
     <!-- currently looks like only need to have CTools providers so get 
     rid of course-management and provided providers. -->
     <removeFromBuild deleteDir="providers" /> 
+    <removeFromBuild deleteDir="course-management/cm-impl" />
  <!--    <removeFromBuild deleteDir="course-management" /> -->
     <!-- 
 	 many now have multiple providers, so need to pick and choose, not just
