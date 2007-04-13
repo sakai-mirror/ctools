@@ -304,10 +304,14 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		{
 			CourseOfferingCmImpl co = new CourseOfferingCmImpl();
 			co.setEid(eid);
-			List aSessions = getCurrentAcademicSessions();
-			if (aSessions != null && aSessions.size() >0)
+			if (as != null)
 			{
-				co.setAcademicSession((AcademicSession)aSessions.get(0));
+				co.setAcademicSession(as);
+			}
+			else
+			{
+				// make up some dummy old term, which is 20 years from the current date
+				co.setAcademicSession(new AcademicSessionCmImpl("old_terms", "Old Term", "old term", new Date(System.currentTimeMillis() - 1000*60*60*24*365*20), new Date(System.currentTimeMillis()-1000*60*60*24*365*19)));
 			}
 			return co;
 		}
