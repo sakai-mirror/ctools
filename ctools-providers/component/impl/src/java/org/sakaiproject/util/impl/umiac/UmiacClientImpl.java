@@ -799,6 +799,11 @@ public class UmiacClientImpl
 			catch (Exception ignore){log.warn("UMIAC: " + ignore);}
 		}
 		
+		if (log.isDebugEnabled())
+		{
+			log.debug( this + ".results: " + v);
+		}
+		
 		return v;
 
 	}	// makeRawCall
