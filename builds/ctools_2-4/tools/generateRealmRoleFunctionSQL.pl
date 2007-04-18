@@ -47,7 +47,7 @@ our $r;
 
 print "Note that this only generates the specific sql and doesn't generate\n";
 print "the sql to actually perform the update.  The output then in just a model\n";
-print "for the right sql."
+print "for the right sql.";
 
 printHeader();
 
@@ -61,7 +61,8 @@ while (<>) {
   $lineCnt++;
 
   # get the data from the line and form the pairings.
-  ($function,@roles) = split;
+#  ($function,@roles) = split;
+  ($function,@roles) = split(/\|/);
   $functions{$function}++;
   foreach $r (@roles) {
     push(@pairs,formatInsertRoleFunction($r,$function));
