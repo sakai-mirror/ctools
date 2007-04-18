@@ -36,10 +36,10 @@ while(<>) {
   }
 
   if (/insert into PERMISSIONS_SRC_TEMP.*'([^']+)'.*'([^']+)'/i) {
-    print "backfill: $1, $2\n";
+#    print "backfill: $1, $2\n";
     push @backfill, "$1\t$2";
     $permissionRoleList{$2} .= "|$1";
-    print "pR: $2 $permissionRoleList{$2}\n";
+#    print "pR: $2 $permissionRoleList{$2}\n";
     $lines-- if ($discountHandled);
   }
 
@@ -47,26 +47,26 @@ while(<>) {
 
 
 END {
-  print "lines: $lines\n";
+  print "# lines: $lines\n";
 
 
-  print "**************\n";
-  print "adding functions\n";
-  print "**************\n";
+  print "##############\n";
+  print "## adding functions\n";
+  print "##############\n";
   foreach(sort(@newFunctions)) {
     print "$_\n";
   }
 
-  print "**************\n";
-  print "adding to templates\n";
-  print "**************\n";
+  print "##############\n";
+  print "## adding to templates\n";
+  print "##############\n";
   foreach(sort(@templateAdditions)) {
     print "$_\n";
 v  }
 
-  print "**************\n";
-  print "backfill\n";
-  print "**************\n";
+  print "##############\n";
+  print "## backfill\n";
+  print "##############\n";
   foreach(sort(@backfill)) {
     print "$_\n";
   }

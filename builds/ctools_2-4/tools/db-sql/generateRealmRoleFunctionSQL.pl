@@ -47,7 +47,7 @@ our $r;
 
 print "Note that this only generates the specific sql and doesn't generate\n";
 print "the sql to actually perform the update.  The output then in just a model\n";
-print "for the right sql.";
+print "for the right sql.\n";
 
 printHeader();
 
@@ -72,10 +72,10 @@ while (<>) {
 END {
   # Print the various inserts and a summary
 
-  foreach (sort(keys(%functions))) {
-    printInsertFunction($_);
-  }
-  print "\n";
+#   foreach (sort(keys(%functions))) {
+#     printInsertFunction($_);
+#   }
+#   print "\n";
 
   foreach (sort(keys(%roles))) {
     printInsertRole($_);
