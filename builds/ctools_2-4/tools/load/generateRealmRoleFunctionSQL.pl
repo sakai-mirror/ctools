@@ -15,9 +15,6 @@
 # <function> <roleA> <roleb> ......
 # Blank lines and comment lines (starting with a #) are ignored.
 
-# $HeadURL$
-# $Id$
-
 use strict;
 
 # keep track of some things for reporting
