@@ -9,4 +9,7 @@ current values to the new 2.4.0 format.  It is subject to change.
 - Customize for CTools.
 - Add script to populate the term table for ctload.
 
+$HeadURL$
+$Id$
+
 

@@ -1,4 +1,8 @@
 -- This is the Oracle Sakai 2.3.0 (or later) -> 2.4.0 conversion script
+
+-- $HeadURL$
+-- $Id$
+
 ----------------------------------------------------------------------------------------------------------------------------------------
 --
 -- use this to convert a Sakai database from 2.3.0 to 2.4.0.  Run this before you run your first app server.

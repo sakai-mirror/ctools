@@ -1,4 +1,11 @@
 -----------------------------------------------------------------------------
+-- Add terms table for 2.4 course management code.  We aren't using the default
+-- Hibernate implementation, so this needs to be done separately.
+
+-- $HeadURL$
+-- $Id$
+
+-----------------------------------------------------------------------------
 -- CM_ACADEMIC_SESSION_T
 -----------------------------------------------------------------------------
 

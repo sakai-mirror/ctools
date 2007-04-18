@@ -1,5 +1,8 @@
 ----------------------------------------------------------------------------------------------------------------------------------------
 
+-- $HeadURL$
+-- $Id$
+
 -- SAK-6780 added SQL update scripts to add new tables and alter existing tables to support selective release and spreadsheet upload
 
 -- Gradebook table changes between Sakai 2.3.0 and 2.3.1.

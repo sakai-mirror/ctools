@@ -1,4 +1,5 @@
 -- This combines and adapts, for ctools, the scripts to upgrade the Sakai database from 2.3.0 to 2.4.0.
+
 -- $HeadURL$
 -- $Id$
 
