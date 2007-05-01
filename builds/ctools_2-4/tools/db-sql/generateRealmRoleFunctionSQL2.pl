@@ -25,7 +25,8 @@
 # separated by a ':'.  Multiple function names can be specfied for a particular
 # realm and role.
 
-# backfill <role_name> <function_name>
+# backfill <role_name> <function_name>.  Arrange for the any realm with this role to have this function added to it.
+
 # Add this function to every realm that has this role.
 
 # If not using spaces as the seperator, then spaces are included in names!!!
@@ -35,13 +36,14 @@ use strict;
 # keep track of some things for reporting
 our $lineCnt;
 our $tupleCnt;
+our $backfillCnt;
 our $roleCnt;
 our $functionCnt;
 our $realmCnt;
 
-#our $trace = 0;
-our $trace = 1;
-our $printBareTuple = 1;
+our $trace = 0;
+#our $trace = 1;
+our $printBareTuple = 0;
 our $printSql = 1;
 
 # Hold the final set of functions / roles / pairs found.
@@ -50,6 +52,7 @@ our %functions;
 our %roles;
 our @pairs;
 our @rrf;
+our @backfill;
 
 # SQL templates for generating the sql statements.
 # insert new function
@@ -64,34 +67,12 @@ our $sqlTupleTmpl = "INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from
 
 
 # map the backfill functions and roles together
-our $sqlPairTmpl = "insert into PERMISSIONS_SRC_TEMP values ('%s','%s');";
-
+our $sqlBackfillTmpl = "insert into PERMISSIONS_SRC_TEMP values ('%s','%s');";
 
 # variables to hold information from the input file.
 our ($function,@roles);
-# hold the current role under consideration.
-#our $r;
-
-
-##### Do it
-
-
-#print "Note that this only generates the specific sql and doesn't generate\n";
-#print "the sql to actually perform the update.  The output then in just a model\n";
-#print "for the right sql.\n";
-
-## See if this is a test run.
-
-#our $type = @ARGV[0];
-#print "type: [$type]\n";
-#if ($type =~ /test/i) {
-#  1;
-#}
-
 
 # If invoked with no arguments, then just return having defined the functions, otherwise run it on the arguments.
-
-#print "\$\#ARGV: ",$#ARGV,"\n"; 
 
 if ($#ARGV == -1) {
   1;
@@ -99,6 +80,8 @@ if ($#ARGV == -1) {
   main();
 }
 
+
+## Read from stdin and process each line.
 sub main  {
 
   resetData();
@@ -118,20 +101,19 @@ sub main  {
       add_to_realm($_);
     }
 
-    #     # get the data from the line and form the pairings.
-    #     #  ($function,@roles) = split;
-    #     ($function,@roles) = split(/\|/);
-    #     $functions{$function}++;
-    #     foreach $r (@roles) {
-    #       push(@pairs,formatInsertRoleFunction($r,$function));
-    #     }
+    if (/^\s*backfill/i) {
+      print "line: [$_]\n" if ($trace);
+      backfillRoleFunction($_);
+    }
   }
 }
 
 
+# Reset the state of the script.  Mostly for testing.
 sub resetData {
   $lineCnt = 0;
   $tupleCnt = 0;
+  $backfillCnt = 0;
   $roleCnt = 0;
   $functionCnt = 0;
   $realmCnt = 0;
@@ -139,11 +121,11 @@ sub resetData {
   %realms = ();
   %functions = ();
   %roles = ();
-  #  @pairs = ();
   @rrf = ();
-
+  @backfill = ();
 }
 
+# When input is done, print the requested sql.
 END {
   
   print "In END\n" if ($trace);
@@ -154,10 +136,78 @@ END {
     printFunctionSql();
     printRealmSql();
     printTupleSql();
+    printBackfillSql();
     printSummary();
   }
 
 }
+
+### Take tuple information then pick out and save the tuples.  Along
+### the way keep track of the realm / role / function names.
+
+### Take an input line and pull out the pieces.
+### This allows for an indefinate number of elements.
+sub parseLine {
+  my($line) = shift;
+  my($verb,$seperator,$tail) = $line =~ m|(\w+)(\W)(.*)|;
+  ## add the backslash to allow | as a seperator.
+  my(@values) = split("\\".$seperator,$tail);
+  unshift @values, $verb;
+  print "verb: [$verb] seperator: [$seperator] values: [",@values,"] \n" if ($trace);
+  return(\@values);
+}
+
+## Parse the line, sanity check, and arrange to save the tuple.
+sub add_to_realm{
+  my($function,@values) = @{parseLine(@_)};
+  print "input: [",@_,"]\n" if ($trace);
+  print "parsed: [",$function,"]:[",join("*",@values),"]\n" if ($trace);
+  die("Not an addition $!") unless ($function =~ /add_to_realm/i);
+  die("Badly formed realm tuple $!") unless (@values >= 3);
+  return saveRealmRoleFunction(@values);
+}
+
+## Save a set of tuples.  There may be multiple function
+## names, so loop over the trailing entries.
+sub saveRealmRoleFunction{
+  my($realm,$role,@functions) = @_;
+
+  $realms{$realm}++;
+  $roles{$role}++;
+
+  foreach (@functions) {
+    my($function) = $_;
+    push(@rrf ,[$realm,$role,$function]);
+    $functions{$function}++;
+  }
+
+}
+
+sub processFunction{
+  my($function,@values) = @{parseLine(@_)};
+  print "input: [",@_,"]\n" if ($trace);
+  print "parsed: [",$function,"]:[",@values,"]\n" if ($trace);
+  die("Not a function $!") unless ($function =~ /function/i);
+  return returnInsertFunction(@values);
+}
+
+sub backfillRoleFunction{
+  my($command,$role,@functions) = @{parseLine(@_)};
+  print "bRF: role: [$role] functions: [",join("*",@functions),"]\n";
+
+  $roles{$role}++;
+
+  foreach (@functions) {
+    my($function) = $_;
+    push(@backfill,[$role,$function]);
+    $functions{$function}++;
+  }
+
+}
+
+##### Generate the sql stmts.
+
+### Format and print the sql.
 
 sub printRoleSql {
   foreach (sort(keys(%roles))) {
@@ -187,56 +237,12 @@ sub printTupleSql {
   print "\n";
 }
 
-sub add_to_realm{
-  my($function,@values) = @{parseLine(@_)};
-  print "input: [",@_,"]\n" if ($trace);
-  print "parsed: [",$function,"]:[",join("*",@values),"]\n" if ($trace);
-  die("Not an addition $!") unless ($function =~ /add_to_realm/i);
-  die("Badly formed realm tuple $!") unless (@values >= 3);
-  return insertRealmRoleFunction(@values);
-}
-
-sub insertRealmRoleFunctionOld{
-  my($realm,$role,$function) = @_;
-  push(@rrf ,\@_);
-  $realms{$realm}++;
-  $functions{$function}++;
-  $roles{$role}++;
-}
-
-sub insertRealmRoleFunction{
-  my($realm,$role,@functions) = @_;
-
-  $realms{$realm}++;
-  $roles{$role}++;
-
-  foreach (@functions) {
-    my($function) = $_;
-    push(@rrf ,[$realm,$role,$function]);
-    $functions{$function}++;
+sub printBackfillSql {
+  foreach (@backfill) {
+    printBackfill(@{$_});
   }
-
+  print "\n";
 }
-
-sub processFunction{
-  my($function,@values) = @{parseLine(@_)};
-  print "input: [",@_,"]\n" if ($trace);
-  print "parsed: [",$function,"]:[",@values,"]\n" if ($trace);
-  die("Not a function $!") unless ($function =~ /function/i);
-  return returnInsertFunction(@values);
-}
-
-sub parseLine {
-  my($line) = shift;
-  my($verb,$seperator,$tail) = $line =~ m|(\w+)(\W)(.*)|;
-  ## add the backslash to allow | as a seperator.
-  my(@values) = split("\\".$seperator,$tail);
-  unshift @values, $verb;
-  print "verb: [$verb] seperator: [$seperator] values: [",@values,"] \n" if ($trace);
-  return(\@values);
-}
-
-##### Generate the sql stmts.
 
 sub formatInsertRoleFunction {
   # write sql for a pair
@@ -249,7 +255,7 @@ sub formatInsertRoleFunction {
 sub returnInsertRoleFunction {
   # write sql for a pair
   my($role,$function) = @_;
-  return sprintf($sqlPairTmpl,$role,$function);
+  return sprintf($sqlBackfillTmpl,$role,$function);
 }
 
 sub printInsertRole {
@@ -303,30 +309,30 @@ sub returnInsertTuple {
   return sprintf($sqlTupleTmpl,@tuple);
 }
 
+sub printBackfill {
+  # write sql to insert a tuple
+  print returnBackfill(@_),"\n";
+  $backfillCnt++;
+}
 
-  # sub returnInsertFunction {
-  #   # write sql to insert a function
-  #   my(@functions) = @_;
-  #   my(@sql);
-  #   foreach(@functions) {
-  #     push @sql,sprintf($sqlFunctionTmpl,$function);
-  #   }
-  #   return @sql;
-  # }
+sub returnBackfill {
+  # write sql to insert a tuple
+  my(@args) = @_;
+  return sprintf($sqlBackfillTmpl,@args);
+}
 
-  # print a header
 
-  sub printHeader {
-    print "-- This file was auto generated at ",`date`,"\n";
-  }
+# Print the header and summary
 
-# Print the summary
+sub printHeader {
+  print "-- This file was auto generated at ",`date`,"\n";
+}
 
 sub printSummary {
   # print a summary that sql will ignore
   print "-- lineCnt: $lineCnt tupleCnt: $tupleCnt\n";
   print "-- roleCnt: $roleCnt functions: $functionCnt\n";  
-  print "-- realmCnt: $realmCnt\n";
+  print "-- realmCnt: $realmCnt backfillCnt: $backfillCnt\n";
   print "\n";
 }
 

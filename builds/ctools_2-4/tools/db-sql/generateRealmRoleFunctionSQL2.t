@@ -100,6 +100,12 @@ test_add_to_realm("add_to_realm:!REALM:ROLE:FUNCTION2",1,1,2,2);
 test_add_to_realm("add_to_realm:!REALM2:ROLE2:FUNCTION3",2,2,3,3);
 
 
+###### backfill tests
+resetData();
+test_backfill("backfill:role1:function1",1,1);
+test_backfill("backfill:role2:function2",2,2);
+test_backfill("backfill:role1:function3:function4",2,4);
+
 ######## util ##########
 
 sub testAddNewTuple {
@@ -111,7 +117,7 @@ sub testAddNewTuple {
   $cnt{role} = scalar(keys(%roles));  
   $cnt{function} = scalar(keys(%functions));
 
-  insertRealmRoleFunction($realm,$role,$function);
+  saveRealmRoleFunction($realm,$role,$function);
 
   my $args = join(",",@_);
 
@@ -141,6 +147,24 @@ sub test_add_to_realm {
 
 }
 
+sub test_backfill{
+
+  my($line,$roleCnt,$functionCnt) = @_;
+  my %cnt;
+
+  $cnt{role} = scalar(keys(%roles));  
+  $cnt{function} = scalar(keys(%functions));
+
+  backfillRoleFunction($line);
+
+  my $args = join(",",@_);
+
+  print "%roles:keys:[",join("*",keys(%roles)),"]\n";
+  is(keys(%roles)+0,$roleCnt,"backfill: check role count: [$args]");
+  is(keys(%functions)+0,$functionCnt,"backfill: check function count: [$args]");
+  
+}
 
 
-#end
+
+    #end
