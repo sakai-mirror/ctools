@@ -108,47 +108,4 @@ sub testAddNewTuple {
 
 }
 
-sub testAddNewTupleOld {
-
-  my($realm,$role,$function) = @_;
-  my %cnt;
-
-#  resetData();
-
-#   while(($k,$v) = each(%cnt)) {
-#     print "k: [$k] v: [$v]\n";
-#   }
-
-#  print "lk:",scalar(keys(%realms)),"\n";
-#  foreach(keys(%realms)) {
-#    print "key: $_\n";
-#  }
-  $cnt{realm} = scalar(keys(%realms));
-#  print "X: realmcnt: $cnt{realm}\n";
-#  while(($k,$v) = each(%realms)) {
-#    print "r: k: [$k] v: [$v]\n";
-#  }
-#  print "X: realms:",join("*",keys(%realms)),"\n";
-  $cnt{role} = scalar(keys(%roles));  
-  $cnt{function} = scalar(keys(%functions));
-
-#   print "a realms:",join("*",keys(%realms)),"\n";
-#   print "a realmCnt: ",$cnt{realm},"\n";
-  insertRealmRoleFunction($realm,$role,$function);
-#   print "b realms:",join("*",keys(%realms)),"\n";
-
-#   print "realmCnt: ",$cnt{realm},"\n";
-
-#   print "realms:",join("*",keys(%realms)),"\n";
-
-#   while(($k,$v) = each(%cnt)) {
-#     print "k: $k v: $v\n";
-#   }
-
-#  print "test: ",(%realms)+0,"\n";
-
-  is(keys(%realms)+0,$cnt{realm}+1,"check realm count");
-
-}
-
 #end
