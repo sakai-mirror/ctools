@@ -33,9 +33,10 @@ use strict;
 
 # keep track of some things for reporting
 our $lineCnt;
-our $pairCnt;
+our $tupleCnt;
 our $roleCnt;
 our $functionCnt;
+our $realmCnt;
 
 our $trace = 0;
 our $printSql = 1;
@@ -58,6 +59,9 @@ our $sqlRealmTmpl = "insert into SAKAI_REALM VALUES (SAKAI_REALM_SEQ.NEXTVAL, '%
 
 # map the new functions and roles together
 our $sqlPairTmpl = "insert into PERMISSIONS_SRC_TEMP values ('%s','%s');";
+
+# map the new functions and roles together
+our $sqlTupleTmpl = "INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '%s'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = '%s'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = '%s'));";
 
 # variables to hold information from the input file.
 our ($function,@roles);
@@ -106,8 +110,8 @@ sub main  {
     $lineCnt++;
 
     if (/^\s*add_to_realm/i) {
-      print "line: $_\n" if ($trace);
-      processAddToRealm($_);
+      print "line: [$_]\n" if ($trace);
+      add_to_realm($_);
     }
 
     #     # get the data from the line and form the pairings.
@@ -123,14 +127,15 @@ sub main  {
 
 sub resetData {
   $lineCnt = 0;
-  $pairCnt = 0;
+  $tupleCnt = 0;
   $roleCnt = 0;
   $functionCnt = 0;
+  $realmCnt = 0;
 
   %realms = ();
   %functions = ();
   %roles = ();
-  @pairs = ();
+  #  @pairs = ();
   @rrf = ();
 
 }
@@ -140,11 +145,13 @@ END {
   print "In END\n" if ($trace);
 
   if ($printSql) {
-  printRoleSql();
-  printFunctionSql();
-  printRealmSql();
-  printSummary();
-}
+    print "\n";
+    printRoleSql();
+    printFunctionSql();
+    printRealmSql();
+    printTupleSql();
+    printSummary();
+  }
 
 }
 
@@ -169,9 +176,12 @@ sub printRealmSql {
   print "\n";
 }
 
-# sub processFunction{
-#   return parseLine(@_);
-# }
+sub printTupleSql {
+  foreach (sort(@rrf)) {
+    printInsertTuple(@{$_});
+  }
+  print "\n";
+}
 
 sub add_to_realm{
   my($function,@values) = @{parseLine(@_)};
@@ -185,7 +195,6 @@ sub add_to_realm{
 sub insertRealmRoleFunction{
   my($realm,$role,$function) = @_;
   push(@rrf ,\@_);
-#  print "realm: $realm\n";
   $realms{$realm}++;
   $functions{$function}++;
   $roles{$role}++;
@@ -214,7 +223,7 @@ sub parseLine {
 sub formatInsertRoleFunction {
   # write sql for a pair
   my($role,$function) = @_;
-  $pairCnt++;
+  $tupleCnt++;
   $roles{$role}++;
   return returnInsertRoleFunction($role,$function);
 }
@@ -239,7 +248,6 @@ sub returnInsertRole {
 
 sub printInsertFunction {
   # write sql to insert a function
-  print "rIF:",@_,"\n" if ($trace);
   print returnInsertFunction(@_),"\n";
   $functionCnt++;
 }
@@ -253,7 +261,7 @@ sub returnInsertFunction {
 sub printInsertRealm {
   # write sql to insert a function
   print returnInsertRealm(@_),"\n";
-  $functionCnt++;
+  $realmCnt++;
 }
 
 sub returnInsertRealm {
@@ -262,29 +270,42 @@ sub returnInsertRealm {
   return sprintf($sqlRealmTmpl,$realm);
 }
 
-
-# sub returnInsertFunction {
-#   # write sql to insert a function
-#   my(@functions) = @_;
-#   my(@sql);
-#   foreach(@functions) {
-#     push @sql,sprintf($sqlFunctionTmpl,$function);
-#   }
-#   return @sql;
-# }
-
-# print a header
-
-sub printHeader {
-  print "-- This file was auto generated at ",`date`,"\n";
+sub printInsertTuple {
+  # write sql to insert a tuple
+  print returnInsertTuple(@_),"\n";
+  $tupleCnt++;
 }
+
+sub returnInsertTuple {
+  # write sql to insert a tuple
+  my(@tuple) = @_;
+  return sprintf($sqlTupleTmpl,@tuple);
+}
+
+
+  # sub returnInsertFunction {
+  #   # write sql to insert a function
+  #   my(@functions) = @_;
+  #   my(@sql);
+  #   foreach(@functions) {
+  #     push @sql,sprintf($sqlFunctionTmpl,$function);
+  #   }
+  #   return @sql;
+  # }
+
+  # print a header
+
+  sub printHeader {
+    print "-- This file was auto generated at ",`date`,"\n";
+  }
 
 # Print the summary
 
 sub printSummary {
   # print a summary that sql will ignore
-  print "-- lineCnt: $lineCnt pairCnt: $pairCnt\n";
-  print "-- roleCnt: $roleCnt functions: $functionCnt\n";
+  print "-- lineCnt: $lineCnt tupleCnt: $tupleCnt\n";
+  print "-- roleCnt: $roleCnt functions: $functionCnt\n";  
+  print "-- realmCnt: $realmCnt\n";
   print "\n";
 }
 
