@@ -14,7 +14,9 @@ use Test::More tests=>24;
 require ("generateRealmRoleFunctionSQL2.pl");
 
 # set this to non-zero to get tracing.
-$trace=1;
+$trace=0;
+
+$printSql = 0;
 
 ############ Check the basic sql templates.
 
@@ -37,32 +39,32 @@ is(returnInsertRoleFunction("ROLE WITH SPACES","FUNCTION"),
 ############ Check parsing of specification line
 
 is_deeply(parseLine("function:FNAME"),
-   ["function","FNAME"],
-   "check find function line with seperator [:]");
+	  ["function","FNAME"],
+	  "check find function line with seperator [:]");
 
 is_deeply(parseLine("function: FNAME"),
-   ["function"," FNAME"],
-   "check find function line with seperator [:].  Spaces count if using non-space seperator.");
+	  ["function"," FNAME"],
+	  "check find function line with seperator [:].  Spaces count if using non-space seperator.");
 
 is_deeply(parseLine("function:FNAME1:FNAME2"),
-   ["function","FNAME1","FNAME2"],
-   "check find multiple value function line with seperator [:]");
+	  ["function","FNAME1","FNAME2"],
+	  "check find multiple value function line with seperator [:]");
 
 is_deeply(parseLine("function FNAME"),
-   ["function","FNAME"],
-   "check find function line with seperator ' '");
+	  ["function","FNAME"],
+	  "check find function line with seperator ' '");
 
 is_deeply(parseLine("function|FNAME"),
-   ["function","FNAME"],
-   "check find function line with seperator '|'");
+	  ["function","FNAME"],
+	  "check find function line with seperator '|'");
 
 is_deeply(parseLine("function|FNAME1|FNAME2"),
-   ["function","FNAME1","FNAME2"],
-   "check find multiple value function line");
+	  ["function","FNAME1","FNAME2"],
+	  "check find multiple value function line");
 
 is_deeply(parseLine("role|ROLE1|ROLE2"),
-   ["role","ROLE1","ROLE2"],
-   "check find multiple value role line");
+	  ["role","ROLE1","ROLE2"],
+	  "check find multiple value role line");
 
 ##############  check line to sql output
 
@@ -86,10 +88,19 @@ testAddNewTuple("REALM2","ROLE2","FUNCTION2",2,2,2);
 testAddNewTuple("REALM2","ROLE3","FUNCTION2",2,3,2);
 testAddNewTuple("REALM2","ROLE3","FUNCTION3",2,3,3);
 
+###
+#$trace=1;
+resetData();
+test_add_to_realm("add_to_realm:!REALM:ROLE:FUNCTION",1,1,1,1);
+test_add_to_realm("add_to_realm:!REALM:ROLE:FUNCTION",1,1,1,2);
 
-# is(add_to_realm("add_to_realm:REALM_A:ROLE_A:FUNCTION_A"),
-#    "",
-#    "add realm tuple");
+resetData();
+test_add_to_realm("add_to_realm:!REALM:ROLE:FUNCTION",1,1,1,1);
+test_add_to_realm("add_to_realm:!REALM:ROLE:FUNCTION2",1,1,2,2);
+test_add_to_realm("add_to_realm:!REALM2:ROLE2:FUNCTION3",2,2,3,3);
+
+
+######## util ##########
 
 sub testAddNewTuple {
 
@@ -102,10 +113,34 @@ sub testAddNewTuple {
 
   insertRealmRoleFunction($realm,$role,$function);
 
-  is(keys(%realms)+0,$realmCnt,"check realm count");
-  is(keys(%roles)+0,$roleCnt,"check role count");
-  is(keys(%functions)+0,$functionCnt,"check function count");
+  my $args = join(",",@_);
+
+  is(keys(%realms)+0,$realmCnt,"check realm count: $args");
+  is(keys(%roles)+0,$roleCnt,"check role count: $args");
+  is(keys(%functions)+0,$functionCnt,"check function count: $args");
 
 }
+
+sub test_add_to_realm {
+
+  my($line,$realmCnt,$roleCnt,$functionCnt,$tupleCnt) = @_;
+  my %cnt;
+
+  $cnt{realm} = scalar(keys(%realms));
+  $cnt{role} = scalar(keys(%roles));  
+  $cnt{function} = scalar(keys(%functions));
+
+  add_to_realm($line);
+
+  my $args = join(",",@_);
+
+  is(keys(%realms)+0,$realmCnt,"add_to_realm: check realm count: [$args]");
+  is(keys(%roles)+0,$roleCnt,"add_to_realm: check role count: [$args]");
+  is(keys(%functions)+0,$functionCnt,"add_to_realm: check function count: [$args]");
+  is(scalar(@rrf),$tupleCnt,"add_to_realm: check tuple cnt [$args]");
+
+}
+
+
 
 #end

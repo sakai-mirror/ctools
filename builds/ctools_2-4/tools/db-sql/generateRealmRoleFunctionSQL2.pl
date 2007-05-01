@@ -38,6 +38,7 @@ our $roleCnt;
 our $functionCnt;
 
 our $trace = 0;
+our $printSql = 1;
 
 # Hold the final set of functions / roles / pairs found.
 our %realms;
@@ -51,6 +52,10 @@ our @rrf;
 our $sqlFunctionTmpl = "insert into SAKAI_REALM_FUNCTION VALUES (SAKAI_REALM_FUNCTION_SEQ.NEXTVAL, '%s');";
 # insert new role
 our $sqlRoleTmpl = "insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, '%s');";
+# insert new realm
+our $sqlRealmTmpl = "insert into SAKAI_REALM VALUES (SAKAI_REALM_SEQ.NEXTVAL, '%s');";
+
+
 # map the new functions and roles together
 our $sqlPairTmpl = "insert into PERMISSIONS_SRC_TEMP values ('%s','%s');";
 
@@ -87,6 +92,7 @@ if ($#ARGV == -1) {
 }
 
 sub main  {
+
   resetData();
   printHeader();
 
@@ -124,8 +130,8 @@ sub resetData {
   %realms = ();
   %functions = ();
   %roles = ();
-  @pairs = [];
-  @rrf = [];
+  @pairs = ();
+  @rrf = ();
 
 }
 
@@ -133,24 +139,34 @@ END {
   
   print "In END\n" if ($trace);
 
-  # Print the various inserts and a summary
+  if ($printSql) {
+  printRoleSql();
+  printFunctionSql();
+  printRealmSql();
+  printSummary();
+}
 
-  #   foreach (sort(keys(%functions))) {
-  #     printInsertFunction($_);
-  #   }
-  #   print "\n";
+}
 
+sub printRoleSql {
   foreach (sort(keys(%roles))) {
     printInsertRole($_);
   }
   print "\n";
+}
 
-  foreach (sort(@pairs)) {
-    print "$_\n";
+sub printFunctionSql {
+  foreach (sort(keys(%functions))) {
+    printInsertFunction($_);
   }
+  print "\n";
+}
 
-  printSummary();
-
+sub printRealmSql {
+  foreach (sort(keys(%realms))) {
+    printInsertRealm($_);
+  }
+  print "\n";
 }
 
 # sub processFunction{
@@ -168,7 +184,8 @@ sub add_to_realm{
 
 sub insertRealmRoleFunction{
   my($realm,$role,$function) = @_;
-  @rrf = \@_;
+  push(@rrf ,\@_);
+#  print "realm: $realm\n";
   $realms{$realm}++;
   $functions{$function}++;
   $roles{$role}++;
@@ -232,6 +249,19 @@ sub returnInsertFunction {
   my($function) = @_;
   return sprintf($sqlFunctionTmpl,$function);
 }
+
+sub printInsertRealm {
+  # write sql to insert a function
+  print returnInsertRealm(@_),"\n";
+  $functionCnt++;
+}
+
+sub returnInsertRealm {
+  # write sql to insert a realm
+  my($realm) = @_;
+  return sprintf($sqlRealmTmpl,$realm);
+}
+
 
 # sub returnInsertFunction {
 #   # write sql to insert a function
