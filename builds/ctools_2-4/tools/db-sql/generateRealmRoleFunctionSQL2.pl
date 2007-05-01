@@ -22,7 +22,8 @@
 # a realm.  The first non word character is the separator character.
 # E.g.  "add_tuple !sillysite actor ego" has the values separated by a
 # space.  E.g. "add_tuple:!sillysite:actor:ego" has the value
-# separated by a ':'.
+# separated by a ':'.  Multiple function names can be specfied for a particular
+# realm and role.
 
 # backfill <role_name> <function_name>
 # Add this function to every realm that has this role.
@@ -38,7 +39,9 @@ our $roleCnt;
 our $functionCnt;
 our $realmCnt;
 
-our $trace = 0;
+#our $trace = 0;
+our $trace = 1;
+our $printBareTuple = 1;
 our $printSql = 1;
 
 # Hold the final set of functions / roles / pairs found.
@@ -56,17 +59,18 @@ our $sqlRoleTmpl = "insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NE
 # insert new realm
 our $sqlRealmTmpl = "insert into SAKAI_REALM VALUES (SAKAI_REALM_SEQ.NEXTVAL, '%s');";
 
+# map the realm / role / function together.
+our $sqlTupleTmpl = "INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '%s'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = '%s'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = '%s'));";
 
-# map the new functions and roles together
+
+# map the backfill functions and roles together
 our $sqlPairTmpl = "insert into PERMISSIONS_SRC_TEMP values ('%s','%s');";
 
-# map the new functions and roles together
-our $sqlTupleTmpl = "INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '%s'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = '%s'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = '%s'));";
 
 # variables to hold information from the input file.
 our ($function,@roles);
 # hold the current role under consideration.
-our $r;
+#our $r;
 
 
 ##### Do it
@@ -177,7 +181,7 @@ sub printRealmSql {
 }
 
 sub printTupleSql {
-  foreach (sort(@rrf)) {
+  foreach (@rrf) {
     printInsertTuple(@{$_});
   }
   print "\n";
@@ -188,16 +192,30 @@ sub add_to_realm{
   print "input: [",@_,"]\n" if ($trace);
   print "parsed: [",$function,"]:[",join("*",@values),"]\n" if ($trace);
   die("Not an addition $!") unless ($function =~ /add_to_realm/i);
-  die("Badly formed realm tuple $!") unless (@values == 3);
+  die("Badly formed realm tuple $!") unless (@values >= 3);
   return insertRealmRoleFunction(@values);
 }
 
-sub insertRealmRoleFunction{
+sub insertRealmRoleFunctionOld{
   my($realm,$role,$function) = @_;
   push(@rrf ,\@_);
   $realms{$realm}++;
   $functions{$function}++;
   $roles{$role}++;
+}
+
+sub insertRealmRoleFunction{
+  my($realm,$role,@functions) = @_;
+
+  $realms{$realm}++;
+  $roles{$role}++;
+
+  foreach (@functions) {
+    my($function) = $_;
+    push(@rrf ,[$realm,$role,$function]);
+    $functions{$function}++;
+  }
+
 }
 
 sub processFunction{
@@ -279,6 +297,9 @@ sub printInsertTuple {
 sub returnInsertTuple {
   # write sql to insert a tuple
   my(@tuple) = @_;
+  if ($printBareTuple) {
+    print "tuple: [",join(",",@tuple),"]\n";
+  }
   return sprintf($sqlTupleTmpl,@tuple);
 }
 
