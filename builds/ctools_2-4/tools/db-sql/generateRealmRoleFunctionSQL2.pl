@@ -193,7 +193,7 @@ sub processFunction{
 
 sub backfillRoleFunction{
   my($command,$role,@functions) = @{parseLine(@_)};
-  print "bRF: role: [$role] functions: [",join("*",@functions),"]\n";
+  print "bRF: role: [$role] functions: [",join("*",@functions),"]\n" if ($trace);
 
   $roles{$role}++;
 
@@ -210,6 +210,7 @@ sub backfillRoleFunction{
 ### Format and print the sql.
 
 sub printRoleSql {
+  print "-- sql to insert all roles mentioned\n";
   foreach (sort(keys(%roles))) {
     printInsertRole($_);
   }
@@ -217,6 +218,7 @@ sub printRoleSql {
 }
 
 sub printFunctionSql {
+  print "-- sql to insert all functions mentioned\n";
   foreach (sort(keys(%functions))) {
     printInsertFunction($_);
   }
@@ -224,6 +226,7 @@ sub printFunctionSql {
 }
 
 sub printRealmSql {
+  print "-- sql to insert all realms mentioned\n";
   foreach (sort(keys(%realms))) {
     printInsertRealm($_);
   }
@@ -231,6 +234,7 @@ sub printRealmSql {
 }
 
 sub printTupleSql {
+  print "-- sql to bind all realm / role / function tuples\n";
   foreach (@rrf) {
     printInsertTuple(@{$_});
   }
@@ -238,6 +242,7 @@ sub printTupleSql {
 }
 
 sub printBackfillSql {
+  print "-- sql to entries to temp table to backfill new permissions\n";
   foreach (@backfill) {
     printBackfill(@{$_});
   }
