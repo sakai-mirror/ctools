@@ -1,4 +1,26 @@
 #!/usr/bin/perl -n 
+
+# Translate specification of permissions to add 
+# to form that allows easy generate of the sql.
+
+# $HeadURL$
+# $Id$
+
+# Take input of form:
+# <realm> <role> <function>
+# or 
+# <role> <function> 
+# and generate commands to use for generating update sql.
+# The update commands are:
+# add_to_realm <realm> <role> <function>+ (there can be many function specifications on the same line)
+# backfill <role> <function>+
+
+# This can be translated into sql via the generateRealmRoleFunctionSQL2.pl file.  The sql output
+# must be merged into the conversion script by hand.
+
+
+
+
 $trace = 0;
 print "line: $_" if ($trace);
 chomp;
