@@ -1,3 +1,34 @@
+# From 2.3.0 ->2.3.1 conversion
+
+!site.template maintain content.hidden
+!group.template maintain content.hidden
+
+!site.template.portfolio CIG_Coordinator content.hidden
+!site.template.portfolioAdmin Program_Coordinator content.hidden
+!site.template.portfolioAdmin Program_Admin content.hidden
+
+Teaching_Assistant content.hidden
+CIG_Coordinator content.hidden
+Program_Coordinator content.hidden
+Program_Admin content.hidden
+
+##### end of 2.3.0 -> 2.3.1 conversion 
+
+##### From standard 2.3.1 ->2.4.0 conversion
+/site/mercury maintain roster.viewall
+/site/mercury maintain roster.export
+/site/mercury access roster.viewsection
+#######
+
+/site/mercury maintain chat.delete.channel
+/site/mercury maintain chat.new.channel
+/site/mercury maintain chat.revise.channel
+
+/site/mercury maintain mailtool.admin
+/site/mercury maintain mailtool.send
+/site/mercury access mailtool.send
+
+
 !group.template access mailtool.send
 !group.template access poll.vote
 !group.template access roster.viewsection
@@ -46,12 +77,10 @@
 !site.template access poll.vote
 !site.template access roster.viewsection
 !site.template maintain chat.delete.channel
-!site.template maintain chat.delete.channel
 !site.template maintain chat.new.channel
-!site.template maintain chat.new.channel
-!site.template maintain chat.revise.channel
 !site.template maintain chat.revise.channel
 !site.template maintain mailtool.send
+!site.template maintain mailtool.admin
 !site.template maintain poll.add
 !site.template maintain poll.deleteAny
 !site.template maintain poll.deleteOwn
