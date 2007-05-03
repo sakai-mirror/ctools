@@ -1324,4 +1324,9 @@ create index isearchbuilderitem_act on  searchbuilderitem (searchaction);
 create index isearchbuilderitem_sta on  searchbuilderitem (searchstate);
 create index isearchwriterlock_lk on  searchwriterlock (lockkey);
 
+-- Drew suggests these.
+create index IE_MAILARC_MSG_MESSAGE_ID on MAILARCHIVE_MESSAGE(MESSAGE_ID) tablespace ctools_indexes;
+-- Current index on this file is provided above as part of the conversion.
+-- create index idx_wikicurrentcontent_rwikiid on rwikicurrentcontent(rwikiid) tablespace ctools_indexes;
+
 -- end
