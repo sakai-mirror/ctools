@@ -1206,11 +1206,12 @@ insert into PERMISSIONS_SRC_TEMP values ('Teaching Assistant','roster.viewsectio
          select 1
              from SAKAI_REALM_RL_FN SRRFI
              where SRRFI.REALM_KEY=SRRFD.REALM_KEY and SRRFI.ROLE_KEY=SRRFD.ROLE_KEY and  SRRFI.FUNCTION_KEY=TMP.FUNCTION_KEY
-     );
-
+     )
+;
  -- clean up the temp tables
- drop table PERMISSIONS_TEMP;
- drop table PERMISSIONS_SRC_TEMP;
+
+-- drop table PERMISSIONS_TEMP; -- NEED THIS
+-- drop table PERMISSIONS_SRC_TEMP; -- NEED THIS
 
 -----------------------------------------------------------------------------
 -- CITATION_COLLECTION
@@ -1330,3 +1331,5 @@ create index IE_MAILARC_MSG_MESSAGE_ID on MAILARCHIVE_MESSAGE(MESSAGE_ID) tables
 -- create index idx_wikicurrentcontent_rwikiid on rwikicurrentcontent(rwikiid) tablespace ctools_indexes;
 
 -- end
+
+
