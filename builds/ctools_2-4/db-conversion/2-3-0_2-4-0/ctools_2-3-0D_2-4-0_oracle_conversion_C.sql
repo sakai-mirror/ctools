@@ -12,8 +12,10 @@
 -- Review to see which already exist and which don't.
 
 -- sql to insert all roles mentioned
-insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, 'Affiliate'); -- NEED THIS ONE.
-insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, 'Assistant'); -- NEED THIS ONE.
+-- NEED THIS ONE.
+insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, 'Affiliate');
+-- NEED THIS ONE.
+insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, 'Assistant');
 
 -- insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, 'CIG Coordinator');
 -- insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, 'Evaluator');
@@ -1220,6 +1222,9 @@ insert into PERMISSIONS_SRC_TEMP values ('maintain','poll.vote');
 -- insert into PERMISSIONS_SRC_TEMP values ('maintain','roster.export');
 insert into PERMISSIONS_SRC_TEMP values ('maintain','roster.viewall');
 
+-- count before the backfill
+select count(*) from sakai_realm_rl_fn;
+
  -- lookup the role and function numbers
  create table PERMISSIONS_TEMP (ROLE_KEY INTEGER, FUNCTION_KEY INTEGER);
  insert into PERMISSIONS_TEMP (ROLE_KEY, FUNCTION_KEY)
@@ -1247,6 +1252,11 @@ insert into PERMISSIONS_SRC_TEMP values ('maintain','roster.viewall');
 
 -- drop table PERMISSIONS_TEMP; -- NEED THIS
 -- drop table PERMISSIONS_SRC_TEMP; -- NEED THIS
+
+-- count before the backfill
+-- count post backfill.
+select count(*) from sakai_realm_rl_fn;
+
 
 -----------------------------------------------------------------------------
 -- CITATION_COLLECTION
