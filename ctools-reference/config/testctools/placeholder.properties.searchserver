@@ -1,0 +1,58 @@
+# placeholder.properties - the testctools edition
+
+# $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference/config/testctools/instance.properties $
+# $Id: instance.properties 29014 2007-04-17 16:42:59Z dlhaines@umich.edu $
+
+# This contains information specific to this type of server.
+# Currently it contains the search setup information.
+
+
+
+############# Search Server #############
+# We want search.
+search.experimental=true
+
+## These two set in security.properties
+#webservices.allowlogin=true
+#sharedKey@org.sakaiproject.search.api.SearchService=????
+
+# Location of search server
+## For the time being http://testctools.... points to venison and 
+# https://testctools..... points to chitlin.
+searchServerUrl@org.sakaiproject.search.api.SearchService=http://testctools.ds.itd.umich.edu/sakai-search-tool/xmlsearch/
+
+#### Server
+searchServer@org.sakaiproject.search.api.SearchService=true
+
+## currently build indices only on the search server.
+search.indexbuild=true
+# Only index sites with search tools. 
+onlyIndexSearchToolSites@org.sakaiproject.search.api.SearchIndexBuilder=true
+
+## index type and location
+indexStorageName@org.sakaiproject.search.index.IndexStorage=filesystem
+localSegmentsOnly@org.sakaiproject.search.api.SearchService.SegmentStore=true
+
+location@org.sakaiproject.search.api.SearchService.SegmentStore=/afs/umich.edu/group/ctpitest/fs102/search/searchindex
+recoverCorruptedIndex@org.sakaiproject.search.index.IndexStorage=true
+location@org.sakaiproject.search.index.IndexStorage=/afs/umich.edu/group/ctpitest/fs102/search/searchindex
+
+## Must override these directly for the time being.
+recoverCorruptedIndex@filesystemSearchStorageImpl=true
+location@filesystemSearchStorageImpl=/afs/umich.edu/group/ctpitest/fs102/search/searchindex
+
+#########
+## Set limits on file sizes when indexing.
+
+# stream files in when they are larger than this.  Default 2M
+#readerSizeLimit@org.sakaiproject.search.component.adapter.contenthosting.ContentHostingContentProvider=2M
+
+# pass to a char stream parser not the file type parser above this limit
+#digesterSizeLimit@org.sakaiproject.search.component.adapter.contenthosting.ContentHostingContentProvider=5M
+
+# The maximum size of a file that will be indexed.  Not sure if this
+# is the limit on the amount of a file that will be indexed or on the
+# files that will be indexed.
+
+#maxDigestSize@org.sakaiproject.search.component.adapter.contenthosting.DefaultContentDigester=30M
+### end ###
