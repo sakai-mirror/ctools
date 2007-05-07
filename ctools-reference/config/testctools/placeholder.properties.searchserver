@@ -1,12 +1,10 @@
-# placeholder.properties - the testctools edition
-
+# placeholder.properties.searchserver - the testctools edition
+#######################################################################
 # $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference/config/testctools/instance.properties $
 # $Id: instance.properties 29014 2007-04-17 16:42:59Z dlhaines@umich.edu $
 
 # This contains information specific to this type of server.
 # Currently it contains the search setup information.
-
-
 
 ############# Search Server #############
 # We want search.
@@ -55,4 +53,5 @@ location@filesystemSearchStorageImpl=/afs/umich.edu/group/ctpitest/fs102/search/
 # files that will be indexed.
 
 #maxDigestSize@org.sakaiproject.search.component.adapter.contenthosting.DefaultContentDigester=30M
-### end ###
+#######################################################################
+# end

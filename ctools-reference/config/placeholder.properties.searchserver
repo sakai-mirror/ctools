@@ -1,5 +1,5 @@
 # placeholder.properties - the CTools edition
-
+#######################################################################
 # set the hibernate dialect (for shared datasource) to Oracle
 #hibernate.dialect=org.hibernate.dialect.Oracle9Dialect
 
@@ -10,3 +10,6 @@
 ctools.oracle.driver=
 ctools.oracle.user=
 ctools.oracle.password=
+#######################################################################
+#end
+
