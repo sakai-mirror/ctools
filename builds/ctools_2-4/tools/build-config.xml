@@ -41,17 +41,32 @@
 
   <target name="copyConfig">
     <echo> instance-type: ${instance-type} </echo>
-    <echo> copy from config.dir: ${config.dir} </echo>
-    <echo> copy to instances.dir: ${instances.dir} </echo>
+    <echo> copy from config.dir: ${config.dir} and instance type sub-dir: ${instance-type}</echo>
+    <echo> copy to instances.dir: ${instances.dir}/${instance-type} </echo>
     <echo> copy keystore: ${keystore.dir}/${keystore} </echo>
 
     <copy todir="${instances.dir}/${instance-type}">
       <fileset dir="${config.dir}">
 	<include name="local.properties"/>
-	<include name="placeholder.properties"/>
-	<include name="search*.properties"/>
+	<!-- <include name="placeholder.properties"/> -->
+	<include name="placeholder.properties*"/> 
+	<!--	<include name="search*.properties"/> -->
 	<include name="toolOrder.xml"/>
       </fileset>
+    </copy>
+
+    <echo>copy (and overwrite if necessary) from instance type specific directory</echo>
+
+    <copy todir="${instances.dir}/${instance-type}" overwrite="true" >
+	<fileset dir="${config.dir}/${instance-type}">
+	  <exclude name="instance.properties" />
+	  <exclude name="test.properties" />
+	  <!--
+	  <include name="local.properties"/>
+	  <include name="placeholder.properties*"/> 
+	  <include name="toolOrder.xml"/>
+	  -->
+	</fileset>
     </copy>
     
     <!--
