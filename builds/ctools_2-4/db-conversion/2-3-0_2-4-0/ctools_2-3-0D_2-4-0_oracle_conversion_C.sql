@@ -1,20 +1,17 @@
 -- This combines and adapts, for ctools, the scripts to upgrade the Sakai database from 2.3.0 to 2.4.0.
 
--- This is based on the sakai 2.4.0 013 conversion script.
-
--- 2007/05/04: This has the duplicate backfill lines commented out.  It also has manager / roster.export commented out and needs to have that put back in.
--- 2007/05/04: updated to be based on the 014 tag.
-
 -- $HeadURL$
 -- $Id$
 
+-- 2007/05/03: Start with the 013 QA tag conversion script.
+-- 2007/05/04: This has the duplicate backfill lines commented out.  It also has manager / roster.export commented out and needs to have that put back in.
+-- 2007/05/04: updated to be based on the 014 tag.
+-- 2007/05/08: add comments, put manager / roster.export backfill back in.
+
 -- ==============
--- Review to see which already exist and which don't.
 
 -- sql to insert all roles mentioned
--- NEED THIS ONE.
 insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, 'Affiliate');
--- NEED THIS ONE.
 insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, 'Assistant');
 
 -- insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, 'CIG Coordinator');
@@ -1219,10 +1216,11 @@ insert into PERMISSIONS_SRC_TEMP values ('maintain','poll.editAny');
 insert into PERMISSIONS_SRC_TEMP values ('maintain','poll.editOwn');
 --insert into PERMISSIONS_SRC_TEMP values ('maintain','poll.vote');
 insert into PERMISSIONS_SRC_TEMP values ('maintain','poll.vote');
--- insert into PERMISSIONS_SRC_TEMP values ('maintain','roster.export');
+insert into PERMISSIONS_SRC_TEMP values ('maintain','roster.export');
 insert into PERMISSIONS_SRC_TEMP values ('maintain','roster.viewall');
 
--- count before the backfill
+-- ======================
+-- count before the backfill so can see how many rows were added.
 select count(*) from sakai_realm_rl_fn;
 
  -- lookup the role and function numbers
@@ -1248,13 +1246,15 @@ select count(*) from sakai_realm_rl_fn;
              where SRRFI.REALM_KEY=SRRFD.REALM_KEY and SRRFI.ROLE_KEY=SRRFD.ROLE_KEY and  SRRFI.FUNCTION_KEY=TMP.FUNCTION_KEY
      )
 ;
- -- clean up the temp tables
+
+-- clean up the temp tables
+-- Leave commented out until we are sure the conversion works.
 
 -- drop table PERMISSIONS_TEMP; -- NEED THIS
 -- drop table PERMISSIONS_SRC_TEMP; -- NEED THIS
 
--- count before the backfill
--- count post backfill.
+-- ====================== 
+-- count post backfill to see how many rows were added.
 select count(*) from sakai_realm_rl_fn;
 
 
