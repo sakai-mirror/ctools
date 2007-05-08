@@ -1,0 +1,27 @@
+# security.properties
+
+# $HeadURL$
+# $Id$
+
+# This should be replaced with a file that has appropriate values for a particular instance.
+# This file will be supplied during installation by the installation team.
+
+# Values we would expect to set are below:
+
+## Database connection and account values.
+
+# ctools.oracle.driver=
+# ctools.oracle.password=
+# ctools.oracle.user=
+
+### iTunesU access information
+# # iTunes U UMich official site configurations 
+# # iTunes U site id
+# iTunesU_site_id=
+# iTunesU_site_sharedSecret=
+
+## Value to increase security for the seach server.
+#sharedKey@org.sakaiproject.search.api.SearchService=
+
+
+# end

@@ -1,4 +1,8 @@
+###############################################################
 # placeholder.properties - the testctools edition
+
+# $HeadURL$
+# $Id$
 
 # set the hibernate dialect (for shared datasource) to Oracle
 hibernate.dialect=org.hibernate.dialect.Oracle9Dialect
@@ -63,3 +67,4 @@ location@filesystemSearchStorageImpl=/afs/umich.edu/group/ctsearch/fs201/search/
 
 #maxDigestSize@org.sakaiproject.search.component.adapter.contenthosting.DefaultContentDigester=30M
 ### end ###
+###############################################################
