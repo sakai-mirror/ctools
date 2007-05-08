@@ -112,8 +112,13 @@ update GB_GRADABLE_OBJECT_T set RELEASED=1 where RELEASED is NULL;
 -- OSP conversion
 alter table osp_presentation_template add propertyFormType varchar2(36);
 alter table osp_presentation add property_form varchar2(36);
-alter table osp_scaffolding add preview number(1,0) DEFAULT 0 not null; -- 014: change
-alter table osp_wizard add preview number(1,0) DEFAULT 0 not null;	-- 014: change
+
+-- 014: change on next line
+alter table osp_scaffolding add preview number(1,0) DEFAULT 0 not null;
+
+-- 014: change on next line
+alter table osp_wizard add preview number(1,0) DEFAULT 0 not null;	
+
 alter table osp_review add review_item_id varchar2(36);
 
 -- making sure these fields allow nulls
@@ -233,6 +238,8 @@ alter table MFR_TOPIC_T modify (MODERATED NUMBER(1,0) not null);
 --create new tables
 --This is coming soon as soon as I can generate the ddl for Oracle...
 
+
+-- 014: addition of contextdefaultchannel
 CREATE TABLE CHAT2_CHANNEL ( 
     CHANNEL_ID           	VARCHAR2(99) NOT NULL,
     CONTEXT              	VARCHAR2(36) NOT NULL,
@@ -242,9 +249,11 @@ CREATE TABLE CHAT2_CHANNEL (
     FILTERTYPE           	VARCHAR2(25) NULL,
     FILTERPARAM          	NUMBER(10,0) NULL,
     CONTEXTDEFAULTCHANNEL	NUMBER(1,0) NULL,
-    ENABLE_USER_OVERRIDE 	NUMBER(1,0) NULL, -- 014: addition
+    ENABLE_USER_OVERRIDE 	NUMBER(1,0) NULL,
     PRIMARY KEY(CHANNEL_ID)
 );
+
+
 
 -- 014: added these two indices.
 CREATE INDEX CHAT2_CHNL_CNTXT_I ON CHAT2_CHANNEL
