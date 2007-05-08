@@ -3,22 +3,6 @@
 
 <beans>
 
-	<bean id="org.sakaiproject.user.api.UserDirectoryProvider"
-			class="org.sakaiproject.component.legacy.user.UnivOfMichUserDirectoryProvider"
-			init-method="init"
-			destroy-method="destroy"
-			singleton="true">
-
-	<!--		<property name="logger"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property> -->
-			<!--		<property name="threadLocalManager"><ref bean="org.sakaiproject.thread_local.api.ThreadLocalManager"/></property> -->
-	<!--	<property name="currentService"><ref bean="org.sakaiproject.service.framework.current.CurrentService"/></property> -->
-	<!--	<property name="serverConfigurationService"><ref bean="org.sakaiproject.service.framework.config.ServerConfigurationService"/></property> -->
-		<property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property> 
-		<property name="method"><value>cosign</value></property>
- 		<property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
-		
-	</bean>
-
 	<bean id="org.sakaiproject.util.api.umiac.Umiac"
 			class="org.sakaiproject.util.impl.umiac.UmiacClientImpl"
 			init-method="init"
@@ -26,25 +10,32 @@
 			singleton="true">
 	<!--	<property name="logger"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property> -->
 	</bean>
+	
+	<bean id="org.sakaiproject.user.api.UserDirectoryProvider"
+			class="org.sakaiproject.provider.user.UnivOfMichUserDirectoryProvider"
+			init-method="init"
+			destroy-method="destroy"
+			singleton="true">
+		<property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property> 
+		<property name="method"><value>cosign</value></property>
+ 		<property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
+		
+	</bean>
 
-	<bean id="org.sakaiproject.authz.api.GroupProvider"
+	 <bean id="org.sakaiproject.authz.api.GroupProvider"
 			class="org.sakaiproject.component.legacy.realm.UnivOfMichRealmProvider"
 			init-method="init"
 			destroy-method="destroy"
 			singleton="true">
-	<!--	<property name="logger"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property> -->
+		<!--<property name="log"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property> -->
 		 <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
 	</bean>
-
-	<bean id="org.sakaiproject.site.api.CourseManagementProvider"
-			class="org.sakaiproject.component.legacy.coursemanagement.UnivOfMichCourseManagementProvider"
-			init-method="init"
-			destroy-method="destroy"
-			singleton="true">
-	<!--	<property name="logger"><ref bean="org.sakaiproject.service.framework.log.Logger"/></property> -->
-		 <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
-         <property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
-	</bean>
+	
+	
+	<bean id="org.sakaiproject.coursemanagement.api.CourseManagementService" class="org.sakaiproject.coursemanagement.impl.CourseManagementServiceUnivOfMichImpl" init-method="init" destroy-method="destroy">
+    	<property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
+    	<property name="sqlService"><ref bean="org.sakaiproject.db.api.SqlService"/></property>
+    </bean>
 
 	<bean id="eventwatcher"
 			class="org.sakaiproject.eventwatcher.EventWatcher"

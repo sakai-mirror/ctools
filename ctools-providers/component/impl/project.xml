@@ -2,7 +2,7 @@
 
 <project>
 	<pomVersion>3</pomVersion>
-	<extend>../../master/project.xml</extend>
+	<extend>../../../master/project.xml</extend>
 	<name>CTools Providers</name>
 	<groupId>sakaiproject</groupId>
 	<id>ctools-provider</id>
@@ -21,11 +21,23 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>sakaiproject</groupId>
+			<artifactId>sakai-db-api</artifactId>
+			<version>${sakai.version}</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<version>1.0.4</version>
 		</dependency>
 
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>${sakai.commons.lang.version}</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
