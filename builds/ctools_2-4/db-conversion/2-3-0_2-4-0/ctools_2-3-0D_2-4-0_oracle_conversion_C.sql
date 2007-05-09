@@ -66,13 +66,17 @@ insert into SAKAI_REALM_FUNCTION VALUES (SAKAI_REALM_FUNCTION_SEQ.NEXTVAL, 'rost
 insert into SAKAI_REALM_FUNCTION VALUES (SAKAI_REALM_FUNCTION_SEQ.NEXTVAL, 'roster.viewsection');
 
 -- sql to insert all realms mentioned
+
+-- These would be better specified explictly naming the data fields. E.g. see the next line.
+-- insert into SAKAI_REALM (REALM_KEY,REALM_ID) VALUES (SAKAI_REALM_SEQ.NEXTVAL, '!site.template.project');
+
 -- insert into SAKAI_REALM VALUES (SAKAI_REALM_SEQ.NEXTVAL, '!group.template');
 -- insert into SAKAI_REALM VALUES (SAKAI_REALM_SEQ.NEXTVAL, '!group.template.course');
 -- insert into SAKAI_REALM VALUES (SAKAI_REALM_SEQ.NEXTVAL, '!site.template');
 -- insert into SAKAI_REALM VALUES (SAKAI_REALM_SEQ.NEXTVAL, '!site.template.course');
 -- insert into SAKAI_REALM VALUES (SAKAI_REALM_SEQ.NEXTVAL, '!site.template.portfolio');
 -- insert into SAKAI_REALM VALUES (SAKAI_REALM_SEQ.NEXTVAL, '!site.template.portfolioAdmin');
-insert into SAKAI_REALM VALUES (SAKAI_REALM_SEQ.NEXTVAL, '!site.template.project');
+-- insert into SAKAI_REALM VALUES (SAKAI_REALM_SEQ.NEXTVAL, '!site.template.project');
 -- insert into SAKAI_REALM VALUES (SAKAI_REALM_SEQ.NEXTVAL, '!site.user');
 -- insert into SAKAI_REALM VALUES (SAKAI_REALM_SEQ.NEXTVAL, '/site/mercury');
 
@@ -306,7 +310,7 @@ alter table CHAT2_MESSAGE add migratedMessageId varchar2(99);
 -- New private folder (SAK-8759)
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-INSERT INTO CONTENT_COLLECTION VALUES ('/private/','/',
+INSERT INTO CONTENT_COLLECTION(COLLECTION_ID,XML,IN_COLLECTION) VALUES ('/private/',
 '<?xml version="1.0" encoding="UTF-8"?>
 <collection id="/private/">
 	<properties>
@@ -318,7 +322,7 @@ INSERT INTO CONTENT_COLLECTION VALUES ('/private/','/',
 		<property name="DAV:creationdate" value="20020401000000000"/>
 	</properties>
 </collection>
-');
+','/');
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- Gradebook table changes needed for 2.4.0 (SAK-8711)
@@ -964,7 +968,7 @@ INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where RE
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'access'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'poll.vote'));
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.course'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Member'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'poll.vote'));
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.course'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Student'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'poll.vote'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.course'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Student'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'poll.vote'));
+-- INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.course'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Student'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'poll.vote'));
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.course'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Teaching Assistant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'poll.vote'));
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Evaluator'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'poll.vote'));
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Reviewer'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'poll.vote'));
