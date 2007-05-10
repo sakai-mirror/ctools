@@ -89,6 +89,9 @@
       <filelist dir="${config.dir}" files="sakai.properties" />
       <filelist dir="${config.dir}" files="${propertiesfileslist}" /> 
       <filelist dir="${config.dir}/${instance-type}" files="${propertiesfileslist}" />
+      <filterchain>
+	<expandproperties/>
+      </filterchain>
     </concat>
   </target>
 
