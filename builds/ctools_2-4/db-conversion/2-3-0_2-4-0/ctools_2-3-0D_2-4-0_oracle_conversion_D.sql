@@ -1279,11 +1279,11 @@ end;
 -- clean up the temp tables
 -- Leave commented out until we are sure the conversion works.
 
--- drop table PERMISSIONS_TEMP; -- NEED THIS
--- drop table PERMISSIONS_SRC_TEMP; -- NEED THIS
+drop table PERMISSIONS_TEMP; -- NEED THIS
+drop table PERMISSIONS_SRC_TEMP; -- NEED THIS
 
 -- ====================== 
--- count post backfill to see how many rows were added.
+-- count after the backfill to see how many rows were added.
 select count(*) from sakai_realm_rl_fn;
 
 
