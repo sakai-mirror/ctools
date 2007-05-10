@@ -109,13 +109,13 @@ code {
 /* SECTION 3 - TABULAR DATA LAYOUTS*/
 /*itemSummary: table for displaying the details of an item - layout is th-td, th-td*/
 /*see an announcement*/
-.itemSummary{
+.itemSummary, .itemSummaryLite{
 	margin: .5em 0;
 }
 
 /*format the th - since jsf cannot do <th> vertically in a column,
  certain tds are classed (header) in jsf based tools to render the same as the th*/
-.itemSummary th, .itemSummary td.header{
+.itemSummary th, .itemSummary td.header, .itemSummaryLite td.header{
 	font-weight: normal;
 	font-family: Arial,Helvetica,sans-serif;
 	white-space: nowrap;
@@ -124,13 +124,13 @@ code {
 	padding: .3em 1em .3em .3em;
 }
 
-table.itemSummary td{
+table.itemSummary td, td.itemSummaryLite{
 	text-align: left;
 	padding: .3em 1em;
 	vertical-align: top;
 }
 
-table.itemSummary caption{
+table.itemSummary caption, caption.itemSummaryLite {
 	text-align: left;
 	font-weight: bold;
 	padding: 1em 0 0 0;
@@ -426,7 +426,7 @@ ie - site creation*/
 .information{
 	background-color: transparent;
 	background-image: url('images/info.gif');
-	background-position: .3em;
+	 background-position: 5px 5px;
 	background-repeat: no-repeat;
 	border: 1px solid #888;
 	display: block;
@@ -443,7 +443,7 @@ ie - site creation*/
 .success{
 	background-color: #fff;
 	background-image: url('images/check.gif');
-	background-position: .3em;
+	background-position: 5px 5px;
 	background-repeat: no-repeat;
 	border: 1px solid #4a4;
 	display: block;
@@ -459,7 +459,7 @@ ie - site creation*/
 /*TODO: consolidate - validationEmbedded used in gradebook, validation in many places, alertMessage legacy*/
 /*see: create an announcement but "forget" to give it a title*/
 .validationEmbedded,.validation,.alertMessage{
-	background: #fff url(images/warn.gif) .3em center no-repeat;
+	 background: #fff url(images/warn.gif) 5px 5px no-repeat;
 	border: 1px solid #b11;
 	display: block;
 	width: 80%;
@@ -478,7 +478,7 @@ ie - site creation*/
 
 /*when displaying a validaiton failure inline (used with a span)*/
 .alertMessageInline{
-	background: #fff url(images/warn.gif) .3em .3em no-repeat;
+	background: #fff url(images/warn.gif) 5px 5px no-repeat;
 	border: 1px solid #b11;
 	width: 80%;
 	font-size: 1em;
@@ -582,19 +582,19 @@ hr.itemSeparator{
 /*	see: create a resource*/
 	
 /*these two have a border that needs to match the background to avoid some tedious problems in IE*/	
-.shorttext,.longtext{
+.shorttext,.longtext,.filepicker{
 	margin: .4em 1em;
 	border: 1px solid #fff;
 }
 
-.shorttext label{
+.shorttext label,.filepicker  label{
 	margin-right: 1em;
 	width: 14.5em;
 	font-weight: normal;
 	float: left;
 }
 
-.shorttext input{
+.shorttext input[type="text"]{
 	padding: .1em .3em;
 	border: 1px solid #888;
 }
