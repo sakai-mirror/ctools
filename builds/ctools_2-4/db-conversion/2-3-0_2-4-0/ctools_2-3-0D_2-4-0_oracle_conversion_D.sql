@@ -15,9 +15,12 @@
 --  Drew's version of permission backfill loop.  Take out references
 --  to /site/mercury.  Take out duplicate updates.
 
+-- 2007/05/11: Various changes by Drew Zhu.
+
 -- ==============
 
 -- sql to insert all roles mentioned
+prompt sql to insert all roles mentioned
 insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, 'Affiliate');
 insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, 'Assistant');
 
@@ -37,6 +40,7 @@ insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, 'access');
 insert into SAKAI_REALM_ROLE VALUES (SAKAI_REALM_ROLE_SEQ.NEXTVAL, 'maintain');
 
 -- sql to insert all functions mentioned
+prompt sql to insert all functions mentioned
 insert into SAKAI_REALM_FUNCTION VALUES (SAKAI_REALM_FUNCTION_SEQ.NEXTVAL, 'chat.delete.channel');
 insert into SAKAI_REALM_FUNCTION VALUES (SAKAI_REALM_FUNCTION_SEQ.NEXTVAL, 'chat.new.channel');
 insert into SAKAI_REALM_FUNCTION VALUES (SAKAI_REALM_FUNCTION_SEQ.NEXTVAL, 'chat.revise.channel');
@@ -95,7 +99,7 @@ insert into SAKAI_REALM_FUNCTION VALUES (SAKAI_REALM_FUNCTION_SEQ.NEXTVAL, 'rost
 -- Gradebook table changes between Sakai 2.3.0 and 2.3.1.
 
 -- Add selective release support
-
+prompt Add selective release support
 alter table GB_GRADABLE_OBJECT_T add (RELEASED NUMBER(1,0));
 update GB_GRADABLE_OBJECT_T set RELEASED=1 where RELEASED is NULL;
 
@@ -121,10 +125,12 @@ update GB_GRADABLE_OBJECT_T set RELEASED=1 where RELEASED is NULL;
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 -- OSP conversion
+prompt OSP conversion
 alter table osp_presentation_template add propertyFormType varchar2(36);
 alter table osp_presentation add property_form varchar2(36);
 
 -- 014: change on next line
+prompt 014: change on next line
 alter table osp_scaffolding add preview number(1,0) DEFAULT 0 not null;
 
 -- 014: change on next line
@@ -133,6 +139,7 @@ alter table osp_wizard add preview number(1,0) DEFAULT 0 not null;
 alter table osp_review add review_item_id varchar2(36);
 
 -- making sure these fields allow nulls
+prompt making sure these fields allow nulls
 ALTER TABLE osp_scaffolding MODIFY ( readyColor VARCHAR2(7) NULL );
 ALTER TABLE osp_scaffolding MODIFY ( pendingColor VARCHAR2(7) NULL );
 ALTER TABLE osp_scaffolding MODIFY ( completedColor VARCHAR2(7) NULL );
@@ -152,6 +159,7 @@ update sakai_site_tool_property set name='siteTypeList', value='portfolio,Portfo
 
 -- SAMIGO conversion
 -- SAK-6790 
+prompt SAK-6790
 alter table SAM_ASSESSMENTBASE_T MODIFY (CREATEDBY varchar(255) , LASTMODIFIEDBY varchar(255));
 alter table SAM_SECTION_T MODIFY (CREATEDBY varchar(255), LASTMODIFIEDBY varchar(255));
 alter table SAM_PUBLISHEDASSESSMENT_T MODIFY(CREATEDBY varchar(255), LASTMODIFIEDBY varchar(255));
@@ -172,17 +180,21 @@ alter table SAM_MEDIA_T MODIFY(CREATEDBY varchar(255), LASTMODIFIEDBY varchar(25
 alter table SAM_TYPE_T MODIFY(CREATEDBY varchar(255) , LASTMODIFIEDBY varchar(255));
 
 -- For performance
-create index SAM_ANSWERFEED_ANSWERID_I on SAM_ANSWERFEEDBACK_T (ANSWERID);
-create index SAM_ANSWER_ITEMTEXTID_I on SAM_ANSWER_T (ITEMTEXTID);
-create index SAM_ITEMFEED_ITEMID_I on SAM_ITEMFEEDBACK_T (ITEMID);
-create index SAM_ITEMMETADATA_ITEMID_I on SAM_ITEMMETADATA_T (ITEMID);
-create index SAM_ITEMTEXT_ITEMID_I on SAM_ITEMTEXT_T (ITEMID);
-create index SAM_ITEM_SECTIONID_I on SAM_ITEM_T (SECTIONID);
-create index SAM_QPOOL_OWNER_I on SAM_QUESTIONPOOL_T (OWNERID);
-
+prompt For performance
+prompt tablespace added by Zhu
+create index SAM_ANSWERFEED_ANSWERID_I on SAM_ANSWERFEEDBACK_T (ANSWERID) tablespace CTOOLS_INDEXES;
+create index SAM_ANSWER_ITEMTEXTID_I on SAM_ANSWER_T (ITEMTEXTID) tablespace CTOOLS_INDEXES;
+create index SAM_ITEMFEED_ITEMID_I on SAM_ITEMFEEDBACK_T (ITEMID) tablespace CTOOLS_INDEXES;
+create index SAM_ITEMMETADATA_ITEMID_I on SAM_ITEMMETADATA_T (ITEMID) tablespace CTOOLS_INDEXES;
+create index SAM_ITEMTEXT_ITEMID_I on SAM_ITEMTEXT_T (ITEMID) tablespace CTOOLS_INDEXES;
+create index SAM_ITEM_SECTIONID_I on SAM_ITEM_T (SECTIONID) tablespace CTOOLS_INDEXES;
+create index SAM_QPOOL_OWNER_I on SAM_QUESTIONPOOL_T (OWNERID) tablespace CTOOLS_INDEXES;
+prompt tablespace added by Zhu
 -- SAK-7093
+prompt SAK-7093
 drop table SAM_STUDENTGRADINGSUMMARY_T cascade constraints;
 drop sequence SAM_STUDENTGRADINGSUMMARY_ID_S;
+prompt table modified by Zhu 1
 create table SAM_STUDENTGRADINGSUMMARY_T (
 STUDENTGRADINGSUMMARYID number(19,0) not null,
 PUBLISHEDASSESSMENTID number(19,0) not null,
@@ -192,10 +204,11 @@ CREATEDBY varchar2(255) not null,
 CREATEDDATE timestamp not null,
 LASTMODIFIEDBY varchar2(255) not null,
 LASTMODIFIEDDATE timestamp not null,
-primary key (STUDENTGRADINGSUMMARYID)
+constraint PK_SAM_STUDENTGRADINGSUMMARY_T primary key (STUDENTGRADINGSUMMARYID) using index tablespace CTOOLS_INDEXES
 );
+prompt End table modified by Zhu
 create sequence SAM_STUDENTGRADINGSUMMARY_ID_S;
-create index SAM_PUBLISHEDASSESSMENT2_I on SAM_STUDENTGRADINGSUMMARY_T (PUBLISHEDASSESSMENTID);
+create index SAM_PUBLISHEDASSESSMENT2_I on SAM_STUDENTGRADINGSUMMARY_T (PUBLISHEDASSESSMENTID) tablespace CTOOLS_INDEXES;
 
 
 -- ----------------------------------------------------------------------------------------------------------------------------------------
@@ -216,18 +229,22 @@ ALTER TABLE SAKAI_SITE ADD (CUSTOM_PAGE_ORDERED CHAR(1) DEFAULT '0' CHECK (CUSTO
 -- Post'em table changes needed for 2.4.0 
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- SAK-8232
+prompt SAK-8232
 ALTER TABLE SAKAI_POSTEM_STUDENT_GRADES MODIFY grade VARCHAR2 (2000);
 
 -- SAK-6948
+prompt SAK-6948
 ALTER TABLE SAKAI_POSTEM_GRADEBOOK MODIFY title VARCHAR2 (255);
 
 -- SAK-8213
+prompt SAK-8213
 ALTER TABLE SAKAI_REALM_ROLE_DESC ADD (PROVIDER_ONLY CHAR(1) NULL);
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- Add Moderator functionality to Message Center (SAK-8632)
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- add column to allow Moderator as template setting
+prompt add column to allow Moderator as template setting
 alter table MFR_AREA_T add (MODERATED NUMBER(1,0));
 update MFR_AREA_T set MODERATED=0 where MODERATED is NULL;
 alter table MFR_AREA_T modify (MODERATED NUMBER(1,0) not null);
@@ -246,11 +263,13 @@ alter table MFR_TOPIC_T modify (MODERATED NUMBER(1,0) not null);
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- New Chat storage and permissions (SAK-8508)
 ----------------------------------------------------------------------------------------------------------------------------------------
+prompt New Chat storage and permissions (SAK-8508)
 --create new tables
 --This is coming soon as soon as I can generate the ddl for Oracle...
 
 
 -- 014: addition of contextdefaultchannel
+prompt table modified by Zhu 2
 CREATE TABLE CHAT2_CHANNEL ( 
     CHANNEL_ID           	VARCHAR2(99) NOT NULL,
     CONTEXT              	VARCHAR2(36) NOT NULL,
@@ -261,9 +280,8 @@ CREATE TABLE CHAT2_CHANNEL (
     FILTERPARAM          	NUMBER(10,0) NULL,
     CONTEXTDEFAULTCHANNEL	NUMBER(1,0) NULL,
     ENABLE_USER_OVERRIDE 	NUMBER(1,0) NULL,
-    PRIMARY KEY(CHANNEL_ID)
+    constraint PK_CHAT2_CHANNEL PRIMARY KEY(CHANNEL_ID) using index tablespace CTOOLS_INDEXES
 );
-
 
 
 -- 014: added these two indices.
@@ -278,16 +296,16 @@ CREATE INDEX CHAT2_CHNL_CNTXT_DFLT_I ON CHAT2_CHANNEL
        CONTEXTDEFAULTCHANNEL
 );
 
-
+prompt table modified by Zhu 3
 CREATE TABLE CHAT2_MESSAGE ( 
     MESSAGE_ID  	VARCHAR2(99) NOT NULL,
     CHANNEL_ID  	VARCHAR2(99) NULL,
     OWNER       	VARCHAR2(96) NOT NULL,
     MESSAGE_DATE	TIMESTAMP(6) NULL,
     BODY        	CLOB NOT NULL,
-    PRIMARY KEY(MESSAGE_ID)
+    constraint PK_CHAT2_MESSAGE PRIMARY KEY(MESSAGE_ID) using index tablespace CTOOLS_INDEXES
 );
-
+prompt table modified by Zhu 3
 
 -- 014: addition.  Added these two indices.
 CREATE INDEX CHAT2_MSG_CHNL_I ON CHAT2_MESSAGE
@@ -317,6 +335,7 @@ alter table CHAT2_MESSAGE add migratedMessageId varchar2(99);
 -- New private folder (SAK-8759)
 ----------------------------------------------------------------------------------------------------------------------------------------
 
+prompt New private folder (SAK-8759)
 INSERT INTO CONTENT_COLLECTION(COLLECTION_ID,XML,IN_COLLECTION) VALUES ('/private/',
 '<?xml version="1.0" encoding="UTF-8"?>
 <collection id="/private/">
@@ -335,17 +354,20 @@ INSERT INTO CONTENT_COLLECTION(COLLECTION_ID,XML,IN_COLLECTION) VALUES ('/privat
 -- Gradebook table changes needed for 2.4.0 (SAK-8711)
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- Add grade commments.
-create table GB_COMMENT_T (
-	ID number(19,0) not null,
-	VERSION number(10,0) not null,
-	GRADER_ID varchar2(255 char) not null,
-	STUDENT_ID varchar2(255 char) not null,
-	COMMENT_TEXT clob,
-	DATE_RECORDED timestamp not null,
-	GRADABLE_OBJECT_ID number(19,0) not null,
-	primary key (ID),
-	unique (STUDENT_ID, GRADABLE_OBJECT_ID));
+Gradebook table changes needed for 2.4.0 (SAK-8711)
 
+prompt table modified by Zhu 4
+create table GB_COMMENT_T (
+        ID number(19,0) not null,
+        VERSION number(10,0) not null,
+        GRADER_ID varchar2(255 char) not null,
+        STUDENT_ID varchar2(255 char) not null,
+        COMMENT_TEXT clob,
+        DATE_RECORDED timestamp not null,
+        GRADABLE_OBJECT_ID number(19,0) not null,
+        constraint PK_GB_COMMENT_T primary key (ID) using index tablespace CTOOLS_INDEXES,
+        constraint UK_GB_COMMENT_T unique (STUDENT_ID, GRADABLE_OBJECT_ID) using index tablespace CTOOLS_INDEXES);
+prompt end table modified by Zhu 4
 alter table GB_COMMENT_T 
 	add constraint FK7977DFF06F98CFF foreign key (GRADABLE_OBJECT_ID) references GB_GRADABLE_OBJECT_T;
 create sequence GB_COMMENT_S;
@@ -356,11 +378,17 @@ alter table GB_GRADE_RECORD_T drop column SORT_GRADE;
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- CourseManagement Reference Impl table changes needed for 2.4.0
 ----------------------------------------------------------------------------------------------------------------------------------------
-create table CM_SEC_CATEGORY_T (CAT_CODE varchar2(255 char) not null, CAT_DESCR varchar2(255 char), primary key (CAT_CODE));
-create index CM_ENR_USER on CM_ENROLLMENT_T (USER_ID);
-create index CM_MBR_CTR on CM_MEMBERSHIP_T (MEMBER_CONTAINER_ID);
-create index CM_MBR_USER on CM_MEMBERSHIP_T (USER_ID);
-create index CM_INSTR_IDX on CM_OFFICIAL_INSTRUCTORS_T (INSTRUCTOR_ID);
+prompt CourseManagement Reference Impl table changes needed for 2.4.0
+prompt table modified by Zhu 5
+create table CM_SEC_CATEGORY_T (CAT_CODE varchar2(255 char) not null, 
+                                CAT_DESCR varchar2(255 char), 
+                                constraint PK_CM_SEC_CATEGORY_T primary key (CAT_CODE) using index tablespace CTOOLS_INDEXES);
+prompt end table modified by Zhu 5
+
+create index CM_ENR_USER on CM_ENROLLMENT_T (USER_ID) tablespace CTOOLS_INDEXES;
+create index CM_MBR_CTR on CM_MEMBERSHIP_T (MEMBER_CONTAINER_ID) tablespace CTOOLS_INDEXES;
+create index CM_MBR_USER on CM_MEMBERSHIP_T (USER_ID) tablespace CTOOLS_INDEXES;
+create index CM_INSTR_IDX on CM_OFFICIAL_INSTRUCTORS_T (INSTRUCTOR_ID) tablespace CTOOLS_INDEXES;
 alter table CM_ACADEMIC_SESSION_T modify (LAST_MODIFIED_DATE date);
 alter table CM_ACADEMIC_SESSION_T modify (CREATED_DATE date);
 alter table CM_ACADEMIC_SESSION_T modify (START_DATE date);
@@ -399,6 +427,7 @@ alter table CM_OFFICIAL_INSTRUCTORS_T add unique (ENROLLMENT_SET_ID, INSTRUCTOR_
 --SAK-7752
 --Add grade comments that were previously stored in Message Center table to the new gradebook table
 ----------------------------------------------------------------------------------------------------------------------------------------
+prompt SAK-7752
 INSERT INTO GB_COMMENT_T
 (select GB_COMMENT_S.NEXTVAL, gb_grade_record_t.VERSION, gb_grade_record_t.GRADER_ID, gb_grade_record_t.STUDENT_ID, MFR_MESSAGE_T.GRADECOMMENT, gb_grade_record_t.DATE_RECORDED, GB_GRADABLE_OBJECT_T.ID
     from (select MAX(MFR_MESSAGE_T.MODIFIED) as MSG_MOD, MFR_MESSAGE_T.GRADEASSIGNMENTNAME as ASSGN_NAME, MFR_MESSAGE_T.CREATED_BY as CREATED_BY_STUDENT, MFR_AREA_T.CONTEXT_ID as CONTEXT from MFR_MESSAGE_T 
@@ -424,34 +453,37 @@ INSERT INTO GB_COMMENT_T
 --SAK-8702 
 --New ScheduledInvocationManager API for jobscheduler
 ----------------------------------------------------------------------------------------------------------------------------------------
-
+prompt SAK-8702
+prompt table modified by Zhu 6
 CREATE TABLE SCHEDULER_DELAYED_INVOCATION (
 	INVOCATION_ID VARCHAR2(36) NOT NULL,
 	INVOCATION_TIME TIMESTAMP NOT NULL,
 	COMPONENT VARCHAR2(2000) NOT NULL,
 	CONTEXT VARCHAR2(2000) NULL,
-	PRIMARY KEY (INVOCATION_ID)
+	constraint PK_SDI PRIMARY KEY (INVOCATION_ID) using index tablespace CTOOLS_INDEXES
 );
-
+prompt end table modified by Zhu 6
 CREATE INDEX SCHEDULER_DI_TIME_INDEX ON SCHEDULER_DELAYED_INVOCATION (INVOCATION_TIME);
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 --SAK-7557
 --New Osp Reports Tables
 ----------------------------------------------------------------------------------------------------------------------------------------
-
+prompt SAK-7557
+prompt table modified by Zhu 7 
 CREATE TABLE osp_report_def_xml (
    reportDefId VARCHAR2(36 CHAR) NOT NULL,
    xmlFile CLOB NOT NULL,
-   PRIMARY KEY  (reportDefId)
+   constraint PK_osp_report_def_xml PRIMARY KEY  (reportDefId) using index tablespace CTOOLS_INDEXES
  );
 
+prompt table modified by Zhu 8
  CREATE TABLE osp_report_xsl (
    	reportXslFileId VARCHAR2(36 CHAR) NOT NULL,
 	reportXslFileRef VARCHAR2(255 CHAR),
 	reportDefId VARCHAR2(36 CHAR),
 	xslFile CLOB NOT NULL,
-	PRIMARY KEY (reportXslFileId)
+	constraint PK_osp_report_xsl PRIMARY KEY (reportXslFileId) using index tablespace CTOOLS_INDEXES
  );
 
  ALTER TABLE osp_report_xsl add CONSTRAINT FK25C0A259BE381194 FOREIGN KEY (reportDefId)	REFERENCES OSP_REPORT_DEF_XML (reportDefId);
@@ -460,7 +492,8 @@ CREATE TABLE osp_report_def_xml (
 --SAK-9029
 --Poll Tool Tables
 ----------------------------------------------------------------------------------------------------------------------------------------
-
+prompt SAK-9029
+prompt table modified by Zhu 9
 CREATE TABLE POLL_POLL (
   POLL_ID number(20,0) NOT NULL,
   POLL_OWNER varchar2(255) NULL,
@@ -474,26 +507,26 @@ CREATE TABLE POLL_POLL (
   POLL_MAX_OPTIONS number(11,0) NULL,
   POLL_DISPLAY_RESULT varchar2(255) NULL,
   POLL_LIMIT_VOTE number(1,0) NULL,
-  PRIMARY KEY  (POLL_ID)
+  constraint PK_POLL_POLL PRIMARY KEY  (POLL_ID) using index tablespace CTOOLS_INDEXES
 );
 
 -- 014: change _S to _SEQ
 CREATE SEQUENCE POLL_POLL_ID_SEQ;
-CREATE INDEX POLL_POLL_SITE_ID_IDX ON POLL_POLL (POLL_SITE_ID);
+CREATE INDEX POLL_POLL_SITE_ID_IDX ON POLL_POLL (POLL_SITE_ID) tablespace CTOOLS_INDEXES;
 
-
+prompt table modified by Zhu 10
 CREATE TABLE POLL_OPTION (
   OPTION_ID number(20,0) NOT NULL,
   OPTION_POLL_ID number(20,0) NULL,
   OPTION_TEXT clob,
-  PRIMARY KEY  (OPTION_ID)
+  constraint PK_POLL_OPTION PRIMARY KEY (OPTION_ID) using index tablespace CTOOLS_INDEXES
 );
 
 -- 014: change _S to _SEQ
 CREATE SEQUENCE POLL_OPTION_ID_SEQ;
-CREATE INDEX POLL_OPTION_POLL_ID_IDX ON POLL_OPTION (OPTION_POLL_ID);
+CREATE INDEX POLL_OPTION_POLL_ID_IDX ON POLL_OPTION (OPTION_POLL_ID) tablespace CTOOLS_INDEXES;
 
-
+prompt table modified by Zhu 11
 CREATE TABLE POLL_VOTE (
   VOTE_ID number(20,0) NOT NULL,
   USER_ID varchar2(255) NULL,
@@ -502,19 +535,19 @@ CREATE TABLE POLL_VOTE (
   VOTE_POLL_ID number(20,0) NULL,
   VOTE_OPTION number(20,0) NULL,
   VOTE_SUBMISSION_ID varchar2(255) NULL,
-  PRIMARY KEY  (VOTE_ID)
+   constraint PK_POLL_VOTE PRIMARY KEY  (VOTE_ID) using index tablespace CTOOLS_INDEXES
 );
 
 -- 014: change _S to _SEQ
 CREATE SEQUENCE POLL_VOTE_ID_SEQ;
-CREATE INDEX POLL_VOTE_POLL_ID_IDX ON POLL_VOTE (VOTE_POLL_ID);
-CREATE INDEX POLL_VOTE_USER_ID_IDX ON POLL_VOTE (USER_ID);
+CREATE INDEX POLL_VOTE_POLL_ID_IDX ON POLL_VOTE (VOTE_POLL_ID) tablespace CTOOLS_INDEXES;
+CREATE INDEX POLL_VOTE_USER_ID_IDX ON POLL_VOTE (USER_ID) tablespace CTOOLS_INDEXES;
 
 
 -----------------------------------------------------------------------------
 -- SAK-8892 CONTENT_TYPE_REGISTRY
 -----------------------------------------------------------------------------
-
+prompt  SAK-8892 CONTENT_TYPE_REGISTRY
 CREATE TABLE CONTENT_TYPE_REGISTRY
 (
     CONTEXT_ID VARCHAR (99) NOT NULL,
@@ -559,6 +592,7 @@ CREATE INDEX content_type_registry_idx ON CONTENT_TYPE_REGISTRY
 
    -- update realms here.
 -- sql to bind all realm / role / function tuples
+prompt sql to bind all realm / role / function tuple
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'maintain'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'chat.delete.channel'));
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'maintain'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'chat.new.channel'));
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'maintain'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'chat.revise.channel'));
@@ -1012,7 +1046,7 @@ INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where RE
  ----------------------------------------------------------------------------------------------------------------------------------------
  -- backfill new Poll permissions into existing realms
  ----------------------------------------------------------------------------------------------------------------------------------------
-
+prompt backfill new Poll permissions into existing realms
  -- for each realm that has a role matching something in this table, we will add to that role the function from this table
  CREATE TABLE PERMISSIONS_SRC_TEMP (ROLE_NAME VARCHAR(99), FUNCTION_NAME VARCHAR(99));
 
@@ -1022,6 +1056,7 @@ INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where RE
 
 
 -- sql to entries to temp table to backfill new permissions
+prompt sql to entries to temp table to backfill new permissions
 insert into PERMISSIONS_SRC_TEMP values ('Affiliate','chat.delete.channel');
 insert into PERMISSIONS_SRC_TEMP values ('Affiliate','chat.new.channel');
 insert into PERMISSIONS_SRC_TEMP values ('Affiliate','chat.revise.channel');
@@ -1225,6 +1260,7 @@ insert into PERMISSIONS_SRC_TEMP values ('maintain','roster.viewall');
 select count(*) from sakai_realm_rl_fn;
 
  -- lookup the role and function numbers
+prompt lookup the role and function numbers
  create table PERMISSIONS_TEMP (ROLE_KEY INTEGER, FUNCTION_KEY INTEGER);
  insert into PERMISSIONS_TEMP (ROLE_KEY, FUNCTION_KEY)
  select SRR.ROLE_KEY, SRF.FUNCTION_KEY
@@ -1250,7 +1286,7 @@ select count(*) from sakai_realm_rl_fn;
 
 -- insert the new functions into the roles of any existing realm that has the role (don't convert the "!site.helper")
 -- Statement provided by Drew.  It speeds the update up a great deal.  It also uses pl/sql
-
+prompt Drew's loop
 -- --Note:
 -- --The 300 and 800 in the routine is based on the size of the SAKAI_REALM in current UM production database;
 -- --Increase the 300 or 800 based on the size of the SAKAI_REALM table.
@@ -1275,22 +1311,22 @@ begin
 end;
 /
 
-
+prompt End of Drew's loop
 -- clean up the temp tables
 -- Leave commented out until we are sure the conversion works.
 
-drop table PERMISSIONS_TEMP; -- NEED THIS
-drop table PERMISSIONS_SRC_TEMP; -- NEED THIS
+-- drop table PERMISSIONS_TEMP; -- NEED THIS
+-- drop table PERMISSIONS_SRC_TEMP; -- NEED THIS
 
 -- ====================== 
--- count after the backfill to see how many rows were added.
+-- count post backfill to see how many rows were added.
 select count(*) from sakai_realm_rl_fn;
 
 
 -----------------------------------------------------------------------------
 -- CITATION_COLLECTION
 -----------------------------------------------------------------------------
-
+prompt CITATION_COLLECTION
 CREATE TABLE CITATION_COLLECTION
 (
    COLLECTION_ID VARCHAR2 (36) NOT NULL,
@@ -1326,6 +1362,7 @@ CREATE TABLE CITATION_SCHEMA
 -----------------------------------------------------------------------------
 -- CITATION_SCHEMA_FIELD
 -----------------------------------------------------------------------------
+prompt CITATION_SCHEMA_FIELD
 
 CREATE TABLE CITATION_SCHEMA_FIELD
 (
@@ -1340,6 +1377,7 @@ CREATE TABLE CITATION_SCHEMA_FIELD
 ------------------------------------------------------------------------
 --- SAK-9436 Missing indexes in rwiki 
 ------------------------------------------------------------------------
+prompt SAK-9436 Missing indexes in rwiki
 --- its ok to ignore the drop errors, 
 drop index rwikiproperties_name;
 drop index  irwikicurrentcontent_rwi;
@@ -1362,30 +1400,32 @@ drop index  irwikipt_user;
 drop index  irwikipt_pagespace;
 drop index  irwikipt_pavename;
 
-create index irwikiproperties_name on rwikiproperties (name);
-create index irwikicurrentcontent_rwi on  rwikicurrentcontent (rwikiid);
-create index irwikihistorycontent_rwi on  rwikihistorycontent (rwikiid); 
-create index irwikipagepresence_sid on  rwikipagepresence (sessionid);
-create index irwikihistory_name on  rwikihistory (name);
-create index irwikihistory_realm on  rwikihistory (realm);
-create index irwikihistory_ref on  rwikihistory (referenced);
-create index irwikihistoryobj_rwid on  rwikihistory (rwikiobjectid);
-create index irwikiobject_name on  rwikiobject (name);
-create index irwikiobject_realm on  rwikiobject (realm);
-create index irwikiobject_ref on  rwikiobject (referenced);
+prompt new indexes
+create index irwikiproperties_name on rwikiproperties (name) tablespace CTOOLS_INDEXES;
+create index irwikicurrentcontent_rwi on  rwikicurrentcontent (rwikiid)  tablespace CTOOLS_INDEXES;
+create index irwikihistorycontent_rwi on  rwikihistorycontent (rwikiid) tablespace CTOOLS_INDEXES; 
+create index irwikipagepresence_sid on  rwikipagepresence (sessionid)  tablespace CTOOLS_INDEXES;
+create index irwikihistory_name on  rwikihistory (name) tablespace CTOOLS_INDEXES;
+create index irwikihistory_realm on  rwikihistory (realm) tablespace CTOOLS_INDEXES;
+create index irwikihistory_ref on  rwikihistory (referenced) tablespace CTOOLS_INDEXES;
+create index irwikihistoryobj_rwid on  rwikihistory (rwikiobjectid) tablespace CTOOLS_INDEXES;
+create index irwikiobject_name on  rwikiobject (name) tablespace CTOOLS_INDEXES;
+create index irwikiobject_realm on  rwikiobject (realm) tablespace CTOOLS_INDEXES;
+create index irwikiobject_ref on  rwikiobject (referenced) tablespace CTOOLS_INDEXES;
 
-create index irwikipr_userid on  rwikipreference (userid);
-create index irwikipm_sessionid on  rwikipagemessage (sessionid);
-create index irwikipm_user on  rwikipagemessage (userid);
-create index irwikipm_pagespace on  rwikipagemessage (pagespace);
-create index irwikipm_pagename on  rwikipagemessage (pagename);
-create index irwikipt_user on  rwikipagetrigger (userid);
-create index irwikipt_pagespace on  rwikipagetrigger (pagespace);
-create index irwikipt_pavename on  rwikipagetrigger (pagename);
+create index irwikipr_userid on  rwikipreference (userid) tablespace CTOOLS_INDEXES;
+create index irwikipm_sessionid on  rwikipagemessage (sessionid) tablespace CTOOLS_INDEXES;
+create index irwikipm_user on  rwikipagemessage (userid) tablespace CTOOLS_INDEXES;
+create index irwikipm_pagespace on  rwikipagemessage (pagespace) tablespace CTOOLS_INDEXES;
+create index irwikipm_pagename on  rwikipagemessage (pagename) tablespace CTOOLS_INDEXES;
+create index irwikipt_user on  rwikipagetrigger (userid) tablespace CTOOLS_INDEXES;
+create index irwikipt_pagespace on  rwikipagetrigger (pagespace) tablespace CTOOLS_INDEXES;
+create index irwikipt_pavename on  rwikipagetrigger (pagename) tablespace CTOOLS_INDEXES;
 
 ------------------------------------------------------------------------
 -- SAK-9439 Missing indexes in search
 ------------------------------------------------------------------------
+prompt SAK-9439 Missing indexes in search
 drop index   isearchbuilderitem_name;
 drop index   isearchbuilderitem_ctx;
 drop index   isearchbuilderitem_act;
@@ -1393,11 +1433,11 @@ drop index   isearchbuilderitem_sta;
 drop index   isearchwriterlock_lk;
 
 
-create index isearchbuilderitem_name on  searchbuilderitem (name);
-create index isearchbuilderitem_ctx on  searchbuilderitem (context);
-create index isearchbuilderitem_act on  searchbuilderitem (searchaction);
-create index isearchbuilderitem_sta on  searchbuilderitem (searchstate);
-create index isearchwriterlock_lk on  searchwriterlock (lockkey);
+create index isearchbuilderitem_name on  searchbuilderitem (name) tablespace CTOOLS_INDEXES;
+create index isearchbuilderitem_ctx on  searchbuilderitem (context)  tablespace CTOOLS_INDEXES;
+create index isearchbuilderitem_act on  searchbuilderitem (searchaction) tablespace CTOOLS_INDEXES;
+create index isearchbuilderitem_sta on  searchbuilderitem (searchstate) tablespace CTOOLS_INDEXES;
+create index isearchwriterlock_lk on  searchwriterlock (lockkey) tablespace CTOOLS_INDEXES;
 
 -- Drew suggests these.
 create index IE_MAILARC_MSG_MESSAGE_ID on MAILARCHIVE_MESSAGE(MESSAGE_ID) tablespace ctools_indexes;
@@ -1405,10 +1445,10 @@ create index IE_MAILARC_MSG_MESSAGE_ID on MAILARCHIVE_MESSAGE(MESSAGE_ID) tables
 -- create index idx_wikicurrentcontent_rwikiid on rwikicurrentcontent(rwikiid) tablespace ctools_indexes;
 
 -- Add academic term information for CM.  This is probably not the final version of this.
-
+prompt 2003
 -- 2003
 insert into cm_academic_session_t values(0, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'FALL 2003', 'FALL_2003', 'FALL 2003', '01-SEP-03', '01-DEC-03');
-
+prompt 2004
 -- 2004 winter, spring spring_summer summer, fall
 insert into cm_academic_session_t values(1, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Winter 2004', 'Winter_2004', 'Winter 2004', '01-JAN-2004', '01-MAY-2004');
 insert into cm_academic_session_t values(2, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Spring 2004', 'Spring_2004', 'Spring 2004', '01-MAY-2004', '01-AUG-2004');
@@ -1417,6 +1457,7 @@ insert into cm_academic_session_t values(4, 1, 'admin', '09-MAY-07', 'admin', '0
 insert into cm_academic_session_t values(5, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Fall 2004', 'Fall_2004', 'Fall 2004', '01-SEP-2004', '01-DEC-2004');
 
 -- 2005 winter, spring spring_summer summer, fall
+prompt 2005 winter, spring spring_summer summer, fall
 insert into cm_academic_session_t values(6, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Winter 2005', 'Winter_2005', 'Winter 2005', '01-JAN-2005', '01-MAY-2005');
 insert into cm_academic_session_t values(7, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Spring 2005', 'Spring_2005', 'Spring 2005', '01-MAY-2005', '01-AUG-2005');
 insert into cm_academic_session_t values(8, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Spring Summer 2005', 'Spring_Summer_2005', 'Spring_Summer 2005', '15-MAY-2005', '01-AUG-2005');
@@ -1424,6 +1465,7 @@ insert into cm_academic_session_t values(9, 1, 'admin', '09-MAY-07', 'admin', '0
 insert into cm_academic_session_t values(10, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Fall 2005', 'Fall_2005', 'Fall 2005', '01-SEP-2005', '01-DEC-2005');
 
 -- 2006 winter, spring spring_summer summer, fall
+prompt 2006 winter, spring spring_summer summer, fall
 insert into cm_academic_session_t values(11, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Winter 2006', 'Winter_2006', 'Winter 2006', '01-JAN-2006', '01-MAY-2006');
 insert into cm_academic_session_t values(12, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Spring 2006', 'Spring_2006', 'Spring 2006', '01-MAY-2006', '23-JUN-2006');
 insert into cm_academic_session_t values(13, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Spring Summer 2006', 'Spring_Summer_2006', 'Spring_Summer 2006', '01-MAY-2006', '18-AUG-2006');
@@ -1431,6 +1473,7 @@ insert into cm_academic_session_t values(14, 1, 'admin', '09-MAY-07', 'admin', '
 insert into cm_academic_session_t values(15, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Fall 2006', 'Fall_2006', 'Fall 2006', '05-SEP-2006', '12-DEC-2006');
 
 -- 2007 winter, spring spring_summer summer, fall
+prompt 2007 winter, spring spring_summer summer, fall
 insert into cm_academic_session_t values(16, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Winter 2007', 'Winter_2007', 'Winter 2007', '04-JAN-2007', '26-APR-2007');
 insert into cm_academic_session_t values(17, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Spring 2007', 'Spring_2007', 'Spring 2007', '01-MAY-2007', '22-JUN-2007');
 insert into cm_academic_session_t values(18, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Spring Summer 2007', 'Spring_Summer_2007', 'Spring_Summer 2007', '01-MAY-2007', '17-AUG-2007');
