@@ -80,6 +80,9 @@ public class UmiacClientImpl
 	
 	private static Log log = LogFactory.getLog(UmiacClientImpl.class);
 
+	/* default cache duration to 1 hour */
+	private int cacheDurationSeconds = 60 * 60;
+
 	/**
 	* Construct, using the default production UMIAC instance.
 	*/
@@ -197,6 +200,14 @@ public class UmiacClientImpl
 		m_umiacSocketTimeout = umiacSocketTimeout;
 	}
 
+	public int getCacheDurationSeconds() {
+		return cacheDurationSeconds;
+	}
+
+	public void setCacheDurationSeconds(int cacheDurationSeconds) {
+		this.cacheDurationSeconds = cacheDurationSeconds;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#userExists(java.lang.String)
 	 */
@@ -221,13 +232,27 @@ public class UmiacClientImpl
 		Vector result = makeRawCall(command);
 
 		// if there are no results, then we don't know the user
+		// If the entries are all null that is the same as a null result.
+		Boolean foundContent = false;
+		for (Object r: result) {
+			   //System.out.println(name.charAt(0));
+				if (r != null) {
+					foundContent = true;
+				}
+		}	
+		
+		if (!foundContent) {
+			result = null;
+		}
+		
 		if (	(result == null)
 			||	(result.size() != 1)
 			||	(((String) result.elementAt(0)).trim().length() == 0)
 			||	(((String) result.elementAt(0)).trim().equals(",")))
 		{
 			// cache the miss for 60 minutes
-			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+	//		if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			return null;
 		}
@@ -261,8 +286,8 @@ public class UmiacClientImpl
 			rv[3] = "";
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, rv, 60 * 60);
+		// cache the results for cache duration seconds.
+		if (m_callCache != null) m_callCache.put(command, rv, cacheDurationSeconds);
 
 		return rv;
 
@@ -294,8 +319,8 @@ public class UmiacClientImpl
 			||	(result.size() < 1)
 			||	(((String)result.elementAt(0)).indexOf("|") == -1))
 		{
-			// cache the miss for 60 minutes
-			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+			// cache the miss for a while.
+			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(id);
 		}
@@ -320,8 +345,8 @@ public class UmiacClientImpl
 		
 		String name = tab.toString();
 		
-		// cache the result for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, name, 60 * 60);
+		// cache the result for a while.
+		if (m_callCache != null) m_callCache.put(command, name, cacheDurationSeconds);
 
 		return name;
 
@@ -353,8 +378,8 @@ public class UmiacClientImpl
 			||	(result.size() < 1)
 			||	(((String)result.elementAt(0)).indexOf("|") == -1))
 		{
-			// cache the miss for 60 minutes
-			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+			// cache the miss for awhile.
+			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(id);
 		}
@@ -372,8 +397,8 @@ public class UmiacClientImpl
 			map.put(uid, role);
 		}
 		
-		// cache the result for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+		// cache the result for a while.
+		if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 		return map;
 
@@ -414,8 +439,8 @@ public class UmiacClientImpl
 			}
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, map, 60 * 60);
+		// cache the results for a while
+		if (m_callCache != null) m_callCache.put(command, map, cacheDurationSeconds);
 
 		return map;
 
@@ -480,8 +505,8 @@ public class UmiacClientImpl
 			||	(result.size() < 1)
 			||	(((String)result.elementAt(0)).indexOf("|") == -1))
 		{
-			// cache this miss for 60 minutes
-			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+			// cache this miss for awhile.
+			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(id[0]);
 		}
@@ -512,8 +537,8 @@ public class UmiacClientImpl
 			}
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, map, 60 * 60);
+		// cache the results for awhile.
+		if (m_callCache != null) m_callCache.put(command, map, cacheDurationSeconds);
 
 		return map;
 
@@ -551,8 +576,8 @@ public class UmiacClientImpl
 			rv.add(res);
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, rv, 60 * 60);
+		// cache the results for awhile
+		if (m_callCache != null) m_callCache.put(command, rv, cacheDurationSeconds);
 
 		return rv;
 		
@@ -590,8 +615,8 @@ public class UmiacClientImpl
 			rv.add(res);
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, rv, 60 * 60);
+		// cache the results for awhile.
+		if (m_callCache != null) m_callCache.put(command, rv, cacheDurationSeconds);
 
 		return rv;
 		
@@ -623,8 +648,8 @@ public class UmiacClientImpl
 		if (	(result == null)
 			||	(result.size() < 1))
 		{
-			// cache the miss for 60 minutes
-			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+			// cache the miss for awhile.
+			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(eid);
 		}
@@ -636,8 +661,8 @@ public class UmiacClientImpl
 			rv.add(res);
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, rv, 60 * 60);
+		// cache the results for awhile.
+		if (m_callCache != null) m_callCache.put(command, rv, cacheDurationSeconds);
 
 		return rv;
 		
@@ -668,8 +693,8 @@ public class UmiacClientImpl
 		if (	(result == null)
 			||	(result.size() < 1))
 		{
-			// cache the miss for 60 minutes
-			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+			// cache the miss for awhile.
+			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(eid);
 		}
@@ -681,8 +706,8 @@ public class UmiacClientImpl
 			rv.add(res);
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, rv, 60 * 60);
+		// cache the results for awhile.
+		if (m_callCache != null) m_callCache.put(command, rv, cacheDurationSeconds);
 
 		return rv;
 		
