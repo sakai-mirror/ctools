@@ -159,7 +159,22 @@
 	  overwrite="true" />
   </target>
 
-  <target name="imageSakai" depends="handleFavicon" >
+  <target name="handleErrorPages" if="errorpages.dir" >
+    <mkdir dir="${image.dir}/webapps/ROOT" />
+    <copy todir="${image.dir}/webapps/ROOT/${errorpages.dir}"
+	  overwrite="true" >
+      <fileset dir="${reference.dir}/${errorpages.dir}" />
+    </copy>
+  </target>
+
+  <target name="handleTomcatWebXml" if="tomcatWebXml.name" >
+    <mkdir dir="${image.dir}/conf" />
+    <copy overwrite="true" tofile="${image.dir}/conf/web.xml">
+      <fileset file="${reference.dir}/${tomcatWebXml.name}" />
+    </copy>
+  </target>
+
+  <target name="imageSakai" depends="handleFavicon,handleErrorPages,handleTomcatWebXml" >
 
     <removeWarFromImage deleteWar="sakai-comp-test-app1.war" />
     <removeWarFromImage deleteWar="sakai-group-test.war" />
