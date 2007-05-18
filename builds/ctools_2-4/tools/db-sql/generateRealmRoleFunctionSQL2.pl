@@ -149,6 +149,8 @@ END {
 ### This allows for an indefinate number of elements.
 sub parseLine {
   my($line) = shift;
+  ## Compress multiple spaces into single space to avoid spurious results from split.
+  $line =~ s/\s+/ /g;
   my($verb,$seperator,$tail) = $line =~ m|(\w+)(\W)(.*)|;
   ## add the backslash to allow | as a seperator.
   my(@values) = split("\\".$seperator,$tail);
