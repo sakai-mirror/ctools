@@ -41,6 +41,8 @@ our $roleCnt;
 our $functionCnt;
 our $realmCnt;
 
+our $currentInputFileName = "";
+
 our $trace = 0;
 #our $trace = 1;
 our $printBareTuple = 0;
@@ -90,21 +92,29 @@ sub main  {
   # read each line
   while (<>) {
 
+    if ($ARGV ne $currentInputFileName) {
+      print "-- ########## Current input file: $ARGV ###########\n";
+      $currentInputFileName = $ARGV;
+    }
+
     # prep line and skip non-relevant lines.
     chomp;
-    next if (/^\s*$/);
-    next if (/^\s*#/);
+#    next if (/^\s*$/);
+#    next if (/^\s*#/);
     $lineCnt++;
 
     if (/^\s*add_to_realm/i) {
       print "line: [$_]\n" if ($trace);
       add_to_realm($_);
+      next;
     }
 
     if (/^\s*backfill/i) {
       print "line: [$_]\n" if ($trace);
       backfillRoleFunction($_);
+      next;
     }
+    print "$_\n";
   }
 }
 
@@ -244,7 +254,7 @@ sub printTupleSql {
 }
 
 sub printBackfillSql {
-  print "-- sql to entries to temp table to backfill new permissions\n";
+  print "-- sql to add entries to temp table to backfill new permissions\n";
   foreach (@backfill) {
     printBackfill(@{$_});
   }
