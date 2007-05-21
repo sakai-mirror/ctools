@@ -1,4 +1,6 @@
--- This file was auto generated at Fri May 18 10:06:41 EDT 2007
+-- This file was auto generated at Fri May 18 10:06:41 EDT 2007 from muse.presql.
+
+-- This has been modified by hand to add indices.
 
 -- ########## Current input file: muse.presql ###########
 -- New indices, permissions, and template additions for Muse (mneme and ambrosia).
