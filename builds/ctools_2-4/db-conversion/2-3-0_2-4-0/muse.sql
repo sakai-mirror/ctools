@@ -40,8 +40,8 @@
 -- 4. create index IDX_PUBMETDATA_ASSESSMENTID on SAM_PUBLISHEDMETADATA_T(ASSESSMENTID) tablespace ctools_indexes;
 
 -- Use similar naming convention as below
-CREATE INDEX SAM_PUBLISHEDANSWER_ITEMTEXTID_I on SAM_PUBLISHEDANSWER_T(ITEMTEXTID) tablespace ctools_indexes;
-CREATE INDEX SAM_PUBLISHEDMETADATA_ASSESSMENTID_I on SAM_PUBLISHEDMETADATA_T(ASSESSMENTID) tablespace ctools_indexes;
+CREATE INDEX SAM_PBLSHDNSWR_ITMTXTD_I on SAM_PUBLISHEDANSWER_T(ITEMTEXTID) tablespace ctools_indexes;
+CREATE INDEX SAM_PBLSHDMTDT_SSSSMNTD_I on SAM_PUBLISHEDMETADATA_T(ASSESSMENTID) tablespace ctools_indexes;
 
 
 -----------------------------------------------------------------------------
@@ -51,39 +51,38 @@ CREATE INDEX SAM_PUBLISHEDMETADATA_ASSESSMENTID_I on SAM_PUBLISHEDMETADATA_T(ASS
 -- add tablespace to indices suggested by Glenn Golden.
 
 -- A --
-CREATE INDEX SAM_ASMNTGRDNG_PID_AGENT_I ON SAM_ASSESSMENTGRADING_T
-(
-       PUBLISHEDASSESSMENTID			ASC,
-       AGENTID					ASC,
-       FORGRADE					ASC
-) tablespace ctools_indexes;
+CREATE INDEX SAM_ASMNTGRDNG_PID_AGENT_I ON SAM_ASSESSMENTGRADING_T (
+       PUBLISHEDASSESSMENTID    ASC, 
+       AGENTID      ASC, 
+       FORGRADE            ASC )
+ tablespace ctools_indexes;
 
 -- B --
 CREATE INDEX SAM_ITEMGRADING_AG_PI_I ON SAM_ITEMGRADING_T
 (
-       ASSESSMENTGRADINGID				ASC,
-       PUBLISHEDITEMID					ASC
+       ASSESSMENTGRADINGID    ASC,
+       PUBLISHEDITEMID     ASC
 ) tablespace ctools_indexes;
 
 -- C --
 CREATE INDEX SAM_PUBLISHEDITEMMETADATA_IL_I ON SAM_PUBLISHEDITEMMETADATA_T
 (
-	ITEMID								ASC,
-	LABEL								ASC
+ ITEMID        ASC,
+ LABEL        ASC
 ) tablespace ctools_indexes;
 
 -- D --
 CREATE INDEX SAM_PUBLISHEDITEMFEEDBACK_IT_I ON SAM_PUBLISHEDITEMFEEDBACK_T
 (
-	ITEMID								ASC,
-	TYPEID								ASC
+ ITEMID        ASC,
+ TYPEID        ASC
 ) tablespace ctools_indexes;
 
 -- E --
 CREATE INDEX SAM_PUBSECTIONMETADATA_IT_I ON SAM_PUBLISHEDSECTIONMETADATA_T
 (
-	SECTIONID							ASC,
-	LABEL								ASC
+ SECTIONID       ASC,
+ LABEL        ASC
 ) tablespace ctools_indexes;
 
 -- sql to insert all roles mentioned
