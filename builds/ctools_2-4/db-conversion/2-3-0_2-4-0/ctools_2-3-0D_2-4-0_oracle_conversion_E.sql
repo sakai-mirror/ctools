@@ -1480,6 +1480,9 @@ insert into cm_academic_session_t values(18, 1, 'admin', '09-MAY-07', 'admin', '
 insert into cm_academic_session_t values(19, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Summer 2007', 'Summer_2007', 'Summer 2007', '27-JUN-2007', '17-AUG-2007');
 insert into cm_academic_session_t values(20, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'Fall 2007', 'Fall_2007', 'Fall 2007', '04-SEP-2007', '11-DEC-2007');
 
+
+prompt adding muse, including indices for samigo
+
 -- Add muse conversion 
 -- This file was auto generated at Fri May 18 10:06:41 EDT 2007 from muse.presql.
 
@@ -1608,7 +1611,9 @@ INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where RE
 -- realmCnt: 2 backfillCnt: 0
 
 
+######################################################
 
+prompt adding samigo data (templates etc.)
 
 
 -- Data load from samigo conversion for 2.4.0. sakai_samigo.sql
@@ -3354,23 +3359,7 @@ INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
       'releaseTo', 'SITE_MEMBERS')
 ;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+commit;
 
 -- end
 
