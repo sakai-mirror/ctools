@@ -433,7 +433,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	public Set<Section> findEnrolledSections(final String userId) 
 	{
 		// not needed
-		return new HashSet()s;
+		return new HashSet();
 	}
 	
 	public Set<Section> findInstructingSections(final String userId, final String academicSessionEid) 
