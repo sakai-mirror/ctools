@@ -211,7 +211,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 
 
 	public List<AcademicSession> getAcademicSessions() {
-		return esi.getAcademicSessions(this);
+		return esi.getAcademicSessions();
 	}
 			
 
@@ -716,7 +716,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		/* (non-Javadoc)
 		 * @see org.sakaiproject.coursemanagement.impl.ExternalSessionInformation#getAcademicSessions(org.sakaiproject.coursemanagement.impl.CourseManagementServiceUnivOfMichImpl)
 		 */
-		public List<AcademicSession> getAcademicSessions(CourseManagementServiceUnivOfMichImpl impl) {
+		public List<AcademicSession> getAcademicSessions() {
 			// send to database
 			String statement = null;
 			Object[] fields = null;
@@ -724,7 +724,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 			// if a record with courseId exists
 			statement = "SELECT ACADEMIC_SESSION_ID, VERSION, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, CREATED_BY, CREATED_DATE, ENTERPRISE_ID, TITLE, DESCRIPTION, START_DATE	, END_DATE FROM CM_ACADEMIC_SESSION_T";
 			
-			List results = impl.m_sqlService.dbRead(statement, null, new SqlReader()
+			List results = m_sqlService.dbRead(statement, null, new SqlReader()
 				{
 					public Object readSqlResultRecord(ResultSet result)
 					{
