@@ -2,7 +2,7 @@ package org.sakaiproject.coursemanagement.impl;
 
 import java.util.Set;
 
-import org.sakaiproject.coursemanagement.api.CourseOffering;
+import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.coursemanagement.api.exception.IdNotFoundException;
 
 import junit.framework.TestCase;
@@ -82,6 +82,9 @@ public class CourseManagementServiceUnivOfMichImplTest extends TestCase {
 //	termIndex.put("SPRING", "4");
 //	termIndex.put("SPRING_SUMMER","5");
 	
+	/**
+	 * test the mapping the English-version of term names into one-digit format which is used inside UMIAC
+	 */
 	public void testFindTermStringFromTermIndex() {
 		assertEquals("Summer term is 1","SUMMER",cmsuofi.findTermStringFromTermIndex("1"));
 		assertEquals("Fall term is 2","FALL",cmsuofi.findTermStringFromTermIndex("2"));
@@ -90,9 +93,12 @@ public class CourseManagementServiceUnivOfMichImplTest extends TestCase {
 		assertEquals("Spring Summer term is 5","SPRING_SUMMER",cmsuofi.findTermStringFromTermIndex("5"));
 	}
 	
-	public void testGetCourseOfferingCreatesCourseOffering() {
-		CourseOffering co = cmsuofi.getCourseOffering("2007,3,A,SUBJECT,SECTION,COURSE");
-		assertEquals("CourseOffering returned from GCO",co instanceof CourseOffering);
+	/**
+	 * test the Section object creation based on the section id in UMIAC format
+	 */
+	public void testGetSectionCreatesSection() {
+		Section co = cmsuofi.getSection("2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");
+		assertEquals("CourseOffering returned from GS",co instanceof Section);
 	}
 	
 //
