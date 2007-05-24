@@ -168,6 +168,18 @@
 			<artifactId>sakai-tool-servlet</artifactId>
 			<version>${sakai.version}</version>
 		</dependency>
+
+		<dependency>
+			 <groupId>jmock</groupId>
+			<artifactId>jmock</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
+		<dependency>
+			 <groupId>jmock</groupId>
+			<artifactId>jmock-cglib</artifactId>
+			<version>1.2.0</version>
+		</dependency>
 		
 		<!--
 		<dependency>
