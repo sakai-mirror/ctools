@@ -69,12 +69,16 @@ import org.sakaiproject.exception.IdUnusedException;
  * @author <a href="mailto:jholtzman@berkeley.edu">Josh Holtzman</a>
  *
  */
+/**
+ * @author dlhaines
+ *
+ */
 public class CourseManagementServiceUnivOfMichImpl implements CourseManagementService {
 	private static final Log log = LogFactory.getLog(CourseManagementServiceUnivOfMichImpl.class);
 	
 	protected static final String ENROLLMENT_SET_SUFFIX = "es";
 	
-	private Hashtable termIndex = new Hashtable();
+	private Hashtable<String, String> termIndex = new Hashtable<String, String>();
 	
 	
 	public void init() {
@@ -146,30 +150,33 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 
 	public Set getCourseSetMemberships(String courseSetEid) throws IdNotFoundException 
 	{
-		String[] fields = courseSetEid.split(",");
+		// not needed
 		
-		//get course participant list
-		//output as a Vector of String[] objects (one String[] per output line:
-		//sort_name|uniqname|umid|level (always "-")|credits|role|enrl_status
-		Vector plist = getUmiac().getClassList (fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
-		Vector members = new Vector();
-		for (int j= 0; j<plist.size(); j++)
-		{
-			String[] res = (String[]) plist.get(j);
-			/*Membership m = new Membership();
-			m.setName(res[0]);
-			m.setUniqname(res[1].toLowerCase());
-			m.setId(res[2]);
-			m.setLevel(res[3]);
-			m.setCredits(res[4]);
-			m.setRole(res[5]);
-			m.setProviderRole(res[5]);
-			m.setCourse(fields[3] + " " + fields[4]);
-			m.setSection(fields[5]);
-			members.add(m);*/
-		}
-		
-		return new HashSet();
+//		String[] fields = courseSetEid.split(",");
+//		
+//		//get course participant list
+//		//output as a Vector of String[] objects (one String[] per output line:
+//		//sort_name|uniqname|umid|level (always "-")|credits|role|enrl_status
+//		Vector plist = getUmiac().getClassList (fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
+//		Vector members = new Vector();
+//		for (int j= 0; j<plist.size(); j++)
+//		{
+//			String[] res = (String[]) plist.get(j);
+//			/*Membership m = new Membership();
+//			m.setName(res[0]);
+//			m.setUniqname(res[1].toLowerCase());
+//			m.setId(res[2]);
+//			m.setLevel(res[3]);
+//			m.setCredits(res[4]);
+//			m.setRole(res[5]);
+//			m.setProviderRole(res[5]);
+//			m.setCourse(fields[3] + " " + fields[4]);
+//			m.setSection(fields[5]);
+//			members.add(m);*/
+//		}
+//		
+	//	return new HashSet();
+		return null;
 	}
 
 	public CanonicalCourse getCanonicalCourse(String eid) throws IdNotFoundException {
@@ -278,32 +285,37 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		}
 	}
 	
-	public CourseOffering getCourseOffering(String eid) throws IdNotFoundException {
+	
+	
+	
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.coursemanagement.api.CourseManagementService#getCourseOffering(java.lang.String)
+	 * 
+	 * Takes a provider id and returns a CourseOffering object.
+	 * Example provider id is: 2007,3,A,SUBJECT,SECTION,COURSE
+	 * 
+	 */
+	
+	public CourseOffering getCourseOffering(String providerId) throws IdNotFoundException {
 		// 2007,3,A,SUBJECT,SECTION,COURSE
-		String[] eidParts = eid.split(",");
+		String[] eidParts = providerId.split(",");
 		String foundTermString = null;
-		for (Iterator iTerm = termIndex.keySet().iterator(); foundTermString == null && iTerm.hasNext();)
-		{
-			String termString = (String) iTerm.next();
-			if (termIndex.get(termString).equals(eidParts[1]))
-			{
-				foundTermString = termString;
-			}
-		}
+	//	foundTermString = findTermStringFromTermIndex(eidParts, foundTermString);
+		foundTermString = findTermStringFromTermIndex(eidParts[1]);
 		String academicSessionId = foundTermString.concat(" ").concat(eidParts[0]);
 		AcademicSession as = getAcademicSession(academicSessionId);
 		
 		// construct CourseOffering object
 		if (as != null)
 		{
-			CourseOfferingCmImpl co = new CourseOfferingCmImpl(eid, eid, "","open", as, new CanonicalCourseCmImpl(eid, eid, eid), as.getStartDate(),as.getEndDate());
+			CourseOfferingCmImpl co = new CourseOfferingCmImpl(providerId, providerId, "","open", as, new CanonicalCourseCmImpl(providerId, providerId, providerId), as.getStartDate(),as.getEndDate());
 			
 			return co;
 		}
 		else
 		{
 			CourseOfferingCmImpl co = new CourseOfferingCmImpl();
-			co.setEid(eid);
+			co.setEid(providerId);
 			if (as != null)
 			{
 				co.setAcademicSession(as);
@@ -315,6 +327,26 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 			}
 			return co;
 		}
+	}
+
+	/**
+	 * Look up the term string from the term index in the provider id.
+	 * @param eidParts
+	 * @param foundTermString
+	 * @return
+	 */
+	
+	 String findTermStringFromTermIndex(String termIndexIntString) {
+		String foundTermString = null;
+		for (Iterator iTerm = termIndex.keySet().iterator(); foundTermString == null && iTerm.hasNext();)
+		{
+			String termString = (String) iTerm.next();
+			if (termIndex.get(termString).equals(termIndexIntString))
+			{
+				foundTermString = termString;
+			}
+		}
+		return foundTermString;
 	}
 
 	public Set getCourseOfferingsInCourseSet(final String courseSetEid) throws IdNotFoundException {
