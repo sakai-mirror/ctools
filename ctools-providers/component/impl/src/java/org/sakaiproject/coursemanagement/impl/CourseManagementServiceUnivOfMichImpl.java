@@ -43,6 +43,7 @@ import org.sakaiproject.coursemanagement.api.CourseManagementAdministration;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
 import org.sakaiproject.coursemanagement.api.CourseOffering;
 import org.sakaiproject.coursemanagement.impl.CourseOfferingCmImpl;
+import org.sakaiproject.coursemanagement.api.AcademicSession;
 import org.sakaiproject.coursemanagement.api.CourseSet;
 import org.sakaiproject.coursemanagement.api.Enrollment;
 import org.sakaiproject.coursemanagement.api.EnrollmentSet;
@@ -64,31 +65,32 @@ import org.sakaiproject.util.StringUtil;
 import org.sakaiproject.exception.IdUnusedException;
 
 /**
- * Provides access to course and enrollment data stored in UMIAC's 
+ * Provides access to course and enrollment data stored in UMIAC.
  * 
- * @author <a href="mailto:jholtzman@berkeley.edu">Josh Holtzman</a>
- *
- */
-/**
- * @author dlhaines
- *
+ * In process.
+ * 
  */
 public class CourseManagementServiceUnivOfMichImpl implements CourseManagementService {
 	private static final Log log = LogFactory.getLog(CourseManagementServiceUnivOfMichImpl.class);
 	
 	protected static final String ENROLLMENT_SET_SUFFIX = "es";
 	
-	private Hashtable<String, String> termIndex = new Hashtable<String, String>();
+	private static Hashtable<String, String> termIndex = new Hashtable<String, String>();
 	
+	private ExternalAcademicSessionInformation esi = new UseDb();
+	//
+	private boolean useSql = true;
 	
-	public void init() {
-		log.info("Initializing " + getClass().getName());
-		
+	static {
 		termIndex.put("SUMMER", "1");
 		termIndex.put("FALL","2");
 		termIndex.put("WINTER", "3");
 		termIndex.put("SPRING", "4");
 		termIndex.put("SPRING_SUMMER","5");
+	}
+	
+	public void init() {
+		log.info("Initializing " + getClass().getName());
 	}
 
 	public void destroy() {
@@ -107,6 +109,14 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		this.m_umiac = m_umiac;
 	}
 
+	public void setEsi(ExternalAcademicSessionInformation esi) {
+		this.esi = esi;
+	}
+
+	public ExternalAcademicSessionInformation getEsi() {
+		return esi;
+	}
+
 	public UmiacClient getUmiac() {
 		return m_umiac;
 	}
@@ -121,6 +131,8 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	
 	/** Dependency: */
 	protected CourseManagementAdministration cmAdmin;
+
+	private boolean UseSql;
 	public void setCmAdmin(CourseManagementAdministration cmAdmin) {
 		this.cmAdmin = cmAdmin;
 	}
@@ -191,110 +203,23 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		return new HashSet();
 	}
 
-	public List<AcademicSession> getAcademicSessions() {
-		// send to database
-		String statement = null;
-		Object[] fields = null;
-		
-		// if a record with courseId exists
-		statement = "SELECT ACADEMIC_SESSION_ID, VERSION, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, CREATED_BY, CREATED_DATE, ENTERPRISE_ID, TITLE, DESCRIPTION, START_DATE	, END_DATE FROM CM_ACADEMIC_SESSION_T";
-		
-		List results = m_sqlService.dbRead(statement, null, new SqlReader()
-			{
-				public Object readSqlResultRecord(ResultSet result)
-				{
-					try
-					{
-						// create the Resource from the db xml
-						String academic_session_id = result.getString(1);
-						String version = result.getString(2);
-						String lastModifiedBy = result.getString(3);
-						String lastModifiedDate = result.getString(4);
-						String createdBy= result.getString(5);
-						String createdDate= result.getString(6);
-						String eid= result.getString(7);
-						String title = result.getString(8);
-						String description = result.getString(9);
-						Date startDate = result.getDate(10);
-						Date endDate = result.getDate(11);
-						AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
-						
-						return ac;
-					}
-					catch (Throwable ignore) { return null;}
-				}
-			} );
-		
-		if (results != null && results.size()>0)
-		{
-			return results;
-		}
-		else
-		{
-			return null;
-		}
+	// Delegate to a default subclass so that can then override the inner class and use a mock for testing.
+	
+	public AcademicSession getAcademicSession(String eid) throws IdNotFoundException {
+		return esi.getAcademicSession(eid);
 	}
+
+
+	public List<AcademicSession> getAcademicSessions() {
+		return esi.getAcademicSessions(this);
+	}
+			
 
 	public List<AcademicSession> getCurrentAcademicSessions() {
 		return getAcademicSessions();
 	}
 
-	public AcademicSession getAcademicSession(final String eid) throws IdNotFoundException {
-		
-		// send to database
-		String statement = null;
-		Object[] fields = new Object[1];
-		fields[0] = eid;
-		
-		// if a record with courseId exists
-		statement = "SELECT ACADEMIC_SESSION_ID, VERSION, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, CREATED_BY, CREATED_DATE, ENTERPRISE_ID, TITLE, DESCRIPTION, START_DATE	, END_DATE FROM CM_ACADEMIC_SESSION_T WHERE ENTERPRISE_ID=?";
-		
-		List results = m_sqlService.dbRead(statement, fields, new SqlReader()
-			{
-				public Object readSqlResultRecord(ResultSet result)
-				{
-					try
-					{
-						// create the Resource from the db xml
-						String academic_session_id = result.getString(1);
-						String version = result.getString(2);
-						String lastModifiedBy = result.getString(3);
-						String lastModifiedDate = result.getString(4);
-						String createdBy= result.getString(5);
-						String createdDate= result.getString(6);
-						String eid= result.getString(7);
-						String title = result.getString(8);
-						String description = result.getString(9);
-						Date startDate = result.getDate(10);
-						Date endDate = result.getDate(11);
-						AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
-						
-						return ac;
-					}
-					catch (Throwable ignore) { return null;}
-				}
-			} );
-		
-		if (results != null && results.size()>0)
-		{
-			return (AcademicSession) results.get(0);
-		}
-		else
-		{
-			return null;
-		}
-	}
 	
-	
-	
-	
-	/* (non-Javadoc)
-	 * @see org.sakaiproject.coursemanagement.api.CourseManagementService#getCourseOffering(java.lang.String)
-	 * 
-	 * Takes a provider id and returns a CourseOffering object.
-	 * Example provider id is: 2007,3,A,SUBJECT,SECTION,COURSE
-	 * 
-	 */
 	
 	public CourseOffering getCourseOffering(String providerId) throws IdNotFoundException {
 		// 2007,3,A,SUBJECT,SECTION,COURSE
@@ -734,5 +659,106 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	public String[] unpackId(String eid)
 	{
 		return getUmiac().unpackId(eid);
+	}
+
+	// Inner class so that can mock and not require a database.
+
+	class UseDb implements ExternalAcademicSessionInformation {
+		/* (non-Javadoc)
+		 * @see org.sakaiproject.coursemanagement.impl.ExternalSessionInformation#getAcademicSession(java.lang.String)
+		 */
+		public AcademicSession getAcademicSession(final String eid) throws IdNotFoundException {
+			
+			// send to database
+			String statement = null;
+			Object[] fields = new Object[1];
+			fields[0] = eid;
+			
+			// if a record with courseId exists
+			statement = "SELECT ACADEMIC_SESSION_ID, VERSION, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, CREATED_BY, CREATED_DATE, ENTERPRISE_ID, TITLE, DESCRIPTION, START_DATE	, END_DATE FROM CM_ACADEMIC_SESSION_T WHERE ENTERPRISE_ID=?";
+			
+			List results = m_sqlService.dbRead(statement, fields, new SqlReader()
+				{
+					public Object readSqlResultRecord(ResultSet result)
+					{
+						try
+						{
+							// create the Resource from the db xml
+							String academic_session_id = result.getString(1);
+							String version = result.getString(2);
+							String lastModifiedBy = result.getString(3);
+							String lastModifiedDate = result.getString(4);
+							String createdBy= result.getString(5);
+							String createdDate= result.getString(6);
+							String eid= result.getString(7);
+							String title = result.getString(8);
+							String description = result.getString(9);
+							Date startDate = result.getDate(10);
+							Date endDate = result.getDate(11);
+							AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
+							
+							return ac;
+						}
+						catch (Throwable ignore) { return null;}
+					}
+				} );
+			
+			if (results != null && results.size()>0)
+			{
+				return (AcademicSession) results.get(0);
+			}
+			else
+			{
+				return null;
+			}
+		}
+	
+		/* (non-Javadoc)
+		 * @see org.sakaiproject.coursemanagement.impl.ExternalSessionInformation#getAcademicSessions(org.sakaiproject.coursemanagement.impl.CourseManagementServiceUnivOfMichImpl)
+		 */
+		public List<AcademicSession> getAcademicSessions(CourseManagementServiceUnivOfMichImpl impl) {
+			// send to database
+			String statement = null;
+			Object[] fields = null;
+			
+			// if a record with courseId exists
+			statement = "SELECT ACADEMIC_SESSION_ID, VERSION, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, CREATED_BY, CREATED_DATE, ENTERPRISE_ID, TITLE, DESCRIPTION, START_DATE	, END_DATE FROM CM_ACADEMIC_SESSION_T";
+			
+			List results = impl.m_sqlService.dbRead(statement, null, new SqlReader()
+				{
+					public Object readSqlResultRecord(ResultSet result)
+					{
+						try
+						{
+							// create the Resource from the db xml
+							String academic_session_id = result.getString(1);
+							String version = result.getString(2);
+							String lastModifiedBy = result.getString(3);
+							String lastModifiedDate = result.getString(4);
+							String createdBy= result.getString(5);
+							String createdDate= result.getString(6);
+							String eid= result.getString(7);
+							String title = result.getString(8);
+							String description = result.getString(9);
+							Date startDate = result.getDate(10);
+							Date endDate = result.getDate(11);
+							AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
+							
+							return ac;
+						}
+						catch (Throwable ignore) { return null;}
+					}
+				} );
+			
+			if (results != null && results.size()>0)
+			{
+				return results;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		
 	}
 }

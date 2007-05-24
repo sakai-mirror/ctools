@@ -14,7 +14,6 @@ public class CourseManagementServiceUnivOfMichImplTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		cmsuofi = new CourseManagementServiceUnivOfMichImpl();
-		cmsuofi.init();
 	}
 
 	protected void tearDown() throws Exception {
@@ -46,6 +45,7 @@ public class CourseManagementServiceUnivOfMichImplTest extends TestCase {
 	public void testGetCourseSetMemberships() {
 		Set courseSetMemberships = cmsuofi.getCourseSetMemberships(null);
 		assertNull("dummy getCourseSetMemberships",courseSetMemberships);
+		fail("not yet finished");
 	}
 //
 //	public void testGetCanonicalCourse() {
@@ -93,7 +93,6 @@ public class CourseManagementServiceUnivOfMichImplTest extends TestCase {
 	public void testGetCourseOfferingCreatesCourseOffering() {
 		CourseOffering co = cmsuofi.getCourseOffering("2007,3,A,SUBJECT,SECTION,COURSE");
 		assertEquals("CourseOffering returned from GCO",co instanceof CourseOffering);
-		
 	}
 	
 //
