@@ -1,5 +1,9 @@
+// $HeadURL:$
+// $Id:$
+
 package org.sakaiproject.coursemanagement.impl;
 
+import org.jmock.*;
 import java.util.Set;
 
 import org.sakaiproject.coursemanagement.api.Section;
