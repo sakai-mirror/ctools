@@ -7,6 +7,12 @@ package org.sakaiproject.coursemanagement.impl;
 // a real database.
 // See testGetSectionCreatesSection for an example of using jmock.
 
+// These tests will change as expand capability of the provider.  E.g.
+// getSection tests for a fixed provider name, but when working on
+// making that more general, first change the test so it fails,
+// because the code doesn't do the right thing and then change the code
+// so it works.
+
 import org.jmock.*;
 
 import java.util.Date;
@@ -158,10 +164,11 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		
 		String id = "2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION";
 		Section s = cmsuofi.getSection(id);
-		// make sure that got back a section
+		// make sure that got back a section and a course offering
 		assertTrue("section returned from GS",s instanceof Section);
 		assertEquals("section contains course offering",id,s.getCourseOfferingEid());
 		
+		// check contents of enrollment set.
 		EnrollmentSet es = s.getEnrollmentSet();
 		assertTrue("section contains enrollment set",es instanceof EnrollmentSet);
 		Set<String> instructors = es.getOfficialInstructors();
