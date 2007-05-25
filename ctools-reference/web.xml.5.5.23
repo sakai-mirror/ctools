@@ -1170,10 +1170,11 @@
     <!-- CTools specific: Added by Dave Haines 2007/05/16 -->
     <!-- $HeadURL$ -->
     <!-- $Id$ -->
-    <!-- Configure tomcat to use CTools specific error pages.  The pages are 
-    kept in svn under ctools-reference/error-pages.  They are installed into the
-    ROOT webapp. 
-    This file is kept in ctools-reference also. -->
+
+    <!-- Configure tomcat to use CTools specific error pages.  The
+         pages are kept in svn under ctools-reference/error-pages.
+         They are installed into the ROOT webapp.  This file is kept
+         in ctools-reference also. -->
 
     <error-page>
         <error-code>403</error-code>
