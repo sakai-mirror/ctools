@@ -21,6 +21,7 @@
 package org.sakaiproject.coursemanagement.impl;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -593,20 +594,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 					{
 						try
 						{
-							// create the Resource from the db xml
-							String academic_session_id = result.getString(1);
-							String version = result.getString(2);
-							String lastModifiedBy = result.getString(3);
-							String lastModifiedDate = result.getString(4);
-							String createdBy= result.getString(5);
-							String createdDate= result.getString(6);
-							String eid= result.getString(7);
-							String title = result.getString(8);
-							String description = result.getString(9);
-							Date startDate = result.getDate(10);
-							Date endDate = result.getDate(11);
-							AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
-							
+							AcademicSessionCmImpl ac = packageAcademicSessionInformationFromDb(result);
 							return ac;
 						}
 						catch (Throwable ignore) { return null;}
@@ -641,19 +629,21 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 						try
 						{
 							// create the Resource from the db xml
-							String academic_session_id = result.getString(1);
-							String version = result.getString(2);
-							String lastModifiedBy = result.getString(3);
-							String lastModifiedDate = result.getString(4);
-							String createdBy= result.getString(5);
-							String createdDate= result.getString(6);
-							String eid= result.getString(7);
-							String title = result.getString(8);
-							String description = result.getString(9);
-							Date startDate = result.getDate(10);
-							Date endDate = result.getDate(11);
-							AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
 							
+							AcademicSessionCmImpl ac = packageAcademicSessionInformationFromDb(result);
+//							String academic_session_id = result.getString(1);
+//							String version = result.getString(2);
+//							String lastModifiedBy = result.getString(3);
+//							String lastModifiedDate = result.getString(4);
+//							String createdBy= result.getString(5);
+//							String createdDate= result.getString(6);
+//							String eid= result.getString(7);
+//							String title = result.getString(8);
+//							String description = result.getString(9);
+//							Date startDate = result.getDate(10);
+//							Date endDate = result.getDate(11);
+//							AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
+//							
 							return ac;
 						}
 						catch (Throwable ignore) { return null;}
@@ -668,6 +658,23 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 			{
 				return null;
 			}
+		}
+
+		protected AcademicSessionCmImpl packageAcademicSessionInformationFromDb(ResultSet result) throws SQLException {
+			// create the Resource from the db xml
+			String academic_session_id = result.getString(1);
+			String version = result.getString(2);
+			String lastModifiedBy = result.getString(3);
+			String lastModifiedDate = result.getString(4);
+			String createdBy= result.getString(5);
+			String createdDate= result.getString(6);
+			String eid= result.getString(7);
+			String title = result.getString(8);
+			String description = result.getString(9);
+			Date startDate = result.getDate(10);
+			Date endDate = result.getDate(11);
+			AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
+			return ac;
 		}
 		
 	}
