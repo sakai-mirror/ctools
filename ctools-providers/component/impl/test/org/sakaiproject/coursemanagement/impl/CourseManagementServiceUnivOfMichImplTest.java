@@ -1,17 +1,28 @@
-// $HeadURL:$
-// $Id:$
+// $HeadURL$
+// $Id$
 
 package org.sakaiproject.coursemanagement.impl;
 
+// This uses jmock to get around requirement of using
+// a real database.
+// See testGetSectionCreatesSection for an example of using jmock.
+
 import org.jmock.*;
+
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
+import org.sakaiproject.coursemanagement.api.AcademicSession;
+import org.sakaiproject.coursemanagement.api.CourseOffering;
+import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.coursemanagement.api.exception.IdNotFoundException;
+import org.sakaiproject.coursemanagement.impl.ExternalAcademicSessionInformation;
 
 import junit.framework.TestCase;
 
-public class CourseManagementServiceUnivOfMichImplTest extends TestCase {
+public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCase {
 
 	CourseManagementServiceUnivOfMichImpl cmsuofi = null;
 	
@@ -49,6 +60,12 @@ public class CourseManagementServiceUnivOfMichImplTest extends TestCase {
 	public void testGetCourseSetMemberships() {
 		Set courseSetMemberships = cmsuofi.getCourseSetMemberships(null);
 		assertNull("dummy getCourseSetMemberships",courseSetMemberships);
+	}
+	
+	public void testGetCourseSetMembershipsYetToDo() {
+		// need to implement these tests too.
+		// 
+		// 
 		fail("not yet finished");
 	}
 //
@@ -97,13 +114,90 @@ public class CourseManagementServiceUnivOfMichImplTest extends TestCase {
 		assertEquals("Spring Summer term is 5","SPRING_SUMMER",cmsuofi.findTermStringFromTermIndex("5"));
 	}
 	
+	
+//	import org.jmock.*;
+//
+//	class PublisherTest extends MockObjectTestCase {
+//	    public void testOneSubscriberReceivesAMessage() {
+//	        // set up
+//	        Mock mockSubscriber = mock(Subscriber.class);
+//	        Publisher publisher = new Publisher();
+//	        publisher.add((Subscriber) mockSubscriber.proxy());
+//	        
+//	        final String message = "message";
+//	        
+//	        // expectations
+//	        mockSubscriber.expects(once()).method("receive").with( eq(message) );
+//	        
+//	        // execute
+//	        publisher.publish(message);
+//	    }
+//	}
+	
 	/**
 	 * test the Section object creation based on the section id in UMIAC format
+	 * test expected contents of enrollmentset and course offering.
+	 * Not finished.
 	 */
-	public void testGetSectionCreatesSection() {
-		Section co = cmsuofi.getSection("2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");
-		assertEquals("CourseOffering returned from GS",co instanceof Section);
+	public void testGetSection() {
+		
+		// getSection will look up section from external source,
+		// so mock one up.
+		Mock mockUseDb = mock(ExternalAcademicSessionInformation.class);
+		ExternalAcademicSessionInformation easi = (ExternalAcademicSessionInformation) mockUseDb.proxy();
+		
+		// The external source will return an Academic session object.  Mock that up and
+		// set appropriate values for that object.
+		Mock mockAcademicSession = mock(AcademicSession.class);
+		mockUseDb.expects(once()).method("getAcademicSession").with(eq("WINTER 2007")).will(returnValue(mockAcademicSession.proxy()));
+		mockAcademicSession.expects(once()).method("getStartDate").will(returnValue(new Date()));
+		mockAcademicSession.expects(once()).method("getEndDate").will(returnValue(new Date()));
+		
+		// setup to use the mock
+		cmsuofi.setExternalAcademicSessionInformationSource(easi);
+		
+		String id = "2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION";
+		Section s = cmsuofi.getSection(id);
+		// make sure that got back a section
+		assertTrue("section returned from GS",s instanceof Section);
+		assertEquals("section contains course offering",id,s.getCourseOfferingEid());
+		
+		EnrollmentSet es = s.getEnrollmentSet();
+		assertTrue("section contains enrollment set",es instanceof EnrollmentSet);
+		Set<String> instructors = es.getOfficialInstructors();
+		Set<String> instructorSet = new HashSet<String>();
+		instructorSet.add("instructorOne");
+		assertTrue("expected instructors are in enrollment set",instructorSet.containsAll(instructors));
+		assertTrue("instructors in enrollment set are all expected",instructors.containsAll(instructorSet));
+		
+		//assertEquals("instructor is instructorOne","instructorOne";
 	}
+	
+	public void testGetSectionYetToDo() {
+		fail("more getSection tests yet to do");
+	}
+	
+//	public void testSectionContents() {
+//		
+//		// getSection will look up section from external source,
+//		// so mock one up.
+//		Mock mockUseDb = mock(ExternalAcademicSessionInformation.class);
+//		ExternalAcademicSessionInformation easi = (ExternalAcademicSessionInformation) mockUseDb.proxy();
+//		
+//		// The external source will return an Academic session object.  Mock that up and
+//		// set appropriate values for that object.
+//		Mock mockAcademicSession = mock(AcademicSession.class);
+//		mockUseDb.expects(once()).method("getAcademicSession").with(eq("WINTER 2007")).will(returnValue(mockAcademicSession.proxy()));
+//		mockAcademicSession.expects(once()).method("getStartDate").will(returnValue(new Date()));
+//		mockAcademicSession.expects(once()).method("getEndDate").will(returnValue(new Date()));
+//		
+//		// setup to use the mock
+//		cmsuofi.setExternalAcademicSessionInformationSource(easi);
+//		Section co = cmsuofi.getSection("2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");
+//		// make sure that got back a section
+//		assertTrue("section returned from GS",co instanceof Section);
+//	}
+	
 	
 //
 //	public void testGetCourseOfferingsInCourseSet() {

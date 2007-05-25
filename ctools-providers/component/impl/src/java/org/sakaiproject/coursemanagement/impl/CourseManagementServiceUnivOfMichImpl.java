@@ -113,18 +113,14 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		this.m_umiac = m_umiac;
 	}
 
-	public void setEsi(ExternalAcademicSessionInformation esi) {
-		this.esi = esi;
-	}
-
-	public ExternalAcademicSessionInformation getEsi() {
-		return esi;
-	}
-
 	public UmiacClient getUmiac() {
 		return m_umiac;
 	}
-	
+	// Reset source of external session information so can use a mock for testing.
+	public void setExternalAcademicSessionInformationSource(ExternalAcademicSessionInformation esi) {
+		this.esi = esi;
+	}
+
 	/** Dependency: SqlService */
 	protected SqlService m_sqlService = null;
 
@@ -294,26 +290,31 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		return new HashSet();
 	}
 
+	// Get the session information from an external source, and setup a section
+	// with a nested course offering and enrollment set.
+	
 	public Section getSection(String eid) throws IdNotFoundException {
 		AcademicSession as = getAcademicSessionFromProviderId(eid);
-		
-		CourseOfferingCmImpl co = new CourseOfferingCmImpl(eid, eid, "","open", as, new CanonicalCourseCmImpl(eid, eid, eid), as.getStartDate(),as.getEndDate());
-		
+
+		CourseOfferingCmImpl co = new CourseOfferingCmImpl(eid, eid, "","open", as, 
+				new CanonicalCourseCmImpl(eid, eid, eid), 
+				as.getStartDate(),as.getEndDate());
+
 		Set instructors = new HashSet();
 		instructors.add("instructorOne");
-		
+
 		EnrollmentSet eSet = new EnrollmentSetCmImpl(eid,eid,eid, "lct","3", co, instructors);
-		
+
 		SectionCmImpl section = new SectionCmImpl();
 		section.setCategory("lct");
 		section.setCourseOffering(co);
 		section.setDescription(co.getDescription());
 		section.setEid(co.getEid());
 		section.setTitle(co.getTitle());
-        section.setMaxSize(new Integer(100));
-        section.setEnrollmentSet(eSet);
-        
-        return section;
+		section.setMaxSize(new Integer(100));
+		section.setEnrollmentSet(eSet);
+
+		return section;
 	}
 
 	public Set getSections(String courseOfferingEid) throws IdNotFoundException {
