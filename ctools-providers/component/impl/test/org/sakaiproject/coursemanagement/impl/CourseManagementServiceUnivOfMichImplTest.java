@@ -166,7 +166,9 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		Section s = cmsuofi.getSection(id);
 		// make sure that got back a section and a course offering
 		assertTrue("section returned from GS",s instanceof Section);
-		assertEquals("section contains course offering",id,s.getCourseOfferingEid());
+		
+		String coEid = "2007,3,A,SUBJECT,CATALOG_NBR";
+		assertEquals("section contains course offering",coEid,s.getCourseOfferingEid());
 		
 		// check contents of enrollment set.
 		EnrollmentSet es = s.getEnrollmentSet();

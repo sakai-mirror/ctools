@@ -247,6 +247,11 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		}
 	}
 
+	private String getCourseOfferingEidFromProviderId(String providerId) {
+		// Section eid: 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION -> CouseOffering eid:2007,3,A,SUBJECT,CATALOG_NBR
+		return providerId.substring(0, providerId.lastIndexOf(","));
+		
+	}
 	private AcademicSession getAcademicSessionFromProviderId(String providerId) {
 		// 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION
 		String[] eidParts = providerId.split(",");
@@ -296,14 +301,16 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	public Section getSection(String eid) throws IdNotFoundException {
 		AcademicSession as = getAcademicSessionFromProviderId(eid);
 
-		CourseOfferingCmImpl co = new CourseOfferingCmImpl(eid, eid, "","open", as, 
-				new CanonicalCourseCmImpl(eid, eid, eid), 
+		// CourseOffering object
+		String coEid = getCourseOfferingEidFromProviderId(eid);
+		CourseOfferingCmImpl co = new CourseOfferingCmImpl(coEid, coEid, "","open", as, 
+				new CanonicalCourseCmImpl(coEid, coEid, coEid), 
 				as.getStartDate(),as.getEndDate());
 
 		Set instructors = new HashSet();
 		instructors.add("instructorOne");
 
-		EnrollmentSet eSet = new EnrollmentSetCmImpl(eid,eid,eid, "lct","3", co, instructors);
+		EnrollmentSet eSet = new EnrollmentSetCmImpl(coEid,coEid,coEid, "lct","3", co, instructors);
 
 		SectionCmImpl section = new SectionCmImpl();
 		section.setCategory("lct");
