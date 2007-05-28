@@ -63,6 +63,48 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 //		fail("Not yet implemented");
 //	}
 //
+	
+	//Section eid: 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION -> CouseOffering eid:2007,3,A,SUBJECT,CATALOG_NBR
+	public void testGetCourseOfferingEidFromProviderId() {
+		assertEquals("extract course offering from provider id","2007,3,A,SUBJECT,CATALOG_NBR",
+				cmsuofi.getCourseOfferingEidFromProviderId("2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION"));
+		
+	}
+	
+//	 String getAcademicSessionIdFromProviderId(String providerId) {
+//			// 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION
+//			String[] eidParts = providerId.split(",");
+//			String foundTermString = findTermStringFromTermIndex(eidParts[1]);
+//			String academicSessionId = foundTermString.concat(" ").concat(eidParts[0]);
+//			return academicSessionId;
+//		}
+	
+	// 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION -> WINTER 2007
+	public void testGetAcademicSessionIdFromProviderIdWinter() {
+		String academicSessionId = cmsuofi.getAcademicSessionIdFromProviderId("2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");	
+		assertEquals("generate WINTER 2007","WINTER 2007",academicSessionId);
+		
+	}
+	
+	public void testGetAcademicSessionIdFromProviderIdSummer() {
+		String academicSessionId = cmsuofi.getAcademicSessionIdFromProviderId("2000,1,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");	
+		assertEquals("generate SUMMER 2000","SUMMER 2000",academicSessionId);
+		
+	}
+	
+	public void testGetAcademicSessionIdFromProviderIdSpring() {
+		String academicSessionId = cmsuofi.getAcademicSessionIdFromProviderId("2006,4,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");	
+		assertEquals("generate SPRING 2006","SPRING 2006",academicSessionId);
+		
+	}
+	
+	public void testGetAcademicSessionIdFromProviderIdSpringSummer() {
+		String academicSessionId = cmsuofi.getAcademicSessionIdFromProviderId("2010,5,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");	
+		assertEquals("generate SPRING_SUMMER","SPRING_SUMMER 2010",academicSessionId);
+		
+	}
+	
+	
 	public void testGetCourseSetMemberships() {
 		Set courseSetMemberships = cmsuofi.getCourseSetMemberships(null);
 		assertNull("dummy getCourseSetMemberships",courseSetMemberships);

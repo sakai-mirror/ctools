@@ -70,6 +70,11 @@ import org.sakaiproject.exception.IdUnusedException;
  * 
  * In process.
  * 
+ * 
+ * NOTE: Using the 'esi'variable allows using an injected class to get external academic information rather than
+ * the default, internal, sql version.  That allows for much easier testing using a mock external academic information 
+ * source.
+ * 
  */
 public class CourseManagementServiceUnivOfMichImpl implements CourseManagementService {
 	private static final Log log = LogFactory.getLog(CourseManagementServiceUnivOfMichImpl.class);
@@ -201,11 +206,12 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	public Set getCanonicalCourses(final String courseSetEid) throws IdNotFoundException {
 		return new HashSet();
 	}
-
-	// Delegate to a default subclass so that can then override the inner class and use a mock for testing.
 	
-	public AcademicSession getAcademicSession(String eid) throws IdNotFoundException {
-		return esi.getAcademicSession(eid);
+	// Explicit testing of these delgating methods is not useful.  Testing the implementations 
+	// of esi would be interesting.
+	
+	public AcademicSession getAcademicSession(String academicSessionEid) throws IdNotFoundException {
+		return esi.getAcademicSession(academicSessionEid);
 	}
 
 
@@ -217,8 +223,6 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	public List<AcademicSession> getCurrentAcademicSessions() {
 		return getAcademicSessions();
 	}
-
-	
 	
 	public CourseOffering getCourseOffering(String providerId) throws IdNotFoundException {
 		AcademicSession as = getAcademicSessionFromProviderId(providerId);
@@ -247,12 +251,14 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		}
 	}
 
-	private String getCourseOfferingEidFromProviderId(String providerId) {
+	String getCourseOfferingEidFromProviderId(String providerId) {
 		// Section eid: 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION -> CouseOffering eid:2007,3,A,SUBJECT,CATALOG_NBR
 		return providerId.substring(0, providerId.lastIndexOf(","));
 		
 	}
-	private AcademicSession getAcademicSessionFromProviderId(String providerId) {
+	
+	
+	 AcademicSession getAcademicSessionFromProviderIdOld(String providerId) {
 		// 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION
 		String[] eidParts = providerId.split(",");
 		String foundTermString = null;
@@ -262,6 +268,21 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		AcademicSession as = getAcademicSession(academicSessionId);
 		return as;
 	}
+	 
+	 AcademicSession getAcademicSessionFromProviderId(String providerId) {
+		 // 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION
+		 String academicSessionId = getAcademicSessionIdFromProviderId(providerId);
+		 AcademicSession as = getAcademicSession(academicSessionId);
+		 return as;
+	 }
+	 
+	 String getAcademicSessionIdFromProviderId(String providerId) {
+			// 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION
+			String[] eidParts = providerId.split(",");
+			String foundTermString = findTermStringFromTermIndex(eidParts[1]);
+			String academicSessionId = foundTermString.concat(" ").concat(eidParts[0]);
+			return academicSessionId;
+		}
 
 	/**
 	 * Look up the term string from the term index in the provider id.
