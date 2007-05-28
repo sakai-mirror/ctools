@@ -167,6 +167,7 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		// make sure that got back a section and a course offering
 		assertTrue("section returned from GS",s instanceof Section);
 		
+		// course offering id should not contain the section information from the full id.
 		String coEid = "2007,3,A,SUBJECT,CATALOG_NBR";
 		assertEquals("section contains course offering",coEid,s.getCourseOfferingEid());
 		

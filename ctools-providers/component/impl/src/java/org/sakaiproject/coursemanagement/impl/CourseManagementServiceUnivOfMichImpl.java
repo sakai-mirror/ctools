@@ -78,9 +78,9 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	
 	private static Hashtable<String, String> termIndex = new Hashtable<String, String>();
 	
+	// Default to the internal implementation, but allow injecting
+	// an overriding one.
 	private ExternalAcademicSessionInformation esi = new UseDb();
-	
-	private boolean useSql = true;
 	
 	/**
 	 * term names are stored as digits in UMIAC
