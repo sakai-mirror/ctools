@@ -3,21 +3,35 @@
 
 package org.sakaiproject.coursemanagement.impl;
 
-// This uses jmock to get around requirement of using
-// a real database.
+// This contains tests for the UMich CTools course management provider.
+// It does not test everything currently, but the tests that are here are working.
+// Feel free to add more tests as new capabilities are needed.
+
+// To overcome the issue of needing a live database the database access methods have been 
+// factored out into an inner class, and a mock can be used to substitute for the 
+// database.
+// 
 // See testGetSectionCreatesSection for an example of using jmock.
 
-// These tests will change as expand capability of the provider.  E.g.
+// These tests will change as we expand capability of the provider.  E.g.
 // getSection tests for a fixed provider name, but when working on
 // making that more general, first change the test so it fails,
 // because the code doesn't do the right thing and then change the code
 // so it works.
 
+//
+
 import org.jmock.*;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+
+import org.sakaiproject.util.api.umiac.UmiacClient;
 
 import org.sakaiproject.coursemanagement.api.AcademicSession;
 import org.sakaiproject.coursemanagement.api.CourseOffering;
@@ -25,6 +39,8 @@ import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Section;
 import org.sakaiproject.coursemanagement.api.exception.IdNotFoundException;
 import org.sakaiproject.coursemanagement.impl.ExternalAcademicSessionInformation;
+import org.sakaiproject.exception.IdUnusedException;
+import org.apache.commons.logging.Log;
 
 import junit.framework.TestCase;
 
@@ -71,14 +87,6 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		
 	}
 	
-//	 String getAcademicSessionIdFromProviderId(String providerId) {
-//			// 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION
-//			String[] eidParts = providerId.split(",");
-//			String foundTermString = findTermStringFromTermIndex(eidParts[1]);
-//			String academicSessionId = foundTermString.concat(" ").concat(eidParts[0]);
-//			return academicSessionId;
-//		}
-	
 	// 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION -> WINTER 2007
 	public void testGetAcademicSessionIdFromProviderIdWinter() {
 		String academicSessionId = cmsuofi.getAcademicSessionIdFromProviderId("2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");	
@@ -110,12 +118,12 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		assertNull("dummy getCourseSetMemberships",courseSetMemberships);
 	}
 	
-	public void testGetCourseSetMembershipsYetToDo() {
-		// need to implement these tests too.
-		// 
-		// 
-		fail("not yet finished");
-	}
+//	public void testGetCourseSetMembershipsYetToDo() {
+//		// need to implement these tests too.
+//		// 
+//		// 
+//		fail("not yet finished");
+//	}
 //
 //	public void testGetCanonicalCourse() {
 //		fail("Not yet implemented");
@@ -144,12 +152,6 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 //	public void testGetCourseOffering() {
 //		fail("Not yet implemented");
 //	}
-	
-//	termIndex.put("SUMMER", "1");
-//	termIndex.put("FALL","2");
-//	termIndex.put("WINTER", "3");
-//	termIndex.put("SPRING", "4");
-//	termIndex.put("SPRING_SUMMER","5");
 	
 	/**
 	 * test the mapping the English-version of term names into one-digit format which is used inside UMIAC
@@ -225,31 +227,10 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		//assertEquals("instructor is instructorOne","instructorOne";
 	}
 	
-	public void testGetSectionYetToDo() {
-		fail("more getSection tests yet to do");
-	}
-	
-//	public void testSectionContents() {
-//		
-//		// getSection will look up section from external source,
-//		// so mock one up.
-//		Mock mockUseDb = mock(ExternalAcademicSessionInformation.class);
-//		ExternalAcademicSessionInformation easi = (ExternalAcademicSessionInformation) mockUseDb.proxy();
-//		
-//		// The external source will return an Academic session object.  Mock that up and
-//		// set appropriate values for that object.
-//		Mock mockAcademicSession = mock(AcademicSession.class);
-//		mockUseDb.expects(once()).method("getAcademicSession").with(eq("WINTER 2007")).will(returnValue(mockAcademicSession.proxy()));
-//		mockAcademicSession.expects(once()).method("getStartDate").will(returnValue(new Date()));
-//		mockAcademicSession.expects(once()).method("getEndDate").will(returnValue(new Date()));
-//		
-//		// setup to use the mock
-//		cmsuofi.setExternalAcademicSessionInformationSource(easi);
-//		Section co = cmsuofi.getSection("2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");
-//		// make sure that got back a section
-//		assertTrue("section returned from GS",co instanceof Section);
+//	public void testGetSectionYetToDo() {
+//		fail("more getSection tests yet to do");
 //	}
-	
+//	
 	
 //
 //	public void testGetCourseOfferingsInCourseSet() {
@@ -280,9 +261,105 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 //		fail("Not yet implemented");
 //	}
 //
-//	public void testGetEnrollmentSet() {
-//		fail("Not yet implemented");
-//	}
+	
+	// eid: providerId 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION
+	// result: 1: Burger,Ham F|HBURGER|11234541|-||Instructor|E
+	public void testGetSectionInstructors() {
+
+		// will need to mock umiac
+		Mock mockUmiac = mock(UmiacClient.class);
+		UmiacClient uc = (UmiacClient) mockUmiac.proxy();
+		
+		String providerId = "2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION";
+		
+		HashMap eidRoleMap = new HashMap();
+	
+		eidRoleMap.put("HBURGER", "Instructor");
+		eidRoleMap.put("FFERTER", "Instructor");
+		eidRoleMap.put("MUSTERARD","Student");
+		eidRoleMap.put("VINAGER","Student");
+		mockUmiac.expects(once()).method("getGroupRoles").with(eq(providerId)).will(returnValue(eidRoleMap));
+
+		cmsuofi.setUmiac(uc);
+		
+		Set s = cmsuofi.getSectionInstructors(providerId);
+		String elements[] = {"HBURGER","FFERTER"};
+		Set right = new HashSet<String>(Arrays.asList(elements));
+		assertEquals("found both instructors",right,s);
+
+	}
+	
+	public void testGetSectionInstructorsEmpty() {
+
+		// will need to mock umiac
+		Mock mockUmiac = mock(UmiacClient.class);
+		UmiacClient uc = (UmiacClient) mockUmiac.proxy();
+		
+		String providerId = "2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION";
+		
+		HashMap eidRoleMap = new HashMap();
+	
+		mockUmiac.expects(once()).method("getGroupRoles").with(eq(providerId)).will(returnValue(eidRoleMap));
+
+		cmsuofi.setUmiac(uc);
+		
+		Set s = cmsuofi.getSectionInstructors(providerId);
+		String elements[] = new String[] {};
+		Set right = new HashSet<String>(Arrays.asList(elements));
+		assertEquals("no instructors returns empty set",right,s);
+
+	}
+	
+	public void testGetSectionInstructorsnoInstructor() {
+
+		// will need to mock umiac
+		Mock mockUmiac = mock(UmiacClient.class);
+		UmiacClient uc = (UmiacClient) mockUmiac.proxy();
+		
+		String providerId = "2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION";
+		
+		HashMap eidRoleMap = new HashMap();
+	
+		eidRoleMap.put("HBURGER", "TA");
+		eidRoleMap.put("FFERTER", "TA");
+		eidRoleMap.put("MUSTERARD","Student");
+		eidRoleMap.put("VINAGER","Student");
+		mockUmiac.expects(once()).method("getGroupRoles").with(eq(providerId)).will(returnValue(eidRoleMap));
+
+		cmsuofi.setUmiac(uc);
+		
+		Set s = cmsuofi.getSectionInstructors(providerId);
+		String elements[] = {};
+		Set right = new HashSet<String>(Arrays.asList(elements));
+		assertEquals("found no instructors",right,s);
+
+	}
+	
+	
+	public void testGetSectionInstructorsUnusedId() {
+
+		// will need to mock umiac
+		Mock mockUmiac = mock(UmiacClient.class);
+		UmiacClient uc = (UmiacClient) mockUmiac.proxy();
+		
+		Mock mockLog = mock(Log.class);
+		Log log = (Log) mockLog.proxy();
+		
+		mockLog.expects(once()).method("warn").with(ANYTHING);
+				
+		String providerId = "2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION";
+		
+//		HashMap eidRoleMap = new HashMap();
+	
+		mockUmiac.expects(once()).method("getGroupRoles").with(eq(providerId)).will(throwException(new org.sakaiproject.exception.IdUnusedException(providerId)));
+
+		cmsuofi.setUmiac(uc);
+		cmsuofi.setLog(log);
+		
+		Set s = cmsuofi.getSectionInstructors(providerId);
+		
+		// There are no specfic asserts since the verify step in the mocks will ensure that the log method has been called.
+	}
 //
 //	public void testGetEnrollmentSets() {
 //		fail("Not yet implemented");
