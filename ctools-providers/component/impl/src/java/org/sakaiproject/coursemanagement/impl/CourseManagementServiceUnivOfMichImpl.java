@@ -102,7 +102,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		return log;
 	}
 
-	public static void setLog(Log log) {
+	public void setLog(Log log) {
 		CourseManagementServiceUnivOfMichImpl.log = log;
 	}
 
@@ -588,8 +588,8 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		return map;
 	}
 
-	public Map getMembershipStatusDescriptions(Locale locale) {
-		Map map = new HashMap();
+	public Map<String, String> getMembershipStatusDescriptions(Locale locale) {
+		Map<String, String> map = new HashMap<String, String>();
 		map.put("member", "Member");
 		map.put("guest", "Guest");
 		return map;
@@ -651,6 +651,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		public List<AcademicSession> getAcademicSessions() {
 			// send to database
 			String statement = null;
+			@SuppressWarnings("unused")
 			Object[] fields = null;
 			
 			// if a record with courseId exists

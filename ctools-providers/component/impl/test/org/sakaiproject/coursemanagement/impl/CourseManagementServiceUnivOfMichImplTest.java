@@ -276,8 +276,8 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 	
 		eidRoleMap.put("HBURGER", "Instructor");
 		eidRoleMap.put("FFERTER", "Instructor");
-		eidRoleMap.put("MUSTERARD","Student");
-		eidRoleMap.put("VINAGER","Student");
+		eidRoleMap.put("MUSTARD","Student");
+		eidRoleMap.put("VINEGAR","Student");
 		mockUmiac.expects(once()).method("getGroupRoles").with(eq(providerId)).will(returnValue(eidRoleMap));
 
 		cmsuofi.setUmiac(uc);
@@ -322,8 +322,8 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 	
 		eidRoleMap.put("HBURGER", "TA");
 		eidRoleMap.put("FFERTER", "TA");
-		eidRoleMap.put("MUSTERARD","Student");
-		eidRoleMap.put("VINAGER","Student");
+		eidRoleMap.put("MUSTARD","Student");
+		eidRoleMap.put("VINEGAR","Student");
 		mockUmiac.expects(once()).method("getGroupRoles").with(eq(providerId)).will(returnValue(eidRoleMap));
 
 		cmsuofi.setUmiac(uc);
