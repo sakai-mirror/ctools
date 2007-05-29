@@ -161,14 +161,16 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public Set getChildCourseSets(final String parentCourseSetEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	/**
 	 * get the whole list of available CourseSet objects
 	 */
 	public Set getCourseSets() {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public Set getCourseSetMemberships(String courseSetEid) throws IdNotFoundException 
@@ -207,11 +209,13 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public Set getEquivalentCanonicalCourses(String canonicalCourseEid) {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public Set getCanonicalCourses(final String courseSetEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 	
 	// Explicit testing of these delgating methods is not useful.  Testing the implementations 
@@ -299,15 +303,18 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public Set getCourseOfferingsInCourseSet(final String courseSetEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public Set getEquivalentCourseOfferings(String courseOfferingEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		// return new HashSet();
 	}
 
 	public Set getCourseOfferingMemberships(String courseOfferingEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		// return new HashSet();
 	}
 
 	// Get the session information from an external source, and setup a section
@@ -340,15 +347,18 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public Set getSections(String courseOfferingEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public Set getChildSections(final String parentSectionEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public Set getSectionMemberships(String sectionEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		// return new HashSet();
 	}
 
 	public EnrollmentSet getEnrollmentSet(String providerId) throws IdNotFoundException {
@@ -390,11 +400,13 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public Set getEnrollmentSets(final String courseOfferingEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public Set getEnrollments(final String enrollmentSetEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public boolean isEnrolled(final String userId, final Set<String> enrollmentSetEids) {
@@ -445,12 +457,14 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 
 
 	public Set findCurrentlyEnrolledEnrollmentSets(final String userId) {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 
 	public Set  findCurrentlyInstructingEnrollmentSets(final String userId) {
-		return new HashSet();
+		return null;
+		// return new HashSet();
 	}
 
 	/**
@@ -459,7 +473,8 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	public Set<Section> findInstructingSections(final String userId) 
 	{
 		// not needed
-		return new HashSet<Section>();
+		return null;
+		//return new HashSet<Section>();
 	}
 
 	/**
@@ -468,16 +483,19 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	public Set<Section> findEnrolledSections(final String userId) 
 	{
 		// not needed
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 	
 	public Set<Section> findInstructingSections(final String userId, final String academicSessionEid) 
 	{
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public Set<CourseOffering> findCourseOfferings(final String courseSetEid, final String academicSessionEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		// return new HashSet();
 	}
 
 	public boolean isEmpty(final String courseSetEid) {
@@ -486,7 +504,8 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 
 
 	public List<CourseSet> findCourseSets(final String category) {
-		return new Vector();
+		return null;
+		//return new Vector();
 	}
 
 
@@ -524,7 +543,8 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 
 
 	public Set<CourseOffering> getCourseOfferingsInCanonicalCourse(final String canonicalCourseEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public boolean isAcademicSessionDefined(String eid) {
@@ -567,11 +587,12 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public List<String> getSectionCategories() {
-		return new Vector();
+		return null;
+		//return new Vector();
 	}
 
 	public String getSectionCategoryDescription(String categoryCode) {
-		return "";
+		return "no section category description.";
 	}
 
 	public Map<String, String> getEnrollmentStatusDescriptions(Locale locale) {
