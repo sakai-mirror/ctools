@@ -1176,10 +1176,12 @@
          They are installed into the ROOT webapp.  This file is kept
          in ctools-reference also. -->
 
+    <!--
     <error-page>
         <error-code>403</error-code>
 	<location>/error-pages/403.html</location>
     </error-page>   
+    -->
 
     <error-page>
         <error-code>404</error-code>
