@@ -321,28 +321,34 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	
 	public Section getSection(String providerId) throws IdNotFoundException {
 		AcademicSession as = getAcademicSessionFromProviderId(providerId);
-
-		// CourseOffering object
-		String coEid = getCourseOfferingEidFromProviderId(providerId);
-		CourseOfferingCmImpl co = new CourseOfferingCmImpl(coEid, coEid, "","open", as, 
-				new CanonicalCourseCmImpl(coEid, coEid, coEid), 
-				as.getStartDate(),as.getEndDate());
-
-		Set<String> instructors = new HashSet<String>();
-		instructors.add("instructorOne");
-
-		EnrollmentSet eSet = new EnrollmentSetCmImpl(coEid,coEid,coEid, "lct","3", co, instructors);
-
-		SectionCmImpl section = new SectionCmImpl();
-		section.setCategory("lct");
-		section.setCourseOffering(co);
-		section.setDescription(co.getDescription());
-		section.setEid(co.getEid());
-		section.setTitle(co.getTitle());
-		section.setMaxSize(new Integer(100));
-		section.setEnrollmentSet(eSet);
-
-		return section;
+		
+		if (as != null)
+		{
+			// CourseOffering object
+			String coEid = getCourseOfferingEidFromProviderId(providerId);
+			CourseOfferingCmImpl co = new CourseOfferingCmImpl(coEid, coEid, "","open", as, 
+					new CanonicalCourseCmImpl(coEid, coEid, coEid), 
+					as.getStartDate(),as.getEndDate());
+	
+			Set<String> instructors = new HashSet<String>();
+			instructors.add("instructorOne");
+	
+			EnrollmentSet eSet = new EnrollmentSetCmImpl(coEid,coEid,coEid, "lct","3", co, instructors);
+	
+			SectionCmImpl section = new SectionCmImpl();
+			section.setCategory("lct");
+			section.setCourseOffering(co);
+			section.setDescription(co.getDescription());
+			section.setEid(co.getEid());
+			section.setTitle(co.getTitle());
+			section.setMaxSize(new Integer(100));
+			section.setEnrollmentSet(eSet);
+			return section;
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	public Set getSections(String courseOfferingEid) throws IdNotFoundException {
