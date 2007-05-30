@@ -308,8 +308,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public Set getEquivalentCourseOfferings(String courseOfferingEid) throws IdNotFoundException {
-		return null;
-		// return new HashSet();
+		return new HashSet(); // see if there are cross listings.
 	}
 
 	public Set getCourseOfferingMemberships(String courseOfferingEid) throws IdNotFoundException {
@@ -592,7 +591,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public String getSectionCategoryDescription(String categoryCode) {
-		return "no section category description.";
+		return "no section category description for code: "+categoryCode;
 	}
 
 	public Map<String, String> getEnrollmentStatusDescriptions(Locale locale) {
