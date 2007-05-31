@@ -63,6 +63,7 @@ public class SectionFieldManagerImpl implements SectionFieldManager {
 	}
 
 	public void init() {
+		log.info("Initializing CTools:" + getClass().getName());
 	}
 
 	public void destroy() {
