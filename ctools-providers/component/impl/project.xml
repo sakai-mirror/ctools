@@ -162,6 +162,12 @@
 			<artifactId>sakai-coursemanagement-api</artifactId>
 			<version>${sakai.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>sakaiproject</groupId>
+			<artifactId>sakai-site-manage-api</artifactId>
+			<version>${sakai.version}</version>
+		</dependency>
 		
 			<dependency>
 			<groupId>sakaiproject</groupId>
@@ -204,7 +210,12 @@
 		<resources>
 
 		</resources>
-
+		<unitTestSourceDirectory>test</unitTestSourceDirectory>
+		<unitTest>
+		  <includes>
+		    <include>**/*Test.java</include>
+		  </includes>
+		</unitTest>
 	</build>
 
 </project>
