@@ -325,7 +325,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		if (as != null)
 		{
 			String[] fields = providerId.split(",");
-			String title = fields[2] + " " + fields[3] + " " + fields[4];
+			String title = fields[3] + " " + fields[4] + " " + fields[5];
 			
 			// CourseOffering object
 			String coEid = getCourseOfferingEidFromProviderId(providerId);
@@ -413,8 +413,31 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public Set getEnrollments(final String enrollmentSetEid) throws IdNotFoundException {
+		if( ! isEnrollmentSetDefined(enrollmentSetEid)) {
+			log.warn(this + "Could not find an enrollment set with eid=" + enrollmentSetEid);
+			return null;
+		}
+		
+		// unpack the enrollmentSetEid to query umiac
+		String ids[] = enrollmentSetEid.split(",");
+		
+		// make sure the eid is formatted right
+		if (ids.length == 6)
+		{
+			HashSet enrollmentSet = new HashSet();
+			Vector enrollList = getUmiac().getClassList(ids[0], ids[1], ids[2], ids[3], ids[4], ids[5]);
+			for (Iterator i = enrollList.iterator(); i.hasNext();)
+			{
+				// format for enroll string: sort_name|uniqname|umid|level|credits|role|enrl_status
+				String[] enrollStringParts = (String []) i.next();
+				if (enrollStringParts.length == 7)
+				{
+					enrollmentSet.add(new EnrollmentCmImpl(enrollStringParts[1], getEnrollmentSet(enrollmentSetEid), enrollStringParts[6], enrollStringParts[4], ""));
+				}
+			}
+			return enrollmentSet;
+		}
 		return null;
-		//return new HashSet();
 	}
 
 	public boolean isEnrolled(final String userId, final Set<String> enrollmentSetEids) {
@@ -432,29 +455,24 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 			return null;
 		}
 		
-		// compute the set of individual umiac ids that are packed into id
-		String eids[] = unpackId(enrollmentSetEid);
+		// unpack the enrollmentSetEid to query umiac
+		String ids[] = enrollmentSetEid.split(",");
 		
-		try
+		// make sure the eid is formatted right
+		if (ids.length == 6)
 		{
-			Map members = getUmiac().getGroupRoles(eids);
-			String roleString = null;
-			for (Iterator i = members.keySet().iterator(); i.hasNext();)
+			Vector enrollList = getUmiac().getClassList(ids[0], ids[1], ids[2], ids[3], ids[4], ids[5]);
+			for (Iterator i = enrollList.iterator(); i.hasNext();)
 			{
-				String memberEid = (String) i.next();
-				if (memberEid.equals(userId))
+				// format for enroll string: sort_name|uniqname|umid|level|credits|role|enrl_status
+				String[] enrollStringParts = (String[]) i.next();
+				if (enrollStringParts.length == 7 && enrollStringParts[2].equals(userId))
 				{
-					roleString = (String) members.get(memberEid);
+					return new EnrollmentCmImpl(userId, getEnrollmentSet(enrollmentSetEid), enrollStringParts[6], enrollStringParts[4], "");
 				}
 			}
-			return new EnrollmentCmImpl(userId, getEnrollmentSet(enrollmentSetEid), "enrolled", "3", "gradeScheme");
-		}
-		catch (IdUnusedException e)
-		{
-			log.warn(this + "could not find an enrollment set for " + enrollmentSetEid);
 		}
 		return null;
-		
 		
 	}
 	
