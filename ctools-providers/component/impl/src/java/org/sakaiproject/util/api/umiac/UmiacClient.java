@@ -71,7 +71,9 @@ public interface UmiacClient {
 	public abstract Map getGroupRoles(String id) throws IdUnusedException; // getGroupRoles
 
 	/**
-	 * Get all the external realm ids the user has a role in, and the role
+	 * Get all the external realm ids the user has a role in, and the role.  
+	 * For teachers this will contain the TEACH site so that they have "magic" access to 
+	 * teaching support.  That doesn't appear in the getInstructorSections command.
 	 * @param id The user id.
 	 * @return A map of he realm id to the role for this user.
 	 */
