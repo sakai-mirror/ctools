@@ -24,7 +24,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/util-impl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/site-manage-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/entity-api"/>
-	<classpathentry kind="lib" path="/Users/zqian/dev2.5/jmock-1/jmock-cglib-1.2.0.jar"/>
-	<classpathentry kind="lib" path="/Users/zqian/eclipse_3.1/plugins/org.junit_3.8.1/junit.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
