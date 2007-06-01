@@ -25,12 +25,15 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+//import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.sitemanage.api.SectionField;
 import org.sakaiproject.sitemanage.api.SectionFieldManager;
 import org.sakaiproject.util.ResourceLoader;
 
 public class SectionFieldManagerImpl implements SectionFieldManager {
 	private static final Log log = LogFactory.getLog(SectionFieldManagerImpl.class);
+
+	//private org.sakaiproject.coursemanagement.api.CourseManagementService cms = (org.sakaiproject.coursemanagement.api.CourseManagementService) ComponentManager.get(org.sakaiproject.coursemanagement.api.CourseManagementService.class);
 
 	public List<SectionField> getRequiredFields() {
 		ResourceLoader resourceLoader = new ResourceLoader("SectionFields");

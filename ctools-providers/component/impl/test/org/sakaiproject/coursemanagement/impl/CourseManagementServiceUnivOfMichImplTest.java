@@ -286,7 +286,6 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		String elements[] = {"HBURGER","FFERTER"};
 		Set right = new HashSet<String>(Arrays.asList(elements));
 		assertEquals("found both instructors",right,s);
-
 	}
 	
 	public void testGetSectionInstructorsEmpty() {

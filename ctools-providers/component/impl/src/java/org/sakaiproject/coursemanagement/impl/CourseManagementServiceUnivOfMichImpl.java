@@ -324,6 +324,9 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		
 		if (as != null)
 		{
+			String[] fields = providerId.split(",");
+			String title = fields[2] + " " + fields[3] + " " + fields[4];
+			
 			// CourseOffering object
 			String coEid = getCourseOfferingEidFromProviderId(providerId);
 			CourseOfferingCmImpl co = new CourseOfferingCmImpl(coEid, coEid, "","open", as, 
@@ -339,8 +342,8 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 			section.setCategory("lct");
 			section.setCourseOffering(co);
 			section.setDescription(co.getDescription());
-			section.setEid(co.getEid());
-			section.setTitle(co.getTitle());
+			section.setEid(providerId);
+			section.setTitle(title);
 			section.setMaxSize(new Integer(100));
 			section.setEnrollmentSet(eSet);
 			return section;
