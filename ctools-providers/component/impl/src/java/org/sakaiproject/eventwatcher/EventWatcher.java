@@ -46,19 +46,6 @@ import org.sakaiproject.entity.cover.EntityManager;
 import org.sakaiproject.event.api.Event;
 import org.sakaiproject.event.api.EventTrackingService;
 import org.sakaiproject.exception.IdUnusedException;
-//import org.sakaiproject.service.framework.config.cover.ServerConfigurationService;
-//import org.sakaiproject.service.framework.log.Logger;
-//import org.sakaiproject.api.kernel.thread_local.cover.ThreadLocalManager;
-//import org.sakaiproject.service.legacy.authzGroup.AuthzGroup;
-//import org.sakaiproject.service.legacy.authzGroup.Role;
-//import org.sakaiproject.service.legacy.authzGroup.cover.AuthzGroupService;
-//import org.sakaiproject.service.legacy.entity.Reference;
-//import org.sakaiproject.service.legacy.event.Event;
-//import org.sakaiproject.service.legacy.event.EventTrackingService;
-//import org.sakaiproject.service.legacy.resource.cover.EntityManager;
-//import org.sakaiproject.service.legacy.user.User;
-//import org.sakaiproject.service.legacy.user.cover.UserDirectoryService;
-//import org.sakaiproject.util.SubjectAffiliates;
 import org.sakaiproject.util.SubjectAffiliates;
 import org.sakaiproject.thread_local.cover.ThreadLocalManager;
 import org.sakaiproject.user.api.User;
@@ -263,10 +250,6 @@ public class EventWatcher implements Observer
 							}
 						}
 					}
-//					catch (IdUnusedException e)
-//					{
-//						log.warn(this + ".update:" + e.getMessage() + ": " + event.getResource());
-//					}
 					catch (Exception e)
 					{
 						log.warn(this + ".update:" + e.getMessage() + ": " + event.getResource());
