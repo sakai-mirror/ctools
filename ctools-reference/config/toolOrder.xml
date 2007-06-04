@@ -11,6 +11,7 @@ $Id:$
     <tool id = "sakai.iframe.site" />
     <tool id = "sakai.synoptic.chat" />
     <tool id = "sakai.synoptic.discussion" />
+    <tool id = "sakai.synoptic.messagecenter" />
     <tool id = "sakai.synoptic.announcement" />
     <tool id = "sakai.summary.calendar" />
     <tool id = "sakai.syllabus" />
@@ -18,7 +19,9 @@ $Id:$
     <tool id = "sakai.announcements" />
     <tool id = "sakai.resources" />
     <tool id = "sakai.melete" />
+    <tool id = "osp.synoptic" />
     <tool id = "osp.presentation" />
+    <tool id = "osp.audience" />
     <tool id = "osp.matrix" />
     <tool id = "sakai.metaobj" />
     <tool id = "osp.style" />
@@ -33,16 +36,21 @@ $Id:$
     <tool id = "sakai.iTunesU" />
     <tool id = "sakai.podcasts" />
     <tool id = "sakai.discussion" />
+    <tool id = "sakai.forums" />
     <tool id = "sakai.messagecenter" />
     <tool id = "sakai.assignment" />
     <tool id = "sakai.assignment.grades" />
     <tool id = "sakai.samigo" />
+    <tool id = "sakai.poll" />
     <tool id = "sakai.gradebook.tool" />
     <tool id = "sakai.postem" />
     <tool id = "sakai.dropbox" />
     <tool id = "sakai.chat" />
     <tool id = "sakai.rwiki" />
+    <tool id = "blogger" />
     <tool id = "sakai.presentation" />
+    <tool id = "sakai.messages" />
+    <tool id = "sakai.mailtool" />
     <tool id = "sakai.mailbox" />
     <tool id = "sakai.messagecenter" />
     <tool id = "sakai.news" />
@@ -61,6 +69,7 @@ $Id:$
     <tool id = "sakai.iframe.site" />
     <tool id = "sakai.synoptic.chat" />
     <tool id = "sakai.synoptic.discussion" />
+    <tool id = "sakai.synoptic.messagecenter" />
     <tool id = "sakai.synoptic.announcement" />
     <tool id = "sakai.summary.calendar" />
     <tool id = "sakai.syllabus" />
@@ -68,7 +77,9 @@ $Id:$
     <tool id = "sakai.announcements" />
     <tool id = "sakai.resources" />
     <tool id = "sakai.melete" />
+    <tool id = "osp.synoptic" />
     <tool id = "osp.presentation" />
+    <tool id = "osp.audience" />
     <tool id = "osp.matrix" />
     <tool id = "sakai.metaobj" />
     <tool id = "osp.style" />
@@ -83,16 +94,23 @@ $Id:$
     <tool id = "sakai.iTunesU" />
     <tool id = "sakai.podcasts" />
     <tool id = "sakai.discussion" />
+    <tool id = "sakai.forums" />
     <tool id = "sakai.messagecenter" />
     <tool id = "sakai.assignment" />
     <tool id = "sakai.assignment.grades" />
     <tool id = "sakai.samigo" />
+    <tool id = "sakai.poll" />
+    <tool id = "sakai.mneme.test" />
+    <tool id = "sakai.mneme" />
     <tool id = "sakai.gradebook.tool" />
     <tool id = "sakai.postem" />
     <tool id = "sakai.dropbox" />
     <tool id = "sakai.chat" />
     <tool id = "sakai.rwiki" />
+    <tool id = "blogger" />
     <tool id = "sakai.presentation" />
+    <tool id = "sakai.messages" />
+    <tool id = "sakai.mailtool" />
     <tool id = "sakai.mailbox" />
     <tool id = "sakai.messagecenter" />
     <tool id = "sakai.news" />
@@ -101,6 +119,7 @@ $Id:$
     <tool id = "sakai.sections" />
     <tool id = "sakai.site.roster" />
     <tool id = "sakai.siteinfo" required = "true" />
+    <tool id = "sakai.site.roster" />
     <tool id = "sakai.search" />
     <tool id = "sakai.contact.support" />
 
@@ -111,6 +130,7 @@ $Id:$
     <tool id = "sakai.iframe.site" />
     <tool id = "sakai.synoptic.chat" />
     <tool id = "sakai.synoptic.discussion" />
+    <tool id = "sakai.synoptic.messagecenter" />
     <tool id = "sakai.synoptic.announcement" />
     <tool id = "sakai.summary.calendar" />
     <tool id = "sakai.syllabus" />
@@ -118,7 +138,9 @@ $Id:$
     <tool id = "sakai.announcements" />
     <tool id = "sakai.resources" />
     <tool id = "sakai.melete" />
+    <tool id = "osp.synoptic" />
     <tool id = "osp.presentation" />
+    <tool id = "osp.audience" />
     <tool id = "osp.matrix" />
     <tool id = "sakai.metaobj" />
     <tool id = "osp.style" />
@@ -133,16 +155,23 @@ $Id:$
     <tool id = "sakai.iTunesU" />
     <tool id = "sakai.podcasts" />
     <tool id = "sakai.discussion" />
+    <tool id = "sakai.forums" />
     <tool id = "sakai.messagecenter" />
     <tool id = "sakai.assignment" />
     <tool id = "sakai.assignment.grades" />
     <tool id = "sakai.samigo" />
+    <tool id = "sakai.poll" />
+    <tool id = "sakai.mneme.test" />
+    <tool id = "sakai.mneme" />
     <tool id = "sakai.gradebook.tool" />
     <tool id = "sakai.postem" />
     <tool id = "sakai.dropbox" />
     <tool id = "sakai.chat" />
     <tool id = "sakai.rwiki" />
+    <tool id = "blogger" />
     <tool id = "sakai.presentation" />
+    <tool id = "sakai.messages" />
+    <tool id = "sakai.mailtool" />
     <tool id = "sakai.mailbox" />
     <tool id = "sakai.messagecenter" />
     <tool id = "sakai.news" />
@@ -151,6 +180,7 @@ $Id:$
     <tool id = "sakai.sections" />
     <tool id = "sakai.site.roster" />
     <tool id = "sakai.siteinfo" required = "true" />
+    <tool id = "sakai.site.roster" />
     <tool id = "sakai.search" />
     <tool id = "sakai.contact.support" />
 
@@ -165,13 +195,18 @@ $Id:$
     <tool id="sakai.resources" />
     <tool id="sakai.dropbox" />
     <tool id="sakai.discussion" />
+    <tool id="sakai.forums" />
     <tool id="sakai.chat" />
     <tool id="sakai.rwiki" />
+    <tool id="blogger" />
     <tool id="sakai.presentation" />
+    <tool id="sakai.messages" />
+    <tool id="sakai.mailtool" />
     <tool id="sakai.mailbox" />
     <tool id="sakai.news" />
     <tool id="sakai.iframe" />
     <tool id="sakai.siteinfo" required = "true" />
+    <tool id="sakai.search" />
     <tool id="ctools.gradToolsHelp" required = "true" />
 
   </category>
@@ -183,12 +218,17 @@ $Id:$
     <tool id="sakai.schedule" />
     <tool id="sakai.resources" />
     <tool id="sakai.discussion" />
+    <tool id="sakai.forums" />
     <tool id="sakai.chat" />
     <tool id="sakai.rwiki" />
+    <tool id="blogger" />
     <tool id="sakai.presentation" />
+    <tool id="sakai.messages" />
+    <tool id="sakai.mailtool" />
     <tool id="sakai.iframe" />
     <tool id="ctools.dissertation.upload" />
     <tool id="sakai.siteinfo" required = "true" />
+    <tool id="sakai.search" />
     <tool id="ctools.gradToolsHelp" required = "true" />
 
   </category>
@@ -200,11 +240,16 @@ $Id:$
     <tool id="sakai.schedule" />
     <tool id="sakai.resources" />
     <tool id="sakai.discussion" />
+    <tool id="sakai.forums" />
     <tool id="sakai.chat" />
     <tool id="sakai.rwiki" />
+    <tool id="blogger" />
     <tool id="sakai.presentation" />
+    <tool id="sakai.messages" />
+    <tool id="sakai.mailtool" />
     <tool id="sakai.iframe" />
     <tool id="sakai.siteinfo" required = "true" />
+    <tool id="sakai.search" />
     <tool id="ctools.gradToolsHelp" required = "true" />
   </category>
 
