@@ -25,13 +25,13 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
   <!-- ========================================================================== -->
 
 
-  <target name="noPatches">
+  <target name="noPatches" depends="applyPatches_2-4-0_p1" >
     <echo>No patches to apply.</echo>
   </target>
 
 
-  <target name="applyPatches_2-4-TRUNK_p1" >
-    <echo message="applying patch set 2-4-TRUNK_p1" />
+  <target name="applyPatches_2-4-0_p1" >
+    <echo message="applying patch set 2-4-0_p1" />
 
     <applyPatch patchFileName="SPEED.patch" />
     <!-- <applyPatch patchFileName="DIRLIST.patch" /> -->
