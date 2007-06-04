@@ -16,7 +16,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
 
   <target name="applyPatches" depends="noPatches">
-    <echo> temp to see if compiles. </echo>
+    <!-- <echo> temp to see if compiles. </echo> -->
   </target>
 
   
@@ -34,6 +34,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <echo message="applying patch set 2-4-0_p1" />
 
     <applyPatch patchFileName="SPEED.patch" />
+    <applyPatch patchFileName="SAK-10146.patch" />
     <!-- <applyPatch patchFileName="DIRLIST.patch" /> -->
 
   </target>
