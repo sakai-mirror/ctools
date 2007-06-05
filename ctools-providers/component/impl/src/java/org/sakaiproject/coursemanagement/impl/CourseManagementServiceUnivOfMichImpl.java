@@ -455,6 +455,8 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 			return null;
 		}
 		
+		EnrollmentSet enrollmentSet = getEnrollmentSet(enrollmentSetEid);
+		
 		// unpack the enrollmentSetEid to query umiac
 		String ids[] = enrollmentSetEid.split(",");
 		
@@ -468,7 +470,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 				String[] enrollStringParts = (String[]) i.next();
 				if (enrollStringParts.length == 7 && enrollStringParts[2].equals(userId))
 				{
-					return new EnrollmentCmImpl(userId, getEnrollmentSet(enrollmentSetEid), enrollStringParts[6], enrollStringParts[4], "");
+					return new EnrollmentCmImpl(userId, enrollmentSet, enrollStringParts[6], enrollStringParts[4], "");
 				}
 			}
 		}
