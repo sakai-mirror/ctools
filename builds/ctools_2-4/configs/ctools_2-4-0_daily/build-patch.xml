@@ -35,6 +35,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
     <applyPatch patchFileName="SPEED.patch" />
     <applyPatch patchFileName="SAK-10146.patch" />
+    <applyPatch patchFileName="CT-150.patch" />
     <!-- <applyPatch patchFileName="DIRLIST.patch" /> -->
 
   </target>
