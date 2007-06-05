@@ -200,7 +200,7 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		// set appropriate values for that object.
 		Mock mockAcademicSession = mock(AcademicSession.class);
 		mockUseDb.expects(once()).method("getAcademicSession").with(eq("WINTER 2007")).will(returnValue(mockAcademicSession.proxy()));
-		mockAcademicSession.expects(once()).method("getDescription").will(returnValue("DESC"));
+		mockAcademicSession.expects(once()).method("getDescription").will(returnValue("W07"));
 		mockAcademicSession.expects(once()).method("getStartDate").will(returnValue(new Date()));
 		mockAcademicSession.expects(once()).method("getEndDate").will(returnValue(new Date()));
 		
@@ -215,7 +215,7 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		// course offering id should not contain the section information from the full id.
 		String coEid = "2007,3,A,SUBJECT,CATALOG_NBR";
 		assertEquals("section contains course offering",coEid,s.getCourseOfferingEid());
-		assertEquals("title contains description","SUBJECT CATALOG_NBR CLASS_SECTION "+"DESC",s.getTitle());
+		assertEquals("title contains description","SUBJECT CATALOG_NBR CLASS_SECTION W07",s.getTitle());
 		
 		// check contents of enrollment set.
 		EnrollmentSet es = s.getEnrollmentSet();
