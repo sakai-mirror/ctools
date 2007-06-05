@@ -24,5 +24,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/util-impl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/site-manage-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/entity-api"/>
+	<classpathentry kind="var" path="MAVEN_REPO/junit/jars/junit-3.8.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
