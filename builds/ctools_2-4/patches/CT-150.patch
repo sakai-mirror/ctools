@@ -22145,10 +22145,10 @@ Index:  assignment/assignment-impl/pack/src/webapp/WEB-INF/components.xml
 +	</bean>
 +  
  </beans>
-Index: assignment-help/src/sakai_assignment/ardn.html
+Index: assignment/assignment-help/src/sakai_assignment/ardn.html
 ===================================================================
---- assignment-help/src/sakai_assignment/ardn.html	(.../sakai_2-4-0)	(revision 31378)
-+++ assignment-help/src/sakai_assignment/ardn.html	(.../pre_2-5-0_QA_001)	(revision 31378)
+--- assignment/assignment-help/src/sakai_assignment/ardn.html	(.../sakai_2-4-0)	(revision 31378)
++++ assignment/assignment-help/src/sakai_assignment/ardn.html	(.../pre_2-5-0_QA_001)	(revision 31378)
 @@ -14,6 +14,8 @@
  <body>
  <div class="helpBody">
@@ -22184,10 +22184,10 @@ Index: assignment-help/src/sakai_assignment/ardn.html
  </div>
  </body></html>
 \ No newline at end of file
-Index: assignment-help/src/sakai_assignment/arda.html
+Index: assignment/assignment-help/src/sakai_assignment/arda.html
 ===================================================================
---- assignment-help/src/sakai_assignment/arda.html	(.../sakai_2-4-0)	(revision 31378)
-+++ assignment-help/src/sakai_assignment/arda.html	(.../pre_2-5-0_QA_001)	(revision 31378)
+--- assignment/assignment-help/src/sakai_assignment/arda.html	(.../sakai_2-4-0)	(revision 31378)
++++ assignment/assignment-help/src/sakai_assignment/arda.html	(.../pre_2-5-0_QA_001)	(revision 31378)
 @@ -16,6 +16,8 @@
  <div class="helpBody">
  <h2>Grading an assignment or reviewing student
