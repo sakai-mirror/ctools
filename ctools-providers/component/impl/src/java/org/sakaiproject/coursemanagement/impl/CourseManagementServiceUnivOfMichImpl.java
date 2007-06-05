@@ -339,7 +339,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		if (as != null)
 		{
 			String[] fields = providerId.split(",");
-			String title = fields[3] + " " + fields[4] + " " + fields[5];
+			String title = fields[3] + " " + fields[4] + " " + fields[5] + " " + as.getDescription();
 			
 			// CourseOffering object
 			String coEid = getCourseOfferingEidFromProviderId(providerId);
