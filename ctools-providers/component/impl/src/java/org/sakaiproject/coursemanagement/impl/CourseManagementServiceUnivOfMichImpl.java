@@ -63,6 +63,7 @@ import org.sakaiproject.util.api.umiac.UmiacClient;
 import org.sakaiproject.db.api.SqlReader;
 import org.sakaiproject.db.api.SqlService;
 import org.sakaiproject.util.StringUtil;
+import org.sakaiproject.time.cover.TimeService;
 import org.sakaiproject.exception.IdUnusedException;
 
 /**
@@ -232,7 +233,20 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 			
 
 	public List<AcademicSession> getCurrentAcademicSessions() {
-		return getAcademicSessions();
+		// only return those future academic sessions
+		List<AcademicSession> rv = new Vector<AcademicSession>();
+		
+		List aSessions = getAcademicSessions();
+		for (Iterator i = aSessions.iterator(); i.hasNext();)
+		{
+			AcademicSession aSession = (AcademicSession) i.next();
+			if (aSession.getStartDate().getTime()>(TimeService.newTime().getTime()))
+			{
+				rv.add(aSession);
+			}
+		}
+		
+		return rv;
 	}
 	
 	public CourseOffering getCourseOffering(String providerId) throws IdNotFoundException {
