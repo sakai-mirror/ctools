@@ -1,0 +1,704 @@
+svn diff -r30081:30082 https://source.sakaiproject.org/svn
+Index: content/content-impl/impl/src/java/org/sakaiproject/content/types/FolderType.java
+===================================================================
+--- content/content-impl/impl/src/java/org/sakaiproject/content/types/FolderType.java	(revision 30081)
++++ content/content-impl/impl/src/java/org/sakaiproject/content/types/FolderType.java	(revision 30082)
+@@ -450,7 +450,20 @@
+          */
+         public boolean available(ContentEntity entity)
+         {
+-	        return true;
++        	boolean ok = true;
++        	if(entity == null || ContentHostingService.ROOT_COLLECTIONS.contains(entity.getId()))
++    		{
++    			ok = false;
++    		}
++    		else
++    		{
++    			ContentCollection parent = entity.getContainingCollection();
++    			if(parent == null || ContentHostingService.ROOT_COLLECTIONS.contains(parent.getId()))
++    			{
++    				ok = false;
++    			}
++    		}
++ 	        return ok;
+         }
+ 		
+ 		/* (non-Javadoc)
+@@ -582,12 +595,24 @@
+          */
+         public boolean available(ContentEntity entity)
+         {
+-        	boolean rv = true;
+-        	if(entity instanceof ContentCollection)
++        	boolean ok = true;
++        	if(entity == null || ContentHostingService.ROOT_COLLECTIONS.contains(entity.getId()))
++    		{
++    			ok = false;
++    		}
++    		else
++    		{
++    			ContentCollection parent = entity.getContainingCollection();
++    			if(parent == null || ContentHostingService.ROOT_COLLECTIONS.contains(parent.getId()))
++    			{
++    				ok = false;
++    			}
++    		}
++        	if(ok && entity instanceof ContentCollection)
+         	{
+-        		rv = (((ContentCollection) entity).getMemberCount() == 0);
++        		ok = (((ContentCollection) entity).getMemberCount() == 0);
+         	}
+-	        return rv;
++	        return ok;
+         }
+         
+ 		/* (non-Javadoc)
+@@ -654,7 +679,20 @@
+          */
+         public boolean available(ContentEntity entity)
+         {
+-	        return true;
++        	boolean ok = true;
++        	if(entity == null || ContentHostingService.ROOT_COLLECTIONS.contains(entity.getId()))
++    		{
++    			ok = false;
++    		}
++    		else
++    		{
++    			ContentCollection parent = entity.getContainingCollection();
++    			if(parent == null || ContentHostingService.ROOT_COLLECTIONS.contains(parent.getId()))
++    			{
++    				ok = false;
++    			}
++    		}
++ 	        return ok;
+         }
+         
+ 		/* (non-Javadoc)
+@@ -800,7 +838,20 @@
+          */
+         public boolean available(ContentEntity entity)
+         {
+-	        return true;
++        	boolean ok = true;
++        	if(entity == null || ContentHostingService.ROOT_COLLECTIONS.contains(entity.getId()))
++    		{
++    			ok = false;
++    		}
++    		else
++    		{
++    			ContentCollection parent = entity.getContainingCollection();
++    			if(parent == null || ContentHostingService.ROOT_COLLECTIONS.contains(parent.getId()))
++    			{
++    				ok = false;
++    			}
++    		}
++ 	        return ok;
+         }
+ 		
+ 		/* (non-Javadoc)
+
+
+svn diff -r30719:30720 https://source.sakaiproject.org/svn
+Index: content/content-impl/impl/src/java/org/sakaiproject/content/types/FolderType.java
+===================================================================
+--- content/content-impl/impl/src/java/org/sakaiproject/content/types/FolderType.java	(revision 30719)
++++ content/content-impl/impl/src/java/org/sakaiproject/content/types/FolderType.java	(revision 30720)
+@@ -277,7 +277,24 @@
+          */
+         public boolean available(ContentEntity entity)
+         {
+-	        return true;
++          	boolean ok = true;
++        	if(entity == null || ContentHostingService.ROOT_COLLECTIONS.contains(entity.getId()))
++    		{
++    			ok = false;
++    		}
++        	else if(entity.getId().startsWith(ContentHostingService.COLLECTION_DROPBOX))
++        	{
++        		ok = false;
++        	}
++        	else
++    		{
++    			ContentCollection parent = entity.getContainingCollection();
++    			if(parent == null || ContentHostingService.ROOT_COLLECTIONS.contains(parent.getId()))
++    			{
++    				ok = false;
++    			}
++    		}
++ 	        return ok;
+         }
+ 
+ 		/* (non-Javadoc)
+@@ -861,7 +878,24 @@
+          */
+         public boolean available(ContentEntity entity)
+         {
+-	        return true;
++           	boolean ok = true;
++        	if(entity == null || ContentHostingService.ROOT_COLLECTIONS.contains(entity.getId()))
++    		{
++    			ok = false;
++    		}
++        	else if(entity.getId().startsWith(ContentHostingService.COLLECTION_DROPBOX))
++        	{
++        		ok = false;
++        	}
++        	else
++    		{
++    			ContentCollection parent = entity.getContainingCollection();
++    			if(parent == null || ContentHostingService.ROOT_COLLECTIONS.contains(parent.getId()))
++    			{
++    				ok = false;
++    			}
++    		}
++ 	        return ok;
+         }
+ 
+ 		/* (non-Javadoc)
+@@ -945,6 +979,10 @@
+     		{
+     			ok = false;
+     		}
++        	else if(entity.getId().startsWith(ContentHostingService.COLLECTION_DROPBOX))
++        	{
++        		ok = false;
++        	}
+     		else
+     		{
+     			ContentCollection parent = entity.getContainingCollection();
+svn diff -r30745:30746 https://source.sakaiproject.org/svn
+Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbResourceTypeRegistry.java
+===================================================================
+--- content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbResourceTypeRegistry.java	(revision 30745)
++++ content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbResourceTypeRegistry.java	(revision 30746)
+@@ -37,6 +37,7 @@
+ import org.sakaiproject.content.api.SiteSpecificResourceType;
+ import org.sakaiproject.db.api.SqlReader;
+ import org.sakaiproject.db.api.SqlService;
++import org.sakaiproject.thread_local.cover.ThreadLocalManager;
+ 
+ public class DbResourceTypeRegistry extends ResourceTypeRegistryImpl 
+ {
+@@ -146,6 +147,7 @@
+ 	{
+ 		//super.setMapOfResourceTypesForContext(context, enabled);
+ 		//Replace in teh db
++		
+ 
+ 		m_sqlService.transact(new Runnable()
+ 		{
+@@ -154,7 +156,8 @@
+ 				saveMap(context, enabled);					
+ 			}
+ 		}, "DbResourceTypeRegistry.setMapOfResourceTypesForContext: " + context);
+-
++		
++		ThreadLocalManager.set("getMapOfResourceTypesForContext@" + context, new HashMap<String, Boolean>(enabled));
+ 	}
+ 	
+ 	protected void saveMap(String context, Map<String, Boolean> enabled) 
+@@ -169,48 +172,54 @@
+ 	 */
+ 	public Map<String, Boolean> getMapOfResourceTypesForContext(String context) 
+ 	{
+-		Map<String, Boolean> enabled = new HashMap<String, Boolean>();
+-		
+-		Object fields[] = new Object[1];
+-		fields[0] = context;
+-		
+-		List results = m_sqlService.dbRead(GET_RESOURCEID_MAP, fields, new SqlReader()
++		Map<String, Boolean> enabled = (Map<String, Boolean>) ThreadLocalManager.get("getMapOfResourceTypesForContext@" + context);
++			
++		if(enabled == null)
+ 		{
+-			public Object readSqlResultRecord(ResultSet result)
++			enabled = new HashMap<String, Boolean>();
++			Object fields[] = new Object[1];
++			fields[0] = context;
++			
++			List results = m_sqlService.dbRead(GET_RESOURCEID_MAP, fields, new SqlReader()
+ 			{
+-				try
++				public Object readSqlResultRecord(ResultSet result)
+ 				{
+-					return new Entry(result.getString(2), "e".equals(result.getString(3)));
++					try
++					{
++						return new Entry(result.getString(2), "e".equals(result.getString(3)));
++					}
++					catch (SQLException ignore)
++					{
++						return null;
++					}
+ 				}
+-				catch (SQLException ignore)
++			});
++				
++			for(Object result : results)
++			{
++				if(result instanceof Entry)
+ 				{
+-					return null;
++					Entry entry = (Entry) result;
++					
++					enabled.put(entry.getTypeId(), new Boolean(entry.isEnabled()));
+ 				}
+ 			}
+-		});
+ 			
+-		for(Object result : results)
+-		{
+-			if(result instanceof Entry)
++			if(enabled.isEmpty())
+ 			{
+-				Entry entry = (Entry) result;
+-				
+-				enabled.put(entry.getTypeId(), new Boolean(entry.isEnabled()));
+-			}
+-		}
+-		
+-		if(enabled.isEmpty())
+-		{
+-			for(ResourceType type : this.typeIndex.values())
+-			{
+-				if(type instanceof SiteSpecificResourceType)
++				for(ResourceType type : this.typeIndex.values())
+ 				{
+-					enabled.put(type.getId(), new Boolean(((SiteSpecificResourceType) type).isEnabledByDefault()));
++					if(type instanceof SiteSpecificResourceType)
++					{
++						enabled.put(type.getId(), new Boolean(((SiteSpecificResourceType) type).isEnabledByDefault()));
++					}
+ 				}
+ 			}
++			
++			ThreadLocalManager.set("getMapOfResourceTypesForContext@" + context, enabled);
+ 		}
+ 
+-		return enabled;
++		return new HashMap<String, Boolean>(enabled);
+ 	} 
+ 
+ 
+svn diff -r30947:30948 https://source.sakaiproject.org/svn
+Index: content/content-api/api/src/java/org/sakaiproject/content/api/ContentHostingService.java
+===================================================================
+--- content/content-api/api/src/java/org/sakaiproject/content/api/ContentHostingService.java	(revision 30947)
++++ content/content-api/api/src/java/org/sakaiproject/content/api/ContentHostingService.java	(revision 30948)
+@@ -176,6 +176,9 @@
+ 	/** The content root collection for items that are public. */
+     public static final String COLLECTION_PUBLIC = "/public/";
+ 
++	/** The content root collection for items that are hidden. */
++    public static final String COLLECTION_PRIVATE = "/private/";
++
+ 	/** The content root collection for meleteDocs */
+     public static final String COLLECTION_MELETE_DOCS = "/meleteDocs/";
+ 
+Index: content/content-tool/tool/src/java/org/sakaiproject/content/tool/ListItem.java
+===================================================================
+--- content/content-tool/tool/src/java/org/sakaiproject/content/tool/ListItem.java	(revision 30947)
++++ content/content-tool/tool/src/java/org/sakaiproject/content/tool/ListItem.java	(revision 30948)
+@@ -607,7 +607,7 @@
+ 		{
+ 			groupsWithRemovePermission = contentService.getGroupsWithRemovePermission(ref.getContainer());
+ 		}
+-		else if(contentService.getSiteCollection(ref.getContext()) != null)
++		else if(ref.getContext() != null && contentService.getSiteCollection(ref.getContext()) != null)
+ 		{
+ 			groupsWithRemovePermission = contentService.getGroupsWithRemovePermission(contentService.getSiteCollection(ref.getContext()));
+ 		}
+Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java
+===================================================================
+--- content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java	(revision 30947)
++++ content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java	(revision 30948)
+@@ -171,6 +171,7 @@
+ 		ROOT_COLLECTIONS.add(COLLECTION_USER);
+ 		ROOT_COLLECTIONS.add(COLLECTION_DROPBOX);
+ 		ROOT_COLLECTIONS.add(COLLECTION_PUBLIC);
++		ROOT_COLLECTIONS.add(COLLECTION_PRIVATE);
+ 		ROOT_COLLECTIONS.add(ATTACHMENTS_COLLECTION);
+ 		ROOT_COLLECTIONS.add(COLLECTION_MELETE_DOCS);
+ 	}
+Index: content/content-impl/impl/src/java/org/sakaiproject/content/types/FolderType.java
+===================================================================
+--- content/content-impl/impl/src/java/org/sakaiproject/content/types/FolderType.java	(revision 30947)
++++ content/content-impl/impl/src/java/org/sakaiproject/content/types/FolderType.java	(revision 30948)
+@@ -879,22 +879,22 @@
+         public boolean available(ContentEntity entity)
+         {
+            	boolean ok = true;
+-        	if(entity == null || ContentHostingService.ROOT_COLLECTIONS.contains(entity.getId()))
+-    		{
+-    			ok = false;
+-    		}
+-        	else if(entity.getId().startsWith(ContentHostingService.COLLECTION_DROPBOX))
+-        	{
+-        		ok = false;
+-        	}
+-        	else
+-    		{
+-    			ContentCollection parent = entity.getContainingCollection();
+-    			if(parent == null || ContentHostingService.ROOT_COLLECTIONS.contains(parent.getId()))
+-    			{
+-    				ok = false;
+-    			}
+-    		}
++//        	if(entity == null || ContentHostingService.ROOT_COLLECTIONS.contains(entity.getId()))
++//    		{
++//    			ok = false;
++//    		}
++//        	else if(entity.getId().startsWith(ContentHostingService.COLLECTION_DROPBOX))
++//        	{
++//        		ok = false;
++//        	}
++//        	else
++//    		{
++//    			ContentCollection parent = entity.getContainingCollection();
++//    			if(parent == null || ContentHostingService.ROOT_COLLECTIONS.contains(parent.getId()))
++//    			{
++//    				ok = false;
++//    			}
++//    		}
+  	        return ok;
+         }
+ 
+svn diff -r30994:30995 https://source.sakaiproject.org/svn
+Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java
+===================================================================
+--- content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java	(revision 30994)
++++ content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java	(revision 30995)
+@@ -1678,6 +1678,42 @@
+ 			}
+ 		}
+ 
++		public Collection<String> getMemberCollectionIds(String collectionId)
++        {
++			List list = null;
++			try
++			{
++				String sql = "select COLLECTION_ID from " + m_collectionTableName + " where IN_COLLECTION = ?";
++				Object[] fields = new Object[1];
++				fields[0] = collectionId;
++
++				list = m_sqlService.dbRead(sql, fields, null);
++			}
++			catch (Throwable t)
++			{
++				M_log.warn("getMemberCollectionIds: failed: " + t);
++			}
++			return (Collection<String>) list;
++        }
++
++		public Collection<String> getMemberResourceIds(String collectionId)
++        {
++			List list = null;
++			try
++			{
++				String sql = "select RESOURCE_ID from " + m_resourceTableName + " where IN_COLLECTION = ?";
++				Object[] fields = new Object[1];
++				fields[0] = collectionId;
++
++				list = m_sqlService.dbRead(sql, fields, null);
++			}
++			catch (Throwable t)
++			{
++				M_log.warn("getMemberResourceIds: failed: " + t);
++			}
++			return (Collection<String>) list;
++        }
++
+ 	} // DbStorage
+ 
+ 	/**
+Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java
+===================================================================
+--- content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java	(revision 30994)
++++ content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java	(revision 30995)
+@@ -9175,20 +9175,21 @@
+ 		public List getMembers()
+ 		{
+ 			// get the objects
+-			List memberResources = getMemberResources();
++			Collection<String> memberResourceIds = m_storage.getMemberResourceIds(this.m_id);
++			Collection<String> memberCollectionIds = m_storage.getMemberCollectionIds(this.m_id);
+ 
+ 			// form the list of just ids
+-			List mbrs = new Vector();
+-			for (int i = 0; i < memberResources.size(); i++)
++			List<String> mbrs = new Vector<String>();
++			if(memberResourceIds != null)
+ 			{
+-				Entity res = (Entity) memberResources.get(i);
+-				if (res != null)
+-				{
+-					mbrs.add(res.getId());
+-				}
++				mbrs.addAll(memberResourceIds);
+ 			}
++			if(memberCollectionIds != null)
++			{
++				mbrs.addAll(memberCollectionIds);
++			}
+ 
+-			if (mbrs.size() == 0) return mbrs;
++			//if (mbrs.size() == 0) return mbrs;
+ 
+ 			// sort? %%%
+ 			// Collections.sort(mbrs);
+@@ -9245,74 +9246,107 @@
+ 		 */
+ 		public List getMemberResources()
+ 		{
+-			List mbrs = new Vector();
+-
+-			// if not caching
+-			if ((!m_caching) || (m_cache == null) || (m_cache.disabled()))
++			List mbrs = (List) ThreadLocalManager.get("members@" + this.m_id);
++			if(mbrs == null)
+ 			{
+-				// TODO: current service caching
+-				mbrs = m_storage.getCollections(this);
+-				mbrs.addAll(m_storage.getResources(this));
+-			}
++				mbrs = new Vector();
+ 
+-			else
+-			{
+-				// if the cache is complete for this collection, use it
+-				if (m_cache.isComplete(getReference()))
++				// if not caching
++				if ((!m_caching) || (m_cache == null) || (m_cache.disabled()))
+ 				{
+-					// get just this collection's members
+-					mbrs = m_cache.getAll(getReference());
++					// TODO: current service caching
++					mbrs = m_storage.getCollections(this);
++					mbrs.addAll(m_storage.getResources(this));
+ 				}
+-
+-				// otherwise get all the members from storage
++	
+ 				else
+ 				{
+-					// Note: while we are getting from storage, storage might change. These can be processed
+-					// after we get the storage entries, and put them in the cache, and mark the cache complete.
+-					// -ggolden
+-					synchronized (m_cache)
++					// if the cache is complete for this collection, use it
++					if (m_cache.isComplete(getReference()))
+ 					{
+-						// if we were waiting and it's now complete...
+-						if (m_cache.isComplete(getReference()))
++						// get just this collection's members
++						mbrs = m_cache.getAll(getReference());
++					}
++	
++					// otherwise get all the members from storage
++					else
++					{
++						// Note: while we are getting from storage, storage might change. These can be processed
++						// after we get the storage entries, and put them in the cache, and mark the cache complete.
++						// -ggolden
++						synchronized (m_cache)
+ 						{
+-							// get just this collection's members
+-							mbrs = m_cache.getAll(getReference());
+-						}
+-						else
+-						{
+-							// save up any events to the cache until we get past this load
+-							m_cache.holdEvents();
+-
+-							// read from storage - resources and collections, but just those
+-							// whose path is this's path (i.e. just mine!)
+-							mbrs = m_storage.getCollections(this);
+-							mbrs.addAll(m_storage.getResources(this));
+-
+-							// update the cache, and mark it complete
+-							for (int i = 0; i < mbrs.size(); i++)
++							// if we were waiting and it's now complete...
++							if (m_cache.isComplete(getReference()))
+ 							{
+-								Entity mbr = (Entity) mbrs.get(i);
+-								m_cache.put(mbr.getReference(), mbr);
++								// get just this collection's members
++								mbrs = m_cache.getAll(getReference());
+ 							}
+-
+-							m_cache.setComplete(getReference());
+-
+-							// now we are complete, process any cached events
+-							m_cache.processEvents();
++							else
++							{
++								// save up any events to the cache until we get past this load
++								m_cache.holdEvents();
++	
++								// read from storage - resources and collections, but just those
++								// whose path is this's path (i.e. just mine!)
++								mbrs = m_storage.getCollections(this);
++								mbrs.addAll(m_storage.getResources(this));
++	
++								// update the cache, and mark it complete
++								for (int i = 0; i < mbrs.size(); i++)
++								{
++									Entity mbr = (Entity) mbrs.get(i);
++									m_cache.put(mbr.getReference(), mbr);
++								}
++	
++								m_cache.setComplete(getReference());
++	
++								// now we are complete, process any cached events
++								m_cache.processEvents();
++							}
+ 						}
+ 					}
+ 				}
++				
++				ThreadLocalManager.set("members@" + this.m_id, mbrs);
+ 			}
+ 
+-			if (mbrs.size() == 0) return mbrs;
++			//if (mbrs.size() == 0) return mbrs;
+ 
+ 			// sort %%%
+ 			// Collections.sort(mbrs);
+ 
+-			return mbrs;
++			return copyEntityList(mbrs);
+ 
+ 		} // getMemberResources
+ 
++		private List copyEntityList(List entities)
++        {
++			List list = new Vector();
++			
++			for(ContentEntity entity : (List<ContentEntity>)entities)
++			{
++				String ref = entity.getReference();
++				ContentEntity copy = null;
++				if(entity instanceof ContentResource)
++				{
++					copy = new BaseResourceEdit((ContentResource) entity);
++					ThreadLocalManager.set("findResource@" + ref, new BaseResourceEdit((ContentResource) entity));
++				}
++				else if(entity instanceof ContentCollection)
++				{
++					copy = new BaseCollectionEdit((ContentCollection) entity);
++					ThreadLocalManager.set("findCollection@" + ref, new BaseCollectionEdit((ContentCollection) entity));
++				}
++				if(copy != null)
++				{
++					list.add(copy);
++				}
++			}
++			
++	        return list;
++        }
++
+ 		/**
+ 		 * Access the collection's properties.
+ 		 * 
+@@ -10406,6 +10440,22 @@
+ 		 * identified by the parameter.
+ 		 */
+ 		public int getMemberCount(String collectionId);
++		
++		/** 
++		 * Access a collection of string identifiers for all ContentResource entities
++		 * that are members of the ContentCollection identified by the parameter.
++		 * @param collectionId
++		 * @return
++		 */
++		public Collection<String> getMemberResourceIds(String collectionId);
++		
++		/** 
++		 * Access a collection of string identifiers for all ContentCollection entities
++		 * that are members of the ContentCollection identified by the parameter.
++		 * @param collectionId
++		 * @return
++		 */
++		public Collection<String> getMemberCollectionIds(String collectionId);
+ 
+ 		/**
+ 		 * Close.
+svn diff -r31120:31121 https://source.sakaiproject.org/svn
+Index: metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java
+===================================================================
+--- metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java	(revision 31120)
++++ metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java	(revision 31121)
+@@ -61,6 +61,7 @@
+ import org.sakaiproject.event.cover.NotificationService;
+ import org.sakaiproject.entity.api.ResourcePropertiesEdit;
+ import org.sakaiproject.entity.api.ResourceProperties;
++import org.sakaiproject.thread_local.cover.ThreadLocalManager;
+ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+ 
+ import javax.xml.transform.TransformerException;
+@@ -80,6 +81,8 @@
+    private static final String SYSTEM_COLLECTION_ID = "/system/";
+    static final private String IMPORT_BASE_FOLDER_ID = "importedForms";
+ 
++   private static final String HAS_HOMES_TAG = "org.sakaiproject.metaobj.hasHomes";
++
+    private AuthorizationFacade authzManager = null;
+    private IdManager idManager;
+    private WorksiteManager worksiteManager;
+@@ -1259,7 +1262,10 @@
+    }
+ 
+    public boolean hasHomes() {
+-      return findHomes(false).size() > 0;
++      if (ThreadLocalManager.get(HAS_HOMES_TAG) == null) {
++         ThreadLocalManager.set(HAS_HOMES_TAG, new Boolean(findHomes(false).size() > 0));
++      }
++      return ((Boolean)ThreadLocalManager.get(HAS_HOMES_TAG)).booleanValue();
+    }
+ 
+    public void addConsumer(FormConsumer consumer) {
+svn diff -r31166:31167 https://source.sakaiproject.org/svn
+Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java
+===================================================================
+--- content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java	(revision 31166)
++++ content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java	(revision 31167)
+@@ -9316,12 +9316,35 @@
+ 			// sort %%%
+ 			// Collections.sort(mbrs);
+ 
+-			return copyEntityList(mbrs);
++			cacheEntities(mbrs); 
++			
++			return mbrs;
+ 
+ 		} // getMemberResources
+ 
+-		private List copyEntityList(List entities)
++		protected void cacheEntities(List entities)
+         {
++			if(entities == null)
++			{
++				return;
++			}
++			
++			for(ContentEntity entity : (List<ContentEntity>) entities)
++			{
++				String ref = entity.getReference();
++				if(entity instanceof ContentResource)
++				{
++					ThreadLocalManager.set("findResource@" + ref, entity);
++				}
++				else if(entity instanceof ContentCollection)
++				{
++					ThreadLocalManager.set("findCollection@" + ref, entity);
++				}
++			}
++        }
++
++		protected List copyEntityList(List entities)
++        {
+ 			List list = new Vector();
+ 			
+ 			for(ContentEntity entity : (List<ContentEntity>)entities)
