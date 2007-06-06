@@ -42,7 +42,7 @@ import org.sakaiproject.coursemanagement.impl.ExternalAcademicSessionInformation
 import org.sakaiproject.exception.IdUnusedException;
 import org.apache.commons.logging.Log;
 
-import junit.framework.TestCase;
+// import junit.framework.TestCase;
 
 public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCase {
 
@@ -274,7 +274,7 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		
 		String providerId = "2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION";
 		
-		HashMap eidRoleMap = new HashMap();
+		HashMap<String, String> eidRoleMap = new HashMap<String, String>();
 	
 		eidRoleMap.put("HBURGER", "Instructor");
 		eidRoleMap.put("FFERTER", "Instructor");
