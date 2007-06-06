@@ -64,6 +64,7 @@ This doesn't supply the sakai.properties files you want to customize.
   <import file="./build-search.xml" />
   <import file="./build-rwiki.xml" />
   <import file="./build-muse.xml" />
+  <import file="./build-assignment.xml" />
 
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
@@ -81,7 +82,7 @@ This doesn't supply the sakai.properties files you want to customize.
   <!-- customization targets -->
 
   <target name="getBuildTypeSrc"
-	  depends="extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc,getRwikiSrc,getMuseSrc"
+	  depends="extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc,getRwikiSrc,getMuseSrc,getAssignmentSrc"
 	  description="get the source specific to the prod build" >
     <echo> melete.extract.skip = [${melete.extract.skip}]</echo>
     <echo> itunesu.install.skip = [${itunesu.install.skip}]</echo>
