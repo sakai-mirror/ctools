@@ -87,17 +87,6 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	 * */
 	private ExternalAcademicSessionInformation esi = new UseDb();
 	
-	/**
-	 * term names are stored as digits in UMIAC
-	 */
-	static {
-		termIndex.put("SUMMER", "1");
-		termIndex.put("FALL","2");
-		termIndex.put("WINTER", "3");
-		termIndex.put("SPRING", "4");
-		termIndex.put("SPRING_SUMMER","5");
-	}
-	
 	// Allow override of the logger (for testing).
 	public static Log getLog() {
 		return log;
@@ -305,6 +294,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	
 	 String findTermStringFromTermIndex(String termIndexIntString) {
 		String foundTermString = null;
+		Hashtable termIndex =  m_umiac.getTermIndexTable();
 		for (Iterator iTerm = termIndex.keySet().iterator(); foundTermString == null && iTerm.hasNext();)
 		{
 			String termString = (String) iTerm.next();

@@ -1,5 +1,6 @@
 package org.sakaiproject.util.api.umiac;
 
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
@@ -178,5 +179,10 @@ public interface UmiacClient {
 	 * @return An array of strings of real umiac group ids, one for each in the multiple.
 	 */
 	public String[] unpackId(String id);	// unpackId
+	
+	/**
+	 * get the term index table
+	 */
+	public Hashtable getTermIndexTable();
 	
 }

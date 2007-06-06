@@ -15,15 +15,5 @@ public class SectionFieldManagerImplTest extends TestCase {
 	public void testDummy() {
 		assertTrue("placeholder test",1==1);
 	}
-	
-	/*
-	public void testGetRequiredFields() {
-		fail("Not yet implemented");
-	}
-
-	public void testGetSectionEid() {
-		fail("Not yet implemented");
-	}
-	*/
 
 }

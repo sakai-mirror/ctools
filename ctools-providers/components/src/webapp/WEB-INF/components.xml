@@ -47,10 +47,11 @@
 
   <!-- add for the local provider implementation of section field manager -->
   <bean id="org.sakaiproject.sitemanage.api.SectionFieldManager"
-	class="org.sakaiproject.sitemanage.impl.SectionFieldManagerImpl"
+	class="org.sakaiproject.sitemanage.impl.SectionFieldManagerUMichImpl"
 	init-method="init"
 	destroy-method="destroy"
 	singleton="true">
+	<property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
   </bean>
 
   <!-- 

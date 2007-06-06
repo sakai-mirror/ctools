@@ -32,6 +32,7 @@ import java.io.InterruptedIOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
@@ -965,6 +966,21 @@ public class UmiacClientImpl
 		}
 
 		return rv;
+	}
+	
+	/**
+	 * @inheritDoc
+	 */
+	public Hashtable getTermIndexTable()
+	{
+		//term names are stored as digits in UMIAC
+		Hashtable termIndex = new Hashtable();
+		termIndex.put("SUMMER", "1");
+		termIndex.put("FALL","2");
+		termIndex.put("WINTER", "3");
+		termIndex.put("SPRING", "4");
+		termIndex.put("SPRING_SUMMER","5");
+		return termIndex;
 	}
 
 	/*******************************************************************************

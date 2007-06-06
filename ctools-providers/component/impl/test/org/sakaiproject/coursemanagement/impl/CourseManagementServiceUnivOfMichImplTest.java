@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -87,26 +88,64 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		
 	}
 	
+	private Hashtable getTermIndexTable() {
+		Hashtable termIndexTable = new Hashtable();
+		termIndexTable.put("SUMMER", "1");
+		termIndexTable.put("FALL","2");
+		termIndexTable.put("WINTER", "3");
+		termIndexTable.put("SPRING", "4");
+		termIndexTable.put("SPRING_SUMMER","5");
+		return termIndexTable;
+	}
+	
 	// 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION -> WINTER 2007
 	public void testGetAcademicSessionIdFromProviderIdWinter() {
+		// mock UmiacClient
+		Mock mockUmiac = mock(UmiacClient.class);
+		UmiacClient uc = (UmiacClient) mockUmiac.proxy();		
+		Hashtable termIndexTable = getTermIndexTable();
+		mockUmiac.expects(once()).method("getTermIndexTable").will(returnValue(termIndexTable));
+		cmsuofi.setUmiac(uc);
+		
 		String academicSessionId = cmsuofi.getAcademicSessionIdFromProviderId("2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");	
 		assertEquals("generate WINTER 2007","WINTER 2007",academicSessionId);
 		
 	}
 	
 	public void testGetAcademicSessionIdFromProviderIdSummer() {
+		// mock UmiacClient
+		Mock mockUmiac = mock(UmiacClient.class);
+		UmiacClient uc = (UmiacClient) mockUmiac.proxy();		
+		Hashtable termIndexTable = getTermIndexTable();
+		mockUmiac.expects(once()).method("getTermIndexTable").will(returnValue(termIndexTable));
+		cmsuofi.setUmiac(uc);
+		
 		String academicSessionId = cmsuofi.getAcademicSessionIdFromProviderId("2000,1,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");	
 		assertEquals("generate SUMMER 2000","SUMMER 2000",academicSessionId);
 		
 	}
 	
 	public void testGetAcademicSessionIdFromProviderIdSpring() {
+		// mock UmiacClient
+		Mock mockUmiac = mock(UmiacClient.class);
+		UmiacClient uc = (UmiacClient) mockUmiac.proxy();		
+		Hashtable termIndexTable = getTermIndexTable();
+		mockUmiac.expects(once()).method("getTermIndexTable").will(returnValue(termIndexTable));
+		cmsuofi.setUmiac(uc);
+		
 		String academicSessionId = cmsuofi.getAcademicSessionIdFromProviderId("2006,4,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");	
 		assertEquals("generate SPRING 2006","SPRING 2006",academicSessionId);
 		
 	}
 	
 	public void testGetAcademicSessionIdFromProviderIdSpringSummer() {
+		// mock UmiacClient
+		Mock mockUmiac = mock(UmiacClient.class);
+		UmiacClient uc = (UmiacClient) mockUmiac.proxy();		
+		Hashtable termIndexTable = getTermIndexTable();
+		mockUmiac.expects(once()).method("getTermIndexTable").will(returnValue(termIndexTable));
+		cmsuofi.setUmiac(uc);
+		
 		String academicSessionId = cmsuofi.getAcademicSessionIdFromProviderId("2010,5,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");	
 		assertEquals("generate SPRING_SUMMER","SPRING_SUMMER 2010",academicSessionId);
 		
@@ -157,7 +196,14 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 	 * test the mapping the English-version of term names into one-digit format which is used inside UMIAC
 	 */
 	public void testFindTermStringFromTermIndex() {
-		assertEquals("Summer term is 1","SUMMER",cmsuofi.findTermStringFromTermIndex("1"));
+		// mock UmiacClient
+		Mock mockUmiac = mock(UmiacClient.class);
+		UmiacClient uc = (UmiacClient) mockUmiac.proxy();		
+		Hashtable termIndexTable = getTermIndexTable();
+		mockUmiac.expects(exactly(5)).method("getTermIndexTable").will(returnValue(termIndexTable));
+		cmsuofi.setUmiac(uc);
+		
+		assertEquals("Summer term is 1","SUMMER", cmsuofi.findTermStringFromTermIndex("1"));
 		assertEquals("Fall term is 2","FALL",cmsuofi.findTermStringFromTermIndex("2"));
 		assertEquals("Winter term is 3","WINTER",cmsuofi.findTermStringFromTermIndex("3"));
 		assertEquals("Spring term is 4","SPRING",cmsuofi.findTermStringFromTermIndex("4"));
@@ -198,6 +244,14 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		
 		// The external source will return an Academic session object.  Mock that up and
 		// set appropriate values for that object.
+		
+		//mock UmiacClient
+		Mock mockUmiac = mock(UmiacClient.class);
+		UmiacClient uc = (UmiacClient) mockUmiac.proxy();		
+		Hashtable termIndexTable = getTermIndexTable();
+		mockUmiac.expects(once()).method("getTermIndexTable").will(returnValue(termIndexTable));
+		cmsuofi.setUmiac(uc);
+		
 		Mock mockAcademicSession = mock(AcademicSession.class);
 		mockUseDb.expects(once()).method("getAcademicSession").with(eq("WINTER 2007")).will(returnValue(mockAcademicSession.proxy()));
 		mockAcademicSession.expects(once()).method("getDescription").will(returnValue("W07"));
