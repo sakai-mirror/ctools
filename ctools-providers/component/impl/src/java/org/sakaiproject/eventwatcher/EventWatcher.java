@@ -45,13 +45,17 @@ import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.entity.cover.EntityManager;
 import org.sakaiproject.event.api.Event;
 import org.sakaiproject.event.api.EventTrackingService;
+import org.sakaiproject.event.cover.UsageSessionService;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.util.SubjectAffiliates;
 import org.sakaiproject.thread_local.cover.ThreadLocalManager;
+import org.sakaiproject.tool.api.Session;
+import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.util.StringUtil;
 import org.sakaiproject.util.api.umiac.UmiacClient;
+import org.sakaiproject.site.api.SiteService;
 //import org.sakaiproject.util.java.StringUtil;
 
 /**
@@ -64,6 +68,9 @@ public class EventWatcher implements Observer
 {
 	
 	private static Log log = LogFactory.getLog(EventWatcher.class);
+	
+	private static String FLAG_FROM_MEMBERSHIP_UPDATE = "flag_from_membership_update";
+	
 	/*******************************************************************************
 	* Dependencies and their setter methods
 	*******************************************************************************/
@@ -160,11 +167,16 @@ public class EventWatcher implements Observer
 		if (!(arg instanceof Event))
 			return;
 		Event event = (Event) arg;
+		Session session = SessionManager.getCurrentSession();
 		
 		// check the event function against the functions we have notifications watching for
 		String function = event.getEvent();
 
-		if (function.equals(AuthzGroupService.SECURE_UPDATE_AUTHZ_GROUP) || function.equals(AuthzGroupService.SECURE_REMOVE_AUTHZ_GROUP))
+		if (function.equals(SiteService.SECURE_UPDATE_SITE_MEMBERSHIP))
+		{
+			session.setAttribute(FLAG_FROM_MEMBERSHIP_UPDATE, Boolean.TRUE);
+		}
+		else if (function.equals(AuthzGroupService.SECURE_UPDATE_AUTHZ_GROUP) || function.equals(AuthzGroupService.SECURE_REMOVE_AUTHZ_GROUP))
 		{
 			Reference ref = EntityManager.newReference(event.getResource());
 			String url = ServerConfigurationService.getPortalUrl() + ref.getId();
@@ -222,8 +234,17 @@ public class EventWatcher implements Observer
 										m_umiac.setGroupUrl((String) sList.get(0), (String) sList.get(1), (String) sList.get(2), (String) sList.get(3), (String) sList.get(4), (String) sList.get(5), "-");
 									}
 									
-									// remove subject affiliates from the realm, using CAMPUS_SUBJECT as the key
-									modifySubjectAffliates((String) sList.get(2) + "_" + (String) sList.get(3), ref.getId(), false);
+									// if the realm.upd was generated during the site participant change, no need to update affiliates.
+									if (session.getAttribute(FLAG_FROM_MEMBERSHIP_UPDATE) == null)
+									{
+										// remove subject affiliates from the realm, using CAMPUS_SUBJECT as the key
+										modifySubjectAffliates((String) sList.get(2) + "_" + (String) sList.get(3), ref.getId(), false);
+									}
+									else
+									{
+										// reset flag
+										session.removeAttribute(FLAG_FROM_MEMBERSHIP_UPDATE);
+									}
 								}
 							}
 						}
@@ -244,8 +265,18 @@ public class EventWatcher implements Observer
 										// only update url when set to
 										m_umiac.setGroupUrl((String) pIdList.get(0), (String) pIdList.get(1), (String) pIdList.get(2), (String) pIdList.get(3), (String) pIdList.get(4), (String) pIdList.get(5), url);
 									}
-									// add subject affiliates to the realm, using CAMPUS_SUBJECT as the key
-									modifySubjectAffliates((String) pIdList.get(2) + "_" + (String) pIdList.get(3), ref.getId(), true);
+									
+									// if the realm.upd was generated during the site participant change, no need to update affiliates.
+									if (session.getAttribute(FLAG_FROM_MEMBERSHIP_UPDATE) == null)
+									{
+										// add subject affiliates to the realm, using CAMPUS_SUBJECT as the key
+										modifySubjectAffliates((String) pIdList.get(2) + "_" + (String) pIdList.get(3), ref.getId(), true);
+									}
+									else
+									{
+										// reset the flag
+										session.removeAttribute(FLAG_FROM_MEMBERSHIP_UPDATE);
+									}
 								}
 							}
 						}
