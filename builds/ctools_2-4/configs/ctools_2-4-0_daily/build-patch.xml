@@ -34,8 +34,29 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <echo message="applying patch set 2-4-0_p1" />
 
     <applyPatch patchFileName="SPEED.patch" />
-    <applyPatch patchFileName="SAK-10146.patch" />
     <applyPatch patchFileName="SAK-10145.patch" />
+    <applyPatch patchFileName="SAK-10298.patch" />
+
+    <!-- site action -->
+    <applyPatch patchFileName="SAK-9829.patch" />
+    <applyPatch patchFileName="SAK-8920.patch" />
+    <applyPatch patchFileName="CT-HUH.patch" />
+    <applyPatch patchFileName="SAK-10242.patch" />
+    <applyPatch patchFileName="SAK-10146.patch" />
+    <!--
+    <applyPatch patchFileName="CT-103-pre.31324.patch" />
+    <applyPatch patchFileName="CT-103-mid.31324.patch" />
+    <applyPatch patchFileName="CT-103-final.31324.patch" />
+    <applyPatch patchFileName="CT-103-remaining.patch" />
+    -->
+
+    
+    <!-- 
+	 <applyPatch patchFileName="CT-103-hack.delete.patch" />
+	 <applyPatch patchFileName="CT-103-hack.add.patch" />
+	 <applyPatch patchFileName="CT-103.patch" />
+    -->
+    
     <!-- <applyPatch patchFileName="CT-150.patch" /> -->
     <!-- <applyPatch patchFileName="DIRLIST.patch" /> -->
 

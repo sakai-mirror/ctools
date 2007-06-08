@@ -36,7 +36,7 @@
 	  description="copy and edit the sakai.properties files." />
   -->
 
-  <target name="buildPropertiesSimple" depends="copyConfig, buildPropertiesFileConcat"
+  <target name="buildPropertiesSimple" depends="copyConfig, buildPropertiesFileConcat,installCitationConfig"
 	  description="TEST: copy and edit the sakai.properties files." />
 
   <target name="copyConfig">
@@ -93,6 +93,13 @@
 	<expandproperties/>
       </filterchain>
     </concat>
+  </target>
+
+  <target name="installCitationConfig"
+	  description="Copy the citation configuration file to sakai.properties." >
+    <property name="citation.config.dir" value="${instances.dir}/${instance-type}/org.sakaiproject.citation" />
+    <mkdir dir="${citation.config.dir}" />
+    <copy file="${config.dir}/citation-configuration.xml" tofile="${citation.config.dir}/categories.xml" />
   </target>
 
 </project>

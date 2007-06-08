@@ -66,6 +66,7 @@
       <arg value="--input=${patches.dir}/@{patchFileName}" />
       <!--      <arg value="\-\-backup" /> -->
       <arg value="--remove-empty-files" />
+      <arg value="--debug=15" />
     </exec>
     </sequential>
   </macrodef>
