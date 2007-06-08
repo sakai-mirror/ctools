@@ -1,0 +1,577 @@
+Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java
+===================================================================
+--- site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 30494)
++++ site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 31484)
+@@ -92,7 +92,6 @@
+ import org.sakaiproject.site.cover.SiteService;
+ import org.sakaiproject.sitemanage.api.SectionField;
+ import org.sakaiproject.sitemanage.api.SectionFieldManager;
+-import org.sakaiproject.util.SubjectAffiliates;
+ import org.sakaiproject.time.api.Time;
+ import org.sakaiproject.time.api.TimeBreakdown;
+ import org.sakaiproject.time.cover.TimeService;
+@@ -658,11 +657,6 @@
+ 			state.setAttribute(STATE_TOP_PAGE_MESSAGE, new Integer(0));
+ 		}
+ 
+-		// affiliates if any
+-		if (state.getAttribute(STATE_SUBJECT_AFFILIATES) == null) {
+-			setupSubjectAffiliates(state);
+-		}
+-
+ 		// skins if any
+ 		if (state.getAttribute(STATE_ICONS) == null) {
+ 			setupIcons(state);
+@@ -1586,7 +1580,7 @@
+ 				if (state.getAttribute(STATE_ICONS) != null) {
+ 					List skins = (List) state.getAttribute(STATE_ICONS);
+ 					for (int i = 0; i < skins.size(); i++) {
+-						Icon s = (Icon) skins.get(i);
++						MyIcon s = (MyIcon) skins.get(i);
+ 						if (!StringUtil
+ 								.different(s.getUrl(), site.getIconUrl())) {
+ 							context.put("siteUnit", s.getName());
+@@ -2484,8 +2478,7 @@
+ 						.getAttribute(STATE_TERM_SELECTED);
+ 				context.put("term", t);
+ 				if (t != null) {
+-					String userId = StringUtil.trimToZero(SessionManager
+-							.getCurrentSessionUserId());
++					String userId = UserDirectoryService.getCurrentUser().getEid();
+ 					List courses = prepareCourseAndSectionListing(userId, t
+ 							.getEid(), state);
+ 					if (courses != null && courses.size() > 0) {
+@@ -3861,6 +3854,9 @@
+ 			state.setAttribute(SORTED_BY, SORTED_BY_PARTICIPANT_NAME);
+ 			state.setAttribute(SORTED_ASC, Boolean.TRUE.toString());
+ 		}
++		
++		// reset the paging info
++		resetPaging(state);
+ 
+ 		if (((String) state.getAttribute(STATE_SITE_MODE))
+ 				.equalsIgnoreCase(SITE_MODE_SITESETUP)) {
+@@ -4167,7 +4163,7 @@
+ 			state.setAttribute(STATE_GROUP_MEMBERS, gMemberSet);
+ 		} else if (option.equals("cancel")) {
+ 			// cancel from the update the group member process
+-			doCancel_create(data);
++			doCancel(data);
+ 			cleanEditGroupParams(state);
+ 
+ 		} else if (option.equals("save")) {
+@@ -4490,9 +4486,9 @@
+ 		// read the user input
+ 		int validInputSites = 0;
+ 		boolean validInput = true;
+-		List requiredFields = sectionFieldManager.getRequiredFields();
+ 		List multiCourseInputs = new Vector();
+ 		for (int i = 0; i < oldNumber; i++) {
++			List requiredFields = sectionFieldManager.getRequiredFields();
+ 			List aCourseInputs = new Vector();
+ 			int emptyInputNum = 0;
+ 
+@@ -4541,6 +4537,7 @@
+ 				state.setAttribute(STATE_MANUAL_ADD_COURSE_NUMBER, new Integer(
+ 						oldNumber + newNumber));
+ 
++				List requiredFields = sectionFieldManager.getRequiredFields();
+ 				for (int j = 0; j < newNumber; j++) {
+ 					// add a new course input
+ 					List aCourseInputs = new Vector();
+@@ -4581,13 +4578,12 @@
+ 				&& multiCourseInputs.size() > 0) {
+ 			AcademicSession t = (AcademicSession) state
+ 					.getAttribute(STATE_TERM_SELECTED);
+-			String courseId = sectionFieldManager.getSectionEid(t.getEid(),
++			String sectionEid = sectionFieldManager.getSectionEid(t.getEid(),
+ 					(List) multiCourseInputs.get(0));
+-			String title = "";
++			// default title
++			String title = sectionEid;
+ 			try {
+-				// instead of making up a name, Josh & I decided to use the
+-				// section.eid instead
+-				title = courseId;
++				title = cms.getSection(sectionEid).getTitle();
+ 			} catch (Exception e) {
+ 				// ignore
+ 			}
+@@ -4868,9 +4864,6 @@
+ 						return;
+ 					}
+ 
+-					// talk to Zhen, agreed to mve this call out of SiteAction
+-					// addSubjectAffliates(state, providerCourseList);
+-
+ 					sendSiteNotification(state, providerCourseList);
+ 				}
+ 
+@@ -4954,62 +4947,7 @@
+ 
+ 	}// doFinish
+ 
+-	/*
+-	 * talked to Zhen and we agreed that this shoudl be moved out of SiteAction -
+-	 * daisyf, 03/12/07 private void addSubjectAffliates(SessionState state,
+-	 * List providerCourseList) { Vector subjAffiliates = new Vector(); Vector
+-	 * affiliates = new Vector(); String subject = ""; String affiliate = ""; //
+-	 * get all subject and campus pairs for this site for (ListIterator i =
+-	 * providerCourseList.listIterator(); i.hasNext();) { String courseId =
+-	 * (String) i.next();
+-	 * 
+-	 * try { Section c = cms.getSection(courseId); if (c != null) // comment
+-	 * this out so at least this method won't break //subject =
+-	 * CourseIdGenerator.getSubject(c.getEid()); subject = c.getEid();
+-	 * subjAffiliates.add(subject); } catch (Exception e) { // M_log.warn(this + "
+-	 * cannot find course " + courseId + ". "); } } // remove duplicates
+-	 * Collection noDups = new HashSet(subjAffiliates); // get affliates for
+-	 * subjects for (Iterator i = noDups.iterator(); i.hasNext();) { subject =
+-	 * (String) i.next();
+-	 * 
+-	 * Collection uniqnames = getSubjectAffiliates(state, subject);
+-	 * 
+-	 * try { affiliates.addAll(uniqnames); } catch (Exception ignore) { } } //
+-	 * remove duplicates Collection addAffiliates = new HashSet(affiliates); //
+-	 * try to add uniqnames with appropriate role for (Iterator i =
+-	 * addAffiliates.iterator(); i.hasNext();) { affiliate = (String) i.next();
+-	 * 
+-	 * try { User user = UserDirectoryService.getUserByEid(affiliate); String
+-	 * realmId = "/site/" + (String) state.getAttribute(STATE_SITE_INSTANCE_ID);
+-	 * if (AuthzGroupService.allowUpdate(realmId)) { try { AuthzGroup realmEdit =
+-	 * AuthzGroupService .getAuthzGroup(realmId); Role role =
+-	 * realmEdit.getRole("Affiliate"); realmEdit.addMember(user.getId(),
+-	 * role.getId(), true, false); AuthzGroupService.save(realmEdit); } catch
+-	 * (Exception ignore) { } } } catch (Exception ignore) { M_log.warn(this + "
+-	 * cannot find affiliate " + affiliate); } } } // addSubjectAffliates
+-	 */
+-
+ 	/**
+-	 * @params - SessionState state
+-	 * @params - String subject is the University's Subject code
+-	 * @return - Collection of uniqnames of affiliates for this subject
+-	 */
+-	private Collection getSubjectAffiliates(SessionState state, String subject) {
+-		Collection rv = null;
+-		List allAffiliates = (Vector) state
+-				.getAttribute(STATE_SUBJECT_AFFILIATES);
+-
+-		// iterate through the subjects looking for this subject
+-		for (Iterator i = allAffiliates.iterator(); i.hasNext();) {
+-			SubjectAffiliates sa = (SubjectAffiliates) i.next();
+-			if (subject.equals(sa.getCampus() + "_" + sa.getSubject()))
+-				return sa.getUniqnames();
+-		}
+-		return rv;
+-
+-	} // getSubjectAffiliates
+-
+-	/**
+ 	 * buildExternalRealm creates a site/realm id in one of three formats, for a
+ 	 * single section, for multiple sections of the same course, or for a
+ 	 * cross-listing having multiple courses
+@@ -5044,11 +4982,8 @@
+ 		StringBuffer buf = new StringBuffer();
+ 
+ 		// get the request email from configuration
+-		String requestEmail = ServerConfigurationService.getString(
+-				"setup.request", null);
+-		if (requestEmail == null) {
+-			M_log.warn(this + " - no 'setup.request' in configuration");
+-		} else {
++		String requestEmail = getSetupRequestEmailAddress();
++		if (requestEmail != null) {
+ 			String noEmailInIdAccountName = ServerConfigurationService
+ 					.getString("noEmailInIdAccountName", "");
+ 
+@@ -5137,11 +5072,11 @@
+ 							List requiredFieldList = (List) requestFields
+ 									.get(i);
+ 							for (int j = 0; j < requiredFieldList.size(); j++) {
+-								String requiredField = (String) requiredFields
++								SectionField requiredField = (SectionField) requiredFields
+ 										.get(j);
+ 
+-								buf.append(requiredField + "\t"
+-										+ requiredFieldList.get(j) + "\n");
++								buf.append(requiredField.getLabelKey() + "\t"
++										+ requiredField.getValue() + "\n");
+ 							}
+ 						}
+ 						buf.append("\n" + rb.getString("java.sitetitle") + "\t"
+@@ -5218,9 +5153,9 @@
+ 			for (int i = 0; i < requestListSize; i++) {
+ 				List requiredFieldList = (List) requestFields.get(i);
+ 				for (int j = 0; j < requiredFieldList.size(); j++) {
+-					String requiredField = (String) requiredFields.get(j);
++					SectionField requiredField = (SectionField) requiredFields.get(j);
+ 
+-					buf.append(requiredField + "\t" + requiredFieldList.get(j)
++					buf.append(requiredField.getLabelKey() + "\t" + requiredField.getValue()
+ 							+ "\n");
+ 				}
+ 			}
+@@ -5273,11 +5208,8 @@
+ 		StringBuffer buf = new StringBuffer();
+ 
+ 		// get the request email from configuration
+-		String requestEmail = ServerConfigurationService.getString(
+-				"setup.request", null);
+-		if (requestEmail == null) {
+-			M_log.warn(this + " - no 'setup.request' in configuration");
+-		} else {
++		String requestEmail = getSetupRequestEmailAddress();
++		if (requestEmail != null) {
+ 			String noEmailInIdAccountName = ServerConfigurationService
+ 					.getString("noEmailInIdAccountName", "");
+ 
+@@ -5510,11 +5442,8 @@
+ 	 */
+ 	private void sendSiteNotification(SessionState state, List notifySites) {
+ 		// get the request email from configuration
+-		String requestEmail = ServerConfigurationService.getString(
+-				"setup.request", null);
+-		if (requestEmail == null) {
+-			M_log.warn(this + " - no 'setup.request' in configuration");
+-		} else {
++		String requestEmail = getSetupRequestEmailAddress();
++		if (requestEmail != null) {
+ 			// send emails
+ 			Site site = getStateSite(state);
+ 			String id = site.getId();
+@@ -6101,8 +6030,7 @@
+ 			removeAddClassContext(state);
+ 			state.setAttribute(STATE_TEMPLATE_INDEX, "43");
+ 		} else if (option.equalsIgnoreCase("add")) {
+-			String userId = StringUtil.trimToZero(SessionManager
+-					.getCurrentSessionUserId());
++			String userId = UserDirectoryService.getCurrentUser().getEid();
+ 			AcademicSession t = (AcademicSession) state
+ 					.getAttribute(STATE_TERM_SELECTED);
+ 			if (t != null) {
+@@ -7927,35 +7855,65 @@
+ 		Vector participants = new Vector();
+ 		try {
+ 			AuthzGroup realm = AuthzGroupService.getAuthzGroup(realmId);
++			realm.getProviderGroupId();
++			
++			// iterate through the provider list first
++			for (Iterator i=providerCourseList.iterator(); i.hasNext();)
++			{
++				String providerCourseEid = (String) i.next();
++				Set enrollmentSet = cms.getEnrollments(providerCourseEid);
++				for (Iterator eIterator = enrollmentSet.iterator();eIterator.hasNext();)
++				{
++					Enrollment e = (Enrollment) eIterator.next();
++					try 
++					{
++						User user = UserDirectoryService.getUserByEid(e.getUserId());
++						Member member = realm.getMember(user.getId());
++						if (member != null && member.isProvided())
++						{
++							// add provided participant
++							Participant participant = new Participant();
++							participant.credits = e.getCredits();
++							participant.name = user.getSortName();
++							participant.providerRole = member.getRole()!=null?member.getRole().getId():"";
++							participant.regId = "";
++							participant.removeable = false;
++							participant.role = member.getRole()!=null?member.getRole().getId():"";
++							participant.section = cms.getSection(providerCourseEid).getTitle();
++							participant.uniqname = user.getId();
++							participants.add(participant);
++						}
++					} catch (UserNotDefinedException exception) {
++						// deal with missing user quietly without throwing a
++						// warning message
++						M_log.warn(exception.getMessage());
++					}
++				}
++			}
++			
++			// now for those not provided users
+ 			Set grants = realm.getMembers();
+-			// Collections.sort(users);
+ 			for (Iterator i = grants.iterator(); i.hasNext();) {
+ 				Member g = (Member) i.next();
+-				String userString = g.getUserEid();
+-				Role r = g.getRole();
+-				try {
+-					User user = UserDirectoryService.getUserByEid(userString);
+-					Participant participant = new Participant();
+-					participant.name = user.getSortName();
+-					participant.uniqname = user.getId();
+-					if (r != null) {
+-						participant.role = r.getId();
+-					}
+-					if (g.isProvided()) {
+-						// official member, can't delete
+-						participant.removeable = false;
+-					} else {
++				if (!g.isProvided())
++				{
++					try {
++						User user = UserDirectoryService.getUserByEid(g.getUserEid());
++						Participant participant = new Participant();
++						participant.name = user.getSortName();
++						participant.uniqname = user.getId();
++						participant.role = g.getRole()!=null?g.getRole().getId():"";
+ 						participant.removeable = true;
++						participants.add(participant);
++					} catch (UserNotDefinedException e) {
++						// deal with missing user quietly without throwing a
++						// warning message
++						M_log.warn(e.getMessage());
+ 					}
+-					participants.add(participant);
+-				} catch (UserNotDefinedException e) {
+-					// deal with missing user quietly without throwing a
+-					// warning message
+-					M_log.warn(e.getMessage());
+ 				}
+ 			}
+ 
+-		} catch (GroupNotDefinedException e) {
++		} catch (GroupNotDefinedException ee) {
+ 			M_log.warn(this + "  IdUnusedException " + realmId);
+ 		}
+ 		return participants;
+@@ -9371,13 +9329,7 @@
+ 	 */
+ 	private void notifyNewUserEmail(String userName, String newUserEmail,
+ 			String newUserPassword, String siteTitle) {
+-		String from = ServerConfigurationService.getString("setup.request",
+-				null);
+-		if (from == null) {
+-			M_log.warn(this + " - no 'setup.request' in configuration");
+-			from = "postmaster@".concat(ServerConfigurationService
+-					.getServerName());
+-		}
++		String from = getSetupRequestEmailAddress();
+ 		String productionSiteName = ServerConfigurationService.getString(
+ 				"ui.service", "");
+ 		String productionSiteUrl = ServerConfigurationService.getPortalUrl();
+@@ -9411,16 +9363,24 @@
+ 		}
+ 	} // notifyNewUserEmail
+ 
++	private String getSetupRequestEmailAddress() {
++		String from = ServerConfigurationService.getString("setup.request",
++				null);
++		if (from == null) {
++			M_log.warn(this + " - no 'setup.request' in configuration");
++			from = "postmaster@".concat(ServerConfigurationService
++					.getServerName());
++		}
++		return from;
++	}
++
+ 	/**
+ 	 * send email notification to added participant
+ 	 */
+ 	private void notifyAddedParticipant(boolean newEmailInIdAccount,
+ 			String emailId, String userName, String siteTitle) {
+-		String from = ServerConfigurationService.getString("setup.request",
+-				null);
+-		if (from == null) {
+-			M_log.warn(this + " - no 'setup.request' in configuration");
+-		} else {
++		String from = getSetupRequestEmailAddress();
++		if (from != null) {
+ 			String productionSiteName = ServerConfigurationService.getString(
+ 					"ui.service", "");
+ 			String productionSiteUrl = ServerConfigurationService
+@@ -9577,8 +9537,6 @@
+ 		state.setAttribute(STATE_SITE_INFO, siteInfo);
+ 		if (state.getAttribute(STATE_MESSAGE) == null) {
+ 			try {
+-				siteInfo = (SiteInfo) state.getAttribute(STATE_SITE_INFO);
+-
+ 				Site site = SiteService.addSite(id, siteInfo.site_type);
+ 
+ 				String title = StringUtil.trimToNull(siteInfo.title);
+@@ -10064,63 +10022,6 @@
+ 	} // setupFormNamesAndConstants
+ 
+ 	/**
+-	 * Add these Unit affliates to sites in these Subject areas with Instructor
+-	 * role
+-	 * 
+-	 */
+-	private void setupSubjectAffiliates(SessionState state) {
+-		Vector affiliates = new Vector();
+-
+-		List subjectList = new Vector();
+-		List campusList = new Vector();
+-		List uniqnameList = new Vector();
+-
+-		// get term information
+-		if (ServerConfigurationService.getStrings("affiliatesubjects") != null) {
+-			subjectList = new ArrayList(Arrays
+-					.asList(ServerConfigurationService
+-							.getStrings("affiliatesubjects")));
+-		}
+-		if (ServerConfigurationService.getStrings("affiliatecampus") != null) {
+-			campusList = new ArrayList(Arrays.asList(ServerConfigurationService
+-					.getStrings("affiliatecampus")));
+-		}
+-		if (ServerConfigurationService.getStrings("affiliateuniqnames") != null) {
+-			uniqnameList = new ArrayList(Arrays
+-					.asList(ServerConfigurationService
+-							.getStrings("affiliateuniqnames")));
+-		}
+-
+-		if (subjectList.size() > 0 && subjectList.size() == campusList.size()
+-				&& subjectList.size() == uniqnameList.size()) {
+-			for (int i = 0; i < subjectList.size(); i++) {
+-				String[] subjectFields = ((String) subjectList.get(i))
+-						.split(",");
+-				String[] uniqnameFields = ((String) uniqnameList.get(i))
+-						.split(",");
+-				String campus = (String) campusList.get(i);
+-
+-				for (int j = 0; j < subjectFields.length; j++) {
+-					String subject = StringUtil.trimToZero(subjectFields[j]);
+-
+-					SubjectAffiliates affiliate = new SubjectAffiliates();
+-					affiliate.setSubject(subject);
+-					affiliate.setCampus(campus);
+-
+-					for (int k = 0; k < uniqnameFields.length; k++) {
+-						affiliate.getUniqnames().add(
+-								StringUtil.trimToZero(uniqnameFields[k]));
+-					}
+-					affiliates.add(affiliate);
+-				}
+-			}
+-		}
+-
+-		state.setAttribute(STATE_SUBJECT_AFFILIATES, affiliates);
+-
+-	} // setupSubjectAffiliates
+-
+-	/**
+ 	 * setupSkins
+ 	 * 
+ 	 */
+@@ -10146,7 +10047,7 @@
+ 				&& (iconNames.length == iconUrls.length)
+ 				&& (iconNames.length == iconSkins.length)) {
+ 			for (int i = 0; i < iconNames.length; i++) {
+-				Icon s = new Icon(StringUtil.trimToNull((String) iconNames[i]),
++				MyIcon s = new MyIcon(StringUtil.trimToNull((String) iconNames[i]),
+ 						StringUtil.trimToNull((String) iconUrls[i]), StringUtil
+ 								.trimToNull((String) iconSkins[i]));
+ 				icons.add(s);
+@@ -10168,9 +10069,9 @@
+ 		// if this icon is in the config appearance list, find a skin to set
+ 		List icons = (List) state.getAttribute(STATE_ICONS);
+ 		for (Iterator i = icons.iterator(); i.hasNext();) {
+-			Icon icon = (Icon) i.next();
+-			if (!StringUtil.different(icon.getUrl(), iconUrl)) {
+-				edit.setSkin(icon.getSkin());
++			Object icon = (Object) i.next();
++			if (icon instanceof MyIcon && !StringUtil.different(((MyIcon) icon).getUrl(), iconUrl)) {
++				edit.setSkin(((MyIcon) icon).getSkin());
+ 				return;
+ 			}
+ 		}
+@@ -10601,12 +10502,12 @@
+ 				// sort by whether the site is joinable or not
+ 				String s1 = null;
+ 				if (o1.getClass().equals(Participant.class)) {
+-					s1 = ((Participant) o1).getCourse();
++					s1 = ((Participant) o1).getSection();
+ 				}
+ 
+ 				String s2 = null;
+ 				if (o2.getClass().equals(Participant.class)) {
+-					s2 = ((Participant) o2).getCourse();
++					s2 = ((Participant) o2).getSection();
+ 				}
+ 
+ 				result = compareString(s1, s2);
+@@ -10743,14 +10644,14 @@
+ 
+ 	} // ToolComparator
+ 
+-	public class Icon {
++	public class MyIcon {
+ 		protected String m_name = null;
+ 
+ 		protected String m_url = null;
+ 
+ 		protected String m_skin = null;
+ 
+-		public Icon(String name, String url, String skin) {
++		public MyIcon(String name, String url, String skin) {
+ 			m_name = name;
+ 			m_url = url;
+ 			m_skin = skin;
+@@ -10859,9 +10760,6 @@
+ 		/** The member credits */
+ 		protected String credits = NULL_STRING;
+ 
+-		/** The course */
+-		public String course = NULL_STRING;
+-
+ 		/** The section */
+ 		public String section = NULL_STRING;
+ 
+@@ -10896,10 +10794,6 @@
+ 			return credits;
+ 		} // getCredits
+ 
+-		public String getCourse() {
+-			return course;
+-		} // getCourse
+-
+ 		public String getSection() {
+ 			return section;
+ 		} // getSection
+@@ -11565,14 +11459,17 @@
+ 
+ 				// 2. check if course offering is cross-listed
+ 				Set set = cms.getEquivalentCourseOfferings(o.getEid());
+-				for (Iterator k = set.iterator(); k.hasNext();) {
+-					CourseOffering eo = (CourseOffering) k.next();
+-					if (courseOfferingHash.containsKey(eo.getEid())) {
+-						// => cross-listed, then list them together
+-						CourseOfferingObject coo_equivalent = new CourseOfferingObject(
+-								eo, (ArrayList) sectionHash.get(eo.getEid()));
+-						l.add(coo_equivalent);
+-						dealtWith.add(eo.getEid());
++				if (set != null)
++				{
++					for (Iterator k = set.iterator(); k.hasNext();) {
++						CourseOffering eo = (CourseOffering) k.next();
++						if (courseOfferingHash.containsKey(eo.getEid())) {
++							// => cross-listed, then list them together
++							CourseOfferingObject coo_equivalent = new CourseOfferingObject(
++									eo, (ArrayList) sectionHash.get(eo.getEid()));
++							l.add(coo_equivalent);
++							dealtWith.add(eo.getEid());
++						}
+ 					}
+ 				}
+ 				CourseObject co = new CourseObject(o, l);
+@@ -12040,7 +11937,18 @@
+ 		state.setAttribute(STATE_CM_LEVELS, cmLevels);
+ 		state.setAttribute(STATE_CM_LEVEL_SELECTIONS, selections);
+ 
+-		state.setAttribute(STATE_TEMPLATE_INDEX, "53");
++		// check the configuration setting for choosing next screen
++		Boolean skipCourseSectionSelection = ServerConfigurationService.getBoolean("wsetup.skipCourseSectionSelection", Boolean.FALSE);
++		if (!skipCourseSectionSelection.booleanValue())
++		{
++			// go to the course/section selection page
++			state.setAttribute(STATE_TEMPLATE_INDEX, "53");
++		}
++		else
++		{
++			// skip the course/section selection page, go directly into the manually create course page
++			state.setAttribute(STATE_TEMPLATE_INDEX, "37");
++		}
+ 	}
+ 
+ 	private void addRequestedSection(SessionState state) {
