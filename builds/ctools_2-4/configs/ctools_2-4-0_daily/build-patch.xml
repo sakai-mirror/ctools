@@ -40,7 +40,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <!-- site action -->
     <applyPatch patchFileName="SAK-9829.patch" />
     <applyPatch patchFileName="SAK-8920.patch" />
-    <applyPatch patchFileName="CT-HUH.patch" />
+    <applyPatch patchFileName="CT-159.patch" />
     <applyPatch patchFileName="SAK-10242.patch" />
     <applyPatch patchFileName="SAK-10146.patch" />
     <!--
