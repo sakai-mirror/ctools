@@ -34,7 +34,7 @@
     <echo>
       Extracting config-viewer tool: ${config-viewer.svnurl} revision: ${config-viewer.revision}.
     </echo>
-    <execSvnCmd url="${config-viewer.svnurl}" revision="${config-viewer.revision}" destination="config-viewerxo"/> 
+    <execSvnCmd url="${config-viewer.svnurl}" revision="${config-viewer.revision}" destination="config-viewer"/> 
 
     <!-- take out the extra level of reference for the master/project.xml -->
     <!--
