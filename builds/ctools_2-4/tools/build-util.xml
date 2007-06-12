@@ -138,6 +138,7 @@
     <sequential>
       <echo>Extract svn resource: via @{cmd} from @{url} revision: @{revision}.</echo>
       <mkdir dir="@{dir}" />
+      <mkdir dir="@{destination}" />
       <exec executable="svn"
 	    dir="@{dir}"
 	    failonerror="true"
