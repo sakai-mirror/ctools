@@ -66,6 +66,7 @@ This doesn't supply the sakai.properties files you want to customize.
   <import file="./build-muse.xml" />
   <import file="./build-assignment.xml" />
   <import file="./build-config-viewer.xml" />
+  <import file="./build-gmt.xml" /> 
 
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
@@ -83,13 +84,17 @@ This doesn't supply the sakai.properties files you want to customize.
   <!-- customization targets -->
 
   <target name="getBuildTypeSrc"
-	  depends="extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc,getRwikiSrc,getMuseSrc,getAssignmentSrc,getConfig-ViewerSrc"
+	  depends="extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc,getRwikiSrc,getMuseSrc,getAssignmentSrc,getConfig-ViewerSrc,getGmtSrc"
 	  description="get the source specific to the prod build" >
     <echo> melete.extract.skip = [${melete.extract.skip}]</echo>
     <echo> itunesu.install.skip = [${itunesu.install.skip}]</echo>
     <echo> sitestats.install.skip = [${sitestats.install.skip}] </echo>
     <echo> search.install.skip = [${search.install.skip}] </echo>
     <echo> rwiki.install.skip = [${rwiki.install.skip}] </echo>
+    <echo> muse.install.skip = [${muse.install.skip}] </echo>
+    <echo> assignment.install.skip = [${assignment.install.skip}] </echo>
+    <echo> config-viewer.install.skip = [${config-viewer.install.skip}] </echo>
+    <echo> gmt.install.skip = [${gmt.install.skip}] </echo>
 
   </target>
 

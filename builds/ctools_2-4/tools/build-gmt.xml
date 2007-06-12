@@ -1,0 +1,50 @@
+<project name="build-gmt" basedir="." default="info" >
+
+  <!--
+
+   $Id: build-gmt.xml 22944 2007-03-19 16:43:02Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-4/tools/build-gmt.xml $
+   
+   Add gmt tool
+ 
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="gmtInfo">
+    <echo>
+      This will extract the gmt tool. It should be called by the master build.xml but not directly.
+
+      The configuration values are:
+      gmt.install.skip = ${gmt.install.skip}
+      gmt.svnurl = ${gmt.svnurl}
+      gmt.revision = ${gmt.revision}
+    </echo>
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--    deal with User Membership specific source       -->
+  <!-- ================================================== -->
+
+  <target name="getGmtSrc" unless="gmt.install.skip">
+    <echo>
+      Extracting gmt tool: ${gmt.svnurl} revision: ${gmt.revision}.
+    </echo>
+    <execSvnCmd url="${gmt.svnurl}" revision="${gmt.revision}" destination="gmt/gmt"/> 
+
+    <!-- take out the extra level of reference for the master/project.xml -->
+    <!--
+    <replaceregexp 
+	file="${build.dir}/gmt-tool/tool/project.xml"  >
+      <regexp pattern="\.\./\.\./\.\./master/project.xml" />
+      <substitution  expression="../../master/project.xml" />
+    </replaceregexp>
+    -->
+
+  </target>
+
+</project>
