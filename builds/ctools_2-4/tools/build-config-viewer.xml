@@ -1,0 +1,50 @@
+<project name="build-config-viewer" basedir="." default="info" >
+
+  <!--
+
+   $Id: build-config-viewer.xml 22944 2007-03-19 16:43:02Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-4/tools/build-config-viewer.xml $
+   
+   Add config-viewer tool
+ 
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="config-viewerInfo">
+    <echo>
+      This will extract the config-viewer tool. It should be called by the master build.xml but not directly.
+
+      The configuration values are:
+      config-viewer.install.skip = ${config-viewer.install.skip}
+      config-viewer.svnurl = ${config-viewer.svnurl}
+      config-viewer.revision = ${config-viewer.revision}
+    </echo>
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--    deal with User Membership specific source       -->
+  <!-- ================================================== -->
+
+  <target name="getConfig-ViewerSrc" unless="config-viewer.install.skip">
+    <echo>
+      Extracting config-viewer tool: ${config-viewer.svnurl} revision: ${config-viewer.revision}.
+    </echo>
+    <execSvnCmd url="${config-viewer.svnurl}" revision="${config-viewer.revision}" destination="config-viewerxo"/> 
+
+    <!-- take out the extra level of reference for the master/project.xml -->
+    <!--
+    <replaceregexp 
+	file="${build.dir}/config-viewer-tool/tool/project.xml"  >
+      <regexp pattern="\.\./\.\./\.\./master/project.xml" />
+      <substitution  expression="../../master/project.xml" />
+    </replaceregexp>
+    -->
+
+  </target>
+
+</project>
