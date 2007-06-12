@@ -34,9 +34,10 @@
     <echo>
       Extracting gmt tool: ${gmt.svnurl} revision: ${gmt.revision}.
     </echo>
-    <execSvnCmd url="${gmt.svnurl}" revision="${gmt.revision}" destination="gmt/gmt"/> 
+    <execSvnCmd url="${gmt.svnurl}" revision="${gmt.revision}" destination="gmt"/> 
 
     <!-- take out the extra level of reference for the master/project.xml -->
+
     <!--
     <replaceregexp 
 	file="${build.dir}/gmt-tool/tool/project.xml"  >
@@ -44,6 +45,15 @@
       <substitution  expression="../../master/project.xml" />
     </replaceregexp>
     -->
+
+    <replaceregexp >
+      <fileset dir="${build.dir}/gmt" casesensitive="yes">
+	<include name="**/project.xml"/>
+      </fileset>
+      <regexp pattern="\.\./\.\./\.\./master/project.xml" />
+      <substitution  expression="../../master/project.xml" />
+    </replaceregexp>
+
 
   </target>
 

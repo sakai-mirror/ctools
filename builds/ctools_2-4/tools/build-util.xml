@@ -138,7 +138,7 @@
     <sequential>
       <echo>Extract svn resource: via @{cmd} from @{url} revision: @{revision}.</echo>
       <mkdir dir="@{dir}" />
-      <mkdir dir="@{dir}/@{destination}" />
+      <!-- <mkdir dir="@{dir}/@{destination}" /> worked for gmt, broke melete -->
       <exec executable="svn"
 	    dir="@{dir}"
 	    failonerror="true"
