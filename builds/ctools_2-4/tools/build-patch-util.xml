@@ -53,7 +53,7 @@
      applying patch @{patchFileName}
      ********************************************************** 
     </echo>
-    <exec executable="patch"
+    <exec executable="/usr/bin/patch"
 	  dir="${build.dir}"
 	  failonerror="true"
 	  output="${logs.dir}/${ant.project.name}.log"
