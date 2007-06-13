@@ -3380,6 +3380,7 @@ alter table GMT_GOAL add constraint FK4D6688846E3F0D23 foreign key (PARENT_GOAL_
 alter table GMT_LINK add constraint FK4D68B96B5F1AA7B8 foreign key (GOAL_ID) references GMT_GOAL;
 alter table GMT_RATING add constraint FK9FEF1ECE3E34DED8 foreign key (LINK_ID) references GMT_LINK;
 
+commit;
 
 -- end
 
