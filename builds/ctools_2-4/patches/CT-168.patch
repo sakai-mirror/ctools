@@ -1,0 +1,14 @@
+svn diff -r31583:31584 https://source.sakaiproject.org/svn
+Index: ctools/trunk/ctools-providers/component/impl/src/java/org/sakaiproject/provider/user/UnivOfMichUserDirectoryProvider.java
+===================================================================
+--- ctools/trunk/ctools-providers/component/impl/src/java/org/sakaiproject/provider/user/UnivOfMichUserDirectoryProvider.java	(revision 31583)
++++ ctools/trunk/ctools-providers/component/impl/src/java/org/sakaiproject/provider/user/UnivOfMichUserDirectoryProvider.java	(revision 31584)
+@@ -343,7 +343,7 @@
+ 	{
+ 	    String [] userName = getUmiac().getUserName(user.getEid());
+ 	    if (userName == null) {
+-	    	return "";
++	    	return null;
+ 	    }
+     	return userName[1];
+ 	}
