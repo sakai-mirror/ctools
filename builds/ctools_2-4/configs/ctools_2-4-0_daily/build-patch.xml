@@ -53,7 +53,6 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="CT-103-final.31324.patch" />
     <applyPatch patchFileName="CT-103-remaining.patch" />
     -->
-    <applyPatch patchFileName="CT-168.patch" />
 
   </target>
 
