@@ -343,7 +343,7 @@ public class UnivOfMichUserDirectoryProvider
 	{
 	    String [] userName = getUmiac().getUserName(user.getEid());
 	    if (userName == null) {
-	    	return "";
+	    	return null;
 	    }
     	return userName[1];
 	}
