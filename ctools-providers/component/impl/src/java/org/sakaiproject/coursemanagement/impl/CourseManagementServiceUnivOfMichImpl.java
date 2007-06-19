@@ -343,7 +343,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 			EnrollmentSet eSet = new EnrollmentSetCmImpl(coEid,coEid,coEid, "lct","3", co, instructors);
 	
 			SectionCmImpl section = new SectionCmImpl();
-			section.setCategory("lct");
+			section.setCategory(getUmiac().getClassCategory(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]));
 			section.setCourseOffering(co);
 			section.setDescription(co.getDescription());
 			section.setEid(providerId);
@@ -375,9 +375,9 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 
 	public EnrollmentSet getEnrollmentSet(String providerId) throws IdNotFoundException {
 		
-		Set instructors = getSectionInstructors(providerId);
+		//Set instructors = getSectionInstructors(providerId);
 		
-		EnrollmentSet eSet = new EnrollmentSetCmImpl(providerId, providerId, providerId, "lct","3", getCourseOffering(providerId), instructors);
+		EnrollmentSet eSet = new EnrollmentSetCmImpl(providerId, providerId, providerId, "lct","3", getCourseOffering(providerId), new HashSet());
 		
 		return eSet;
 	}
@@ -624,7 +624,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public String getSectionCategoryDescription(String categoryCode) {
-		return "no section category description for code: "+categoryCode;
+		return categoryCode;
 	}
 
 	public Map<String, String> getEnrollmentStatusDescriptions(Locale locale) {

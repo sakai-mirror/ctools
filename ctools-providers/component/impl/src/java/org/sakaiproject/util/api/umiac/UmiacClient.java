@@ -97,6 +97,13 @@ public interface UmiacClient {
 	 */
 	public abstract Vector getClassList(String year, String term,
 			String campus, String subject, String course, String section); // getClassList
+	
+	/**
+	 * get class category
+	 *
+	 */
+	public abstract String getClassCategory(String year, String term,
+			String campus, String subject, String course, String section); // getClassCategory
 
 	/**
 	 * Send a command to the UMIAC using the getUserInfo batch API and return

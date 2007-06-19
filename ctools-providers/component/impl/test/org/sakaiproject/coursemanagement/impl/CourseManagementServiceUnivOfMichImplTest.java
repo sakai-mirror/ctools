@@ -250,6 +250,7 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		UmiacClient uc = (UmiacClient) mockUmiac.proxy();		
 		Hashtable termIndexTable = getTermIndexTable();
 		mockUmiac.expects(once()).method("getTermIndexTable").will(returnValue(termIndexTable));
+		mockUmiac.expects(once()).method("getClassCategory").will(returnValue("LAB"));
 		cmsuofi.setUmiac(uc);
 		
 		Mock mockAcademicSession = mock(AcademicSession.class);

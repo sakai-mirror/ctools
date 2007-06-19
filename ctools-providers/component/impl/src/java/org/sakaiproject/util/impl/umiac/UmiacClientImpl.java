@@ -584,6 +584,40 @@ public class UmiacClientImpl
 		
 	} // getClassList
 	
+	/**
+	 * @inheritDoc 
+	 */
+	public String getClassCategory (String year, String term, String campus, String subject, String course, String section)
+	{
+		String command = "getClassInfo," + year + "," + term + "," + campus + "," + subject + "," + course + "," + section + "\n\n";
+
+		Vector results;
+		// check the cache - still use expired entries
+		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
+		{
+			results = (Vector) m_callCache.getExpiredOrNot(command);
+		}
+		else
+		{
+			results = makeRawCall(command);
+		}
+		
+		// if there are no results
+		if (	(results == null)
+			||	(results.size() < 1))
+		{
+			return null ;
+		}
+		else
+		{
+			String[] classInfos = StringUtil.split((String)results.get(0),"|");
+			// look up the category definition
+			Hashtable categoryTable = getClassCategoryTable();
+			String rv = (classInfos.length>=5 && categoryTable.get(classInfos[4]) != null)?(String) categoryTable.get(classInfos[4]):null;
+			return rv;
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getUserInformation(java.lang.String)
 	 */
@@ -981,6 +1015,36 @@ public class UmiacClientImpl
 		termIndex.put("SPRING", "4");
 		termIndex.put("SPRING_SUMMER","5");
 		return termIndex;
+	}
+	
+	/**
+	 * set up the class category look up table
+	 */
+	private Hashtable<String, String> getClassCategoryTable()
+	{
+		Hashtable rv = new Hashtable();
+		rv.put("ACL", "Ambulatory Clinical");
+		rv.put("CAS","Case Studies/Presentations");
+		rv.put("CLL", "Clinical Lab");
+		rv.put("CLN", "Clinical");
+		rv.put("CNF", "Conference");
+		rv.put("DIS", "Discussion");
+		rv.put("ERC", "Emergency Room Clinical");
+		rv.put("FLD", "Field Studies");
+		rv.put("FLD", "Field Experience");
+		rv.put("HP", "History and Physical");
+		rv.put("IND", "Independent Study");
+		rv.put("LAB", "Laboratory");
+		rv.put("LEC", "Lecture");
+		rv.put("MDC", "Multi Disciplinary Conf");
+		rv.put("PSI", "Personalized System of Instr");
+		rv.put("PTP", "Patient Presentations");
+		rv.put("REC", "Recitation");
+		rv.put("RES", "Research");
+		rv.put("SEM", "Seminar");
+		rv.put("SMA", "Small Group");
+		rv.put("SPI", "Simulated Patient Interviews");
+		return rv;
 	}
 
 	/*******************************************************************************
