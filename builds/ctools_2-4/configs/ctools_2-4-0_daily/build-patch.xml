@@ -39,6 +39,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <!-- -->
     <applyPatch patchFileName="SPEED.patch" />
     <applyPatch patchFileName="SAK-10145.patch" />
+    <applyPatch patchFileName="SAK-10145B.patch" />
     <applyPatch patchFileName="SAK-10298.patch" />
 
     <!-- site action -->
@@ -53,6 +54,8 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="CT-103-final.31324.patch" />
     <applyPatch patchFileName="CT-103-remaining.patch" />
     -->
+
+    <!--     <applyPatch patchFileName="CT-182.patch" /> -->
 
   </target>
 
