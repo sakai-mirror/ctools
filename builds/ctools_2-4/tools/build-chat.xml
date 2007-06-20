@@ -1,0 +1,62 @@
+<project name="build-chat" basedir="." default="info" >
+
+  <!--
+
+   $Id: build-chat.xml 22944 2007-03-19 16:43:02Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-4/tools/build-chat.xml $
+   
+   Add chat tool
+ 
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="chatInfo" unless="chat.install.skip" >
+    <echo>
+      This will extract the chat tool. It should be called by the master build.xml but not directly.
+
+      The configuration values are:
+      chat.install.skip = ${chat.install.skip}
+      chat.svnurl = ${chat.svnurl}
+      chat.revision = ${chat.revision}
+    </echo>
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--    deal with User Membership specific source       -->
+  <!-- ================================================== -->
+
+  <target name="getChatSrc" unless="chat.install.skip">
+    <echo>
+      Extracting chat tool: ${chat.svnurl} revision: ${chat.revision}.
+    </echo>
+    <execSvnCmd url="${chat.svnurl}" revision="${chat.revision}" destination="chat"/> 
+
+    <!-- take out the extra level of reference for the master/project.xml -->
+
+    <!--
+    <replaceregexp 
+	file="${build.dir}/chat-tool/tool/project.xml"  >
+      <regexp pattern="\.\./\.\./\.\./master/project.xml" />
+      <substitution  expression="../../master/project.xml" />
+    </replaceregexp>
+    -->
+
+    <!--
+    <replaceregexp >
+      <fileset dir="${build.dir}/chat" casesensitive="yes">
+	<include name="**/project.xml"/>
+      </fileset>
+      <regexp pattern="\.\./\.\./\.\./master/project.xml" />
+      <substitution  expression="../../master/project.xml" />
+    </replaceregexp>
+    -->
+
+
+  </target>
+
+</project>
