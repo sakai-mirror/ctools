@@ -54,7 +54,7 @@ createConfig - add dependencies to customize which instances have properties fil
   <!-- Assemble the desired source files. -->
 
   <target name="getSource" 
-	  depends="getSakaiSrc,getCtoolsSrc,getBuildTypeSrc"
+	  depends="getSakaiSrc,getCtoolsSrc,getBuildTypeSrc,printBuildInfo"
 	  description="get the source for sakai and required tools." >
 
     <echo> 

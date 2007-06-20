@@ -14,7 +14,7 @@
   -->
 
 
-  <target name="sitestatsInfo">
+  <target name="sitestatsInfo" unless="sitestats.install.skip" >
     <echo>
       This will extract the Sitestats tool. It should be called by the master build.xml not directly.
 

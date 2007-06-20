@@ -14,9 +14,10 @@
   -->
 
 
-  <target name="ocwInfo">
+  <target name="ocwInfo" unless="ocw.install.skip" >
+
     <echo>
-      This will extract the iTuneU podcasting tool. It should be called by the master build.xml not directly.
+      This will extract the ocw tool. It should be called by the master build.xml not directly.
 
       The configuration values are:
       ocw.install.skip = ${ocw.install.skip}

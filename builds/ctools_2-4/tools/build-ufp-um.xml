@@ -14,7 +14,7 @@
   -->
 
 
-  <target name="userMembershipInfo">
+  <target name="userMembershipInfo" unless="usermembership.install.skip" >
     <echo>
       This will extract the user membership tool. It should be called by the master build.xml not directly.
 

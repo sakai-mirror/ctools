@@ -14,7 +14,7 @@
   -->
 
 
-  <target name="itunesuInfo">
+  <target name="itunesuInfo" unless="itunesu.install.skip">
     <echo>
       This will extract the iTuneU podcasting tool. It should be called by the master build.xml not directly.
 

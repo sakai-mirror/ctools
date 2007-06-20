@@ -15,7 +15,7 @@
        
   -->
 
-  <target name="meleteBuildInfo">
+  <target name="meleteInfo" unless="melete.install.skip" >
     <echo>
       This will include the melete tool into Sakai for a ctools environment.  It should be called
       from the master build file, not on its own.

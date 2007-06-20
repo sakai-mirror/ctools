@@ -14,7 +14,7 @@
   -->
 
 
-  <target name="config-viewerInfo">
+  <target name="config-ViewerInfo" unless="config-viewer.install.skip" >
     <echo>
       This will extract the config-viewer tool. It should be called by the master build.xml but not directly.
 

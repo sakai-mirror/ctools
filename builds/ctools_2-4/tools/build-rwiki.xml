@@ -12,7 +12,7 @@
   -->
 
 
-  <target name="rwikiInfo">
+  <target name="rwikiInfo" unless="rwiki.install.skip" >
     <echo>
       This will extract the rwiki tool. It should be called by the master build.xml not directly.
 

@@ -12,7 +12,7 @@
   -->
 
 
-  <target name="assignmentInfo">
+  <target name="assignmentInfo" unless="assignment.install.skip" >
     <echo>
       This will extract the assignment tool. It should be called by the master build.xml not directly.
 

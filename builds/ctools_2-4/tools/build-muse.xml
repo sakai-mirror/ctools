@@ -14,7 +14,8 @@
   -->
 
 
-  <target name="museInfo">
+  <target name="museInfo" unless="mneme.install.skip" >
+
     <echo>
       This will extract the muse test and quiz engine.
 

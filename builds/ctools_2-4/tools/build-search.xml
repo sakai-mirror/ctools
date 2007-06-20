@@ -12,7 +12,7 @@
   -->
 
 
-  <target name="searchInfo">
+  <target name="searchInfo" unless="search.install.skip" >
     <echo>
       This will extract the search tool. It should be called by the master build.xml not directly.
 
