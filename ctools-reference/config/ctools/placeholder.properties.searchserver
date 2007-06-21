@@ -25,9 +25,9 @@
 
 ############# Search Server #############
 # We want search.
-search.experimental=true
-webservices.allowlogin=true
-sharedKey@org.sakaiproject.search.api.SearchService=
+search.enable=true
+#webservices.allowlogin=true
+#sharedKey@org.sakaiproject.search.api.SearchService=
 
 # Location of search server
 searchServerUrl@org.sakaiproject.search.api.SearchService=http://ctsearch.vip.itd.umich.edu/sakai-search-tool/xmlsearch

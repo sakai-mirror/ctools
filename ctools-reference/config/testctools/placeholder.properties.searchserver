@@ -8,7 +8,7 @@
 
 ############# Search Server #############
 # We want search.
-search.experimental=true
+search.enable=true
 
 ## These two set in security.properties
 #webservices.allowlogin=true

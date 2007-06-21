@@ -6,7 +6,7 @@
 
 ############# Search Server #############
 # We want search.
-search.experimental=true
+search.enable=true
 #webservices.allowlogin=true
 #sharedKey@org.sakaiproject.search.api.SearchService=
 
