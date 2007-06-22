@@ -27,7 +27,7 @@
 
 
   <!-- ================================================== -->
-  <!--    deal with User Membership specific source       -->
+  <!--    deal with chat specific source       -->
   <!-- ================================================== -->
 
   <target name="getChatSrc" unless="chat.install.skip">
