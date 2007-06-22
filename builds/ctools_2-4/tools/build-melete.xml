@@ -51,6 +51,8 @@
 
   <target name="editMelete" unless="melete.install.skip" >
 
+    <!-- text checked in switched to windows format, change it back to let these
+	 prior targets work. -->
     <replaceregexp match="c:" replace="/var" flags="g" >
       <fileset dir="${build.dir}/${melete.dirname}">
 	<include name="meleteDocs.xml" />
@@ -65,8 +67,7 @@
       </fileset>
     </replaceregexp>
 
-
-    <replaceregexp match="var/" replace="/var" flags="g" >
+    <replaceregexp match="var/" replace="/var/" flags="g" >
       <fileset dir="${build.dir}/${melete.dirname}">
 	<include name="meleteDocs.xml" />
 	<include name="**/web.xml" />
