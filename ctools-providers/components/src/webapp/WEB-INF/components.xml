@@ -46,6 +46,7 @@
   </bean>
 
   <!-- add for the local provider implementation of section field manager -->
+  <!-- NOTE that other implementations of the SectionFieldManager must be deleted. -->
   <bean id="org.sakaiproject.sitemanage.api.SectionFieldManager"
 	class="org.sakaiproject.sitemanage.impl.SectionFieldManagerUMichImpl"
 	init-method="init"

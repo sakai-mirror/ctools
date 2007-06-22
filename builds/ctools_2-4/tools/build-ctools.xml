@@ -54,11 +54,17 @@ $HeadURL$
 
 
   <target name="removeUnneededCtools" >
+
+    <!-- these don't work well -->
     <removeFromBuild deleteDir="osp/migration" />
     <removeFromBuild deleteDir="osp/warehouse" />
     <removeFromBuild deleteDir="osp/reports/api-impl" />
     <removeFromBuild deleteDir="osp/reports/components" />
     <removeFromBuild deleteDir="osp/reports/tool" />
+
+    <!-- CTools has its own SectionFields impl, so can delete the default one -->
+    <removeFromBuild deleteDir="site-manage/site-manage-impl" />
+
   </target>
 
   <!-- add the gradtools configuration changes to the sakai code. -->
@@ -155,6 +161,7 @@ $HeadURL$
 	  tofile="${build.dir}/${gradebook.grades.config.tofile}"
 	  overwrite="true"/>
   </target>
+
 
   <!--
   <target name="editCourseManagement">
