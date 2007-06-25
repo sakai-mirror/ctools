@@ -341,8 +341,11 @@ public class UnivOfMichUserDirectoryProvider
 	 */
 	public String getDisplayName(User user)
 	{
-		// punt
-		return "";
+	    String [] userName = getUmiac().getUserName(user.getEid());
+	    if (userName == null) {
+	    	return null;
+	    }
+    	return userName[1];
 	}
 	
 	/**

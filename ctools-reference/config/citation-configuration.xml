@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<config>
+   <!-- 
+	$HeadURL:$
+	$Id$
+   -->
+  <categories>
+
+    <category name="General Interest" id="1234" default="default">
+      <category_description>General Interest is what you want...</category_description>
+      <category_databases>
+        <category_database recommended="recommended">
+          <id>UMI00077</id>
+        </category_database>
+        <category_database recommended="recommended">
+          <id>UMI00433</id>
+        </category_database>
+        <category_database recommended="recommended">
+          <id>UMI01738</id>
+        </category_database>
+        <category_database recommended="recommended">
+          <id>UMI01789</id>
+        </category_database>
+        <category_database recommended="recommended">
+          <id>UMI01244</id>
+        </category_database>
+        <category_database recommended="recommended">
+          <id>UMI01559</id>
+        </category_database>
+        <category_database recommended="recommended">
+          <id>UMI00213</id>
+        </category_database>
+        <category_database recommended="recommended">
+          <id>UMI00272</id>
+        </category_database>
+      </category_databases>
+    </category>
+
+    <category name="Arts &amp; Humanities" id="1">
+      <category_description>arts and humanities description...</category_description>
+
+      <category name="African Studies" id="2">
+        <category_description>african studies description...</category_description>
+        <category_databases>
+          <category_database>
+            <id>UMI01508</id>
+          </category_database>
+          <category_database recommended="recommended">
+            <id>UMI00003</id>
+          </category_database>
+          <category_database>
+            <id>UMI00092</id>
+          </category_database>
+          <category_database recommended="recommended">
+            <id>UMI02383</id>
+          </category_database>
+          <category_database recommended="recommended">
+            <id>UMI01247</id>
+          </category_database>
+          <category_database>
+            <id>UMI00384</id>
+          </category_database>
+          <category_database recommended="recommended">
+            <id>UMI00091</id>
+          </category_database>
+          <category_database recommended="recommended">
+            <id>UMI01559</id>
+          </category_database>
+          <category_database>
+            <id>UMI00528</id>
+          </category_database>
+          <category_database recommended="recommended">
+            <id>UMI00386</id>
+          </category_database>
+          <category_database recommended="recommended">
+            <id>UMI00232</id>
+          </category_database>
+          <category_database>
+            <id>UMI00189</id>
+          </category_database>
+          <category_database recommended="recommended">
+            <id>UMI00272</id>
+          </category_database>
+        </category_databases>
+      </category>
+
+      <category name="East Asian Languages and Cultures" id="3">
+        <category_description>ealc description...</category_description>
+        <category_databases>
+          <category_database>
+            <id>UMI01212</id>
+          </category_database>
+          <category_database>
+            <id>UMI01567</id>
+          </category_database>
+          <category_database recommended="recommended">
+            <id>UMI00092</id>
+          </category_database>
+          <category_database recommended="recommended">
+            <id>UMI01247</id>
+          </category_database>
+        </category_databases>
+      </category>
+
+    </category>  <!-- end of Arts and Humanities -->
+
+    <category name="Business + Economics" id="77">
+      <category_description>business and economics...</category_description>
+      <category_databases>
+        <category_database>
+          <id>UMI01795</id>
+        </category_database>
+        <category_database recommended="recommended">
+          <id>UMI00052</id>
+        </category_database>
+        <category_database recommended="recommended">
+          <id>UMI01219</id>
+        </category_database>
+        <category_database>
+          <id>UMI01229</id>
+        </category_database>
+        <category_database>
+          <id>UMI01947</id>
+        </category_database>
+        <category_database>
+          <id>UMI01255</id>
+        </category_database>
+        <category_database>
+          <id>UMI00235</id>
+        </category_database>
+      </category_databases>
+    </category>
+
+    <category name="Science" id="4">
+      <category_description>Science description...</category_description>
+
+      <category name="Ecology and Evolutionary Biology" id="5">
+        <category_description>Ecology and Evolutionary Biology description...</category_description>
+        <category name="Ecology" id="10">
+          <category_description>something...</category_description>
+          <category name="REAL Ecology" id="11">
+            <category_description>grizzly peak</category_description>
+            <category_databases>
+              <category_database>
+                <id>UMI00238</id>
+              </category_database>
+              <category_database>
+                <id>UMI01364</id>
+              </category_database>
+              <category_database recommended="recommended">
+                <id>UMI01365</id>
+              </category_database>
+              <category_database>
+                <id>UMI00497</id>
+              </category_database>
+              <category_database recommended="recommended">
+                <id>UMI00230</id>
+              </category_database>
+            </category_databases>
+          </category>
+        </category>
+
+        <category name="Evolution" id="13">
+          <category_description>this is the description for evolution: bling bling</category_description>
+          <category name="Stage 1" id="14">
+            <category_description>stage 1</category_description>
+            <category name="Stage 2" id="24">
+              <category_description>stage 2</category_description>
+              <category name="Stage 3" id="34">
+                <category_description>stage 3</category_description>
+                <category name="Stage 3a" id="15">
+                  <category_databases>
+                    <category_database>
+                      <id>UMI00300</id>
+                    </category_database>
+                    <category_database>
+                      <id>UMI01366</id>
+                    </category_database>
+                    <category_database recommended="recommended">
+                      <id>UMI00239</id>
+                    </category_database>
+                    <category_database>
+                      <id>UMI01369</id>
+                    </category_database>
+                    <category_database>
+                      <id>UMI01367</id>
+                    </category_database>
+                    <category_database recommended="recommended">
+                      <id>UMI00248</id>
+                    </category_database>
+                  </category_databases>
+                </category>
+
+                <category name="Stage 3b" id="16">
+                  <category_databases>
+                    <category_database recommended="recommended">
+                      <id>UMI01712</id>
+                    </category_database>
+                    <category_database>
+                      <id>UMI01877</id>
+                    </category_database>
+                    <category_database recommended="recommended">
+                      <id>UMI01948</id>
+                    </category_database>
+                    <category_database>
+                      <id>UMI00538</id>
+                    </category_database>
+                    <category_database>
+                      <id>UMI01857</id>
+                    </category_database>
+                  </category_databases>
+                </category>
+
+                <category name="Stage 3c" id="17">
+                  <category_databases>
+                    <category_database>
+                      <id>UMI00319</id>
+                    </category_database>
+                    <category_database>
+                      <id>UMI00214</id>
+                    </category_database>
+                    <category_database>
+                      <id>UMI00237</id>
+                    </category_database>
+                    <category_database recommended="recommended">
+                      <id>UMI01738</id>
+                    </category_database>
+                  </category_databases>
+                </category>
+              </category>
+            </category>
+
+            <category name="Stage 2a" id="18">
+              <category_description>stage 2a</category_description>
+              <category_databases>
+                <category_database>
+                  <id>UMI01370</id>
+                </category_database>
+                <category_database>
+                  <id>UMI00260</id>
+                </category_database>
+                <category_database>
+                  <id>UMI00254</id>
+                </category_database>
+                <category_database>
+                  <id>UMI01301</id>
+                </category_database>
+                <category_database>
+                  <id>UMI00317</id>
+                </category_database>
+                <category_database recommended="recommended">
+                  <id>UMI00320</id>
+                </category_database>
+              </category_databases>
+            </category>
+          </category>
+        </category>
+      </category>
+
+      <category name="Electrical Engineering" id="6">
+        <category_description>Electrical Engineering description...</category_description>
+        <category_databases>
+          <category_database recommended="recommended">
+            <id>UMI01183</id>
+          </category_database>
+          <category_database>
+            <id>UMI00230</id>
+          </category_database>
+          <category_database>
+            <id>UMI01165</id>
+          </category_database>
+          <category_database recommended="recommended">
+            <id>UMI01166</id>
+          </category_database>
+          <category_database recommended="recommended">
+            <id>UMI01301</id>
+          </category_database>
+        </category_databases>
+      </category>
+
+    </category>  <!-- end of Science category -->
+
+  </categories>
+
+  <databases>
+    <database name="ACM Digital Library" id="UMI01183">
+      <database_description>Full-text archive of ACM publications, including journals, magazines, transactions, proceedings, and newsletters, as well as some publications by affiliated organizations.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Engineering Index (Compendex)" id="UMI01165">
+      <database_description>Engineering Index (Compendex) provides international coverage of engineering and applied science literature in over 5000 journals, conference proceedings, and technical reports.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="INSPEC" id="UMI01166">
+      <database_description>Covers the world-wide literature (mainly journal articles and conference proceedings papers) in astronomy, physics, electronics and electrical engineering, computers and control, and information technology.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="AGRICOLA" id="UMI00238">
+      <database_description>A bibliographic database of the agricultural literature, containing records of materials acquired by the National Agriculture Library (NAL) and cooperating institutions. Index to articles in agriculture, soil sciences, forestry, and related areas.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Algology Abstracts (Microbiology C)" id="UMI01364">
+      <database_description>Covers literature on algae, fungi, protozoa, and lichens; including the areas of reproduction, growth, life cycles, biochemistry, genetics, and infection and immunity in humans, other animals, and plants.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="Animal Behavior Abstracts" id="UMI01365">
+      <database_description>Index of journal articles relevant to animal behavior, including topics from neurophysiology to behavioral ecology, and genetics to applied ethology, also covers particular taxonomic groups.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Annual Reviews" id="UMI00497">
+      <database_description>Provides access to authoritative, analytic reviews of research in 29 focused disciplines within the Biological &amp; Medical, Physical, and Social Sciences. Permits searching within these three broad categories or across all 29 titles.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="Applied Science and Technology Abstracts" id="UMI00230">
+      <database_description>Applied Science and Technology Abstracts (its full name) covers 350+ key, international English-language periodicals in the applied sciences and technology. It is a good source of information on management, careers and employment, and financial trends in the scientific and technological fields. It abstracts interviews, meetings, conferences, exhibitions, discussions, corrections, continued articles, new product reviews, new product announcements, technically valuable editorials and letters, tables, charts, diagrams, buyers' guides, directories, and conference proceedings; it also cites book reviews. Each record contains a bibliographic citation.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Aqualine" id="UMI00300">
+      <database_description>Coverage of trade, technical, and scientific literature in water resources and supplies, water quality, water and waste analysis, water treatment, underground services and water use, sewage, industrial effluent, and the effects of pollution.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="Aquatic Sciences and Fisheries Abstracts (ASFA)" id="UMI01366">
+      <database_description>Contains subfiles: ASFA1 Biological Sciences, ASFA2 Ocean Technolgy, ASFA3 Aquatic Pollution and Environmental Quality, ASFA Aquaculture, and ASFA Marine Biotchnology Abstracts</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Aquatic Sciences and Fisheries Abstracts - Aquatic Pollution &amp; Environmental Quality (ASFA 3)" id="UMI00239">
+      <database_description>Devoted exclusively to research and policy on the contamination of oceans, seas, lakes, rivers, and estuaries.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="Aquatic Sciences and Fisheries Abstracts. Biological Sciences &amp; Living Resources" id="UMI01369">
+      <database_description>Extensive indexing coverage of literature on basic and applied research on aquatic organisms. All aspects of marine, freshwater, and brackishwater organisms and environments are covered, including related legal, policy, and socioeconomic issues.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="ASFA Aquaculture Abstracts" id="UMI01367">
+      <database_description>   Covers all aspects of marine, brackish and freshwater aquaculture, including techniques, biological reproduction and growth, economics and management.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="Biology Digest" id="UMI00248">
+      <database_description>A compilation of abstracts and indexes of domestic and international material in the life sciences intended primarily for high school and undergraduate college students. Covers botany, ecology, zoology, environmental studies, medicine, psychology, etc.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="BioMed Central Journals" id="UMI01712">
+      <database_description>Provides 100+ open-access biomedical electronic journals. Articles are also immediately available on publication thru PubMed Central. UM author charges are prepaid by the UM Library.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="BioOne Abstracts and Indexes" id="UMI01877">
+      <database_description>This BioOne bibliographic database is an indexed and fully-searchable collection of abstracts that link to the fulltext articles available from the BioOne organization. BioOne provides a unique aggregation of over 65 high-impact bioscience research journals from more than 50 publishers. Additional publishers and journals will be added over time, and the aggregation will ultimately encompass over 200 bioscience titles. These titles are produced by societies and non-commercial publishers and a majority were previously available only in printed form. BioOne was developed by the American Institute of Biological Sciences (AIBS), SPARC (the Scholarly Publishing and Academic Resources Coalition), the University of Kansas, the Greater Western Library Alliance, and Allen Press. The organization is committed to a non-profit objective of disseminating important, scholarly information focused on the biological, ecological and environmental sciences by recovering costs while ensuring sustainability. More information can be found at www.bioone.org.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Biosis Previews" id="UMI01948">
+      <database_description>Comprehensive index to life sciences research literature. Covers journals (5000+), reports, meetings (1500+), reviews, and books in all areas of biology. Weekly email alerts available.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="Conference Papers Index" id="UMI00538">
+      <database_description>Conference Papers provides citations to papers and poster sessions presented at major scientific meetings around the world with subject emphasis since 1995 being in the life sciences, environmental sciences and the aquatic sciences.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Current Contents Connect" id="UMI01857">
+      <database_description>Indexes the table-of-contents pages of scholarly journals, books and conference proceedings in the fields of medicine, science, engineering, the arts, social sciences, and humanities.
+        Users can save searches as e-mail alerts.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Ecology Abstracts" id="UMI00319">
+      <database_description>Covers relevant papers on evolutionary biology, economics, and systems analysis as they relate to ecosystems or the environment.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="General Science Abstracts" id="UMI00214">
+      <database_description>Indexes over 160 leading scientific journals and magazines published in the U.S. and Great Britain. Basic, core coverage across all scientific fields, from astronomy to zoology.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="GeoRef" id="UMI00237">
+      <database_description>Index to journal articles, books and some theses in the earth sciences. Topics include: all aspects of geology, solid-earth geophysics, mineralogy, paleontology, petrology, geochemistry, geochronology, energy, and stratigraphy.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="ISI Web of Science" id="UMI01738">
+      <database_description>Combines three citation indexes--Arts &amp; Humanities, Science Expanded, and Social Sciences--which permit searching for articles that cite a known author or work, as well as searching by subject, author, journal, and author address. Covers 8,400+ journals.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Ocean Technology, Policy &amp; Non-Living Resources (ASFA 2)" id="UMI01370">
+      <database_description>Covers the physical, descriptive, dynamic, chemical, geological, and biological aspects of oceanography, including limnology, ocean engineering, and specific resources.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Oceanic Abstracts" id="UMI00260">
+      <database_description>Provides bilbiographic coverage of information pertaining to the marine &amp; brackish-water environment, focusing on marine biology &amp; physical oceanography, fisheries, aquaculture, non-living resources, meteorology &amp; geology, plus technological topics, etc.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="Plant Science" id="UMI00254">
+      <database_description>Plant Science is a bibliographic database focusing on all aspects of plant research including pathology, symbiosis, biochemistry, genetics, biotechnology, techniques, and environmental biology.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Science Citation Index (ISI Web of Science)" id="UMI01301">
+      <database_description>Key index to articles from major journals in all areas of science and technology. Use to find other articles citing a specific article (footnotes in reverse).</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="Water Resources Abstracts" id="UMI00317">
+      <database_description>Provides comprehensive coverage of water resources issues, including groundwater, lakes, estuaries, water supply, desalination, water yield, water quantity, groundwater management, watersheds, water quality, wastewater, and water law.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Zoological Record Plus" id="UMI00320">
+      <database_description>   Zoological Record Plus (ZR Plus), produced by BIOSIS, provides extensive coverage of the world's zoological and animal science literature, covering research from biochemistry to veterinary medicine. The database provides an easily searched collection of references from over 4,500 international serial publications, plus books, meetings, reviews and other non serial literature from over 100 countries.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="Bibliography of Asian Studies" id="UMI01212">
+      <database_description>Contains over 410,000 citations to western-language periodical articles and books published on all subjects pertaining to East, Southeast, and South Asia.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Historical Abstracts" id="UMI01567">
+      <database_description>Indexing with abstracts for 2,000+ journals and other materials relating to world history (excluding the U.S. and Canada) from 1450 to the present. Covers political, diplomatic, economic, social, cultural, and intellectual history.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="JSTOR" id="UMI00092">
+      <database_description>Provides full-text access to the archives of core scholarly journals in the humanities and social sciences.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Oxford University Press Online Journals" id="UMI01247">
+      <database_description>Provides full-text access to recent volumes of scholarly journals in all subject areas published by Oxford University Press.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="Ethnic NewsWatch" id="UMI01508">
+      <database_description>A full text database of 200 publications of the ethnic, minority and native press. Searchable in both English and Spanish, with titles in both languages. Includes more than 100,000 articles in Spanish and over 400,000 in English.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="International Political Science Abstracts" id="UMI00003">
+      <database_description>Provides abstracts of political science articles published in scholarly journals and yearbooks worldwide. Topics include method and theory, political thinkers, ideas, administrative institutions, national and area studies.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="MLA International Bibliography (CSA)" id="UMI02383">
+      <database_description>The MLA International Bibliography is a subject index for books and articles published on modern languages, literatures, folklore, and linguistics.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Periodicals Contents Index Full Text" id="UMI00384">
+      <database_description>Now called Periodicals Index Online (PIO), which includes all indexing and full text previously in Periodicals Contents Index Full Text. See separate entry under this new title. In addition, the full text portion available separately as Periodicals Archive Online (PAO), also listed separately.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="Project MUSE" id="UMI00091">
+      <database_description>Full-text access to over 100 scholarly journals in the arts and humanities, social sciences and mathematics published by Johns Hopkins University Press and other university presses (Duke, Hawaii, Indiana, MIT, Penn State, etc.).</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="ProQuest" id="UMI01559">
+      <database_description>Combined access to ProQuest databases including: ABI/INFORM Dateline, ABI/INFORM Global, ABI/INFORM Trade &amp; Industry, Alt-Press Watch, Ethnic NewsWatch, GenderWatch, OxResearch, ProQuest Dissertations and Theses, ProQuest Research Library, and the Snapshots International Series.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="PsycINFO" id="UMI00528">
+      <database_description>This database contains more than one million citations and summaries of journal articles, book chapters, books, dissertations and technical reports, all in the field of psychology. It also includes information about the psychological aspects of related disciplines such as medicine, psychiatry, nursing, sociology, education, pharmacology, physiology, linguistics, anthropology, business and law. Journal coverage, which spans from 1887 to present, includes international material selected from more than 2,100 periodicals in over 35 languages.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="ScienceDirect (Elsevier Journals Online)" id="UMI00386">
+      <database_description>Contains the full text of more than 1,000 Elsevier Science journals in the life, physical, medical, technical, and social sciences. Also includes citations and abstracts only for core scientific journals not published by Elsevier.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="Social Sciences Abstracts" id="UMI00232">
+      <database_description>Social Sciences Abstracts provides accurate, up-to-date coverage of the social sciences. Its records describe feature articles, biographical sketches, interviews, obituaries, scholarly replies, and book reviews longer than one-half page; book reviews of government documents and letters to the editor are not included. Each record contains a bibliographic citation and library holdings for the journal.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Sociological Abstracts" id="UMI00189">
+      <database_description>CSA Sociological Abstracts abstracts and indexes the international literature in sociology and related disciplines in the social and behavioral sciences. The database provides abstracts of journal articles and citations to book reviews drawn from over 1,700 serials publications, and also provides abstracts of books, book chapters, dissertations, and conference papers. Records added after 1974 contain in-depth and nonevaluative abstracts of journal articles.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="Wilson Select Plus [FirstSearch]" id="UMI00272">
+      <database_description>Indexing and abstracts plus full text for articles from 1,350+ general, humanities, business, science &amp; social science periodicals. Portions of 14 different Wilson indexes combined into a single database, with full text included for every article covered.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="ArticleFirst" id="UMI00077">
+      <database_description>Brief citations of articles from tables of contents of over 12,000 journals in science, technology, medicine, social science, business, the humanities, and popular culture. Updated daily.</database_description>
+      <database_group>free</database_group>
+    </database>
+
+    <database name="InfoTrac OneFile" id="UMI00433">
+      <database_description>Provides indexing for over 8,000 scholarly and general interest journals and newspapers, with full text articles included for over 4,200 of them. Combines the content of Computer Database, Expanded Academic ASAP, General Reference Center Gold, etc.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Mirlyn" id="UMI01789">
+      <database_description>Library Catalog of the University of Michigan. Includes catalogs for the University Library, Bentley Historical Library and Clements Library at UM-Ann Arbor, and for the Thompson Library at UM-Flint. Contains information about items available at these four libraries</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="OAIster" id="UMI01244">
+      <database_description>Uses the Open Archives Initiative (OAI) protocol to search over 7 million records of free, useful, previously difficult to access wide-ranging digital resources hosted at over 600 institutions.</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Readers Guide Abstracts [FirstSearch]" id="UMI00213">
+      <database_description>Indexes and briefly summarizes articles from 240 popular periodicals published in the U.S. &amp; Canada, covering current events &amp; news, fine arts, fashion, education, business, sports, health and nutrition, consumer affairs, etc</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="ABI/INFORM Global" id="UMI01795">
+      <database_description>fetch later...</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="EconLit" id="UMI00052">
+      <database_description>fetch later...</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Economist Intelligence Unit" id="UMI01219">
+      <database_description>fetch later...</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Hoover's Online" id="UMI01229">
+      <database_description>fetch later...</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Standard &amp; Poor's NetAdvantage" id="UMI01255">
+      <database_description>fetch later...</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Wilson Business Abstracts" id="UMI00235">
+      <database_description>fetch later...</database_description>
+      <database_group>all</database_group>
+    </database>
+
+    <database name="Kresge Library Catalog" id="UMI01947">
+      <database_description>fetch later...</database_description>
+      <database_group>all</database_group>
+    </database>
+
+  </databases>
+
+</config>

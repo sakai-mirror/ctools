@@ -20,8 +20,18 @@
 # iTunesU_site_id=
 # iTunesU_site_sharedSecret=
 
-## Value to increase security for the seach server.
-#sharedKey@org.sakaiproject.search.api.SearchService=
 
+############### webservices
+
+# must be true for portlets and for search
+# webservices.allowlogin=true
+
+# portlet / sakai secret
+# This is documented as 'webservice.portalsecret' but that seems unlikely.
+# Fill in <shhhhhh> with an appropriate value.
+#webservices.portalsecret=<shhhhhhh>
+
+## Search client search server secret
+#sharedKey@org.sakaiproject.search.api.SearchService=<shhhhhhhhh>
 
 # end

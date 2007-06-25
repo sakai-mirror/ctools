@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL:  $
+ * $HeadURL:  $
  * $Id:  $
  ***********************************************************************************
  *
@@ -21,6 +21,7 @@
 package org.sakaiproject.coursemanagement.impl;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,6 +44,7 @@ import org.sakaiproject.coursemanagement.api.CourseManagementAdministration;
 import org.sakaiproject.coursemanagement.api.CourseManagementService;
 import org.sakaiproject.coursemanagement.api.CourseOffering;
 import org.sakaiproject.coursemanagement.impl.CourseOfferingCmImpl;
+import org.sakaiproject.coursemanagement.api.AcademicSession;
 import org.sakaiproject.coursemanagement.api.CourseSet;
 import org.sakaiproject.coursemanagement.api.Enrollment;
 import org.sakaiproject.coursemanagement.api.EnrollmentSet;
@@ -61,30 +63,41 @@ import org.sakaiproject.util.api.umiac.UmiacClient;
 import org.sakaiproject.db.api.SqlReader;
 import org.sakaiproject.db.api.SqlService;
 import org.sakaiproject.util.StringUtil;
+import org.sakaiproject.time.cover.TimeService;
 import org.sakaiproject.exception.IdUnusedException;
 
 /**
- * Provides access to course and enrollment data stored in UMIAC's 
+ * Provides access to course and enrollment data stored in UMIAC.
  * 
- * @author <a href="mailto:jholtzman@berkeley.edu">Josh Holtzman</a>
- *
+ * In process.
+ * 
  */
 public class CourseManagementServiceUnivOfMichImpl implements CourseManagementService {
-	private static final Log log = LogFactory.getLog(CourseManagementServiceUnivOfMichImpl.class);
+	private static Log log = LogFactory.getLog(CourseManagementServiceUnivOfMichImpl.class);
 	
-	protected static final String ENROLLMENT_SET_SUFFIX = "es";
+	protected static String ENROLLMENT_SET_SUFFIX = "es";
 	
-	private Hashtable termIndex = new Hashtable();
+	private static Hashtable<String, String> termIndex = new Hashtable<String, String>();
 	
+	// Default to the internal implementation, but allow injecting
+	// an overriding one.
+	/* NOTE: Using the 'esi'variable allows using an injected class to get external academic information rather than
+	 * the default, internal, sql version.  That allows for much easier testing using a mock external academic information 
+	 * source.
+	 * */
+	private ExternalAcademicSessionInformation esi = new UseDb();
 	
+	// Allow override of the logger (for testing).
+	public static Log getLog() {
+		return log;
+	}
+
+	public void setLog(Log log) {
+		CourseManagementServiceUnivOfMichImpl.log = log;
+	}
+
 	public void init() {
 		log.info("Initializing " + getClass().getName());
-		
-		termIndex.put("SUMMER", "1");
-		termIndex.put("FALL","2");
-		termIndex.put("WINTER", "3");
-		termIndex.put("SPRING", "4");
-		termIndex.put("SPRING_SUMMER","5");
 	}
 
 	public void destroy() {
@@ -93,7 +106,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	
 	/**
 	 * Dependency: UmiacClient.
-	 * *param service the UmiacClient.
+	 * @param service the UmiacClient.
 	 */
 	
 	/** Dependency: UmiacClient */
@@ -106,7 +119,11 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	public UmiacClient getUmiac() {
 		return m_umiac;
 	}
-	
+	// Reset source of external session information so can use a mock for testing.
+	public void setExternalAcademicSessionInformationSource(ExternalAcademicSessionInformation esi) {
+		this.esi = esi;
+	}
+
 	/** Dependency: SqlService */
 	protected SqlService m_sqlService = null;
 
@@ -117,6 +134,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	
 	/** Dependency: */
 	protected CourseManagementAdministration cmAdmin;
+
 	public void setCmAdmin(CourseManagementAdministration cmAdmin) {
 		this.cmAdmin = cmAdmin;
 	}
@@ -126,50 +144,54 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 	
 	/**
-	 * get the course set by eid. 
+	 * get the CourseSet by its eid. 
 	 */
 	public CourseSet getCourseSet(String eid) throws IdNotFoundException {
 		return null;
 	}
 
 	public Set getChildCourseSets(final String parentCourseSetEid) throws IdNotFoundException {
-		// Ensure that the parent exists
-		if(!isCourseSetDefined(parentCourseSetEid)) {
-			throw new IdNotFoundException(parentCourseSetEid, CourseSet.class.getName());
-		}
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
+	/**
+	 * get the whole list of available CourseSet objects
+	 */
 	public Set getCourseSets() {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public Set getCourseSetMemberships(String courseSetEid) throws IdNotFoundException 
 	{
-		String[] fields = courseSetEid.split(",");
+		// not needed
 		
-		//get course participant list
-		//output as a Vector of String[] objects (one String[] per output line:
-		//sort_name|uniqname|umid|level (always "-")|credits|role|enrl_status
-		Vector plist = getUmiac().getClassList (fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
-		Vector members = new Vector();
-		for (int j= 0; j<plist.size(); j++)
-		{
-			String[] res = (String[]) plist.get(j);
-			/*Membership m = new Membership();
-			m.setName(res[0]);
-			m.setUniqname(res[1].toLowerCase());
-			m.setId(res[2]);
-			m.setLevel(res[3]);
-			m.setCredits(res[4]);
-			m.setRole(res[5]);
-			m.setProviderRole(res[5]);
-			m.setCourse(fields[3] + " " + fields[4]);
-			m.setSection(fields[5]);
-			members.add(m);*/
-		}
-		
-		return new HashSet();
+//		String[] fields = courseSetEid.split(",");
+//		
+//		//get course participant list
+//		//output as a Vector of String[] objects (one String[] per output line:
+//		//sort_name|uniqname|umid|level (always "-")|credits|role|enrl_status
+//		Vector plist = getUmiac().getClassList (fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
+//		Vector members = new Vector();
+//		for (int j= 0; j<plist.size(); j++)
+//		{
+//			String[] res = (String[]) plist.get(j);
+//			/*Membership m = new Membership();
+//			m.setName(res[0]);
+//			m.setUniqname(res[1].toLowerCase());
+//			m.setId(res[2]);
+//			m.setLevel(res[3]);
+//			m.setCredits(res[4]);
+//			m.setRole(res[5]);
+//			m.setProviderRole(res[5]);
+//			m.setCourse(fields[3] + " " + fields[4]);
+//			m.setSection(fields[5]);
+//			members.add(m);*/
+//		}
+//		
+	//	return new HashSet();
+		return null;
 	}
 
 	public CanonicalCourse getCanonicalCourse(String eid) throws IdNotFoundException {
@@ -177,133 +199,59 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public Set getEquivalentCanonicalCourses(String canonicalCourseEid) {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public Set getCanonicalCourses(final String courseSetEid) throws IdNotFoundException {
-		return new HashSet();
-	}
-
-	public List<AcademicSession> getAcademicSessions() {
-		// send to database
-		String statement = null;
-		Object[] fields = null;
-		
-		// if a record with courseId exists
-		statement = "SELECT ACADEMIC_SESSION_ID, VERSION, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, CREATED_BY, CREATED_DATE, ENTERPRISE_ID, TITLE, DESCRIPTION, START_DATE	, END_DATE FROM CM_ACADEMIC_SESSION_T";
-		
-		List results = m_sqlService.dbRead(statement, null, new SqlReader()
-			{
-				public Object readSqlResultRecord(ResultSet result)
-				{
-					try
-					{
-						// create the Resource from the db xml
-						String academic_session_id = result.getString(1);
-						String version = result.getString(2);
-						String lastModifiedBy = result.getString(3);
-						String lastModifiedDate = result.getString(4);
-						String createdBy= result.getString(5);
-						String createdDate= result.getString(6);
-						String eid= result.getString(7);
-						String title = result.getString(8);
-						String description = result.getString(9);
-						Date startDate = result.getDate(10);
-						Date endDate = result.getDate(11);
-						AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
-						
-						return ac;
-					}
-					catch (Throwable ignore) { return null;}
-				}
-			} );
-		
-		if (results != null && results.size()>0)
-		{
-			return results;
-		}
-		else
-		{
-			return null;
-		}
-	}
-
-	public List<AcademicSession> getCurrentAcademicSessions() {
-		return getAcademicSessions();
-	}
-
-	public AcademicSession getAcademicSession(final String eid) throws IdNotFoundException {
-		
-		// send to database
-		String statement = null;
-		Object[] fields = new Object[1];
-		fields[0] = eid;
-		
-		// if a record with courseId exists
-		statement = "SELECT ACADEMIC_SESSION_ID, VERSION, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, CREATED_BY, CREATED_DATE, ENTERPRISE_ID, TITLE, DESCRIPTION, START_DATE	, END_DATE FROM CM_ACADEMIC_SESSION_T WHERE ENTERPRISE_ID=?";
-		
-		List results = m_sqlService.dbRead(statement, fields, new SqlReader()
-			{
-				public Object readSqlResultRecord(ResultSet result)
-				{
-					try
-					{
-						// create the Resource from the db xml
-						String academic_session_id = result.getString(1);
-						String version = result.getString(2);
-						String lastModifiedBy = result.getString(3);
-						String lastModifiedDate = result.getString(4);
-						String createdBy= result.getString(5);
-						String createdDate= result.getString(6);
-						String eid= result.getString(7);
-						String title = result.getString(8);
-						String description = result.getString(9);
-						Date startDate = result.getDate(10);
-						Date endDate = result.getDate(11);
-						AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
-						
-						return ac;
-					}
-					catch (Throwable ignore) { return null;}
-				}
-			} );
-		
-		if (results != null && results.size()>0)
-		{
-			return (AcademicSession) results.get(0);
-		}
-		else
-		{
-			return null;
-		}
+		return null;
+		//return new HashSet();
 	}
 	
-	public CourseOffering getCourseOffering(String eid) throws IdNotFoundException {
-		// 2007,3,A,SUBJECT,SECTION,COURSE
-		String[] eidParts = eid.split(",");
-		String foundTermString = null;
-		for (Iterator iTerm = termIndex.keySet().iterator(); foundTermString == null && iTerm.hasNext();)
+	// Explicit testing of these delgating methods is not useful.  Testing the implementations 
+	// of esi would be interesting.
+	
+	public AcademicSession getAcademicSession(String academicSessionEid) throws IdNotFoundException {
+		return esi.getAcademicSession(academicSessionEid);
+	}
+
+
+	public List<AcademicSession> getAcademicSessions() {
+		return esi.getAcademicSessions();
+	}
+			
+
+	public List<AcademicSession> getCurrentAcademicSessions() {
+		// only return those future academic sessions
+		List<AcademicSession> rv = new Vector<AcademicSession>();
+		
+		List aSessions = getAcademicSessions();
+		for (Iterator i = aSessions.iterator(); i.hasNext();)
 		{
-			String termString = (String) iTerm.next();
-			if (termIndex.get(termString).equals(eidParts[1]))
+			AcademicSession aSession = (AcademicSession) i.next();
+			if (aSession.getStartDate().getTime()>(TimeService.newTime().getTime()))
 			{
-				foundTermString = termString;
+				rv.add(aSession);
 			}
 		}
-		String academicSessionId = foundTermString.concat(" ").concat(eidParts[0]);
-		AcademicSession as = getAcademicSession(academicSessionId);
+		
+		return rv;
+	}
+	
+	public CourseOffering getCourseOffering(String providerId) throws IdNotFoundException {
+		AcademicSession as = getAcademicSessionFromProviderId(providerId);
 		
 		// construct CourseOffering object
 		if (as != null)
 		{
-			CourseOfferingCmImpl co = new CourseOfferingCmImpl(eid, eid, "","open", as, new CanonicalCourseCmImpl(eid, eid, eid), as.getStartDate(),as.getEndDate());
+			CourseOfferingCmImpl co = new CourseOfferingCmImpl(providerId, providerId, "","open", as, new CanonicalCourseCmImpl(providerId, providerId, providerId), as.getStartDate(),as.getEndDate());
 			
 			return co;
 		}
 		else
 		{
 			CourseOfferingCmImpl co = new CourseOfferingCmImpl();
-			co.setEid(eid);
+			co.setEid(providerId);
 			if (as != null)
 			{
 				co.setAcademicSession(as);
@@ -317,63 +265,139 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		}
 	}
 
+	AcademicSession getAcademicSessionFromProviderId(String providerId) {
+		// 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION
+		String academicSessionId = getAcademicSessionIdFromProviderId(providerId);
+		AcademicSession as = getAcademicSession(academicSessionId);
+		return as;
+	}
+
+	String getCourseOfferingEidFromProviderId(String providerId) {
+		// Section eid: 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION -> CouseOffering eid:2007,3,A,SUBJECT,CATALOG_NBR
+		return providerId.substring(0, providerId.lastIndexOf(","));
+	}	
+
+	String getAcademicSessionIdFromProviderId(String providerId) {
+		// 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION
+		String[] eidParts = providerId.split(",");
+		String foundTermString = findTermStringFromTermIndex(eidParts[1]);
+		String academicSessionId = foundTermString.concat(" ").concat(eidParts[0]);
+		return academicSessionId;
+	}
+
+	/**
+	 * Look up the term string from the term index in the provider id.
+	 * @param eidParts
+	 * @param foundTermString
+	 * @return
+	 */
+	
+	 String findTermStringFromTermIndex(String termIndexIntString) {
+		String foundTermString = null;
+		Hashtable termIndex =  m_umiac.getTermIndexTable();
+		for (Iterator iTerm = termIndex.keySet().iterator(); foundTermString == null && iTerm.hasNext();)
+		{
+			String termString = (String) iTerm.next();
+			if (termIndex.get(termString).equals(termIndexIntString))
+			{
+				foundTermString = termString;
+			}
+		}
+		return foundTermString;
+	}
+
 	public Set getCourseOfferingsInCourseSet(final String courseSetEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public Set getEquivalentCourseOfferings(String courseOfferingEid) throws IdNotFoundException {
-		return new HashSet();
+		return new HashSet(); // see if there are cross listings.
 	}
 
 	public Set getCourseOfferingMemberships(String courseOfferingEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		// return new HashSet();
 	}
 
-	public Section getSection(String eid) throws IdNotFoundException {
-		AcademicSession as = getAcademicSession("WINTER 2007");
+	// Get the session information from an external source, and setup a section
+	// with a nested course offering and enrollment set.
+	
+	public Section getSection(String providerId) throws IdNotFoundException {
+		AcademicSession as = getAcademicSessionFromProviderId(providerId);
 		
-		CourseOfferingCmImpl co = new CourseOfferingCmImpl(eid, eid, "","open", as, new CanonicalCourseCmImpl(eid, eid, eid), as.getStartDate(),as.getEndDate());
-		
-		Set instructors = new HashSet();
-		instructors.add("instructorOne");
-		
-		EnrollmentSet eSet = new EnrollmentSetCmImpl(eid,eid,eid, "lct","3", co, instructors);
-		
-		SectionCmImpl section = new SectionCmImpl();
-		section.setCategory("lct");
-		section.setCourseOffering(co);
-		section.setDescription(co.getDescription());
-		section.setEid(co.getEid());
-		section.setTitle(co.getTitle());
-        section.setMaxSize(new Integer(100));
-        section.setEnrollmentSet(eSet);
-        
-        return section;
+		if (as != null)
+		{
+			String[] fields = providerId.split(",");
+			String title = fields[3] + " " + fields[4] + " " + fields[5] + " " + as.getDescription();
+			
+			// CourseOffering object
+			String coEid = getCourseOfferingEidFromProviderId(providerId);
+			CourseOfferingCmImpl co = new CourseOfferingCmImpl(coEid, coEid, "","open", as, 
+					new CanonicalCourseCmImpl(coEid, coEid, coEid), 
+					as.getStartDate(),as.getEndDate());
+	
+			Set<String> instructors = new HashSet<String>();
+			instructors.add("instructorOne");
+	
+			EnrollmentSet eSet = new EnrollmentSetCmImpl(coEid,coEid,coEid, "lct","3", co, instructors);
+	
+			SectionCmImpl section = new SectionCmImpl();
+			section.setCategory(getUmiac().getClassCategory(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]));
+			section.setCourseOffering(co);
+			section.setDescription(co.getDescription());
+			section.setEid(providerId);
+			section.setTitle(title);
+			section.setMaxSize(new Integer(100));
+			section.setEnrollmentSet(eSet);
+			return section;
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	public Set getSections(String courseOfferingEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public Set getChildSections(final String parentSectionEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public Set getSectionMemberships(String sectionEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		// return new HashSet();
 	}
 
-	public EnrollmentSet getEnrollmentSet(String eid) throws IdNotFoundException {
+	public EnrollmentSet getEnrollmentSet(String providerId) throws IdNotFoundException {
 		
-		Set instructors = new HashSet();
+		//Set instructors = getSectionInstructors(providerId);
+		
+		EnrollmentSet eSet = new EnrollmentSetCmImpl(providerId, providerId, providerId, "lct","3", getCourseOffering(providerId), new HashSet());
+		
+		return eSet;
+	}
+
+		/**
+		 * 
+		 * @param providerId
+		 * @return
+		 */
+	
+	Set getSectionInstructors(String providerId) {
+		Set<String> instructors = new HashSet<String>();
 		
 		try
 		{
-			Map members = getUmiac().getGroupRoles(eid);
+			Map members = getUmiac().getGroupRoles(providerId);
 			for (Iterator i=members.keySet().iterator(); i.hasNext();)
 			{
 				String eId = (String) i.next();
-				String roleString = (String) members.get(eid);
+				String roleString = (String) members.get(eId);
 				if (roleString != null && roleString.equals("Instructor"))
 				{
 					instructors.add(eId);
@@ -382,20 +406,42 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		}
 		catch (IdUnusedException e)
 		{
-			log.warn(this + "could not find an enrollment set for " + eid);
+			log.warn(this + "could not find an enrollment set for " + providerId);
 		}
-		
-		EnrollmentSet eSet = new EnrollmentSetCmImpl(eid, eid, eid, "lct","3", getCourseOffering(eid), instructors);
-		
-		return eSet;
+		return instructors;
 	}
 
 	public Set getEnrollmentSets(final String courseOfferingEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public Set getEnrollments(final String enrollmentSetEid) throws IdNotFoundException {
-		return new HashSet();
+		if( ! isEnrollmentSetDefined(enrollmentSetEid)) {
+			log.warn(this + "Could not find an enrollment set with eid=" + enrollmentSetEid);
+			return null;
+		}
+		
+		// unpack the enrollmentSetEid to query umiac
+		String ids[] = enrollmentSetEid.split(",");
+		
+		// make sure the eid is formatted right
+		if (ids.length == 6)
+		{
+			HashSet enrollmentSet = new HashSet();
+			Vector enrollList = getUmiac().getClassList(ids[0], ids[1], ids[2], ids[3], ids[4], ids[5]);
+			for (Iterator i = enrollList.iterator(); i.hasNext();)
+			{
+				// format for enroll string: sort_name|uniqname|umid|level|credits|role|enrl_status
+				String[] enrollStringParts = (String []) i.next();
+				if (enrollStringParts.length == 7)
+				{
+					enrollmentSet.add(new EnrollmentCmImpl(enrollStringParts[1], getEnrollmentSet(enrollmentSetEid), enrollStringParts[6], enrollStringParts[4], ""));
+				}
+			}
+			return enrollmentSet;
+		}
+		return null;
 	}
 
 	public boolean isEnrolled(final String userId, final Set<String> enrollmentSetEids) {
@@ -413,29 +459,26 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 			return null;
 		}
 		
-		// compute the set of individual umiac ids that are packed into id
-		String eids[] = unpackId(enrollmentSetEid);
+		EnrollmentSet enrollmentSet = getEnrollmentSet(enrollmentSetEid);
 		
-		try
+		// unpack the enrollmentSetEid to query umiac
+		String ids[] = enrollmentSetEid.split(",");
+		
+		// make sure the eid is formatted right
+		if (ids.length == 6)
 		{
-			Map members = getUmiac().getGroupRoles(eids);
-			String roleString = null;
-			for (Iterator i = members.keySet().iterator(); i.hasNext();)
+			Vector enrollList = getUmiac().getClassList(ids[0], ids[1], ids[2], ids[3], ids[4], ids[5]);
+			for (Iterator i = enrollList.iterator(); i.hasNext();)
 			{
-				String memberEid = (String) i.next();
-				if (memberEid.equals(userId))
+				// format for enroll string: sort_name|uniqname|umid|level|credits|role|enrl_status
+				String[] enrollStringParts = (String[]) i.next();
+				if (enrollStringParts.length == 7 && enrollStringParts[2].equals(userId))
 				{
-					roleString = (String) members.get(memberEid);
+					return new EnrollmentCmImpl(userId, enrollmentSet, enrollStringParts[6], enrollStringParts[4], "");
 				}
 			}
-			return new EnrollmentCmImpl(userId, getEnrollmentSet(enrollmentSetEid), "enrolled", "3", "gradeScheme");
-		}
-		catch (IdUnusedException e)
-		{
-			log.warn(this + "could not find an enrollment set for " + enrollmentSetEid);
 		}
 		return null;
-		
 		
 	}
 	
@@ -446,12 +489,14 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 
 
 	public Set findCurrentlyEnrolledEnrollmentSets(final String userId) {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 
 	public Set  findCurrentlyInstructingEnrollmentSets(final String userId) {
-		return new HashSet();
+		return null;
+		// return new HashSet();
 	}
 
 	/**
@@ -459,22 +504,9 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	 */
 	public Set<Section> findInstructingSections(final String userId) 
 	{
-		HashSet set = new HashSet<Section>();
-		
-		// iterating through all sessions
-		List sessions = getAcademicSessions();
-		for (int i = 0; i<sessions.size(); i++)
-		{
-			AcademicSession session = (AcademicSession) sessions.get(i);
-			Set set1 = findInstructingSections(userId, session.getEid());
-			for(Iterator iter = set1.iterator(); iter.hasNext();) {
-				Section section = (Section)iter.next();
-				set.add(section);
-			}
-		}
-		
-		return set;
-		
+		// not needed
+		return null;
+		//return new HashSet<Section>();
 	}
 
 	/**
@@ -482,100 +514,20 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	 */
 	public Set<Section> findEnrolledSections(final String userId) 
 	{
-		HashSet set = new HashSet();
-		
-		if (userId == null) return set;
-
-		// get the user's external list of sites : Map of provider id -> role for this user
-		Map map = getUmiac().getUserSections(userId);
-		Set sectionIds = map.keySet();
-		for (Iterator itr = sectionIds.iterator(); itr.hasNext();)
-		{
-			AcademicSession as = getAcademicSession("WINTER 2007");
-			
-			String sectionId = (String) itr.next();
-			CourseOfferingCmImpl co = new CourseOfferingCmImpl(sectionId, sectionId, "","open", as, new CanonicalCourseCmImpl(sectionId, sectionId, sectionId), as.getStartDate(),as.getEndDate());
-			
-			Set instructors = new HashSet();
-			instructors.add(userId);
-			
-			EnrollmentSet eSet = new EnrollmentSetCmImpl(sectionId, sectionId, sectionId, "lct","3", co, instructors);
-			
-			SectionCmImpl section = new SectionCmImpl();
-			section.setCategory("lct");
-			section.setCourseOffering(co);
-			section.setDescription(co.getDescription());
-			section.setEid(co.getEid());
-			section.setTitle(co.getTitle());
-	        section.setMaxSize(new Integer(100));
-	        section.setEnrollmentSet(eSet);
-	        
-	        set.add(section);
-		}
-		
-		return set;
+		// not needed
+		return null;
+		//return new HashSet();
 	}
 	
 	public Set<Section> findInstructingSections(final String userId, final String academicSessionEid) 
 	{
-		HashSet s = new HashSet();
-		
-		try
-		{
-			// get the academic session first
-			AcademicSession as = getAcademicSession(academicSessionEid);
-			String[] acTitleParts = as.getTitle().split(" ");
-			
-			// get the instructor courses 
-			Vector rv = new Vector();
-			int i = 0;
-			
-			try
-			{
-				//getInstructorSections returns 12 strings: year, term_id, campus_code, 
-				//subject, catalog_nbr, class_section, title, url, component, role, 
-				//subrole, "CL" if cross-listed, blank if not
-				Vector courses = getUmiac().getInstructorSections (userId, acTitleParts[1], (String) termIndex.get(acTitleParts[0]));
-				
-				int count = courses.size();
-				for (i=0; i<courses.size(); i++)
-				{
-					String[] res = (String[]) courses.get(i);
-					String cEid = res[0] + "," + res[1] + "," + res[2] + "," + res[3] + "," + res[4] + "," + res[5];
-					String title = res[3] + "," + res[4] + "," + res[5];
-					
-					CourseOfferingCmImpl co = new CourseOfferingCmImpl(cEid, title, title + " " + as.getTitle(),"open", as, new CanonicalCourseCmImpl(title, title, title), as.getStartDate(),as.getEndDate());		
-					
-					Set instructors = new HashSet();
-					instructors.add(userId);
-					
-					EnrollmentSet eSet = new EnrollmentSetCmImpl(co.getEid(), co.getEid(), co.getEid(), "lct","3", co, instructors);
-					
-					SectionCmImpl section = new SectionCmImpl();
-					section.setCategory("lct");
-					section.setCourseOffering(co);
-					section.setDescription(co.getDescription());
-					section.setEid(co.getEid());
-					section.setTitle(co.getTitle());
-			        section.setMaxSize(new Integer(100));
-			        section.setEnrollmentSet(eSet);
-		        	
-					s.add(section);
-				}
-			}
-			catch (Exception ee)
-			{
-				log.warn(this + " Cannot find any course in record for the instructor with id " + userId + ". ");
-			}
-		}
-		catch (IdNotFoundException e)
-		{
-		}
-		return s;
+		return null;
+		//return new HashSet();
 	}
 
 	public Set<CourseOffering> findCourseOfferings(final String courseSetEid, final String academicSessionEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		// return new HashSet();
 	}
 
 	public boolean isEmpty(final String courseSetEid) {
@@ -584,7 +536,8 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 
 
 	public List<CourseSet> findCourseSets(final String category) {
-		return new Vector();
+		return null;
+		//return new Vector();
 	}
 
 
@@ -622,7 +575,8 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 
 
 	public Set<CourseOffering> getCourseOfferingsInCanonicalCourse(final String canonicalCourseEid) throws IdNotFoundException {
-		return new HashSet();
+		return null;
+		//return new HashSet();
 	}
 
 	public boolean isAcademicSessionDefined(String eid) {
@@ -665,11 +619,12 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public List<String> getSectionCategories() {
-		return new Vector();
+		return null;
+		//return new Vector();
 	}
 
 	public String getSectionCategoryDescription(String categoryCode) {
-		return "";
+		return categoryCode;
 	}
 
 	public Map<String, String> getEnrollmentStatusDescriptions(Locale locale) {
@@ -686,8 +641,8 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		return map;
 	}
 
-	public Map getMembershipStatusDescriptions(Locale locale) {
-		Map map = new HashMap();
+	public Map<String, String> getMembershipStatusDescriptions(Locale locale) {
+		Map<String, String> map = new HashMap<String, String>();
 		map.put("member", "Member");
 		map.put("guest", "Guest");
 		return map;
@@ -702,5 +657,113 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	public String[] unpackId(String eid)
 	{
 		return getUmiac().unpackId(eid);
+	}
+
+	// Inner class so that can mock and not require a database.
+
+	class UseDb implements ExternalAcademicSessionInformation {
+		/* (non-Javadoc)
+		 * @see org.sakaiproject.coursemanagement.impl.ExternalSessionInformation#getAcademicSession(java.lang.String)
+		 */
+		public AcademicSession getAcademicSession(final String eid) throws IdNotFoundException {
+			
+			// send to database
+			String statement = null;
+			Object[] fields = new Object[1];
+			fields[0] = eid;
+			
+			// if a record with courseId exists
+			statement = "SELECT ACADEMIC_SESSION_ID, VERSION, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, CREATED_BY, CREATED_DATE, ENTERPRISE_ID, TITLE, DESCRIPTION, START_DATE	, END_DATE FROM CM_ACADEMIC_SESSION_T WHERE ENTERPRISE_ID=?";
+			
+			List results = m_sqlService.dbRead(statement, fields, new SqlReader()
+				{
+					public Object readSqlResultRecord(ResultSet result)
+					{
+						try
+						{
+							AcademicSessionCmImpl ac = packageAcademicSessionInformationFromDb(result);
+							return ac;
+						}
+						catch (Throwable ignore) { return null;}
+					}
+				} );
+			
+			if (results != null && results.size()>0)
+			{
+				return (AcademicSession) results.get(0);
+			}
+			else
+			{
+				return null;
+			}
+		}
+	
+		/* (non-Javadoc)
+		 * @see org.sakaiproject.coursemanagement.impl.ExternalSessionInformation#getAcademicSessions(org.sakaiproject.coursemanagement.impl.CourseManagementServiceUnivOfMichImpl)
+		 */
+		public List<AcademicSession> getAcademicSessions() {
+			// send to database
+			String statement = null;
+			@SuppressWarnings("unused")
+			Object[] fields = null;
+			
+			// if a record with courseId exists
+			statement = "SELECT ACADEMIC_SESSION_ID, VERSION, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, CREATED_BY, CREATED_DATE, ENTERPRISE_ID, TITLE, DESCRIPTION, START_DATE	, END_DATE FROM CM_ACADEMIC_SESSION_T";
+			
+			List results = m_sqlService.dbRead(statement, null, new SqlReader()
+				{
+					public Object readSqlResultRecord(ResultSet result)
+					{
+						try
+						{
+							// create the Resource from the db xml
+							
+							AcademicSessionCmImpl ac = packageAcademicSessionInformationFromDb(result);
+//							String academic_session_id = result.getString(1);
+//							String version = result.getString(2);
+//							String lastModifiedBy = result.getString(3);
+//							String lastModifiedDate = result.getString(4);
+//							String createdBy= result.getString(5);
+//							String createdDate= result.getString(6);
+//							String eid= result.getString(7);
+//							String title = result.getString(8);
+//							String description = result.getString(9);
+//							Date startDate = result.getDate(10);
+//							Date endDate = result.getDate(11);
+//							AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
+//							
+							return ac;
+						}
+						catch (Throwable ignore) { return null;}
+					}
+				} );
+			
+			if (results != null && results.size()>0)
+			{
+				return results;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		protected AcademicSessionCmImpl packageAcademicSessionInformationFromDb(ResultSet result) throws SQLException {
+			// create the Resource from the db xml
+			String academic_session_id = result.getString(1);
+			String version = result.getString(2);
+			String lastModifiedBy = result.getString(3);
+			String lastModifiedDate = result.getString(4);
+			String createdBy= result.getString(5);
+			String createdDate= result.getString(6);
+			String eid= result.getString(7);
+			String title = result.getString(8);
+			String description = result.getString(9);
+			Date startDate = result.getDate(10);
+			Date endDate = result.getDate(11);
+			AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
+			return ac;
+		}
+		
 	}
 }

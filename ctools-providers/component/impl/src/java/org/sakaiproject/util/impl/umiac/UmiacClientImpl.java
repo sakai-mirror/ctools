@@ -32,6 +32,7 @@ import java.io.InterruptedIOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
@@ -79,6 +80,9 @@ public class UmiacClientImpl
 	protected int m_umiacSocketTimeout = 3000;
 	
 	private static Log log = LogFactory.getLog(UmiacClientImpl.class);
+
+	/* default cache duration to 1 hour */
+	private int cacheDurationSeconds = 60 * 60;
 
 	/**
 	* Construct, using the default production UMIAC instance.
@@ -197,6 +201,14 @@ public class UmiacClientImpl
 		m_umiacSocketTimeout = umiacSocketTimeout;
 	}
 
+	public int getCacheDurationSeconds() {
+		return cacheDurationSeconds;
+	}
+
+	public void setCacheDurationSeconds(int cacheDurationSeconds) {
+		this.cacheDurationSeconds = cacheDurationSeconds;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#userExists(java.lang.String)
 	 */
@@ -221,13 +233,27 @@ public class UmiacClientImpl
 		Vector result = makeRawCall(command);
 
 		// if there are no results, then we don't know the user
+		// If the entries are all null that is the same as a null result.
+		Boolean foundContent = false;
+		for (Object r: result) {
+			   //System.out.println(name.charAt(0));
+				if (r != null) {
+					foundContent = true;
+				}
+		}	
+		
+		if (!foundContent) {
+			result = null;
+		}
+		
 		if (	(result == null)
 			||	(result.size() != 1)
 			||	(((String) result.elementAt(0)).trim().length() == 0)
 			||	(((String) result.elementAt(0)).trim().equals(",")))
 		{
 			// cache the miss for 60 minutes
-			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+	//		if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			return null;
 		}
@@ -261,8 +287,8 @@ public class UmiacClientImpl
 			rv[3] = "";
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, rv, 60 * 60);
+		// cache the results for cache duration seconds.
+		if (m_callCache != null) m_callCache.put(command, rv, cacheDurationSeconds);
 
 		return rv;
 
@@ -294,8 +320,8 @@ public class UmiacClientImpl
 			||	(result.size() < 1)
 			||	(((String)result.elementAt(0)).indexOf("|") == -1))
 		{
-			// cache the miss for 60 minutes
-			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+			// cache the miss for a while.
+			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(id);
 		}
@@ -320,8 +346,8 @@ public class UmiacClientImpl
 		
 		String name = tab.toString();
 		
-		// cache the result for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, name, 60 * 60);
+		// cache the result for a while.
+		if (m_callCache != null) m_callCache.put(command, name, cacheDurationSeconds);
 
 		return name;
 
@@ -353,8 +379,8 @@ public class UmiacClientImpl
 			||	(result.size() < 1)
 			||	(((String)result.elementAt(0)).indexOf("|") == -1))
 		{
-			// cache the miss for 60 minutes
-			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+			// cache the miss for awhile.
+			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(id);
 		}
@@ -372,8 +398,8 @@ public class UmiacClientImpl
 			map.put(uid, role);
 		}
 		
-		// cache the result for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+		// cache the result for a while.
+		if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 		return map;
 
@@ -414,8 +440,8 @@ public class UmiacClientImpl
 			}
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, map, 60 * 60);
+		// cache the results for a while
+		if (m_callCache != null) m_callCache.put(command, map, cacheDurationSeconds);
 
 		return map;
 
@@ -480,8 +506,8 @@ public class UmiacClientImpl
 			||	(result.size() < 1)
 			||	(((String)result.elementAt(0)).indexOf("|") == -1))
 		{
-			// cache this miss for 60 minutes
-			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+			// cache this miss for awhile.
+			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(id[0]);
 		}
@@ -512,8 +538,8 @@ public class UmiacClientImpl
 			}
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, map, 60 * 60);
+		// cache the results for awhile.
+		if (m_callCache != null) m_callCache.put(command, map, cacheDurationSeconds);
 
 		return map;
 
@@ -551,12 +577,46 @@ public class UmiacClientImpl
 			rv.add(res);
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, rv, 60 * 60);
+		// cache the results for awhile
+		if (m_callCache != null) m_callCache.put(command, rv, cacheDurationSeconds);
 
 		return rv;
 		
 	} // getClassList
+	
+	/**
+	 * @inheritDoc 
+	 */
+	public String getClassCategory (String year, String term, String campus, String subject, String course, String section)
+	{
+		String command = "getClassInfo," + year + "," + term + "," + campus + "," + subject + "," + course + "," + section + "\n\n";
+
+		Vector results;
+		// check the cache - still use expired entries
+		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
+		{
+			results = (Vector) m_callCache.getExpiredOrNot(command);
+		}
+		else
+		{
+			results = makeRawCall(command);
+		}
+		
+		// if there are no results
+		if (	(results == null)
+			||	(results.size() < 1))
+		{
+			return null ;
+		}
+		else
+		{
+			String[] classInfos = StringUtil.split((String)results.get(0),"|");
+			// look up the category definition
+			Hashtable categoryTable = getClassCategoryTable();
+			String rv = (classInfos.length>=5 && categoryTable.get(classInfos[4]) != null)?(String) categoryTable.get(classInfos[4]):null;
+			return rv;
+		}
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getUserInformation(java.lang.String)
@@ -590,8 +650,8 @@ public class UmiacClientImpl
 			rv.add(res);
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, rv, 60 * 60);
+		// cache the results for awhile.
+		if (m_callCache != null) m_callCache.put(command, rv, cacheDurationSeconds);
 
 		return rv;
 		
@@ -623,8 +683,8 @@ public class UmiacClientImpl
 		if (	(result == null)
 			||	(result.size() < 1))
 		{
-			// cache the miss for 60 minutes
-			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+			// cache the miss for awhile.
+			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(eid);
 		}
@@ -636,8 +696,8 @@ public class UmiacClientImpl
 			rv.add(res);
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, rv, 60 * 60);
+		// cache the results for awhile.
+		if (m_callCache != null) m_callCache.put(command, rv, cacheDurationSeconds);
 
 		return rv;
 		
@@ -668,8 +728,8 @@ public class UmiacClientImpl
 		if (	(result == null)
 			||	(result.size() < 1))
 		{
-			// cache the miss for 60 minutes
-			if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
+			// cache the miss for awhile.
+			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(eid);
 		}
@@ -681,8 +741,8 @@ public class UmiacClientImpl
 			rv.add(res);
 		}
 
-		// cache the results for 60 minutes
-		if (m_callCache != null) m_callCache.put(command, rv, 60 * 60);
+		// cache the results for awhile.
+		if (m_callCache != null) m_callCache.put(command, rv, cacheDurationSeconds);
 
 		return rv;
 		
@@ -939,6 +999,51 @@ public class UmiacClientImpl
 			}
 		}
 
+		return rv;
+	}
+	
+	/**
+	 * @inheritDoc
+	 */
+	public Hashtable getTermIndexTable()
+	{
+		//term names are stored as digits in UMIAC
+		Hashtable termIndex = new Hashtable();
+		termIndex.put("SUMMER", "1");
+		termIndex.put("FALL","2");
+		termIndex.put("WINTER", "3");
+		termIndex.put("SPRING", "4");
+		termIndex.put("SPRING_SUMMER","5");
+		return termIndex;
+	}
+	
+	/**
+	 * set up the class category look up table
+	 */
+	private Hashtable<String, String> getClassCategoryTable()
+	{
+		Hashtable rv = new Hashtable();
+		rv.put("ACL", "Ambulatory Clinical");
+		rv.put("CAS","Case Studies/Presentations");
+		rv.put("CLL", "Clinical Lab");
+		rv.put("CLN", "Clinical");
+		rv.put("CNF", "Conference");
+		rv.put("DIS", "Discussion");
+		rv.put("ERC", "Emergency Room Clinical");
+		rv.put("FLD", "Field Studies");
+		rv.put("FLD", "Field Experience");
+		rv.put("HP", "History and Physical");
+		rv.put("IND", "Independent Study");
+		rv.put("LAB", "Laboratory");
+		rv.put("LEC", "Lecture");
+		rv.put("MDC", "Multi Disciplinary Conf");
+		rv.put("PSI", "Personalized System of Instr");
+		rv.put("PTP", "Patient Presentations");
+		rv.put("REC", "Recitation");
+		rv.put("RES", "Research");
+		rv.put("SEM", "Seminar");
+		rv.put("SMA", "Small Group");
+		rv.put("SPI", "Simulated Patient Interviews");
 		return rv;
 	}
 

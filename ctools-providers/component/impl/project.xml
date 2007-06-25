@@ -162,11 +162,29 @@
 			<artifactId>sakai-coursemanagement-api</artifactId>
 			<version>${sakai.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>sakaiproject</groupId>
+			<artifactId>sakai-site-manage-api</artifactId>
+			<version>${sakai.version}</version>
+		</dependency>
 		
 			<dependency>
 			<groupId>sakaiproject</groupId>
 			<artifactId>sakai-tool-servlet</artifactId>
 			<version>${sakai.version}</version>
+		</dependency>
+
+		<dependency>
+			 <groupId>jmock</groupId>
+			<artifactId>jmock</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
+		<dependency>
+			 <groupId>jmock</groupId>
+			<artifactId>jmock-cglib</artifactId>
+			<version>1.2.0</version>
 		</dependency>
 		
 		<!--
@@ -190,9 +208,19 @@
 		<sourceDirectory>src/java</sourceDirectory>
 
 		<resources>
-
+			<resource>
+				<directory>${basedir}/src/bundle</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
 		</resources>
-
+		<unitTestSourceDirectory>test</unitTestSourceDirectory>
+		<unitTest>
+		  <includes>
+		    <include>**/*Test.java</include>
+		  </includes>
+		</unitTest>
 	</build>
 
 </project>

@@ -1,5 +1,6 @@
 package org.sakaiproject.util.api.umiac;
 
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
@@ -71,7 +72,9 @@ public interface UmiacClient {
 	public abstract Map getGroupRoles(String id) throws IdUnusedException; // getGroupRoles
 
 	/**
-	 * Get all the external realm ids the user has a role in, and the role
+	 * Get all the external realm ids the user has a role in, and the role.  
+	 * For teachers this will contain the TEACH site so that they have "magic" access to 
+	 * teaching support.  That doesn't appear in the getInstructorSections command.
 	 * @param id The user id.
 	 * @return A map of he realm id to the role for this user.
 	 */
@@ -94,6 +97,13 @@ public interface UmiacClient {
 	 */
 	public abstract Vector getClassList(String year, String term,
 			String campus, String subject, String course, String section); // getClassList
+	
+	/**
+	 * get class category
+	 *
+	 */
+	public abstract String getClassCategory(String year, String term,
+			String campus, String subject, String course, String section); // getClassCategory
 
 	/**
 	 * Send a command to the UMIAC using the getUserInfo batch API and return
@@ -176,5 +186,10 @@ public interface UmiacClient {
 	 * @return An array of strings of real umiac group ids, one for each in the multiple.
 	 */
 	public String[] unpackId(String id);	// unpackId
+	
+	/**
+	 * get the term index table
+	 */
+	public Hashtable getTermIndexTable();
 	
 }
