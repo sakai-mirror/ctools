@@ -39,7 +39,9 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <!-- -->
     <applyPatch patchFileName="SPEED.patch" />
 
+    <!-- 2007/06/26 - appling patch now fails with 'reversed patch' error 
     <applyPatch patchFileName="SAK-10428.patch" />
+    -->
     <!--
     <applyPatch patchFileName="SAK-10145.patch" />
     <applyPatch patchFileName="SAK-10145B.patch" />
