@@ -229,7 +229,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		for (Iterator i = aSessions.iterator(); i.hasNext();)
 		{
 			AcademicSession aSession = (AcademicSession) i.next();
-			if (aSession.getStartDate().getTime()>(TimeService.newTime().getTime()))
+			if (aSession.getEndDate().getTime()>(TimeService.newTime().getTime()))
 			{
 				rv.add(aSession);
 			}
