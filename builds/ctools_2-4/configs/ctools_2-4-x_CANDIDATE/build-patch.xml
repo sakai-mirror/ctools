@@ -1,0 +1,70 @@
+<project name="build-patches" basedir="." default="info" >
+
+  <!--
+
+$Id$
+$HeadURL$
+
+Apply patches to the code.  This is used to avoid having to have a UMich specific branch of Sakai.
+
+  -->
+
+  <!-- ========================================================================== -->
+
+  <!-- Update the dependencies for this target to appropriate ones for this configuration. -->
+
+
+
+  <target name="applyPatches" depends="applyPatches_2-4-0_p1" >
+    <!-- <echo> temp to see if compiles. </echo> -->
+  </target>
+
+  
+  <!-- ========================================================================== -->
+  <!-- ==                    Targets for specific patch sets.                  == -->
+  <!-- ========================================================================== -->
+
+
+  <target name="noPatches" >
+    <echo>No patches to apply.</echo>
+  </target>
+
+
+  <target name="applyPatches_2-4-0_p1" >
+    <echo message="applying patch set 2-4-0_p1" />
+
+
+    <!-- comment out all but CT-103, but need them all in the end -->
+
+    <!-- -->
+    <applyPatch patchFileName="SPEED.patch" />
+
+    <applyPatch patchFileName="SAK-10428.patch" />
+    <!--
+    <applyPatch patchFileName="SAK-10145.patch" />
+    <applyPatch patchFileName="SAK-10145B.patch" />
+    <applyPatch patchFileName="SAK-10298.patch" />
+    -->
+    <!-- site action -->
+    <!--
+    <applyPatch patchFileName="SAK-9829.patch" />
+    <applyPatch patchFileName="SAK-8920.patch" />
+
+    <applyPatch patchFileName="CT-159.patch" />
+
+    <applyPatch patchFileName="SAK-10242.patch" />
+    <applyPatch patchFileName="SAK-10146.patch" />
+    -->
+    <!--
+    <applyPatch patchFileName="CT-103-pre.31324.patch" />
+    <applyPatch patchFileName="CT-103-mid.31324.patch" />
+    <applyPatch patchFileName="CT-103-final.31324.patch" />
+    <applyPatch patchFileName="CT-103-remaining.patch" />
+    -->
+
+    <!--     <applyPatch patchFileName="CT-182.patch" /> -->
+
+  </target>
+
+
+</project>
