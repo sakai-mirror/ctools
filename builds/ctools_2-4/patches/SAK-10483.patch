@@ -1,7 +1,7 @@
-Index: chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMigration.java
+Index: chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMigration.java
 ===================================================================
---- chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMigration.java	(revision 31885)
-+++ chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMigration.java	(working copy)
+--- chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMigration.java	(revision 31885)
++++ chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMigration.java	(working copy)
 @@ -151,12 +151,20 @@
        
        String sql = getMessageFromBundle("select.oldchannels");
@@ -116,10 +116,10 @@ Index: chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMigrati
     }
  
     /**
-Index: chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java
+Index: chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java
 ===================================================================
---- chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java	(revision 31885)
-+++ chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java	(working copy)
+--- chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java	(revision 31885)
++++ chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java	(working copy)
 @@ -334,10 +334,18 @@
  		  String migratedId= (String) values[5];
  		  
