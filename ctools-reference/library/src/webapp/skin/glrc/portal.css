@@ -80,9 +80,13 @@ site types are a local setting - adjust */
 TODO:get it and its children onto main document. Children are #mastHead,#tabNavWrap*/
 .siteNavWrap{
 	margin: 0; 
+	padding: 3px 0;
+	border-top: 1px solid #EE7700;
 	border-bottom:5px solid #fff;
+	width: 100%;
 	height:100%;
-	overflow:hidden
+	overflow:hidden;
+	background: #CC6600;
 }
 /*wrapper for mast head elements - children are 3 blocks - #mastLogo,#mastBanner,#mastLogin*/
 #mastHead{
@@ -224,13 +228,6 @@ padding-top:1em
 /*PART 4 - SITE NAVIGATION - children of #siteNavBlock*/
 /*outer wrapper for the site navigation blocks - it is a class,not an id because it can be overloaded with other values having to do with site type
 so for example <div class="tabHolder workspace"> so that different site types can be treated differently via inheritance - children are #siteNavWrap and #navBottom*/
-.siteNavWrap{
-	width: 100%;
-	background: #CC6600;
-	padding: 3px 0;
-	margin: 0;
-	border-top: 1px solid #EE7700;
-}
 * html .siteNavWrap{
 	padding:0
 }
@@ -369,10 +366,11 @@ line-height: 1.5;
 	text-decoration: underline;
 }
 
-#toolMenu li a.selected{
+#toolMenu li.selectedTool span{
+	display: block;
 	text-decoration: none;
-	color: #aaa;
-	cursor: text;
+	padding: 2px 0px 2px 4px;
+	color: #000;
 }
 
 #toolMenu li a.selected:hover{
@@ -510,6 +508,7 @@ below they are contextually defined depending on the column as an example,as you
 
 .portletTitle .title a{
 	background: url(images/reload.gif) center left no-repeat;
+	text-decoration: none;
 }
 
 .portletTitle .title a:hover{

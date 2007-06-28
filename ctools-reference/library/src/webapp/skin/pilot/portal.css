@@ -88,22 +88,24 @@ site types are a local setting - adjust */
 /*outer wrapper for contents of site navigation document that is displayed inside of the site navigation iframe
 TODO:get it and its children onto main document. Children are #mastHead,#tabNavWrap*/
 .siteNavWrap{
-	margin: 0; 
-	border-bottom:5px solid #B81F1D;
-	height:100%;
-	overflow:hidden
+	width: 100%;
+	background: #2A5EAB;
+	padding: 3px 0 0 0;
+	margin: 0;
+	border-top: 1px solid #69d;
 }
 /*depending on site type - different border-bottoms for the site menu parent block
 site types are a local setting - adjust */
-.workspace .siteNavWrap{
+.workspace #siteNav{
 	border-bottom:5px solid #69d;
 }
-.course .siteNavWrap{
+.course #siteNav{
 	border-bottom:5px solid #fc0;
 }
-.project .siteNavWrap{
+.project #siteNav{
 	border-bottom:5px solid #b71;
 }
+
 
 /*wrapper for mast head elements - children are 3 blocks - #mastLogo,#mastBanner,#mastLogin*/
 #mastHead{
@@ -257,13 +259,7 @@ padding-top:1em
 /*PART 4 - SITE NAVIGATION - children of #siteNavBlock*/
 /*outer wrapper for the site navigation blocks - it is a class,not an id because it can be overloaded with other values having to do with site type
 so for example <div class="tabHolder workspace"> so that different site types can be treated differently via inheritance - children are #siteNavWrap and #navBottom*/
-.siteNavWrap{
-	width: 100%;
-	background: #2A5EAB;
-	padding: 3px 0;
-	margin: 0;
-	border-top: 1px solid #69d;
-}
+
 * html .siteNavWrap{
 	padding:0
 }
@@ -274,6 +270,11 @@ so for example <div class="tabHolder workspace"> so that different site types ca
 /*note - after tag 2.2 004 - this and children are no longer nested floated boxes due to fact of site nav remaining in iframe with attendant float drop problems*/
 #siteNav{
 	width:100%;
+	height:100%;
+	overflow:hidden;
+	padding-bottom:3px;
+	border-bottom: 5px solid #B81F1D;
+
 }
 
 /*wrapper for the site link list   - the #siteLinkList child)*/
@@ -417,17 +418,24 @@ line-height: 1.5;
 	text-decoration: underline;
 }
 
-#toolMenu li a.selected{
+#toolMenu li.selectedTool span{
+	display: block;
 	text-decoration: none;
-	color: #000;
-	font-weight: bold;
-	cursor: text;
+	padding: 2px 0px 2px 4px;
+	color: #B81F1D;
 }
 
-#toolMenu li a.selected:hover{
-	text-decoration: none;
-	color: #000;
-	cursor: text;
+
+.course #toolMenu li.selectedTool span{
+	color: #E8B900;
+}
+
+.project #toolMenu li.selectedTool span{
+	color: #b71;
+}
+
+.workspace #toolMenu li.selectedTool span{
+	color: #69d;
 }
 
 /*PART 6 - SITE AFFILIATION,SITE TYPE/STATUS AND PRESENCE - children of #toolMenuWrap	*/
@@ -562,6 +570,7 @@ below they are contextually defined depending on the column as an example,as you
 
 .portletTitle .title a{
 	background: url(images/reload.gif) center left no-repeat;
+	text-decoration: none;
 }
 
 .portletTitle .title a:hover{
@@ -570,6 +579,7 @@ below they are contextually defined depending on the column as an example,as you
 
 .portletTitle .action{
 	padding: 2px 4px 4px 2px;
+	margin-right:5px;
 	text-align: right;
 	vertical-align: middle;
 }
