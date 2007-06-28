@@ -116,3 +116,16 @@ Index: chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMi
     }
  
     /**
+Index: chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java
+===================================================================
+--- chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java	(revision 31885)
++++ chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java	(working copy)
+@@ -337,7 +337,7 @@
+ 		  
+ 	      ChatMessage message = getMigratedMessage(messageId);
+ 	      
+-	      if(message == null && body != null && !body.equals("")) {
++	      if(message == null && owner != null && body != null && !body.equals("")) {
+ 	    	  
+ 	    	  ChatChannel channel = getChatChannel(channelId);
+ 	    	  
