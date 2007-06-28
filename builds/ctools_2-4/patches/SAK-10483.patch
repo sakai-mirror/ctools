@@ -130,8 +130,8 @@ Index: chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManage
  	      
 -	      if(message == null && body != null && !body.equals("")) {
 +		  
-+		  if (message == null || owner == null) {
-+			  logger.warn("can't migrate messageId: ["+messageId
++		  if (owner == null) {
++			  logger.warn("can't migrate message, owner is null. messageId: ["+messageId
 +					  +"] channelId: ["+channelId+"]");
 +			  return;
 +		  }
