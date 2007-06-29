@@ -3403,7 +3403,7 @@ prompt add column to MFR message table.
 
 -- Changed at Michigan  default added since we changed an existing table.
 -- index put in tablespace.  Probably not needed.
-alter table MFR_MESSAGE_T add DELETED number(1, 0) default 1 not null;
+alter table MFR_MESSAGE_T add DELETED number(1, 0) default 0 not null;
 create index MFR_MESSAGE_DELETED_I on MFR_MESSAGE_T (DELETED) tablespace ctools_indexes;
 
 commit;
