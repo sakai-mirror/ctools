@@ -3387,6 +3387,26 @@ alter table GMT_RATING add constraint FK9FEF1ECE3E34DED8 foreign key (LINK_ID) r
 
 commit;
 
+
+-- This change was introducted in 2.4.x.  No
+-- such changes should NOT be introducted into 
+-- a maintenance branch, but so it goes.
+
+prompt add column to MFR message table.
+
+
+-- SAK-9808: Implement ability to delete threaded messages within Forums
+-- need to add a bit field and index on it
+
+-- alter table MFR_MESSAGE_T add DELETED number(1, 0) not null;
+-- create index MFR_MESSAGE_DELETED_I on MFR_MESSAGE_T (DELETED);
+
+-- Changed at Michigan  default added since we changed an existing table.
+-- index put in tablespace.  Probably not needed.
+alter table MFR_MESSAGE_T add DELETED number(1, 0) default 1 not null;
+create index MFR_MESSAGE_DELETED_I on MFR_MESSAGE_T (DELETED) tablespace ctools_indexes;
+
+commit;
 -- end
 
 
