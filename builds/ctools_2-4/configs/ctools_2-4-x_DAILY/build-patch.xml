@@ -36,9 +36,13 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
     <!-- comment out all but CT-103, but need them all in the end -->
 
-    <!-- -->
+    <!-- query speedup -->
     <applyPatch patchFileName="SPEED.patch" />
 
+    <!-- change site dropdown from 'more' to 'more sites' -->
+    <applyPatch patchFileName="SAK-7489.patch" />
+
+    <!-- chat migration fixes -->
     <applyPatch patchFileName="SAK-10483.patch" />
     <!-- 2007/06/26 - appling patch now fails with 'reversed patch' error 
     <applyPatch patchFileName="SAK-10428.patch" />
