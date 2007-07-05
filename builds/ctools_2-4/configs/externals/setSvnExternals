@@ -1,0 +1,6 @@
+#!/bin/bash
+set -x 
+svn propset -F ./.externals svn:externals .
+svn propget svn:externals
+svn commit -m"Updated externals"
+#end
