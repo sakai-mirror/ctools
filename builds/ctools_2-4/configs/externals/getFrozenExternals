@@ -1,8 +1,8 @@
 #!/bin/bash # -*- sh -*-
 # generate an externals file from an existing .externals file from SVN
 
-# $HeadURL:$
-# $Id:$
+# $HeadURL$
+# $Id$
 # take .externals file in svn, get the latest revision number for
 # each entry in it and write it out in the svn externals format.
 
