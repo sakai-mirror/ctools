@@ -67,3 +67,5 @@
  ambrosia -r9369 https://source.sakaiproject.org/contrib/muse/ambrosia/tags/0.5.0
  mneme -r9612 https://source.sakaiproject.org/contrib/muse/mneme/tags/0.5.3
  itunes -r10436 https://source.sakaiproject.org/contrib/umctx/tags/sakai_2-4-0
+ config-viewer -rHEAD https://source.sakaiproject.org/contrib/config-viewer/trunk
+ gmt -rHEAD https://source.sakaiproject.org/contrib/syracuse/gmt/branches/2.4.x/gmt
