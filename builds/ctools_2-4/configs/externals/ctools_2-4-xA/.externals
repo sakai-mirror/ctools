@@ -69,3 +69,7 @@
  itunes -r10436 https://source.sakaiproject.org/contrib/umctx/tags/sakai_2-4-0
  config-viewer -r10021 https://source.sakaiproject.org/contrib/config-viewer/branches/config-viewer-2.4.x
  gmt -r10135 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/2.4.x/gmt
+ ctools-apps -r32061 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
+ ctools-providers -r32061 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
+ ctools-reference -r32061 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
+ gradtools -r32061 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
