@@ -65,6 +65,9 @@ This doesn't supply the sakai.properties files you want to customize.
   <import file="./build-search.xml" />
   <import file="./build-rwiki.xml" />
   <import file="./build-ocw.xml" />
+  <import file="./build-evaluation.xml" />
+  <import file="./build-entitybroker.xml" />
+  <import file="./build-jobscheduler.xml" />
 
 
   <!-- ========================= -->
@@ -83,7 +86,7 @@ This doesn't supply the sakai.properties files you want to customize.
   <!-- customization targets -->
 
   <target name="getBuildTypeSrc"
-	  depends="extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc,getRwikiSrc,getOcwSrc,getChecklistSrc"
+	  depends="extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc,getRwikiSrc,getOcwSrc,getChecklistSrc,getEvaluationSrc,getEntitybrokerSrc,getJobschedulerSrc"
 	  description="get the source specific to the prod build" >
     <echo> melete.extract.skip = [${melete.extract.skip}]</echo>
     <echo> itunesu.install.skip = [${itunesu.install.skip}]</echo>
@@ -91,6 +94,11 @@ This doesn't supply the sakai.properties files you want to customize.
     <echo> sitestats.install.skip = [${sitestats.install.skip}] </echo>
     <echo> search.install.skip = [${search.install.skip}] </echo>
     <echo> rwiki.install.skip = [${rwiki.install.skip}] </echo>
+    <echo> ocw.install.skip = [${ocw.install.skip}] </echo>
+    <echo> checklist.install.skip = [${checklist.install.skip}] </echo>
+    <echo> evaluation.install.skip = [${evaluation.install.skip}] </echo>
+    <echo> entitybroker.install.skip = [${entitybroker.install.skip}] </echo>
+    <echo> jobscheduler.install.skip = [${jobscheduler.install.skip}] </echo>
 
   </target>
 

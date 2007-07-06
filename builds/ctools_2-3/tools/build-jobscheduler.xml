@@ -1,0 +1,45 @@
+<project name="build-jobscheduler" basedir="." default="info" >
+
+  <!--
+
+   $Id: build-jobscheduler.xml 20306 2007-01-12 18:29:08Z dlhaines@umich.edu $
+   $HeadURL: https://source.sakaiproject.org/svn/ctools/branches/tools/build-jobscheduler.xml $
+   
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="jobschedulerInfo">
+    <echo>
+      This will extract the jobscheduler tool. It should be called by the master build.xml not directly.
+
+      The configuration values are:
+      jobscheduler.install.skip = ${jobscheduler.install.skip}
+      jobscheduler.svnurl = ${jobscheduler.svnurl}
+      jobscheduler.revision = ${jobscheduler.revision}
+    </echo>
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--          deal with jobscheduler specific source          -->
+  <!-- ================================================== -->
+
+
+  <target name="getJobschedulerSrc" depends="deleteDefaultJobschedulerSrc,getCustomJobschedulerSrc" />
+  
+  <target name="deleteDefaultJobschedulerSrc">
+    <delete dir="${build.dir}/jobscheduler" />
+  </target>
+
+  <target name="getCustomJobschedulerSrc" unless="jobscheduler.install.skip">
+    <echo>
+      Extracting jobscheduler tool: ${jobscheduler.svnurl} revision: ${jobscheduler.revision}.
+    </echo>
+    <execSvnCmd url="${jobscheduler.svnurl}" revision="${jobscheduler.revision}" dir="${build.dir}/jobscheduler"/> 
+  </target>
+
+</project>

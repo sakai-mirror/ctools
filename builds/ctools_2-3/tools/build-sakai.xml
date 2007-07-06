@@ -157,7 +157,7 @@
 	  failonerror="true"
 	  searchpath="true"
 	  >
-	  <env key="MAVEN_OPTS" value="-Djava.net.preferIPv4Stack=true -Xmx768m" />
+	  <env key="MAVEN_OPTS" value="-Djava.net.preferIPv4Stack=true -Xmx768m -XX:MaxPermSize=256m" />
 
       <arg value="-b" />
       <!-- <arg value="-X" /> -->
