@@ -354,7 +354,7 @@ INSERT INTO CONTENT_COLLECTION(COLLECTION_ID,XML,IN_COLLECTION) VALUES ('/privat
 -- Gradebook table changes needed for 2.4.0 (SAK-8711)
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- Add grade commments.
-Gradebook table changes needed for 2.4.0 (SAK-8711)
+-- Gradebook table changes needed for 2.4.0 (SAK-8711)
 
 prompt table modified by Zhu 4
 create table GB_COMMENT_T (
@@ -1483,7 +1483,7 @@ insert into cm_academic_session_t values(20, 1, 'admin', '09-MAY-07', 'admin', '
 
 prompt adding muse, including indices for samigo
 
-y-- Add muse conversion 
+-- Add muse conversion 
 -- This file was auto generated at Fri May 18 10:06:41 EDT 2007 from muse.presql.
 
 -- This has been modified by hand to add indices.
@@ -1611,7 +1611,7 @@ INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where RE
 -- realmCnt: 2 backfillCnt: 0
 
 
-######################################################
+-- #######################################################
 
 prompt adding samigo data (templates etc.)
 
