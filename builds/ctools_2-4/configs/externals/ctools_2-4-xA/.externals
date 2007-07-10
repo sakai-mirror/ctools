@@ -10,7 +10,7 @@
  citations -r31433 https://source.sakaiproject.org/svn/citations/branches/sakai_2-4-x
  cluster -r28013 https://source.sakaiproject.org/svn/cluster/branches/sakai_2-4-x
  component -r31502 https://source.sakaiproject.org/svn/component/branches/sakai_2-4-x
- content -r31838 https://source.sakaiproject.org/svn/content/branches/sakai_2-4-x
+ content -r32040 https://source.sakaiproject.org/svn/content/branches/sakai_2-4-x
  content-review -r29427 https://source.sakaiproject.org/svn/content-review/branches/sakai_2-4-x
  courier -r28016 https://source.sakaiproject.org/svn/courier/branches/sakai_2-4-x
  course-management -r28313 https://source.sakaiproject.org/svn/course-management/branches/sakai_2-4-x
