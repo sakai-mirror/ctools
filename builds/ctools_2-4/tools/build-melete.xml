@@ -49,10 +49,44 @@
     <delete file="${build.dir}/${melete.archivename}" />
   </target>
 
-  <target name="editMelete" unless="melete.install.skip" >
+  <target name="editMelete" unless="melete.install.skip">
+    
+    <!-- Paths are now inconsistant, so treat each one separately. -->
+    <replaceregexp match="c:" replace="/melete" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<!-- <include name="meleteDocs.xml" /> -->
+	<include name="**/web.xml" />
+      </fileset>
+    </replaceregexp>
+
+    <replaceregexp match="/melete\\meleteDocs" replace="/melete/meleteDocs" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<!-- <include name="meleteDocs.xml" /> -->
+	<include name="**/web.xml" />
+      </fileset>
+    </replaceregexp>
+
+    <replaceregexp match="/var/melete/packagefiles" replace="/melete/packagefiles" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<!-- <include name="meleteDocs.xml" /> -->
+	<include name="**/web.xml" />
+      </fileset>
+    </replaceregexp>
+
+    <replaceregexp match="/var/meleteDocs" replace="/melete/meleteDocs" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<include name="meleteDocs.xml" /> 
+	<!-- <include name="**/web.xml" /> -->
+      </fileset>
+    </replaceregexp>
+
+  </target>
+
+  <target name="editMeleteOld" unless="melete.install.skip" >
 
     <!-- text checked in switched to windows format, change it back to let these
 	 prior targets work. -->
+
     <replaceregexp match="c:" replace="/var" flags="g" >
       <fileset dir="${build.dir}/${melete.dirname}">
 	<include name="meleteDocs.xml" />
