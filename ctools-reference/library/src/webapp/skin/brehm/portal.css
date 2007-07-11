@@ -126,12 +126,15 @@ site types are a local setting - adjust */
 /*container wrapping branding images - portal outputs one /library/skin/<skin name>/images/logo_inst.gif
 that can be used or hidden,can also use a background:url(images/<image name>.<ext>) in this block,or both superimposing them*/
 #mastLogo{
-	
+	float:left;
+	width:444px;
+	height:92px;
+	background:url(images/brehm_logo.jpg) top left no-repeat;
 }
 
 /*the portal outputs an image that can be treated here or hidden with display:none*/
 #mastLogo img{
-
+	display:none
 }
 
 /*another container wrapping branding images - portal outputs one /library/skin/<skin name>/images/banner_inst.gif
@@ -422,7 +425,7 @@ line-height: 1.5;
 
 #toolMenu li.selectedTool span{
 	display: block;
-	text-decoration: bold;
+	text-decoration: none;
 	padding: 2px 0px 2px 4px;
 	color: #FFCF31;
 }
