@@ -229,7 +229,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		for (Iterator i = aSessions.iterator(); i.hasNext();)
 		{
 			AcademicSession aSession = (AcademicSession) i.next();
-			if (aSession.getStartDate().getTime()>(TimeService.newTime().getTime()))
+			if (aSession.getEndDate().getTime()>(TimeService.newTime().getTime()))
 			{
 				rv.add(aSession);
 			}
@@ -280,8 +280,12 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	String getAcademicSessionIdFromProviderId(String providerId) {
 		// 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION
 		String[] eidParts = providerId.split(",");
-		String foundTermString = findTermStringFromTermIndex(eidParts[1]);
-		String academicSessionId = foundTermString.concat(" ").concat(eidParts[0]);
+		String academicSessionId = "";
+		if (eidParts.length == 6)
+		{
+			String foundTermString = findTermStringFromTermIndex(eidParts[1]);
+			academicSessionId = foundTermString != null?foundTermString.concat(" ").concat(eidParts[0]):"";
+		}
 		return academicSessionId;
 	}
 
