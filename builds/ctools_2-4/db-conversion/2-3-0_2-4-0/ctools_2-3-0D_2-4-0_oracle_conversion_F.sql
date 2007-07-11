@@ -272,7 +272,7 @@ prompt New Chat storage and permissions (SAK-8508)
 prompt table modified by Zhu 2
 CREATE TABLE CHAT2_CHANNEL ( 
     CHANNEL_ID           	VARCHAR2(99) NOT NULL,
-    CONTEXT              	VARCHAR2(36) NOT NULL,
+    CONTEXT              	VARCHAR2(99) NOT NULL,
     CREATION_DATE        	TIMESTAMP(6) NULL,
     TITLE                	VARCHAR2(64) NULL,
     DESCRIPTION          	VARCHAR2(255) NULL,
