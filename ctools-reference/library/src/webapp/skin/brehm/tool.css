@@ -888,10 +888,10 @@ width:auto !important
 /*some definitions overriding tool_base.css for the external xlogin screen*/
 table.login{
 	border:none;
-	border-top: 1px solid #00338C
+	border-top: 1px solid #fff
 }
 table.login th{
-		background: #00338C url(images/xlogin-blue_tab.gif) top right no-repeat;
+		background: #fff url(images/xlogin-blue_tab.gif) top right no-repeat;
 		height:24px;
 		padding:0;
 		color:#fff;
