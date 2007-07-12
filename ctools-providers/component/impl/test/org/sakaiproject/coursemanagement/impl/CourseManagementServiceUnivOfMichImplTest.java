@@ -151,6 +151,22 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		
 	}
 	
+	public void testGetAcademicSessionIdFromProviderId() {
+		// mock UmiacClient
+		Mock mockUmiac = mock(UmiacClient.class);
+		UmiacClient uc = (UmiacClient) mockUmiac.proxy();		
+		Hashtable termIndexTable = getTermIndexTable();
+		mockUmiac.expects(exactly(2)).method("getTermIndexTable").will(returnValue(termIndexTable));
+		cmsuofi.setUmiac(uc);
+		
+		// use of Section eid
+		String academicSessionId = cmsuofi.getAcademicSessionIdFromProviderId("2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION");	
+		assertEquals("generate WINTER 2007","WINTER 2007",academicSessionId);
+		
+		// use of CourseOffering eid
+		academicSessionId = cmsuofi.getAcademicSessionIdFromProviderId("2007,3,A,SUBJECT,CATALOG_NBR");
+		assertEquals("generate WINTER 2007","WINTER 2007",academicSessionId);
+	}
 	
 	public void testGetCourseSetMemberships() {
 		Set courseSetMemberships = cmsuofi.getCourseSetMemberships(null);
