@@ -51,7 +51,7 @@
  search -r30222 https://source.sakaiproject.org/svn/search/branches/sakai_2-4-x
  sections -r31903 https://source.sakaiproject.org/svn/sections/branches/sakai_2-4-x
  site -r31878 https://source.sakaiproject.org/svn/site/branches/sakai_2-4-x
- site-manage -r31928 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
+ site-manage -r32398 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
  syllabus -r31116 https://source.sakaiproject.org/svn/syllabus/branches/sakai_2-4-x
  test-harness -r28057 https://source.sakaiproject.org/svn/test-harness/branches/sakai_2-4-x
  textarea -r28058 https://source.sakaiproject.org/svn/textarea/branches/sakai_2-4-x
@@ -71,7 +71,7 @@
  gmt/gmt -r10135 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/2.4.x/gmt
  assignment -r31377 https://source.sakaiproject.org/svn/assignment/tags/pre_2-5-0_QA_001
  ctools-apps -r32366 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
- ctools-providers -r32366 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
+ ctools-providers -r32400 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
  ctools-reference -r32372 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
  gradtools -r32366 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
 
