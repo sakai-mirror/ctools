@@ -278,10 +278,10 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}	
 
 	String getAcademicSessionIdFromProviderId(String providerId) {
-		// 2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION
+		// 2007,3,A,SUBJECT,CATALOG_NBR[,CLASS_SECTION]
 		String[] eidParts = providerId.split(",");
 		String academicSessionId = "";
-		if (eidParts.length == 6)
+		if (eidParts.length >=5 )
 		{
 			String foundTermString = findTermStringFromTermIndex(eidParts[1]);
 			academicSessionId = foundTermString != null?foundTermString.concat(" ").concat(eidParts[0]):"";
