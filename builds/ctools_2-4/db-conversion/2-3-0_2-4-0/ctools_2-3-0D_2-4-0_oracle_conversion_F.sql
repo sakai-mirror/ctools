@@ -330,6 +330,11 @@ ALTER TABLE CHAT2_MESSAGE
 alter table CHAT2_CHANNEL add migratedChannelId varchar2(99);
 alter table CHAT2_MESSAGE add migratedMessageId varchar2(99);
 
+-- Added because context needs to be 99
+alter table CHAT2_CHANNEL modify CONTEXT VARCHAR2(99);
+
+-- Added as it makes the conversion process linear rather than n^2.
+create index ind_CHAT2_MESSAGE_4_CONVT on CHAT2_MESSAGE(MIGRATEDMESSAGEID) tablespace ctools_indexes;
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- New private folder (SAK-8759)
