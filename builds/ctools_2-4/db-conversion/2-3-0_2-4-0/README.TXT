@@ -31,6 +31,10 @@ backfill commands is all printed at the end of processing, so you do
 lose track of where those commands come from.
 
 
+2007/07/16:
+
+Need to add the initial data for citations.  How did it get left out of the CTools conversion?
+
 $HeadURL$
 $Id$
 
