@@ -15,70 +15,69 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
 
 
-  <target name="applyPatches" depends="applyPatches_2-4-xA,applyPatches_2-4-xB" >
-    
-  </target>
+  <!-- This target specifies the patches to apply.  By convention each
+       new incremental release adds a new target with the new patches
+       applied.  If this doesn't fit particular circumstances (e.g. an
+       earlier patch is retracted) please add a comment.
+  -->
 
-  
-  <!-- ========================================================================== -->
-  <!-- ==                    Targets for specific patch sets.                  == -->
-  <!-- ========================================================================== -->
-
-
-  <target name="noPatches" >
-    <echo>No patches to apply.</echo>
-  </target>
+  <target name="applyPatches" 
+	  depends="applyPatches_2-4-xA,applyPatches_2-4-xB" 
+	  />
 
 
-  <target name="applyPatches_2-4-xA" >
-    <echo message="applying patch set 2-4-xA" />
 
-    <!-- same as 2-4-0_p1 -->
-
-    <!-- query speedup -->
-    <applyPatch patchFileName="SPEED.patch" />
-
-    <!-- change site dropdown from 'more' to 'more sites' -->
-    <applyPatch patchFileName="SAK-7489.patch" />
-
-    <!-- chat migration fixes -->
-    <applyPatch patchFileName="SAK-10483.patch" />
-
-    <!-- missing login logout images -->
-    <applyPatch patchFileName="SAK-10498.patch" />
-
-    <!-- missing podcasts exception -->
-    <applyPatch patchFileName="SAK-10332.patch" />
+<!-- ========================================================================== -->
+<!-- ==                    Targets for specific patch sets.                  == -->
+<!-- ========================================================================== -->
 
 
-    <!-- missing podcasts exception -->
-    <applyPatch patchFileName="CT-231.patch" />
+<target name="noPatches" >
+  <echo>No patches to apply.</echo>
+</target>
 
 
-  </target>
+<target name="applyPatches_2-4-xA" >
+  <echo message="applying patch set 2-4-xA" />
 
-  <target name="applyPatches_2-4-xB" >
-    <echo message="applying patch set 2-4-xB" />
+  <!-- same as 2-4-0_p1 -->
 
+  <!-- query speedup -->
+  <applyPatch patchFileName="SPEED.patch" />
 
-    <!-- patches for the OSP for the med school -->
-    <applyPatch patchFileName="SAK-9725.patch" />
-    <applyPatch patchFileName="SAK-10583.patch" />
+  <!-- change site dropdown from 'more' to 'more sites' -->
+  <applyPatch patchFileName="SAK-7489.patch" />
 
-  </target>
+  <!-- chat migration fixes -->
+  <applyPatch patchFileName="SAK-10483.patch" />
 
-  <target name="applyPatches_2-4-xC" >
-    <echo message="applying patch set 2-4-xC" />
+  <!-- missing login logout images -->
+  <applyPatch patchFileName="SAK-10498.patch" />
 
-    <!--
-	Multiple patches that didn't get through testctools 
-    <applyPatch patchFileName="SAK-9123.patch" />
-    <applyPatch patchFileName="SAK-10683.patch" />
-    <applyPatch patchFileName="SAK-8449.patch" />
-    -->
+  <!-- missing podcasts exception -->
+  <applyPatch patchFileName="SAK-10332.patch" />
 
 
-  </target>
+  <!-- missing podcasts exception -->
+  <applyPatch patchFileName="CT-231.patch" />
 
+
+</target>
+
+<target name="applyPatches_2-4-xB" >
+  <echo message="applying patch set 2-4-xB" />
+
+
+  <!-- patches for the OSP for the med school -->
+  <applyPatch patchFileName="SAK-9725.patch" />
+  <applyPatch patchFileName="SAK-10583.patch" />
+
+  <!-- patches to be checked out -->
+  <applyPatch patchFileName="SAK-9123.patch" />
+  <applyPatch patchFileName="SAK-10683.patch" />
+  <applyPatch patchFileName="SAK-8449.patch" />
+
+
+</target>
 
 </project>
