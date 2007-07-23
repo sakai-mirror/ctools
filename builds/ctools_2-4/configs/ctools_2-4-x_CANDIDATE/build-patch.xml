@@ -15,8 +15,8 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
 
 
-  <target name="applyPatches" depends="applyPatches_2-4-0_p1" >
-    <!-- <echo> temp to see if compiles. </echo> -->
+  <target name="applyPatches" depends="applyPatches_2-4-xA,applyPatches_2-4-xB" >
+    
   </target>
 
   
@@ -30,11 +30,10 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
   </target>
 
 
-  <target name="applyPatches_2-4-0_p1" >
-    <echo message="applying patch set 2-4-0_p1" />
+  <target name="applyPatches_2-4-xA" >
+    <echo message="applying patch set 2-4-xA" />
 
-
-    <!-- comment out all but CT-103, but need them all in the end -->
+    <!-- same as 2-4-0_p1 -->
 
     <!-- query speedup -->
     <applyPatch patchFileName="SPEED.patch" />
@@ -56,38 +55,28 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="CT-231.patch" />
 
 
+  </target>
+
+  <target name="applyPatches_2-4-xB" >
+    <echo message="applying patch set 2-4-xB" />
+
+
+    <!-- patches for the OSP for the med school -->
+    <applyPatch patchFileName="SAK-9725.patch" />
+    <applyPatch patchFileName="SAK-10583.patch" />
+
+  </target>
+
+  <target name="applyPatches_2-4-xC" >
+    <echo message="applying patch set 2-4-xC" />
+
+    <!--
+	Multiple patches that didn't get through testctools 
     <applyPatch patchFileName="SAK-9123.patch" />
     <applyPatch patchFileName="SAK-10683.patch" />
     <applyPatch patchFileName="SAK-8449.patch" />
-
-
-    <!-- 2007/06/26 - appling patch now fails with 'reversed patch' error 
-
-    <applyPatch patchFileName="SAK-10428.patch" />
-    -->
-    <!--
-    <applyPatch patchFileName="SAK-10145.patch" />
-    <applyPatch patchFileName="SAK-10145B.patch" />
-    <applyPatch patchFileName="SAK-10298.patch" />
-    -->
-    <!-- site action -->
-    <!--
-    <applyPatch patchFileName="SAK-9829.patch" />
-    <applyPatch patchFileName="SAK-8920.patch" />
-
-    <applyPatch patchFileName="CT-159.patch" />
-
-    <applyPatch patchFileName="SAK-10242.patch" />
-    <applyPatch patchFileName="SAK-10146.patch" />
-    -->
-    <!--
-    <applyPatch patchFileName="CT-103-pre.31324.patch" />
-    <applyPatch patchFileName="CT-103-mid.31324.patch" />
-    <applyPatch patchFileName="CT-103-final.31324.patch" />
-    <applyPatch patchFileName="CT-103-remaining.patch" />
     -->
 
-    <!--     <applyPatch patchFileName="CT-182.patch" /> -->
 
   </target>
 
