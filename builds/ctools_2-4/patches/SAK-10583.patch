@@ -1,0 +1,22 @@
+Index: metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/AddStructuredArtifactDefinitionController.java
+===================================================================
+107,109c107,111
+<             String id = getContentHosting().resolveUuid(sad.getAlternateCreateXslt().getValue());
+<             Reference ref = getEntityManager().newReference(getContentHosting().getReference(id));
+<             files.add(ref);
+---
+>             if (sad.getAlternateCreateXslt() != null) {
+>                String id = getContentHosting().resolveUuid(sad.getAlternateCreateXslt().getValue());
+>                Reference ref = getEntityManager().newReference(getContentHosting().getReference(id));
+>                files.add(ref);
+>             }
+116,118c118,122
+<             String id = getContentHosting().resolveUuid(sad.getAlternateViewXslt().getValue());
+<             Reference ref = getEntityManager().newReference(getContentHosting().getReference(id));
+<             files.add(ref);
+---
+>             if (sad.getAlternateViewXslt() != null) {
+>                String id = getContentHosting().resolveUuid(sad.getAlternateViewXslt().getValue());
+>                Reference ref = getEntityManager().newReference(getContentHosting().getReference(id));
+>                files.add(ref);
+>             }

@@ -1,0 +1,1077 @@
+Index: metaobj/metaobj-impl/component/src/webapp/WEB-INF/components.xml
+===================================================================
+--- metaobj/metaobj-impl/component/src/webapp/WEB-INF/components.xml	(revision 30100)
++++ metaobj/metaobj-impl/component/src/webapp/WEB-INF/components.xml	(revision 30106)
+@@ -258,6 +258,23 @@
+          </list>
+       </property>
+    </bean>
++   
++   <bean id="org.sakaiproject.content.api.ContentResourceFilter.metaobjFile.xsl"
++      parent="org.sakaiproject.content.api.ContentResourceFilter.base">
++      <property name="viewAll">
++         <value>true</value>
++      </property>
++      <property name="mimeTypes">
++         <list>
++            <!-- <value>text/xml</value> -->
++         </list>
++      </property>
++      <property name="acceptedExtensions">
++         <list>
++            <value>xsl</value>
++         </list>
++      </property>
++   </bean>
+ 
+ 
+    <bean id="org.sakaiproject.content.api.ContentResourceFilter.formUploadStyleFile"
+Index: metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java
+===================================================================
+--- metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java	(revision 30100)
++++ metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java	(revision 30106)
+@@ -32,6 +32,7 @@
+ import org.sakaiproject.authz.api.SecurityService;
+ import org.sakaiproject.component.cover.ComponentManager;
+ import org.sakaiproject.component.cover.ServerConfigurationService;
++import org.sakaiproject.content.api.ContentCollection;
+ import org.sakaiproject.content.api.ContentHostingService;
+ import org.sakaiproject.content.api.ContentResource;
+ import org.sakaiproject.content.api.ContentCollectionEdit;
+@@ -50,9 +51,13 @@
+ import org.sakaiproject.metaobj.worksite.mgt.WorksiteManager;
+ import org.sakaiproject.service.legacy.resource.DuplicatableToolService;
+ import org.sakaiproject.site.api.Site;
++import org.sakaiproject.site.cover.SiteService;
+ import org.sakaiproject.tool.api.Placement;
+ import org.sakaiproject.tool.api.ToolManager;
+ import org.sakaiproject.tool.cover.SessionManager;
++import org.sakaiproject.user.api.User;
++import org.sakaiproject.user.cover.UserDirectoryService;
++import org.sakaiproject.util.ResourceLoader;
+ import org.sakaiproject.event.cover.NotificationService;
+ import org.sakaiproject.entity.api.ResourcePropertiesEdit;
+ import org.sakaiproject.entity.api.ResourceProperties;
+@@ -73,6 +78,7 @@
+ 
+    static final private String DOWNLOAD_FORM_ID_PARAM = "formId";
+    private static final String SYSTEM_COLLECTION_ID = "/system/";
++   static final private String IMPORT_BASE_FOLDER_ID = "importedForms";
+ 
+    private AuthorizationFacade authzManager = null;
+    private IdManager idManager;
+@@ -764,7 +770,15 @@
+       attrNode = new Element("documentRootNode");
+       attrNode.addContent(new CDATA(bean.getDocumentRoot()));
+       rootNode.addContent(attrNode);
+-
++      
++      attrNode = new Element("altCreateXslt");
++      attrNode.addContent(new CDATA(bean.getAlternateCreateXslt().getValue()));
++      rootNode.addContent(attrNode);
++      
++      attrNode = new Element("altViewXslt");
++      attrNode.addContent(new CDATA(bean.getAlternateViewXslt().getValue()));
++      rootNode.addContent(attrNode);
++      
+       return new Document(rootNode);
+    }
+ 
+@@ -801,6 +815,10 @@
+       zos.putNextEntry(schemeFile);
+       zos.write(bean.getSchema());
+       zos.closeEntry();
++      
++      List existingEntries = new ArrayList();
++      storeFile(zos, bean.getAlternateCreateXslt(), existingEntries);
++      storeFile(zos, bean.getAlternateViewXslt(), existingEntries);
+ 
+    }
+ 
+@@ -926,7 +944,7 @@
+          zis.closeEntry();
+          currentEntry = zis.getNextEntry();
+       }
+-      
++      /*
+       if (currentEntry != null) {
+          if (currentEntry.getName().endsWith("xml")) {
+             readSADfromXML(bean, zis);
+@@ -953,10 +971,122 @@
+       if (!hasXML || !hasXSD) {
+          return null;
+       }
++      */
++      
++      try {
++         Hashtable<Id, Id> fileMap = new Hashtable<Id, Id>();
++         String tempDirName = getIdManager().createId().getValue();
++         ContentCollectionEdit fileParent = getExpandedFileDir(tempDirName);
++         boolean gotFile = false;
++         
++         while (currentEntry != null) {
++            logger.debug("current entry name: " + currentEntry.getName());
++   
++            if (currentEntry.getName().endsWith("xml")) {
++               readSADfromXML(bean, zis);
++               hasXML = true;
++            }
++            else if (currentEntry.getName().endsWith("xsd")) {
++               readSADSchemaFromXML(bean, zis);
++               hasXSD = true;
++            }
++            else if (!currentEntry.isDirectory()) {
++               gotFile = true;
++               processFile(currentEntry, zis, fileMap, fileParent);
++               
++            }
++   
++            zis.closeEntry();
++            currentEntry = zis.getNextEntry();
++         }
++         
++         if (gotFile) {
++            fileParent.getPropertiesEdit().addProperty(
++                  ResourceProperties.PROP_DISPLAY_NAME, bean.getDescription());
++            getContentHosting().commitCollection(fileParent);
++         }
++         else {
++            getContentHosting().cancelCollection(fileParent);
++         }
++         
++         if (bean.getAlternateCreateXslt() != null)
++            bean.setAlternateCreateXslt((Id)fileMap.get(bean.getAlternateCreateXslt()));
++         
++         if (bean.getAlternateViewXslt() != null)
++            bean.setAlternateViewXslt((Id)fileMap.get(bean.getAlternateViewXslt()));
++         
++      }
++      catch (Exception exp) {
++         throw new RuntimeException(exp);
++      }
++      
+ 
+       bean.setSchemaHash(calculateSchemaHash(bean));
+       return bean;
+    }
++   
++   /**
++    * This gets the directory in which the import places files into.
++    * 
++    * This method gets the current users base collection, creates an imported directory,
++    * then uses the param to create a new directory.
++    * 
++    * this uses the bean property importFolderName to name the
++    * 
++    * @param origName String
++    * @return ContentCollectionEdit
++    * @throws InconsistentException
++    * @throws PermissionException
++    * @throws IdUsedException
++    * @throws IdInvalidException
++    * @throws IdUnusedException
++    * @throws TypeException
++    */
++   protected ContentCollectionEdit getExpandedFileDir(String origName) throws TypeException, IdUnusedException, PermissionException, IdUsedException, IdInvalidException, InconsistentException {
++      ContentCollection userCollection = getUserCollection();
++      
++      try {
++         //TODO use the bean org.theospi.portfolio.admin.model.IntegrationOption.siteOption 
++         // in common/components to get the name and id for this site.
++         
++         ResourceLoader rb = new ResourceLoader("org/sakaiproject/metaobj/registry/messages");
++         
++         ContentCollectionEdit groupCollection = getContentHosting().addCollection(userCollection.getId() + IMPORT_BASE_FOLDER_ID);
++         groupCollection.getPropertiesEdit().addProperty(ResourceProperties.PROP_DISPLAY_NAME, rb.getString("form_import_folder"));
++         getContentHosting().commitCollection(groupCollection);
++      }
++      catch (IdUsedException e) {
++         // ignore... it is already there.
++          if (logger.isDebugEnabled()) {
++              logger.debug(e);
++          } 
++      }
++      catch (Exception e) {
++         throw new RuntimeException(e);
++      }
++      
++      ContentCollection collection = getContentHosting().getCollection(userCollection.getId() + IMPORT_BASE_FOLDER_ID + "/");
++      
++      String childId = collection.getId() + origName;
++      return getContentHosting().addCollection(childId);
++   }
++   
++   /**
++    * gets the current user's resource collection
++    * 
++    * @return ContentCollection
++    * @throws TypeException
++    * @throws IdUnusedException
++    * @throws PermissionException
++    */
++   protected ContentCollection getUserCollection() throws TypeException, IdUnusedException, PermissionException {
++      User user = UserDirectoryService.getCurrentUser();
++      String userId = user.getId();
++      String wsId = SiteService.getUserSiteId(userId);
++      String wsCollectionId = getContentHosting().getSiteCollection(wsId);
++      ContentCollection collection = getContentHosting().getCollection(wsCollectionId);
++      return collection;
++   }
+ 
+    private StructuredArtifactDefinitionBean readSADfromXML(StructuredArtifactDefinitionBean bean, InputStream inStream) {
+       SAXBuilder builder = new SAXBuilder();
+@@ -977,6 +1107,8 @@
+          bean.setDescription(new String(topNode.getChildTextTrim("description").getBytes(), "UTF-8"));
+          bean.setInstruction(new String(topNode.getChildTextTrim("instruction").getBytes(), "UTF-8"));
+          bean.setDocumentRoot(new String(topNode.getChildTextTrim("documentRootNode").getBytes(), "UTF-8"));
++         bean.setAlternateCreateXslt(getIdManager().getId(new String(topNode.getChildTextTrim("altCreateXslt").getBytes(), "UTF-8")));
++         bean.setAlternateViewXslt(getIdManager().getId(new String(topNode.getChildTextTrim("altViewXslt").getBytes(), "UTF-8")));
+       }
+       catch (Exception jdome) {
+          logger.error(jdome);
+@@ -1103,8 +1235,16 @@
+    public InputStream getTransformer(String type, boolean readOnly) {
+       try {
+          String viewLocation = "/group/PortfolioAdmin/system/formCreate.xslt";
++         StructuredArtifactDefinitionBean sadb = loadHome(type);
++         if (sadb.getAlternateCreateXslt() != null) {
++            viewLocation = getContentHosting().resolveUuid(sadb.getAlternateCreateXslt().getValue());
++         }
++         
+          if (readOnly) {
+             viewLocation = "/group/PortfolioAdmin/system/formView.xslt";
++            if (sadb.getAlternateViewXslt() != null) {
++               viewLocation = getContentHosting().resolveUuid(sadb.getAlternateViewXslt().getValue());
++            }
+          }
+          return getContentHosting().getResource(viewLocation).streamContent();
+       } catch (ServerOverloadException e) {
+@@ -1260,7 +1400,145 @@
+       }
+       return resource.getId();
+    }
++   
++   protected void storeFile(ZipOutputStream zos, Id fileId, List existingEntries) throws IOException {
++      if (fileId == null) {
++         return;
++      }
++      try {
++         String userId = SessionManager.getCurrentSessionUserId();
++         String id = getContentHosting().resolveUuid(fileId.getValue());
++         String ref = getContentHosting().getReference(id);
++         //getSecurityService().pushAdvisor(
++         //      new SimpleSecurityAdvisor(userId, ContentHostingService.EVENT_RESOURCE_READ, ref));
++         
++         getSecurityService().pushAdvisor(new SecurityAdvisor()
++            {
++               public SecurityAdvice isAllowed(String userId, String function, String reference)
++               {
++                  return SecurityAdvice.ALLOWED;
++               }
++            });
++            
++         ContentResource resource = getContentHosting().getResource(id);
++         String newName = resource.getProperties().getProperty(
++               resource.getProperties().getNamePropDisplayName());
++         String cleanedName = newName.substring(newName.lastIndexOf('\\')+1);
++         
++         if (!existingEntries.contains(fileId)) {
++            existingEntries.add(fileId);
++            storeFileInZip(zos, resource.streamContent(),
++                  resource.getContentType() + File.separator +
++                  fileId.getValue() + File.separator + cleanedName);
++         }
++         getSecurityService().popAdvisor();
++      } catch (PermissionException e) {
++         logger.error("", e);
++         throw new RuntimeException(e);
++      } catch (IdUnusedException e) {
++         logger.error("", e);
++         throw new RuntimeException(e);
++      } catch (TypeException e) {
++         logger.error("", e);
++         throw new RuntimeException(e);
++      } catch (ServerOverloadException e) {
++         logger.error("", e);
++         throw new RuntimeException(e);
++      }
++   }
+ 
++   protected void storeFileInZip(ZipOutputStream zos, InputStream in, String entryName)
++      throws IOException {
++
++      byte data[] = new byte[1024 * 10];
++
++      if (File.separatorChar == '\\') {
++         entryName = entryName.replace('\\', '/');
++      }
++
++      ZipEntry newfileEntry = new ZipEntry(entryName);
++
++      zos.putNextEntry(newfileEntry);
++
++      BufferedInputStream origin = new BufferedInputStream(in, data.length);
++
++      int count;
++      while ((count = origin.read(data, 0, data.length)) != -1) {
++         zos.write(data, 0, count);
++      }
++      zos.closeEntry();
++      in.close();
++   }
++   
++   protected void processFile(ZipEntry currentEntry, ZipInputStream zis,
++         Hashtable fileMap, ContentCollection fileParent) throws IOException {
++
++      File file = new File(currentEntry.getName());
++
++      MimeType mimeType = new MimeType(file.getParentFile().getParentFile().getParentFile().getName(),
++            file.getParentFile().getParentFile().getName());
++
++      String contentType = mimeType.getValue();
++
++      Id oldId = getIdManager().getId(file.getParentFile().getName());
++
++      try {
++         ByteArrayOutputStream bos = new ByteArrayOutputStream();
++         int c = zis.read();
++
++         while (c != -1) {
++            bos.write(c);
++            c = zis.read();
++         }
++
++         String fileName = findUniqueFileName(fileParent.getId(), file.getName());
++         ResourcePropertiesEdit resourceProperties = getContentHosting().newResourceProperties();
++         resourceProperties.addProperty (ResourceProperties.PROP_DISPLAY_NAME, fileName);
++         ContentResource /*Edit*/ resource;
++
++         resource = getContentHosting().addResource(fileParent.getId() + fileName, contentType, bos.toByteArray(),
++               resourceProperties, NotificationService.NOTI_NONE);
++//       ResourcePropertiesEdit resourceProperties = resource.getPropertiesEdit();
++//       resourceProperties.addProperty (ResourceProperties.PROP_DISPLAY_NAME, file.getName());
++//       resource.setContent(bos.toByteArray());
++//       resource.setContentType(contentType);
++//       getContentHosting().commitResource(resource);
++
++         Id newId = getIdManager().getId(getContentHosting().getUuid(resource.getId()));
++         fileMap.put(oldId, newId);
++      }
++      catch (Exception exp) {
++         throw new RuntimeException(exp);
++      }
++   }
++   
++   protected String findUniqueFileName(String id, String name) throws TypeException, PermissionException {
++      String orig = name;
++      String testId = id + name;
++      int current = 0;
++      while (resourceExists(testId)) {
++         current++;
++         int dotPos = orig.lastIndexOf('.');
++         if (dotPos == -1) {
++            name = orig + current;
++         }
++         else {
++            name = orig.substring(0, dotPos) + "-" + current + orig.substring(dotPos);
++         }
++         testId = id + name;
++      }
++
++      return name;
++   }
++   
++   protected boolean resourceExists(String returned) throws TypeException, PermissionException {
++      try {
++         return getContentHosting().getResource(returned) != null;
++      } catch (IdUnusedException e) {
++         return false;
++      }
++   }
++
+    public boolean isReplaceViews() {
+       return replaceViews;
+    }
+Index: metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/home/StructuredArtifactDefinition.java
+===================================================================
+--- metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/home/StructuredArtifactDefinition.java	(revision 30100)
++++ metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/home/StructuredArtifactDefinition.java	(revision 30106)
+@@ -30,7 +30,6 @@
+ 
+ import java.io.ByteArrayInputStream;
+ import java.io.Serializable;
+-import java.text.MessageFormat;
+ import java.util.Date;
+ 
+ 
+@@ -60,6 +59,10 @@
+    private String schemaFileName;
+    private String xslFileName;
+    private SchemaNode schema;
++   private Id alternateCreateXslt;
++   private String alternateCreateXsltName;
++   private Id alternateViewXslt;
++   private String alternateViewXsltName;
+ 
+    /**
+     * should be one of the following states
+@@ -90,11 +93,8 @@
+     */
+    private String action;
+ 
+-   private static final MessageFormat format =
+-         new MessageFormat("<META HTTP-EQUIV=\"Refresh\" CONTENT=\"0;URL={0}/member/viewArtifact.osp?artifactId={1}&artifactType={2}\">");
+-
+    public StructuredArtifactDefinition() {
+-      ;
++      
+    }
+ 
+    public StructuredArtifactDefinition(StructuredArtifactDefinitionBean bean) {
+@@ -129,6 +129,10 @@
+       this.setExternalType(bean.getExternalType());
+       this.setInstruction(bean.getInstruction());
+       this.decoratedDescription = bean.getDecoratedDescription();
++      this.alternateCreateXslt = bean.getAlternateCreateXslt();
++      this.alternateViewXslt = bean.getAlternateViewXslt();
++      this.alternateCreateXsltName = bean.getAlternateCreateXsltName();
++      this.alternateViewXsltName = bean.getAlternateViewXsltName();
+       
+       if (getId() != null)
+          this.setTypeId(getId().getValue());
+@@ -436,4 +440,36 @@
+       this.decoratedDescription = decoratedDescription;
+    }
+ 
++   public Id getAlternateCreateXslt() {
++      return alternateCreateXslt;
++   }
++
++   public void setAlternateCreateXslt(Id alternateCreateXslt) {
++      this.alternateCreateXslt = alternateCreateXslt;
++   }
++
++   public String getAlternateCreateXsltName() {
++      return alternateCreateXsltName;
++   }
++
++   public void setAlternateCreateXsltName(String alternateCreateXsltName) {
++      this.alternateCreateXsltName = alternateCreateXsltName;
++   }
++
++   public Id getAlternateViewXslt() {
++      return alternateViewXslt;
++   }
++
++   public void setAlternateViewXslt(Id alternateViewXslt) {
++      this.alternateViewXslt = alternateViewXslt;
++   }
++
++   public String getAlternateViewXsltName() {
++      return alternateViewXsltName;
++   }
++
++   public void setAlternateViewXsltName(String alternateViewXsltName) {
++      this.alternateViewXsltName = alternateViewXsltName;
++   }
++
+ }
+Index: metaobj/metaobj-impl/api-impl/src/bundle/org/sakaiproject/metaobj/registry/messages.properties
+===================================================================
+--- metaobj/metaobj-impl/api-impl/src/bundle/org/sakaiproject/metaobj/registry/messages.properties	(revision 30100)
++++ metaobj/metaobj-impl/api-impl/src/bundle/org/sakaiproject/metaobj/registry/messages.properties	(revision 30106)
+@@ -1,2 +1,4 @@
+ form_item=Form Item
+ form_item_tip=Form Item: {0}
++
++form_import_folder=Imported Form Files
+Index: metaobj/metaobj-api/api/src/java/org/sakaiproject/metaobj/shared/model/StructuredArtifactDefinitionBean.java
+===================================================================
+--- metaobj/metaobj-api/api/src/java/org/sakaiproject/metaobj/shared/model/StructuredArtifactDefinitionBean.java	(revision 30100)
++++ metaobj/metaobj-api/api/src/java/org/sakaiproject/metaobj/shared/model/StructuredArtifactDefinitionBean.java	(revision 30106)
+@@ -25,7 +25,6 @@
+ import org.sakaiproject.site.api.Site;
+ import org.sakaiproject.site.cover.SiteService;
+ 
+-import java.text.MessageFormat;
+ import java.util.Date;
+ 
+ /**
+@@ -37,7 +36,6 @@
+    public static final int STATE_WAITING_APPROVAL = 1;
+    public static final int STATE_PUBLISHED = 2;
+ 
+-   private Id id;
+    private String documentRoot;
+    private Agent owner;
+    private Date created = new Date();
+@@ -58,6 +56,10 @@
+    private String externalType;
+    private String instruction;
+    private String filePickerAction;
++   private Id alternateCreateXslt;
++   private String alternateCreateXsltName;
++   private Id alternateViewXslt;
++   private String alternateViewXsltName;
+ 
+    private transient String decoratedDescription;
+ 
+@@ -90,10 +92,7 @@
+     */
+    private String action;
+ 
+-   private static final MessageFormat format =
+-         new MessageFormat("<META HTTP-EQUIV=\"Refresh\" CONTENT=\"0;URL={0}/member/viewArtifact.osp?artifactId={1}&artifactType={2}\">");
+ 
+-
+    /**
+     * @return Returns the action.
+     */
+@@ -446,4 +445,36 @@
+    public void setDecoratedDescription(String decoratedDescription) {
+       this.decoratedDescription = decoratedDescription;
+    }
++
++   public Id getAlternateCreateXslt() {
++      return alternateCreateXslt;
++   }
++
++   public void setAlternateCreateXslt(Id alternateCreateXslt) {
++      this.alternateCreateXslt = alternateCreateXslt;
++   }
++
++   public Id getAlternateViewXslt() {
++      return alternateViewXslt;
++   }
++
++   public void setAlternateViewXslt(Id alternateViewXslt) {
++      this.alternateViewXslt = alternateViewXslt;
++   }
++
++   public String getAlternateCreateXsltName() {
++      return alternateCreateXsltName;
++   }
++
++   public void setAlternateCreateXsltName(String alternateCreateXsltName) {
++      this.alternateCreateXsltName = alternateCreateXsltName;
++   }
++
++   public String getAlternateViewXsltName() {
++      return alternateViewXsltName;
++   }
++
++   public void setAlternateViewXsltName(String alternateViewXsltName) {
++      this.alternateViewXsltName = alternateViewXsltName;
++   }
+ }
+Index: metaobj/metaobj-api/api/src/java/org/sakaiproject/metaobj/shared/mgt/StructuredArtifactDefinition.hbm.xml
+===================================================================
+--- metaobj/metaobj-api/api/src/java/org/sakaiproject/metaobj/shared/mgt/StructuredArtifactDefinition.hbm.xml	(revision 30100)
++++ metaobj/metaobj-api/api/src/java/org/sakaiproject/metaobj/shared/mgt/StructuredArtifactDefinition.hbm.xml	(revision 30106)
+@@ -21,6 +21,8 @@
+       <property name="schema" column="schemaData" type="binary" not-null="true" length="2147483647"/>
+       <property name="instruction" type="text"/>
+       <property name="schemaHash" column="schema_hash" type="string"/>
++      <property name="alternateCreateXslt" column="alternateCreateXslt" length="36" type="org.sakaiproject.metaobj.shared.IdType" />
++      <property name="alternateViewXslt" column="alternateViewXslt" length="36" type="org.sakaiproject.metaobj.shared.IdType" />
+    </class>
+    
+    
+Index: metaobj/metaobj-tool/tool/src/bundle/messages.properties
+===================================================================
+--- metaobj/metaobj-tool/tool/src/bundle/messages.properties	(revision 30100)
++++ metaobj/metaobj-tool/tool/src/bundle/messages.properties	(revision 30106)
+@@ -76,10 +76,16 @@
+ 
+ header_form =Form
+ 
++header_advancedOptions = Advanced Options
++
+ label_name         =Name
+ label_newName      =New Name
+ label_schemaFile   =Schema File (xsd)
++label_altCreateFile  = Alternate Form Creation Renderer (xsl)
++label_altViewFile  = Alternate Form View Renderer (xsl)
+ text_selectXSD     =Select Schema File
++text_selectAltCreateXsl = Select Xsl File
++text_selectAltViewXsl = Select Xsl File
+ label_documentRoot =Document Root Node
+ label_Instructions =Instruction
+ label_hiddenForm   =make this form hidden
+@@ -170,6 +176,8 @@
+ WAITING=Waiting
+ filePickerMessage.pickTransform=Please choose XSL Transformation File
+ filePickerMessage.pickSchema=Please choose XSD Schema File
++filePickerMessage.pickAltCreateXsl=Please choose XSL Transformation File
++filePickerMessage.pickAltViewXsl=Please choose XSL Transformation File
+ 
+ metaobj.import.title=Import Form
+ metaobj.import.importButton=Import
+Index: metaobj/metaobj-tool/tool/src/webapp/WEB-INF/shared-web-config.xml
+===================================================================
+--- metaobj/metaobj-tool/tool/src/webapp/WEB-INF/shared-web-config.xml	(revision 30100)
++++ metaobj/metaobj-tool/tool/src/webapp/WEB-INF/shared-web-config.xml	(revision 30106)
+@@ -86,6 +86,12 @@
+             <property name="sessionManager">
+                <ref bean="org.sakaiproject.tool.api.SessionManager"/>
+             </property>
++            <property name="contentHosting">
++		         <ref bean="org.sakaiproject.content.api.ContentHostingService"/>
++		      </property>
++		      <property name="entityManager">
++               <ref bean="org.sakaiproject.entity.api.EntityManager"/>
++            </property>
+          </bean>
+       </property>
+       <property name="sessionForm">
+@@ -310,6 +316,12 @@
+             <property name="securityService">
+                <ref bean="org.sakaiproject.authz.api.SecurityService"/>
+             </property>
++            <property name="contentHosting">
++		         <ref bean="org.sakaiproject.content.api.ContentHostingService"/>
++		      </property>
++		      <property name="entityManager">
++               <ref bean="org.sakaiproject.entity.api.EntityManager"/>
++            </property>
+          </bean>
+       </property>
+       <property name="sessionForm">
+Index: metaobj/metaobj-tool/tool/src/webapp/WEB-INF/jsp/addStructuredArtifactDefinition.jsp
+===================================================================
+--- metaobj/metaobj-tool/tool/src/webapp/WEB-INF/jsp/addStructuredArtifactDefinition.jsp	(revision 30100)
++++ metaobj/metaobj-tool/tool/src/webapp/WEB-INF/jsp/addStructuredArtifactDefinition.jsp	(revision 30106)
+@@ -102,7 +102,47 @@
+    </div>
+ </spring:bind>
+ 
++<h4><fmt:message key="header_advancedOptions"/></h4>
++<p class="shorttext">
++<label for=""><fmt:message key="label_altCreateFile"/></label>
++<spring:bind path="bean.alternateCreateXsltName">
++<input type="text" id="<c:out value="${status.expression}"/>" name="<c:out value="${status.expression}"/>"
++      disabled="true" value="<c:out value="${status.value}" />" />
++</spring:bind>
++<spring:bind path="bean.alternateCreateXslt">
++<input type="hidden" name="<c:out value="${status.expression}"/>" id="<c:out value="${status.expression}"/>"
++      value="<c:out value="${status.value}"/>" />
+ 
++     <span class="error_message"><c:out value="${status.errorMessage}"/></span>
++<a href="#"
++   onclick="document.forms[0]['filePickerAction'].value='pickAltCreate';
++      document.forms[0]['filePickerFrom'].value='<spring:message
++         code="filePickerMessage.pickAltCreateXsl" />';
++      document.forms[0].submit();return false;">
++<fmt:message key="text_selectAltCreateXsl"/></a>
++</spring:bind>
++</p>
++
++<p class="shorttext">
++<label for=""><fmt:message key="label_altViewFile"/></label>
++<spring:bind path="bean.alternateViewXsltName">
++<input type="text" id="<c:out value="${status.expression}"/>" name="<c:out value="${status.expression}"/>"
++      disabled="true" value="<c:out value="${status.value}" />" />
++</spring:bind>
++<spring:bind path="bean.alternateViewXslt">
++<input type="hidden" name="<c:out value="${status.expression}"/>" id="<c:out value="${status.expression}"/>"
++      value="<c:out value="${status.value}"/>" />
++
++     <span class="error_message"><c:out value="${status.errorMessage}"/></span>
++<a href="#"
++   onclick="document.forms[0]['filePickerAction'].value='pickAltView';
++      document.forms[0]['filePickerFrom'].value='<spring:message
++         code="filePickerMessage.pickAltViewXsl" />';
++      document.forms[0].submit();return false;">
++<fmt:message key="text_selectAltViewXsl"/></a>
++</spring:bind>
++</p>
++
+ <p class="act">
+ <c:if test="${empty bean.id}">
+ <input name="action" type="submit" class="active" value="<fmt:message key="button_save"/>"/>
+Index: metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/StructuredArtifactDefinitionValidator.java
+===================================================================
+--- metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/StructuredArtifactDefinitionValidator.java	(revision 30100)
++++ metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/StructuredArtifactDefinitionValidator.java	(revision 30106)
+@@ -36,6 +36,8 @@
+ 
+    public static final String PICK_SCHEMA_ACTION = "pickSchema";
+    public static final String PICK_TRANSFORM_ACTION = "pickTransform";
++   public static final String PICK_ALTCREATEXSLT_ACTION = "pickAltCreate";
++   public static final String PICK_ALTVIEWXSLT_ACTION = "pickAltView";
+ 
+    public boolean supports(Class clazz) {
+       return (StructuredArtifactDefinitionBean.class.isAssignableFrom(clazz));
+@@ -46,7 +48,9 @@
+          StructuredArtifactDefinitionBean artifactHome = (StructuredArtifactDefinitionBean) obj;
+ 
+          if (PICK_SCHEMA_ACTION.equals(artifactHome.getFilePickerAction()) ||
+-               PICK_TRANSFORM_ACTION.equals(artifactHome.getFilePickerAction())) {
++               PICK_TRANSFORM_ACTION.equals(artifactHome.getFilePickerAction()) ||
++               PICK_ALTCREATEXSLT_ACTION.equals(artifactHome.getFilePickerAction()) ||
++               PICK_ALTVIEWXSLT_ACTION.equals(artifactHome.getFilePickerAction())) {
+             return;
+          }
+ 
+Index: metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/AbstractStructuredArtifactDefinitionController.java
+===================================================================
+--- metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/AbstractStructuredArtifactDefinitionController.java	(revision 30100)
++++ metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/AbstractStructuredArtifactDefinitionController.java	(revision 30106)
+@@ -31,6 +31,7 @@
+ 
+ import org.apache.commons.logging.Log;
+ import org.apache.commons.logging.LogFactory;
++import org.sakaiproject.entity.api.EntityManager;
+ import org.sakaiproject.metaobj.security.AuthenticationManager;
+ import org.sakaiproject.metaobj.security.AuthorizationFacade;
+ import org.sakaiproject.metaobj.security.AuthorizationFailedException;
+@@ -51,16 +52,13 @@
+    protected final Log logger = LogFactory.getLog(getClass());
+    private HomeFactory homeFactory;
+    private AuthenticationManager authManager;
+-   //private FileArtifactFinder fileArtifactFinder;
+    private StructuredArtifactDefinitionManager structuredArtifactDefinitionManager;
+-   //private RepositoryManager repositoryManager;
+    private IdManager idManager;
+    private AuthorizationFacade authzManager = null;
+    private WorksiteManager worksiteManager = null;
++   private EntityManager entityManager;
+    private String toolId;
+    private ListScrollIndexer listScrollIndexer;
+-   
+-   //TODO removed references to repositoryManager and fileArtifactFinder 
+ 
+    public void checkPermission(String function) throws AuthorizationFailedException {
+       if (getStructuredArtifactDefinitionManager().isGlobal()) {
+@@ -177,20 +175,6 @@
+       this.homeFactory = homeFactory;
+    }
+ 
+-   /**
+-    * @return Returns the fileArtifactFinder.
+-    */
+-   //public FileArtifactFinder getFileArtifactFinder() {
+-   //   return fileArtifactFinder;
+-   //}
+-
+-   /**
+-    * @param fileArtifactFinder The fileArtifactFinder to set.
+-    */
+-   //public void setFileArtifactFinder(FileArtifactFinder fileArtifactFinder) {
+-   //   this.fileArtifactFinder = fileArtifactFinder;
+-   //}
+-
+    public StructuredArtifactDefinitionManager getStructuredArtifactDefinitionManager() {
+       return structuredArtifactDefinitionManager;
+    }
+@@ -200,20 +184,6 @@
+    }
+ 
+    /**
+-    * @return Returns the repositoryManager.
+-    */
+-   //public RepositoryManager getRepositoryManager() {
+-   //   return repositoryManager;
+-   //}
+-
+-   /**
+-    * @param repositoryManager The repositoryManager to set.
+-    */
+-   //public void setRepositoryManager(RepositoryManager repositoryManager) {
+-   //   this.repositoryManager = repositoryManager;
+-   //}
+-
+-   /**
+     * @return Returns the idManager.
+     */
+    public IdManager getIdManager() {
+@@ -242,7 +212,15 @@
+    public void setWorksiteManager(WorksiteManager worksiteManager) {
+       this.worksiteManager = worksiteManager;
+    }
++   
++   public EntityManager getEntityManager() {
++      return entityManager;
++   }
+ 
++   public void setEntityManager(EntityManager entityManager) {
++      this.entityManager = entityManager;
++   }
++
+    public void setToolId(String toolId) {
+       this.toolId = toolId;
+    }
+Index: metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/AddStructuredArtifactDefinitionController.java
+===================================================================
+--- metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/AddStructuredArtifactDefinitionController.java	(revision 30100)
++++ metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/AddStructuredArtifactDefinitionController.java	(revision 30106)
+@@ -21,15 +21,23 @@
+ 
+ package org.sakaiproject.metaobj.shared.control;
+ 
++import java.util.ArrayList;
++import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
+ 
+ import org.sakaiproject.component.cover.ComponentManager;
++import org.sakaiproject.content.api.ContentHostingService;
++import org.sakaiproject.content.api.ContentResource;
+ import org.sakaiproject.content.api.FilePickerHelper;
+ import org.sakaiproject.entity.api.Reference;
++import org.sakaiproject.exception.IdUnusedException;
++import org.sakaiproject.exception.PermissionException;
++import org.sakaiproject.exception.TypeException;
+ import org.sakaiproject.metaobj.security.AuthorizationFailedException;
+ import org.sakaiproject.metaobj.shared.SharedFunctionConstants;
+ import org.sakaiproject.metaobj.shared.FormHelper;
++import org.sakaiproject.metaobj.shared.model.Id;
+ import org.sakaiproject.metaobj.shared.model.PersistenceException;
+ import org.sakaiproject.metaobj.shared.model.StructuredArtifactDefinitionBean;
+ import org.sakaiproject.metaobj.utils.mvc.intf.CustomCommandController;
+@@ -49,6 +57,7 @@
+    protected static final String SAD_SESSION_TAG =
+          "org.sakaiproject.metaobj.shared.control.AddStructuredArtifactDefinitionController.sad";
+    private SessionManager sessionManager;
++   private ContentHostingService contentHosting;
+ 
+    public Object formBackingObject(Map request, Map session, Map application) {
+ 
+@@ -74,11 +83,39 @@
+       StructuredArtifactDefinitionBean sad = (StructuredArtifactDefinitionBean) requestModel;
+ 
+       if (StructuredArtifactDefinitionValidator.PICK_SCHEMA_ACTION.equals(sad.getFilePickerAction()) ||
+-            StructuredArtifactDefinitionValidator.PICK_TRANSFORM_ACTION.equals(sad.getFilePickerAction())) {
++            StructuredArtifactDefinitionValidator.PICK_TRANSFORM_ACTION.equals(sad.getFilePickerAction()) ||
++            StructuredArtifactDefinitionValidator.PICK_ALTCREATEXSLT_ACTION.equals(sad.getFilePickerAction()) ||
++            StructuredArtifactDefinitionValidator.PICK_ALTVIEWXSLT_ACTION.equals(sad.getFilePickerAction())) {
+          session.put(SAD_SESSION_TAG, sad);
++         
++         //set the filter for xsl files since it is 3 out of 4 cases
+          session.put(FilePickerHelper.FILE_PICKER_RESOURCE_FILTER,
+-               ComponentManager.get("org.sakaiproject.content.api.ContentResourceFilter.metaobjFile"));
++               ComponentManager.get("org.sakaiproject.content.api.ContentResourceFilter.metaobjFile.xsl"));
++         
++         if (StructuredArtifactDefinitionValidator.PICK_SCHEMA_ACTION.equals(sad.getFilePickerAction())) {
++            //set the filter for xsd files only in this case
++            session.put(FilePickerHelper.FILE_PICKER_RESOURCE_FILTER,
++                  ComponentManager.get("org.sakaiproject.content.api.ContentResourceFilter.metaobjFile"));
++         }
++         
+          session.put(FilePickerHelper.FILE_PICKER_MAX_ATTACHMENTS, new Integer(1));
++         
++         List files = new ArrayList();
++         if (StructuredArtifactDefinitionValidator.PICK_ALTCREATEXSLT_ACTION.equals(sad.getFilePickerAction())) {
++            String id = getContentHosting().resolveUuid(sad.getAlternateCreateXslt().getValue());
++            Reference ref = getEntityManager().newReference(getContentHosting().getReference(id));
++            files.add(ref);
++            
++            session.put(FilePickerHelper.FILE_PICKER_ATTACHMENTS, files);
++         }
++         else if (StructuredArtifactDefinitionValidator.PICK_ALTVIEWXSLT_ACTION.equals(sad.getFilePickerAction())) {
++            String id = getContentHosting().resolveUuid(sad.getAlternateViewXslt().getValue());
++            Reference ref = getEntityManager().newReference(getContentHosting().getReference(id));
++            files.add(ref);
++            
++            session.put(FilePickerHelper.FILE_PICKER_ATTACHMENTS, files);
++         }
++         
+          return new ModelAndView("pickSchema");
+       }
+ 
+@@ -157,6 +194,16 @@
+                sad.setSchemaFile(getIdManager().getId(ref.getId()));
+                sad.setSchemaFileName(ref.getProperties().getProperty(ref.getProperties().getNamePropDisplayName()));
+             }
++            else if (StructuredArtifactDefinitionValidator.PICK_ALTCREATEXSLT_ACTION.equals(sad.getFilePickerAction())) {
++               Id id = getIdManager().getId(getContentHosting().getUuid(ref.getId()));
++               sad.setAlternateCreateXslt(id);
++               sad.setAlternateCreateXsltName(ref.getProperties().getProperty(ref.getProperties().getNamePropDisplayName()));
++            }
++            else if (StructuredArtifactDefinitionValidator.PICK_ALTVIEWXSLT_ACTION.equals(sad.getFilePickerAction())) {
++               Id id = getIdManager().getId(getContentHosting().getUuid(ref.getId()));
++               sad.setAlternateViewXslt(id);
++               sad.setAlternateViewXsltName(ref.getProperties().getProperty(ref.getProperties().getNamePropDisplayName()));
++            }
+             else if (StructuredArtifactDefinitionValidator.PICK_TRANSFORM_ACTION.equals(sad.getFilePickerAction())) {
+                sad.setXslConversionFileId(getIdManager().getId(ref.getId()));
+                sad.setXslFileName(ref.getProperties().getProperty(ref.getProperties().getNamePropDisplayName()));
+@@ -178,8 +225,41 @@
+             errors.rejectValue("schemaFile", errorMessage, errorMessage);
+          }
+       }
++      if (sad.getAlternateCreateXslt() != null){
++         ContentResource resource = getContentResource(sad.getAlternateCreateXslt());
++         String name = resource.getProperties().getProperty(
++               resource.getProperties().getNamePropDisplayName());
++         sad.setAlternateCreateXsltName(name);
++      }
++      if (sad.getAlternateViewXslt() != null){
++         ContentResource resource = getContentResource(sad.getAlternateViewXslt());
++         String name = resource.getProperties().getProperty(
++               resource.getProperties().getNamePropDisplayName());
++         sad.setAlternateViewXsltName(name);
++      }      
+       return base;
+    }
++   
++   protected ContentResource getContentResource(Id fileId) {
++      String id = getContentHosting().resolveUuid(fileId.getValue());
++      //String ref = getContentHosting().getReference(id);
++      //getSecurityService().pushAdvisor(
++      //      new AllowMapSecurityAdvisor(ContentHostingService.EVENT_RESOURCE_READ, ref));
++      ContentResource resource = null;
++      try {
++         resource = getContentHosting().getResource(id);
++      } catch (PermissionException e) {
++         logger.error("", e);
++         throw new RuntimeException(e);
++      } catch (IdUnusedException e) {
++         logger.error("", e);
++         throw new RuntimeException(e);
++      } catch (TypeException e) {
++         logger.error("", e);
++         throw new RuntimeException(e);
++      }
++      return resource;
++   }
+ 
+    public SessionManager getSessionManager() {
+       return sessionManager;
+@@ -189,4 +269,14 @@
+       this.sessionManager = sessionManager;
+    }
+ 
++   public ContentHostingService getContentHosting() {
++      return contentHosting;
++   }
++
++   public void setContentHosting(ContentHostingService contentHosting) {
++      this.contentHosting = contentHosting;
++   }
++
++
++
+ }
+Index: metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/ImportStructuredArtifactDefinitionController.java
+===================================================================
+--- metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/ImportStructuredArtifactDefinitionController.java	(revision 30100)
++++ metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/ImportStructuredArtifactDefinitionController.java	(revision 30106)
+@@ -22,7 +22,6 @@
+ package org.sakaiproject.metaobj.shared.control;
+ 
+ import org.sakaiproject.component.cover.ComponentManager;
+-import org.sakaiproject.content.api.ContentHostingService;
+ import org.sakaiproject.content.api.ContentResource;
+ import org.sakaiproject.content.api.FilePickerHelper;
+ import org.sakaiproject.entity.api.EntityManager;
+@@ -31,7 +30,6 @@
+ import org.sakaiproject.metaobj.shared.model.FormUploadForm;
+ import org.sakaiproject.metaobj.shared.model.InvalidUploadException;
+ import org.sakaiproject.metaobj.utils.mvc.intf.Controller;
+-import org.sakaiproject.tool.api.SessionManager;
+ import org.sakaiproject.tool.api.ToolSession;
+ import org.springframework.validation.Errors;
+ import org.springframework.validation.Validator;
+@@ -42,9 +40,7 @@
+ public class ImportStructuredArtifactDefinitionController extends AddStructuredArtifactDefinitionController
+       implements Controller, Validator {
+ 
+-   private SessionManager sessionManager;
+-   private ContentHostingService contentHosting = null;
+-   private EntityManager entityManager;
++   
+ 
+    public Object formBackingObject(Map request, Map session, Map application) {
+ 
+@@ -52,11 +48,6 @@
+       return backingObject;
+    }
+ 
+-   /*
+-public ModelAndView handleRequest(Object requestModel, Map request, Map session, Map application, Errors errors) {
+-return prepareListView(request, null);
+-}
+-*/
+    public ModelAndView handleRequest(Object requestModel, Map request, Map session,
+                                      Map application, Errors errors) {
+ 
+@@ -207,30 +198,6 @@
+    public Object fillBackingObject(Object incomingModel, Map request, Map session, Map application) throws Exception {
+       return incomingModel;
+    }
+-
+-   public SessionManager getSessionManager() {
+-      return sessionManager;
+-   }
+-
+-   public void setSessionManager(SessionManager sessionManager) {
+-      this.sessionManager = sessionManager;
+-   }
+-
+-   public ContentHostingService getContentHosting() {
+-      return contentHosting;
+-   }
+-
+-   public void setContentHosting(ContentHostingService contentHosting) {
+-      this.contentHosting = contentHosting;
+-   }
+-
+-   public EntityManager getEntityManager() {
+-      return entityManager;
+-   }
+-
+-   public void setEntityManager(EntityManager entityManager) {
+-      this.entityManager = entityManager;
+-   }
+ }
+ 
+ 
+Index: reference/docs/conversion/sakai_2_4_0-2_5_0_mysql_conversion.sql
+===================================================================
+--- reference/docs/conversion/sakai_2_4_0-2_5_0_mysql_conversion.sql	(revision 0)
++++ reference/docs/conversion/sakai_2_4_0-2_5_0_mysql_conversion.sql	(revision 30106)
+@@ -0,0 +1,11 @@
++-- This is the MySQL Sakai 2.4.0 (or later) -> 2.5.0 conversion script
++----------------------------------------------------------------------------------------------------------------------------------------
++--
++-- use this to convert a Sakai database from 2.4.0 to 2.5.0.  Run this before you run your first app server.
++-- auto.ddl does not need to be enabled in your app server - this script takes care of all new TABLEs, changed TABLEs, and changed data.
++--
++----------------------------------------------------------------------------------------------------------------------------------------
++
++--metaobj conversion
++alter TABLE metaobj_form_def add column alternateCreateXslt	varchar(36) NULL;
++alter TABLE metaobj_form_def add column alternateViewXslt  	varchar(36) NULL;
+
+Property changes on: reference/docs/conversion/sakai_2_4_0-2_5_0_mysql_conversion.sql
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+Name: svn:keywords
+   + Date Revision Author HeadURL Id
+
+Index: reference/docs/conversion/sakai_2_4_0-2_5_0_oracle_conversion.sql
+===================================================================
+--- reference/docs/conversion/sakai_2_4_0-2_5_0_oracle_conversion.sql	(revision 0)
++++ reference/docs/conversion/sakai_2_4_0-2_5_0_oracle_conversion.sql	(revision 30106)
+@@ -0,0 +1,11 @@
++-- This is the Oracle Sakai 2.4.0 (or later) -> 2.5.0 conversion script
++----------------------------------------------------------------------------------------------------------------------------------------
++--
++-- use this to convert a Sakai database from 2.4.0 to 2.5.0.  Run this before you run your first app server.
++-- auto.ddl does not need to be enabled in your app server - this script takes care of all new TABLEs, changed TABLEs, and changed data.
++--
++----------------------------------------------------------------------------------------------------------------------------------------
++
++--metaobj conversion
++alter TABLE metaobj_form_def add alternateCreateXslt varchar2(36) NULL;
++alter TABLE metaobj_form_def add alternateViewXslt varchar2(36) NULL;
+
+Property changes on: reference/docs/conversion/sakai_2_4_0-2_5_0_oracle_conversion.sql
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+Name: svn:keywords
+   + Date Revision Author HeadURL Id
+
