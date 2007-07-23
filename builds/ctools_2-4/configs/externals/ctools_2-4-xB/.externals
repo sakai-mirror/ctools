@@ -1,9 +1,9 @@
- access -r32339 https://source.sakaiproject.org/svn/access/branches/sakai_2-4-x
- alias -r28277 https://source.sakaiproject.org/svn/alias/branches/sakai_2-4-x
+# access -r32339 https://source.sakaiproject.org/svn/access/branches/sakai_2-4-x
+# alias -r28277 https://source.sakaiproject.org/svn/alias/branches/sakai_2-4-x
  announcement -r32297 https://source.sakaiproject.org/svn/announcement/branches/sakai_2-4-x
  archive -r28700 https://source.sakaiproject.org/svn/archive/branches/sakai_2-4-x
  authz -r28692 https://source.sakaiproject.org/svn/authz/branches/sakai_2-4-x
- blog -r32580 https://source.sakaiproject.org/svn/blog/branches/sakai_2-4-x
+ # blog -r32580 https://source.sakaiproject.org/svn/blog/branches/sakai_2-4-x
  calendar -r32565 https://source.sakaiproject.org/svn/calendar/branches/sakai_2-4-x
  chat -r32655 https://source.sakaiproject.org/svn/chat/branches/sakai_2-4-x
  citations -r32323 https://source.sakaiproject.org/svn/citations/branches/sakai_2-4-x
