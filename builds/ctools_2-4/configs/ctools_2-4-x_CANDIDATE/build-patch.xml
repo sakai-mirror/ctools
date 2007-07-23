@@ -55,7 +55,9 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
   <applyPatch patchFileName="SAK-10498.patch" />
 
   <!-- missing podcasts exception -->
+  <!-- seems to be in 2.4.x as of 2007/07/23 
   <applyPatch patchFileName="SAK-10332.patch" />
+  -->
 
 
   <!-- missing podcasts exception -->
@@ -73,9 +75,13 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
   <applyPatch patchFileName="SAK-10583.patch" />
 
   <!-- patches to be checked out -->
+  <!-- in 2.4.x as of 2007/07/23 
   <applyPatch patchFileName="SAK-9123.patch" />
+  -->
   <applyPatch patchFileName="SAK-10683.patch" />
+  <!-- in 2.4.x as of 2007/07/23 
   <applyPatch patchFileName="SAK-8449.patch" />
+  -->
 
 
 </target>
