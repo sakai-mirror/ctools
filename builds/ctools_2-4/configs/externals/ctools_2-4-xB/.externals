@@ -1,9 +1,9 @@
-# access -r32339 https://source.sakaiproject.org/svn/access/branches/sakai_2-4-x
-# alias -r28277 https://source.sakaiproject.org/svn/alias/branches/sakai_2-4-x
+ access -r32339 https://source.sakaiproject.org/svn/access/branches/sakai_2-4-x
+ alias -r28277 https://source.sakaiproject.org/svn/alias/branches/sakai_2-4-x
  announcement -r32297 https://source.sakaiproject.org/svn/announcement/branches/sakai_2-4-x
  archive -r28700 https://source.sakaiproject.org/svn/archive/branches/sakai_2-4-x
  authz -r28692 https://source.sakaiproject.org/svn/authz/branches/sakai_2-4-x
- # blog -r32580 https://source.sakaiproject.org/svn/blog/branches/sakai_2-4-x
+ blog -r32580 https://source.sakaiproject.org/svn/blog/branches/sakai_2-4-x
  calendar -r32565 https://source.sakaiproject.org/svn/calendar/branches/sakai_2-4-x
  chat -r32655 https://source.sakaiproject.org/svn/chat/branches/sakai_2-4-x
  citations -r32323 https://source.sakaiproject.org/svn/citations/branches/sakai_2-4-x
@@ -63,12 +63,15 @@
  mailtool -r32648 https://source.sakaiproject.org/svn/mailtool/branches/sakai_2-4-x
  usermembership -r32566 https://source.sakaiproject.org/svn/usermembership/branches/sakai_2-4-x
  polls -r31964 https://source.sakaiproject.org/svn/polls/branches/sakai_2-4-x
+ # contrib tools
  ambrosia -r9369 https://source.sakaiproject.org/contrib/muse/ambrosia/tags/0.5.0
  mneme -r9612 https://source.sakaiproject.org/contrib/muse/mneme/tags/0.5.3
  itunes -r10436 https://source.sakaiproject.org/contrib/umctx/tags/sakai_2-4-0
  config-viewer -r10021 https://source.sakaiproject.org/contrib/config-viewer/branches/config-viewer-2.4.x
+ # special gmt handling for gmt / assignment integration
  gmt -r10144 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
  assignment -r31377 https://source.sakaiproject.org/svn/assignment/tags/pre_2-5-0_QA_001
+ # ctools
  ctools-apps -r31824 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
  ctools-providers -r32400 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
  ctools-reference -r32600 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
