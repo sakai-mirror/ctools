@@ -1,4 +1,4 @@
- access -r28276 https://source.sakaiproject.org/svn/access/branches/sakai_2-4-x
+ access -rHEAD https://source.sakaiproject.org/svn/access/branches/sakai_2-4-x
  alias -r28277 https://source.sakaiproject.org/svn/alias/branches/sakai_2-4-x
  announcement -r30695 https://source.sakaiproject.org/svn/announcement/branches/sakai_2-4-x
  archive -r28700 https://source.sakaiproject.org/svn/archive/branches/sakai_2-4-x
