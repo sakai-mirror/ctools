@@ -434,23 +434,16 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		{
 			HashSet enrollmentSet = new HashSet();
 			Vector enrollList = getUmiac().getClassList(ids[0], ids[1], ids[2], ids[3], ids[4], ids[5]);
-			if (enrollList != null)
+			for (Iterator i = enrollList.iterator(); i.hasNext();)
 			{
-				for (Iterator i = enrollList.iterator(); i.hasNext();)
+				// format for enroll string: sort_name|uniqname|umid|level|credits|role|enrl_status
+				String[] enrollStringParts = (String []) i.next();
+				if (enrollStringParts.length == 7)
 				{
-					// format for enroll string: sort_name|uniqname|umid|level|credits|role|enrl_status
-					String[] enrollStringParts = (String []) i.next();
-					if (enrollStringParts.length == 7)
-					{
-						enrollmentSet.add(new EnrollmentCmImpl(enrollStringParts[1], getEnrollmentSet(enrollmentSetEid), enrollStringParts[6], enrollStringParts[4], ""));
-					}
+					enrollmentSet.add(new EnrollmentCmImpl(enrollStringParts[1], getEnrollmentSet(enrollmentSetEid), enrollStringParts[6], enrollStringParts[4], ""));
 				}
-				return enrollmentSet;
 			}
-			else
-			{
-				return null;
-			}
+			return enrollmentSet;
 		}
 		return null;
 	}
