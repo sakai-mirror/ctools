@@ -18,11 +18,26 @@ if [ x$URL == x ]; then
     exit 1;
 fi
 
-# Take existing externals and script to get updated information
-svn cat $URL/.externals | perl -n -e 'm|(\S+).*(http.*)| && print "svn --limit 1 -q log $2\necho $1 -rREVISION $2\n"'  >| ./externals.tmp
+# Take existing externals and create a script to get current revision numbers
+svn cat $URL/.externals | perl -n -e 'm|(\S+).*(http.*)| && print "svn --limit 1 -q log $2\necho $1 -rREVISION $2\n"'  >| ./externals.tmp.1.$$
 
+echo "# " $(date) >| ./externals.exact
 # find the updated information and format as a .externals script
-source ./externals.tmp | perl -n -e 'chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {s/REVISION/$R/; print " $_\n"}'
+source ./externals.tmp.1.$$ | perl -n -e 'chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {s/REVISION/$R/; print " $_\n"}' >> ./externals.exact
 
-rm ./externals.tmp
+# find and print the maximum revision number
+#cat  ./externals.tmp.2.$$ | perl -n -e 'BEGIN { $maxR = -1} chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {$maxR = ($R > $maxR ? $R : $maxR);} END { print "# maxR: $maxR\n";}'
+cat  ./externals.exact | perl -n -e 'BEGIN { $maxR = -1} chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {$maxR = ($R > $maxR ? $R : $maxR);} END { print "# maxR: $maxR\n";}' >| externals.tmp.2.$$
+cat ./externals.exact >> ../externals.tmp.2.$$
+
+echo "reformat to have max revision."
+
+# print out the annotated .externals list
+#cat ./externals.tmp.2.$$
+cat ./externals.exact
+
+# clean up
+rm ./externals.tmp.1.$$
+#rm ./externals.tmp.2.$$
+#rm ./externals.tmp.$$
 #end
