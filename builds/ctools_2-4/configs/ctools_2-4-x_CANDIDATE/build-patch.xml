@@ -69,10 +69,19 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 <target name="applyPatches_2-4-xB" >
   <echo message="applying patch set 2-4-xB" />
 
+  <!-- db changes required by:
+  SAK-9725 (not part of 2.4.x) 
+  SAK-9808 (part of 2.4.x at this point)
+  SAK-10454 suggested for Samigo
+  -->
+  
 
   <!-- patches for the OSP for the med school -->
-  <applyPatch patchFileName="SAK-9725.patch" />
+
+  <applyPatch patchFileName="SAK-9725.patch" /> <!-- requires db change -->
   <applyPatch patchFileName="SAK-10583.patch" />
+
+  <
 
   <!-- patches to be checked out -->
   <!-- in 2.4.x as of 2007/07/23 
