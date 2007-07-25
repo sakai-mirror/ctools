@@ -49,10 +49,8 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="SAK-10498.patch" />
 
     <!-- missing podcasts exception -->
-    <applyPatch patchFileName="SAK-10332.patch" />
+    <!--    <applyPatch patchFileName="SAK-10332.patch" /> -->
 
-
-    <!-- missing podcasts exception -->
     <applyPatch patchFileName="CT-231.patch" />
 
     <!-- 2007/06/26 - appling patch now fails with 'reversed patch' error 
