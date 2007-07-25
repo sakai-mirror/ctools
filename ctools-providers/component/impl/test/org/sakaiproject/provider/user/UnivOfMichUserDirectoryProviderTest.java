@@ -1,5 +1,10 @@
 package org.sakaiproject.provider.user;
 
+/*
+  $HeadURL:$
+  $Id:$
+ */
+
 import java.util.Collection;
 import java.util.Vector;
 
