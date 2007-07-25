@@ -1,29 +1,5 @@
-/**********************************************************************************
-*
-* $Header:  Exp $
-*
-***********************************************************************************
-*
-* Copyright (c) 2003, 2004 The Regents of the University of Michigan, Trustees of Indiana University,
-*                  Board of Trustees of the Leland Stanford, Jr., University, and The MIT Corporation
-* 
-* Licensed under the Educational Community License Version 1.0 (the "License");
-* By obtaining, using and/or copying this Original Work, you agree that you have read,
-* understand, and will comply with the terms and conditions of the Educational Community License.
-* You may obtain a copy of the License at:
-* 
-*      http://cvs.sakaiproject.org/licenses/license_1_0.html
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
-* AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-* DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*
-**********************************************************************************/
-
-// package
 package org.sakaiproject.provider.user;
+
 
 // imports
 import java.io.IOException;
@@ -49,6 +25,7 @@ import org.sakaiproject.component.api.ServerConfigurationService;
 
 import org.sakaiproject.exception.IdUnusedException;
 // import org.sakaiproject.framework.current.CurrentService;
+import org.sakaiproject.provider.user.SSLSocketClientWithClientAuth;
 import org.sakaiproject.thread_local.cover.ThreadLocalManager;
 import org.sakaiproject.user.api.DisplayAdvisorUDP;
 import org.sakaiproject.user.api.User;
@@ -71,11 +48,10 @@ import org.sakaiproject.util.api.umiac.UmiacClient;
 * <li>the file "krb5.conf" must be placed into that same directory.</li></ul></p>
 * <p>These two files can be found in CVS under src/conf/jaas_k5, and are configured
 * for U of M Kerberos.</p>
-* <p>Note: The server running this code must be known the the UMIAC system to be able to make requests.</p>
-* <p>Todo: %%% cache users?</p>
-*
-* @author University of Michigan, CHEF Software Development Team
-* @version $Revision: 21092 $
+* <p>Note: The server running this code must be known the the UMIAC system to be able to mity of Michigan, CHEF Software Development Team
+* @version $Revision$
+* $HeadURL$
+* $Id$
 */
 public class UnivOfMichUserDirectoryProvider
 	implements UserDirectoryProvider, UsersShareEmailUDP, DisplayAdvisorUDP
@@ -301,6 +277,27 @@ public class UnivOfMichUserDirectoryProvider
 		// get a UserEdit to populate
 		UserEdit edit = factory.newUser();
 
+		// assume a "@...umich.edu"
+
+		int posUmich = email.indexOf("umich.edu");
+		int posAt = email.indexOf("@");
+		if (posUmich != -1 && posAt != -1)
+		{
+			String id = email.substring(0, posAt);
+			edit.setEid(id);
+			if (getUser(edit)) rv.add(edit);
+		}
+
+		return rv;
+	}
+
+	public Collection findUsersByEmailOld(String email, UserFactory factory)
+	{
+		Collection rv = new Vector();
+
+		// get a UserEdit to populate
+		UserEdit edit = factory.newUser();
+
 		// assume a "@local.host"
 		int pos = email.indexOf("@umich.edu");
 		if (pos != -1)
@@ -312,7 +309,6 @@ public class UnivOfMichUserDirectoryProvider
 
 		return rv;
 	}
-
 	
 	
 	/**
