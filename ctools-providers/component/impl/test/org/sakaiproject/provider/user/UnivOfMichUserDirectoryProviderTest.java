@@ -1,8 +1,8 @@
 package org.sakaiproject.provider.user;
 
 /*
-  $HeadURL:$
-  $Id:$
+  $HeadURL$
+  $Id$
  */
 
 import java.util.Collection;
@@ -122,19 +122,19 @@ public class UnivOfMichUserDirectoryProviderTest extends MockObjectTestCase {
 		assertEquals("found user",1,c.size());
 	}
 	
-	public void testFindUsersByEmailNotAcceptingSubdomain() {
-		Mock mockUserFactory = mock(UserFactory.class);
-		UserFactory uf = (UserFactory) mockUserFactory.proxy();		
+//  	public void testFindUsersByEmailNotAcceptingSubdomain() {
+//  		Mock mockUserFactory = mock(UserFactory.class);
+//  		UserFactory uf = (UserFactory) mockUserFactory.proxy();		
 		
-		Mock mockUserEdit = mock(UserEdit.class);
-		UserEdit ue = (UserEdit) mockUserEdit.proxy();
+//  		Mock mockUserEdit = mock(UserEdit.class);
+//  		UserEdit ue = (UserEdit) mockUserEdit.proxy();
 		
-		mockUserFactory.expects(once()).method("newUser").will(returnValue(ue));
+//  		mockUserFactory.expects(once()).method("newUser").will(returnValue(ue));
 		
-		// will not recognize when use subdomain.
-		Collection c = uomudp.findUsersByEmail("ME@biz.umich.edu",uf);
-		assertEquals("found user",0,c.size());
-	}
+//  		// will not recognize when use subdomain.
+//  		Collection c = uomudp.findUsersByEmail("ME@biz.umich.edu",uf);
+//  		assertEquals("found user",0,c.size());
+//  	}
 
 
 	
