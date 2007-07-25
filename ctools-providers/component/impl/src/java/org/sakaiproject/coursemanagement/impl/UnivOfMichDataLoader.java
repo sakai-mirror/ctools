@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/course-management/trunk/cm-impl/hibernate-impl/impl/src/java/org/sakaiproject/coursemanagement/impl/SampleDataLoader.java $
- * $Id: SampleDataLoader.java 23011 2007-03-19 20:22:39Z jholtzman@berkeley.edu $
+ * $URL$
+ * $Id$
  ***********************************************************************************
  *
  * Copyright (c) 2007 The Sakai Foundation.

@@ -49,7 +49,9 @@ import org.sakaiproject.util.api.umiac.UmiacClient;
 * <p>These two files can be found in CVS under src/conf/jaas_k5, and are configured
 * for U of M Kerberos.</p>
 * <p>Note: The server running this code must be known the the UMIAC system to be able to mity of Michigan, CHEF Software Development Team
-* @version $Revision: 21092 $
+* @version $Revision$
+* $HeadURL:$
+* $Id:$
 */
 public class UnivOfMichUserDirectoryProvider
 	implements UserDirectoryProvider, UsersShareEmailUDP, DisplayAdvisorUDP

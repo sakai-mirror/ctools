@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/course-management/trunk/cm-impl/hibernate-impl/hibernate/src/java/org/sakaiproject/coursemanagement/impl/AbstractPersistentCourseManagementObjectCmImpl.java $
- * $Id: AbstractPersistentCourseManagementObjectCmImpl.java 13913 2006-08-22 20:25:48Z jholtzman@berkeley.edu $
+ * $URL$
+ * $Id$
  ***********************************************************************************
  *
  * Copyright (c) 2006 The Sakai Foundation.

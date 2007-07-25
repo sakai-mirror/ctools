@@ -39,7 +39,7 @@ import javax.net.ssl.*;
  * U of M uniqnames, both internal and friend.
  *
  * @author University of Michigan, Sakai Software Development Team
- * @version $Revision: 44 $
+ * @version $Revision$
  */
 public class SSLSocketClientWithClientAuth
 {
