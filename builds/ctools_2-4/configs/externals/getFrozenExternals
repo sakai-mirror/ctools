@@ -4,11 +4,14 @@
 # $HeadURL$
 # $Id$
 # take .externals file in svn, get the latest revision number for
-# each entry in it and write it out in the svn externals format.
+# each entry in it.  Then write 2 files in the externals format:
+# - A file with the exact revision number for each entry
+# - A file where all the revision numbers are the maximum revision number found in the prior set.
+# These files can be used as the basis for a customized externals file for a specific build.
+
+# This second file will get the same set of files, with less maintenance of revision numbers.
 
 # TTD:
-# - Does the .externals file already need to be checked in?
-# - Don't use a tmp file in current directory.
 # - 
 
 URL=$1
@@ -21,23 +24,25 @@ fi
 # Take existing externals and create a script to get current revision numbers
 svn cat $URL/.externals | perl -n -e 'm|(\S+).*(http.*)| && print "svn --limit 1 -q log $2\necho $1 -rREVISION $2\n"'  >| ./externals.tmp.1.$$
 
+# create externals file with the exact revision for each reference.
 echo "# " $(date) >| ./externals.exact
-# find the updated information and format as a .externals script
+
+#set -x
+
+# find the updated information and format as a .externals script.
+#source ./externals.tmp.1.$$ | perl -n -e 'chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {s/REVISION/$R/; print " $_\n"}' >> ./externals.exact
 source ./externals.tmp.1.$$ | perl -n -e 'chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {s/REVISION/$R/; print " $_\n"}' >> ./externals.exact
 
-# find and print the maximum revision number
-#cat  ./externals.tmp.2.$$ | perl -n -e 'BEGIN { $maxR = -1} chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {$maxR = ($R > $maxR ? $R : $maxR);} END { print "# maxR: $maxR\n";}'
-cat  ./externals.exact | perl -n -e 'BEGIN { $maxR = -1} chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {$maxR = ($R > $maxR ? $R : $maxR);} END { print "# maxR: $maxR\n";}' >| externals.tmp.2.$$
-cat ./externals.exact >> ../externals.tmp.2.$$
+# find and print the maximum revision number.
 
-echo "reformat to have max revision."
+cat  ./externals.exact | perl -n -e 'BEGIN { $maxR = -1} chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {$maxR = ($R > $maxR ? $R : $maxR);} END { print "# maxR: $maxR\n";}' >| ./externals.tmp.2.$$
 
-# print out the annotated .externals list
-#cat ./externals.tmp.2.$$
-cat ./externals.exact
+# make the maximum revision number the first line of the file.
+cat ./externals.exact >> ./externals.tmp.2.$$
+
+# reset all the revision numbers to the max revision number.
+cat ./externals.tmp.2.$$ | perl -p -e ' $maxR = $1 if (/maxR:\s+(\d+)/); s|-r\d+\s+http|-r$maxR http|' >| externals.max
 
 # clean up
-rm ./externals.tmp.1.$$
-#rm ./externals.tmp.2.$$
-#rm ./externals.tmp.$$
+rm ./externals.tmp.*.$$
 #end
