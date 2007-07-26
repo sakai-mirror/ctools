@@ -68,7 +68,9 @@
  mneme -r9612 https://source.sakaiproject.org/contrib/muse/mneme/tags/0.5.3
  itunes -r10436 https://source.sakaiproject.org/contrib/umctx/tags/sakai_2-4-0
  config-viewer -r10021 https://source.sakaiproject.org/contrib/config-viewer/branches/config-viewer-2.4.x
- gmt -rHEAD https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
+# Want HEAD but can't specify it, so specify nothing.
+# gmt -rHEAD https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
+ gmt/gmt  https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
  assignment -r31377 https://source.sakaiproject.org/svn/assignment/tags/pre_2-5-0_QA_001
  ctools-apps -r32366 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
  ctools-providers -r32400 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
