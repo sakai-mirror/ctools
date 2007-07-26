@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<registration>
+
+	<tool id="ctools.iframe.libhelp"
+			title="Library Help"
+			description="For real-time help with library research">
+		
+
+		<configuration name="source" value="http://www.lib.umich.edu/help/ctools/askus/" />
+		<configuration name="height" value="600px" />
+		<configuration name="hide.options" value="true" />
+
+		<configuration name="reset.button" value="true" type="final" />
+
+		<category name="course" />
+		<category name="project" />
+      	<category name="portfolio" />
+		<category name="myworkspace" />
+		<category name="GradToolsStudent" />
+
+		<!-- Allow this to be set -->
+		<configuration name="functions.require" /> 
+	
+	</tool>
+
+</registration>
