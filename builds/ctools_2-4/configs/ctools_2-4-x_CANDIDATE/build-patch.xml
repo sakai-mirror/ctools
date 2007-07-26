@@ -27,72 +27,68 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
 
 
-<!-- ========================================================================== -->
-<!-- ==                    Targets for specific patch sets.                  == -->
-<!-- ========================================================================== -->
+  <!-- ========================================================================== -->
+  <!-- ==                    Targets for specific patch sets.                  == -->
+  <!-- ========================================================================== -->
 
 
-<target name="noPatches" >
-  <echo>No patches to apply.</echo>
-</target>
+  <target name="noPatches" >
+    <echo>No patches to apply.</echo>
+  </target>
 
 
-<target name="applyPatches_2-4-xA" >
-  <echo message="applying patch set 2-4-xA" />
+  <target name="applyPatches_2-4-xA" >
+    <echo message="applying patch set 2-4-xA" />
 
-  <!-- same as 2-4-0_p1 -->
+    <!-- same as 2-4-0_p1 -->
 
-  <!-- query speedup -->
-  <applyPatch patchFileName="SPEED.patch" />
+    <!-- query speedup -->
+    <applyPatch patchFileName="SPEED.patch" />
 
-  <!-- change site dropdown from 'more' to 'more sites' -->
-  <applyPatch patchFileName="SAK-7489.patch" />
+    <!-- change site dropdown from 'more' to 'more sites' -->
+    <applyPatch patchFileName="SAK-7489.patch" />
 
-  <!-- chat migration fixes -->
-  <applyPatch patchFileName="SAK-10483.patch" />
+    <!-- chat migration fixes -->
+    <applyPatch patchFileName="SAK-10483.patch" />
 
-  <!-- missing login logout images -->
-  <applyPatch patchFileName="SAK-10498.patch" />
+    <!-- missing login logout images -->
+    <applyPatch patchFileName="SAK-10498.patch" />
 
-  <!-- missing podcasts exception -->
-  <!-- seems to be in 2.4.x as of 2007/07/23 
-  <applyPatch patchFileName="SAK-10332.patch" />
-  -->
+    <!-- missing podcasts exception -->
+    <!-- seems to be in 2.4.x as of 2007/07/23 
+	 <applyPatch patchFileName="SAK-10332.patch" />
+    -->
 
-
-  <!-- missing podcasts exception -->
-  <applyPatch patchFileName="CT-231.patch" />
+    <applyPatch patchFileName="CT-231.patch" />
 
 
-</target>
+  </target>
 
-<target name="applyPatches_2-4-xB" >
-  <echo message="applying patch set 2-4-xB" />
+  <target name="applyPatches_2-4-xB" >
+    <echo message="applying patch set 2-4-xB" />
 
-  <!-- db changes required by:
-  SAK-9725 (not part of 2.4.x) 
-  SAK-9808 (part of 2.4.x at this point)
-  SAK-10454 suggested for Samigo
-  -->
-  
+    <!-- db changes required by:
+	 SAK-9725 (not part of 2.4.x) 
+	 SAK-9808 (part of 2.4.x at this point)
+	 SAK-10454 suggested for Samigo
+    -->
+    
 
-  <!-- patches for the OSP for the med school -->
+    <!-- patches for the OSP for the med school -->
 
-  <applyPatch patchFileName="SAK-9725.patch" /> <!-- requires db change -->
-  <applyPatch patchFileName="SAK-10583.patch" />
+    <applyPatch patchFileName="SAK-9725.patch" /> <!-- requires db change -->
+    <applyPatch patchFileName="SAK-10583.patch" />
 
-  <
-
-  <!-- patches to be checked out -->
-  <!-- in 2.4.x as of 2007/07/23 
-  <applyPatch patchFileName="SAK-9123.patch" />
-  -->
-  <applyPatch patchFileName="SAK-10683.patch" />
-  <!-- in 2.4.x as of 2007/07/23 
-  <applyPatch patchFileName="SAK-8449.patch" />
-  -->
+    <!-- patches to be checked out -->
+    <!-- in 2.4.x as of 2007/07/23 
+	 <applyPatch patchFileName="SAK-9123.patch" />
+    -->
+    <applyPatch patchFileName="SAK-10683.patch" />
+    <!-- in 2.4.x as of 2007/07/23 
+	 <applyPatch patchFileName="SAK-8449.patch" />
+    -->
 
 
-</target>
+  </target>
 
 </project>
