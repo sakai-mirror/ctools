@@ -1,0 +1,19 @@
+#!/bin/bash
+# Set externals property for a directory.
+
+# $HeadURL$
+# $Id$
+
+# This requires that the .externals file in the
+# current directory is the updated version.
+
+# Based on a script from Andrew Poland at IU.
+
+# TTD:
+# - Why assume you are in the right directory?
+# - Better commit message necessary?
+
+svn propset -F ./.externals svn:externals .
+svn propget svn:externals
+svn commit -m"Updated externals"
+#end
