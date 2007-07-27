@@ -88,6 +88,8 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 	 <applyPatch patchFileName="SAK-8449.patch" />
     -->
 
+    <!-- home grown patch for rss _blank -->
+    <applyPatch patchFileName="SAK-10810" />
 
   </target>
 
