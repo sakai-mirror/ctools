@@ -1,7 +1,7 @@
-Index: util-util/util/src/java/org/sakaiproject/util/FormattedText.java
+Index: util/util-util/util/src/java/org/sakaiproject/util/FormattedText.java
 ===================================================================
---- util-util/util/src/java/org/sakaiproject/util/FormattedText.java	(revision 33231)
-+++ util-util/util/src/java/org/sakaiproject/util/FormattedText.java	(working copy)
+--- util/util-util/util/src/java/org/sakaiproject/util/FormattedText.java	(revision 33231)
++++ util/util-util/util/src/java/org/sakaiproject/util/FormattedText.java	(working copy)
 @@ -197,9 +197,8 @@
  			Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
  
