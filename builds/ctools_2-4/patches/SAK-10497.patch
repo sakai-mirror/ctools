@@ -1,0 +1,27 @@
+diff -ur portal/portal-api/api/src/java/org/sakaiproject/portal/api/Portal.java portal/portal-api/api/src/java/org/sakaiproject/portal/api/Portal.java
+--- portal/portal-api/api/src/java/org/sakaiproject/portal/api/Portal.java	2007-06-20 13:09:29.000000000 +0200
++++ portal/portal-api/api/src/java/org/sakaiproject/portal/api/Portal.java	2007-06-28 09:25:25.000000000 +0200
+@@ -88,6 +88,11 @@
+ 	public static final String CONFIG_AUTO_RESET = "portal.experimental.auto.reset";
+ 
+ 	/**
++	 * Configuration option for default number of site tabs to display to users
++	 */
++	public static final String CONFIG_DEFAULT_TABS = "portal.default.tabs";
++	
++	/**
+ 	 * Names of tool config/registration attributes that control the rendering
+ 	 * of the tool's titlebar
+ 	 */
+diff -ur /portal/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/SiteHandler.java portal/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/SiteHandler.java
+--- portal/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/SiteHandler.java	2007-06-20 13:05:46.000000000 +0200
++++ portal/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/SiteHandler.java	2007-06-28 09:23:48.000000000 +0200
+@@ -346,7 +346,7 @@
+ 				myWorkspaceSiteId = siteHelper.getSiteEffectiveId(myWorkspaceSite);
+ 			}
+ 
+-			int prefTabs = 4;
++			int prefTabs = ServerConfigurationService.getInt(Portal.CONFIG_DEFAULT_TABS, 5);
+ 			int tabsToDisplay = prefTabs;
+ 
+ 			// Get the list of sites in the right order,
