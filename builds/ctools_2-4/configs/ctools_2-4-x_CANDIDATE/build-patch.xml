@@ -88,7 +88,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 	 <applyPatch patchFileName="SAK-8449.patch" />
     -->
 
-    <!-- home grown patch for rss _blank -->
+    <!-- home grown patch for rss _blank in library reserves. -->
     <applyPatch patchFileName="SAK-10810" />
 
   </target>
