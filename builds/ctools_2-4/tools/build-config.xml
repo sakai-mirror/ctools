@@ -31,11 +31,6 @@
   <property name="instance-type.file" value="instance.${instance-type}.properties" />
   <property file="${instance-type.file}" />
 
-  <!--
-  <target name="buildProperties" depends="copyConfig, editInstanceSakaiProperties"
-	  description="copy and edit the sakai.properties files." />
-  -->
-
   <target name="buildPropertiesSimple" depends="copyConfig, buildPropertiesFileConcat,installCitationConfig"
 	  description="TEST: copy and edit the sakai.properties files." />
 

@@ -38,25 +38,6 @@
 
     <!-- take out the extra level of reference for the master/project.xml -->
 
-    <!--
-    <replaceregexp 
-	file="${build.dir}/chat-tool/tool/project.xml"  >
-      <regexp pattern="\.\./\.\./\.\./master/project.xml" />
-      <substitution  expression="../../master/project.xml" />
-    </replaceregexp>
-    -->
-
-    <!--
-    <replaceregexp >
-      <fileset dir="${build.dir}/chat" casesensitive="yes">
-	<include name="**/project.xml"/>
-      </fileset>
-      <regexp pattern="\.\./\.\./\.\./master/project.xml" />
-      <substitution  expression="../../master/project.xml" />
-    </replaceregexp>
-    -->
-
-
   </target>
 
 </project>

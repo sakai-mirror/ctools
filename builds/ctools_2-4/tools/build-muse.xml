@@ -45,15 +45,6 @@
     <mkdir dir="${build.dir}/mneme" />
     <execSvnCmd url="${mneme.svnurl}" revision="${mneme.revision}" dir="${build.dir}/mneme"/> 
 
-    <!-- take out the extra level of reference for the master/project.xml -->
-    <!--
-    <replaceregexp 
-	file="${build.dir}/mneme-tool/tool/project.xml"  >
-      <regexp pattern="\.\./\.\./\.\./master/project.xml" />
-      <substitution  expression="../../master/project.xml" />
-    </replaceregexp>
-    -->
-
   </target>
 
   <target name="getAmbrosiaSrc" unless="ambrosia.install.skip">
@@ -62,17 +53,6 @@
     </echo>
     <mkdir dir="${build.dir}/ambrosia" />
     <execSvnCmd url="${ambrosia.svnurl}" revision="${ambrosia.revision}" dir="${build.dir}/ambrosia"/> 
-
-
-    <!-- take out the extra level of reference for the master/project.xml -->
-    <!--
-    <replaceregexp 
-	file="${build.dir}/ambrosia-tool/tool/project.xml"  >
-      <regexp pattern="\.\./\.\./\.\./master/project.xml" />
-      <substitution  expression="../../master/project.xml" />
-    </replaceregexp>
-    -->
-
   </target>
 
 </project>

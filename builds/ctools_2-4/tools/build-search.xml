@@ -28,16 +28,6 @@
   <!--          deal with search specific source          -->
   <!-- ================================================== -->
 
-  <!--
-  <target name="getSearchSrc" unless="search.install.skip">
-    <echo>
-      Extracting search tool: ${search.svnurl} revision: ${search.revision}.
-    </echo>
-    <delete dir="${build.dir}/search" />
-    <execSvnCmd url="${search.svnurl}" revision="${search.revision}" dir="${build.dir}/search"/> 
-  </target>
-  -->
-
   <target name="getSearchSrc" depends="deleteDefaultSearchSrc,getCustomSearchSrc" unless="search.install.skip" />
   
   <target name="deleteDefaultSearchSrc" unless="search.install.skip">

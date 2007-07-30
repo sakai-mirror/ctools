@@ -181,13 +181,4 @@ $HeadURL$
 	  overwrite="true"/>
   </target>
 
-
-  <!--
-  <target name="editCourseManagement">
-    <copy file="${reference.dir}/${CM.groups.config.sourcefile}"
-	  tofile="${build.dir}/${CM.groups.config.tofile}"
-	  overwrite="true"/>
-  </target>
-  -->
-
 </project>

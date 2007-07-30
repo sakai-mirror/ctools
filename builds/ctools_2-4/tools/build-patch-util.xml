@@ -30,14 +30,6 @@
     </echo>
   </target>
 
-  <!--
-  <target name="applyPatches" depends="applyPatches_none" />
-
-  <target name="applyPatches_none">
-    <echo> No patches to apply (applyPatches_none) </echo>
-  </target>
-  -->
-
   <!-- Target to apply a single patch.  Used to test patches.  -->
   <target name="testOnePatch" description="target to test single patch application">
     <applyPatch patchFileName="${patchFileName}" />

@@ -40,15 +40,6 @@
     a single directory we specify an explicit destination directory rather than use the default. -->
     <execSvnCmd url="${sitestats.svnurl}" revision="${sitestats.revision}" destination="${sitestats.svndir}"/> 
 
-    <!-- take out the extra level of reference for the master/project.xml -->
-    <!--
-    <replaceregexp 
-	file="${build.dir}/sitestats-tool/tool/project.xml"  >
-      <regexp pattern="\.\./\.\./master/project.xml" />
-      <substitution  expression="../master/project.xml" />
-    </replaceregexp>
-    -->
-
   </target>
 
 </project>

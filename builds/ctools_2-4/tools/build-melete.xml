@@ -35,13 +35,6 @@
   <!--           deal with Melete specific source         -->
   <!-- ================================================== -->
 
-<!--
-  <target name="extractMelete" if="melete.install" >
-    <execSvnCmd url="${melete.svnurl}" revision="${melete.revision}"/> 
-    <untar src="${build.dir}/${melete.archivename}" dest="${build.dir}" compression="gzip" />
-  </target>
--->
-
   <target name="extractMelete" unless="melete.install.skip" >
     <echo> extracting melete:</echo>
     <execSvnCmd url="${melete.svnurl}" revision="${melete.revision}" destination="${melete.archivename}"/> 
@@ -82,61 +75,6 @@
 
   </target>
 
-  <target name="editMeleteOld" unless="melete.install.skip" >
-
-    <!-- text checked in switched to windows format, change it back to let these
-	 prior targets work. -->
-
-    <replaceregexp match="c:" replace="/var" flags="g" >
-      <fileset dir="${build.dir}/${melete.dirname}">
-	<include name="meleteDocs.xml" />
-	<include name="**/web.xml" />
-      </fileset>
-    </replaceregexp>
-
-    <replaceregexp match="\var" replace="/var" flags="g" >
-      <fileset dir="${build.dir}/${melete.dirname}">
-	<include name="meleteDocs.xml" />
-	<include name="**/web.xml" />
-      </fileset>
-    </replaceregexp>
-
-    <replaceregexp match="var/" replace="/var/" flags="g" >
-      <fileset dir="${build.dir}/${melete.dirname}">
-	<include name="meleteDocs.xml" />
-	<include name="**/web.xml" />
-      </fileset>
-    </replaceregexp>
-
-    <replaceregexp match="&gt;/var&lt;/param-value" replace="&gt;${melete.homedir}&lt;/param-value" flags="g" >
-      <fileset dir="${build.dir}/${melete.dirname}">
-	<include name="meleteDocs.xml" />
-	<include name="**/web.xml" />
-      </fileset>
-    </replaceregexp>
-
-    <replaceregexp match="/var/meleteDocs" replace="${melete.docsdir}" flags="g" >
-      <fileset dir="${build.dir}/${melete.dirname}">
-	<include name="meleteDocs.xml" />
-	<include name="**/web.xml" />
-      </fileset>
-    </replaceregexp>
-
-    <replaceregexp match="/var/melete/packagefiles" replace="${melete.packagingdir}" flags="g" >
-      <fileset dir="${build.dir}/${melete.dirname}">
-	<include name="**/web.xml" />
-      </fileset>
-    </replaceregexp>
-
-    <replaceregexp match="/var/uploads" replace="${melete.uploaddir}" flags="g" >
-      <fileset dir="${build.dir}/${melete.dirname}">
-	<include name="meleteDocs.xml" />
-	<include name="**/web.xml" />
-      </fileset>
-    </replaceregexp>
-
-  </target>
-  
   <target name="imageMelete" unless="melete.install.skip">
     <echo>update image for melete</echo>
     <copy todir="${image.dir}/conf/Catalina/localhost">

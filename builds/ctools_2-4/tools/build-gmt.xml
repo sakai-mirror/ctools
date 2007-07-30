@@ -38,14 +38,6 @@
 
     <!-- take out the extra level of reference for the master/project.xml -->
 
-    <!--
-    <replaceregexp 
-	file="${build.dir}/gmt-tool/tool/project.xml"  >
-      <regexp pattern="\.\./\.\./\.\./master/project.xml" />
-      <substitution  expression="../../master/project.xml" />
-    </replaceregexp>
-    -->
-
     <replaceregexp >
       <fileset dir="${build.dir}/gmt" casesensitive="yes">
 	<include name="**/project.xml"/>

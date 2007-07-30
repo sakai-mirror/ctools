@@ -36,15 +36,6 @@
     </echo>
     <execSvnCmd url="${config-viewer.svnurl}" revision="${config-viewer.revision}" destination="config-viewer"/> 
 
-    <!-- take out the extra level of reference for the master/project.xml -->
-    <!--
-    <replaceregexp 
-	file="${build.dir}/config-viewer-tool/tool/project.xml"  >
-      <regexp pattern="\.\./\.\./\.\./master/project.xml" />
-      <substitution  expression="../../master/project.xml" />
-    </replaceregexp>
-    -->
-
   </target>
 
 </project>
