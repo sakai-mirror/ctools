@@ -198,9 +198,9 @@
 
       <arg value="-b" />
       <!-- <arg value="-X" /> -->
-      <!--  sometimes needed with a new build 
+      <!--  sometimes need to avoid this with a new build, but usually speeds things up. -->
       <arg value="-o" />
-       -->
+
       <arg value="sakai:clean" />
       <arg value="sakai:build" />
       <arg value="sakai:deploy-zip" />
