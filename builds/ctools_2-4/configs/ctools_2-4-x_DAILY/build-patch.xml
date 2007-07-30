@@ -15,11 +15,18 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
 
 
-  <target name="applyPatches" depends="applyPatches_2-4-0_p1" >
-    <!-- <echo> temp to see if compiles. </echo> -->
-  </target>
+  <!-- This target specifies the patches to apply.  By convention each
+       new incremental release adds a new target with the new patches
+       applied.  If this doesn't fit particular circumstances (e.g. an
+       earlier patch is retracted) please add a comment.
+  -->
 
-  
+  <target name="applyPatches" 
+	  depends="applyPatches_2-4-xA,applyPatches_2-4-xB,applyPatches_2-4-xC" 
+	  />
+
+
+
   <!-- ========================================================================== -->
   <!-- ==                    Targets for specific patch sets.                  == -->
   <!-- ========================================================================== -->
@@ -30,11 +37,8 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
   </target>
 
 
-  <target name="applyPatches_2-4-0_p1" >
-    <echo message="applying patch set 2-4-0_p1" />
-
-
-    <!-- comment out all but CT-103, but need them all in the end -->
+  <target name="applyPatches_2-4-xA" >
+    <echo message="applying patch set 2-4-xA" />
 
     <!-- query speedup -->
     <applyPatch patchFileName="SPEED.patch" />
@@ -44,61 +48,64 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
     <!-- chat migration fixes -->
     <applyPatch patchFileName="SAK-10483.patch" />
+    <applyPatch patchFileName="CT-231.patch" />
 
     <!-- missing login logout images -->
     <applyPatch patchFileName="SAK-10498.patch" />
 
     <!-- missing podcasts exception -->
-    <!--    <applyPatch patchFileName="SAK-10332.patch" /> -->
-
-    <applyPatch patchFileName="CT-231.patch" />
-
-    <!-- make number of tabs configurable -->
-    <applyPatch patchFileName="SAK-10497.patch" />
-
-    <!-- cannot add roster via site info -->
-    <applyPatch patchFileName="SAK-10831.patch" />
-
-    <!-- add manual roster to existing site -->
-
-
-<!-- doesn't work yet  -->
-    <applyPatch patchFileName="SAK-10520A.patch" />
-    <applyPatch patchFileName="SAK-10520B.patch" />
-
-
-    <!-- rss extra _blank -->
-    <applyPatch patchFileName="SAK-10810.patch" />
-
-    <!-- 2007/06/26 - appling patch now fails with 'reversed patch' error 
-
-    <applyPatch patchFileName="SAK-10428.patch" />
+    <!-- seems to be in 2.4.x as of 2007/07/23 
+	 <applyPatch patchFileName="SAK-10332.patch" />
     -->
-    <!--
-    <applyPatch patchFileName="SAK-10145.patch" />
-    <applyPatch patchFileName="SAK-10145B.patch" />
-    <applyPatch patchFileName="SAK-10298.patch" />
-    -->
-    <!-- site action -->
-    <!--
-    <applyPatch patchFileName="SAK-9829.patch" />
-    <applyPatch patchFileName="SAK-8920.patch" />
-
-    <applyPatch patchFileName="CT-159.patch" />
-
-    <applyPatch patchFileName="SAK-10242.patch" />
-    <applyPatch patchFileName="SAK-10146.patch" />
-    -->
-    <!--
-    <applyPatch patchFileName="CT-103-pre.31324.patch" />
-    <applyPatch patchFileName="CT-103-mid.31324.patch" />
-    <applyPatch patchFileName="CT-103-final.31324.patch" />
-    <applyPatch patchFileName="CT-103-remaining.patch" />
-    -->
-
-    <!--     <applyPatch patchFileName="CT-182.patch" /> -->
 
   </target>
 
+  <target name="applyPatches_2-4-xB" >
+    <echo message="applying patch set 2-4-xB" />
+
+    <!-- db changes required by:
+	 SAK-9725 (not part of 2.4.x) 
+	 SAK-9808 (part of 2.4.x at this point)
+	 SAK-10454 suggested for Samigo
+    -->
+    
+
+    <!-- patches for the OSP for the med school -->
+
+    <applyPatch patchFileName="SAK-9725.patch" /> <!-- requires db change -->
+    <applyPatch patchFileName="SAK-10583.patch" />
+
+    <!-- patches to be checked out -->
+    <!-- in 2.4.x as of 2007/07/23 
+	 <applyPatch patchFileName="SAK-9123.patch" />
+    -->
+
+    <!-- assignment tool Word file corruption -->
+    <!-- now in post-2-4 branch 
+     <applyPatch patchFileName="SAK-10683.patch" /> -->
+    <!-- in 2.4.x as of 2007/07/23 
+	 <applyPatch patchFileName="SAK-8449.patch" />
+    -->
+
+
+  </target>
+
+  <target name="applyPatches_2-4-xC" >
+    <echo message="applying patch set 2-4-xC" />
+
+    <!-- ct-225 will have the right bschool sakai.properties configuration by
+    virtue of using later ctools-reference revision. -->
+
+    <!-- home grown patch for rss _blank in library reserves. -->
+    <applyPatch patchFileName="SAK-10810.patch" />
+
+    <!-- patch default number of site tabs, and make it 
+    settable via sakai.properties -->
+    <applyPatch patchFileName="SAK-10497.patch" />
+
+    <!-- gmt view submissions instead of clicking on assignment to submit -->
+    <applyPatch patchFileName="SAK-10252.patch" />
+
+  </target>
 
 </project>
