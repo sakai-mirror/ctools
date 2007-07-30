@@ -71,7 +71,7 @@
  config-viewer  https://source.sakaiproject.org/contrib/config-viewer/branches/config-viewer-2.4.x
  # special gmt handling for gmt / assignment integration
  gmt/gmt  https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
- assignment https://source.sakaiproject.org/svn/assignment/tags/pre_2-5-0_QA_001
+ assignment https://source.sakaiproject.org/svn/assignment/branches/post-2-4
  # ctools
  ctools-apps https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
  ctools-providers https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
