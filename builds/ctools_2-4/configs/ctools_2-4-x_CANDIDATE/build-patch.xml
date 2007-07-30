@@ -22,7 +22,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
   -->
 
   <target name="applyPatches" 
-	  depends="applyPatches_2-4-xA,applyPatches_2-4-xB" 
+	  depends="applyPatches_2-4-xA,applyPatches_2-4-xB,applyPatches_2-4-xC" 
 	  />
 
 
@@ -39,8 +39,6 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
   <target name="applyPatches_2-4-xA" >
     <echo message="applying patch set 2-4-xA" />
-
-    <!-- same as 2-4-0_p1 -->
 
     <!-- query speedup -->
     <applyPatch patchFileName="SPEED.patch" />
@@ -88,12 +86,24 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 	 <applyPatch patchFileName="SAK-8449.patch" />
     -->
 
+
+  </target>
+
+  <target name="applyPatches_2-4-xC" >
+    <echo message="applying patch set 2-4-xC" />
+
+    <!-- ct-225 will have the right bschool sakai.properties configuration by
+    virtue of using later ctools-reference revision. -->
+
     <!-- home grown patch for rss _blank in library reserves. -->
     <applyPatch patchFileName="SAK-10810.patch" />
 
     <!-- patch default number of site tabs, and make it 
     settable via sakai.properties -->
     <applyPatch patchFileName="SAK-10497.patch" />
+
+    <!-- gmt view submissions instead of clicking on assignment to submit -->
+    <applyPatch patchFileName="SAK-10252.patch" />
 
   </target>
 
