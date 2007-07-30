@@ -50,6 +50,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
     <!-- chat migration fixes -->
     <applyPatch patchFileName="SAK-10483.patch" />
+    <applyPatch patchFileName="CT-231.patch" />
 
     <!-- missing login logout images -->
     <applyPatch patchFileName="SAK-10498.patch" />
@@ -58,9 +59,6 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <!-- seems to be in 2.4.x as of 2007/07/23 
 	 <applyPatch patchFileName="SAK-10332.patch" />
     -->
-
-    <applyPatch patchFileName="CT-231.patch" />
-
 
   </target>
 
@@ -83,6 +81,8 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <!-- in 2.4.x as of 2007/07/23 
 	 <applyPatch patchFileName="SAK-9123.patch" />
     -->
+
+    <!-- assignment tool Word file corruption -->
     <applyPatch patchFileName="SAK-10683.patch" />
     <!-- in 2.4.x as of 2007/07/23 
 	 <applyPatch patchFileName="SAK-8449.patch" />
@@ -90,6 +90,10 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
     <!-- home grown patch for rss _blank in library reserves. -->
     <applyPatch patchFileName="SAK-10810.patch" />
+
+    <!-- patch default number of site tabs, and make it 
+    settable via sakai.properties -->
+    <applyPatch patchFileName="SAK-10497.patch" />
 
   </target>
 
