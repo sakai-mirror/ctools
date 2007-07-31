@@ -104,7 +104,9 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="SAK-10497.patch" />
 
     <!-- gmt view submissions instead of clicking on assignment to submit -->
+    <!-- does not patch 
     <applyPatch patchFileName="SAK-10252.patch" />
+    -->
 
   </target>
 
