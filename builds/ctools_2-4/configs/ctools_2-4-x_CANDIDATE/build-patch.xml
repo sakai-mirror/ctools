@@ -117,6 +117,23 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <!-- chat room stack dumps -->
     <applyPatch patchFileName="SAK-10726.patch" />
 
+    <!-- Cannot import forms -->
+    <applyPatch patchFileName="SAK-10939.patch" />
+
+    <!-- doesn't patch cleanly
+    <applyPatch patchFileName="SAK-10953.patch" />
+    -->
+
+    <!-- cannot add roster via site info -->
+    <applyPatch patchFileName="SAK-10831.patch" />
+
+    <!-- Changed point value in assignments doesn't show up changed in Gbook -->
+    <applyPatch patchFileName="SAK-10997.patch" />
+
+    <!-- doesn't patch cleanly 
+    <applyPatch patchFileName="SAK-10419.patch" />
+    -->
+
   </target>
 
 </project>
