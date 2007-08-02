@@ -22,7 +22,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
   -->
 
   <target name="applyPatches" 
-	  depends="applyPatches_2-4-xA,applyPatches_2-4-xB,applyPatches_2-4-xC" 
+	  depends="applyPatches_2-4-xA,applyPatches_2-4-xB,applyPatches_2-4-xC,applyPatches_2-4-xD" 
 	  />
 
 
@@ -81,7 +81,9 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     -->
 
     <!-- assignment tool Word file corruption -->
+    <!-- in assignment post-2-4 as of r3315 
     <applyPatch patchFileName="SAK-10683.patch" />
+    -->
     <!-- in 2.4.x as of 2007/07/23 
 	 <applyPatch patchFileName="SAK-8449.patch" />
     -->
@@ -103,7 +105,17 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="SAK-10497.patch" />
 
     <!-- gmt view submissions instead of clicking on assignment to submit -->
+    <!-- in assignment post-2-4 as of revision r33315
     <applyPatch patchFileName="SAK-10252.patch" />
+    -->
+
+  </target>
+
+  <target name="applyPatches_2-4-xD" >
+    <echo message="applying patch set 2-4-xD" />
+
+    <!-- chat room stack dumps -->
+    <applyPatch patchFileName="SAK-10726.patch" />
 
   </target>
 
