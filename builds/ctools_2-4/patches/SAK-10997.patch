@@ -1,0 +1,17 @@
+svn diff -r33425:33426 https://source.sakaiproject.org/svn
+Index: assignment/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java
+===================================================================
+--- assignment/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java	(revision 33425)
++++ assignment/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java	(revision 33426)
+@@ -2309,10 +2309,7 @@
+ 						    Assignment a = AssignmentService.getAssignment(associateGradebookAssignment);
+ 
+ 						    // update attributes if the GB assignment was created for the assignment
+-						    if (newAssignment_title.equals(associateGradebookAssignment))
+-						    {
+-					    			g.updateExternalAssessment(gradebookUid, associateGradebookAssignment, null, newAssignment_title, newAssignment_maxPoints/10.0, new Date(newAssignment_dueTime.getTime()));
+-						    }
++						    g.updateExternalAssessment(gradebookUid, associateGradebookAssignment, null, newAssignment_title, newAssignment_maxPoints/10.0, new Date(newAssignment_dueTime.getTime()));
+ 						}
+ 					    catch(Exception e)
+ 				        {
