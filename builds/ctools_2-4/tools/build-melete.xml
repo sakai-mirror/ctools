@@ -37,7 +37,11 @@
 
   <target name="extractMelete" unless="melete.install.skip" >
     <echo> extracting melete:</echo>
-    <execSvnCmd url="${melete.svnurl}" revision="${melete.revision}" destination="${melete.archivename}"/> 
+    <!-- It doesn't make sense to checkout the melete archive since it is just a tar of the 
+    source packaged here for our use.  We don't have the source seperately in svn so 
+    export add value. -->
+    <execSvnCmd cmd="export" url="${melete.svnurl}" revision="${melete.revision}" 
+		destination="${melete.archivename}"/> 
     <untar src="${build.dir}/${melete.archivename}" dest="${build.dir}" compression="gzip" />
     <delete file="${build.dir}/${melete.archivename}" />
   </target>
