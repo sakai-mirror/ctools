@@ -1,6 +1,7 @@
 /**********************************************************************************
 *
-* $Header: /cvs/ctools/ctools-providers/component/src/java/org/sakaiproject/component/legacy/user/SSLSocketClientWithClientAuth.java,v 1.3 2005/05/26 04:05:34 ggolden.umich.edu Exp $
+* $HeadURL:$
+* $Id:$
 *
 ***********************************************************************************
 *
@@ -199,9 +200,3 @@ public class SSLSocketClientWithClientAuth
 	//	}
 
 }
-
-/**********************************************************************************
-*
-* $Header: /cvs/ctools/ctools-providers/component/src/java/org/sakaiproject/component/legacy/user/SSLSocketClientWithClientAuth.java,v 1.3 2005/05/26 04:05:34 ggolden.umich.edu Exp $
-*
-**********************************************************************************/
