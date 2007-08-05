@@ -35,6 +35,9 @@ import java.io.PrintWriter;
 import java.security.KeyStore;
 import javax.net.ssl.*;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * <p>SSLSocketClientWithClientAuth knows how to talk to COSIGN via an HTTPS connection to authenticate
  * U of M uniqnames, both internal and friend.
@@ -50,7 +53,9 @@ public class SSLSocketClientWithClientAuth
 	protected String pathAuthenticate = null;
 	protected String keyStorePassPhrase = null;
 	protected String keyStoreFilePath = null;
-
+	
+	private static Log log = LogFactory.getLog(SSLSocketClientWithClientAuth.class);
+	
 	public SSLSocketClientWithClientAuth()
 	{
 		//defaults
@@ -90,6 +95,7 @@ public class SSLSocketClientWithClientAuth
 	protected SSLSocket initSocket() throws Exception
 	{
 		SSLSocketFactory factory = null;
+		FileInputStream ksfp = null;
 		try
 		{
 			SSLContext ctx;
@@ -100,8 +106,9 @@ public class SSLSocketClientWithClientAuth
 			ctx = SSLContext.getInstance("TLS");
 			kmf = KeyManagerFactory.getInstance("SunX509");
 			ks = KeyStore.getInstance("JKS");
-
-			ks.load(new FileInputStream(keyStoreFilePath), passphrase);
+			ksfp = new FileInputStream(keyStoreFilePath);
+			//ks.load(new FileInputStream(keyStoreFilePath), passphrase);
+			ks.load(ksfp, passphrase);
 
 			kmf.init(ks, passphrase);
 			ctx.init(kmf.getKeyManagers(), null, null);
@@ -110,7 +117,11 @@ public class SSLSocketClientWithClientAuth
 		}
 		catch (Exception e)
 		{
+			log.warn("Exception in SSLSocketClientWithClientAuth.initSocket",e);
 			throw new IOException(e.getMessage());
+		}
+		finally {
+			ksfp.close();
 		}
 
 		SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
