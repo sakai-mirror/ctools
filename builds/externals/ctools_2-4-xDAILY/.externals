@@ -2,7 +2,7 @@
  alias   https://source.sakaiproject.org/svn/alias/branches/sakai_2-4-x
  announcement   https://source.sakaiproject.org/svn/announcement/branches/sakai_2-4-x
  archive   https://source.sakaiproject.org/svn/archive/branches/sakai_2-4-x
- assignment   https://source.sakaiproject.org/svn/assignment/branches/sakai_2-4-x
+# assignment   https://source.sakaiproject.org/svn/assignment/branches/sakai_2-4-x
  authz   https://source.sakaiproject.org/svn/authz/branches/sakai_2-4-x
  blog   https://source.sakaiproject.org/svn/blog/branches/sakai_2-4-x
  calendar   https://source.sakaiproject.org/svn/calendar/branches/sakai_2-4-x
@@ -67,7 +67,7 @@
 # contrib tools
  ambrosia https://source.sakaiproject.org/contrib/muse/ambrosia/tags/0.5.0
  mneme https://source.sakaiproject.org/contrib/muse/mneme/tags/0.5.3
- itunes -r10436 https://source.sakaiproject.org/contrib/umctx/tags/sakai_2-4-0
+ itunes https://source.sakaiproject.org/contrib/umctx/tags/sakai_2-4-0
  config-viewer  https://source.sakaiproject.org/contrib/config-viewer/branches/config-viewer-2.4.x
  # special gmt handling for gmt / assignment integration
  gmt/gmt  https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
