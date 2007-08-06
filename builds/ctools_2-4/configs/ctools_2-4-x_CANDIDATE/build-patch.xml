@@ -236,7 +236,13 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <!-- ====================================== -->
 
     <!-- 2.4.xE -->
-    <!-- none yet -->
+
+    <!-- change conncurrent hash map -->
+    <!-- 
+	 did not patch cleanly.
+    <applyPatch patchFileName="SAK-11023.patch" />
+    -->
+
   </target>
 
 </project>
