@@ -61,6 +61,7 @@ $Id$
     <tool id = "sakai.siteinfo" required = "true" />
     <tool id = "sakai.search" />
     <tool id = "sakai.contact.support" />
+    <tool id = "ctools.iframe.libhelp" />
 
   </category>
 
@@ -122,6 +123,7 @@ $Id$
     <tool id = "sakai.site.roster" />
     <tool id = "sakai.search" />
     <tool id = "sakai.contact.support" />
+    <tool id = "ctools.iframe.libhelp" />
 
   </category>
 
@@ -183,6 +185,7 @@ $Id$
     <tool id = "sakai.site.roster" />
     <tool id = "sakai.search" />
     <tool id = "sakai.contact.support" />
+    <tool id = "ctools.iframe.libhelp" />
 
   </category>
 
@@ -208,6 +211,7 @@ $Id$
     <tool id="sakai.siteinfo" required = "true" />
     <tool id="sakai.search" />
     <tool id="ctools.gradToolsHelp" required = "true" />
+    <tool id = "ctools.iframe.libhelp" />
 
   </category>
   <category name="GradToolsRackham">
@@ -230,6 +234,7 @@ $Id$
     <tool id="sakai.siteinfo" required = "true" />
     <tool id="sakai.search" />
     <tool id="ctools.gradToolsHelp" required = "true" />
+    <tool id = "ctools.iframe.libhelp" />
 
   </category>
   <category name="GradToolsDepartment">
@@ -251,6 +256,7 @@ $Id$
     <tool id="sakai.siteinfo" required = "true" />
     <tool id="sakai.search" />
     <tool id="ctools.gradToolsHelp" required = "true" />
+    <tool id = "ctools.iframe.libhelp" />
   </category>
 
 </toolOrder>
