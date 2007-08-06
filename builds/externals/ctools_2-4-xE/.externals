@@ -78,7 +78,7 @@
  # ctools
  ctools-apps -r33104 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
  ctools-providers -r33495 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
- ctools-reference -r33234 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
+ ctools-reference -r33504 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
  gradtools -r33104 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
 # no version on this until we get some testing.
  ctools-libhelp  https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
