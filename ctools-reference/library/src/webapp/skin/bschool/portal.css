@@ -442,7 +442,8 @@ line-height: 1.5;
 /*site logo wrapper*/
 #worksiteLogo{
 	width: 9.7em;
-	background: url(images/bus.gif) top center no-repeat;
+/*	the icon is always there- use that instead
+	background: url(images/bus.gif) top center no-repeat; */
 	height: 50px;
 	overflow: hidden;
 	display: block;
