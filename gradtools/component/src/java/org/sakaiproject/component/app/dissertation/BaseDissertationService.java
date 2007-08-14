@@ -2127,38 +2127,137 @@ public abstract class BaseDissertationService
 	* Access in Sort Name order the student User objects for which CandidatePath candidate 
 	* attribute (uniqname) has a Sort Name starting with this letter.
 	* @param type - The CandidatePath type (e.g., “Dissertation Steps”, “Dissertation Steps: Music Performance”.
-	* @param letter – A letter of the alphabet, A-Z,a-z.
+	* @param letter A letter of the alphabet, A-Z,a-z.
 	* @return The List of Users, or null if no such Users exist.
 	*/
 	public List getSortedUsersOfTypeForLetter(String type, String letter)
 	{
 		List retVal = new ArrayList();
+		//check parameters
+		if(type == null || letter == null)
+		{
+			if(m_logger.isWarnEnabled())
+				m_logger.warn(this + ".getSortedUsersOfTypeForLetter: type is null or letter is null.");
+			return retVal;	
+		}
 		if(!letter.matches("[A-Za-z]"))
 		{
+			if(m_logger.isWarnEnabled())
+				m_logger.warn(this + ".getSortedUsersOfTypeForLetter: letter doesn't match A-Z a-z, type = '" + type + "' letter = '" + letter + "'.");
 			return retVal;
 		}
-		if(type != null)
+		//adding copious logging and try/catch's to make sure list is returned to the UI and bad data logged
+		CandidatePath path = null;
+		String sortName = null;
+		String userId = null;
+		User student = null;
+		try
 		{
-			CandidatePath path = null;
-			String sortName = null;
+			//loop through paths getting user ids
 			List paths = m_pathStorage.getAllOfTypeForLetter(type, letter);
 			for (int i = 0; i < paths.size(); i++)
 			{
-				path = (CandidatePath)paths.get(i);
 				try
 				{
-					//path.getCandidate() returns User id
-					User student = UserDirectoryService.getUser(path.getCandidate());
-					sortName = student.getSortName();
-					if(sortName.startsWith(letter.toUpperCase()) || sortName.startsWith(letter.toLowerCase()))
-					{
-						retVal.add(student);
-					}
+					path = (CandidatePath)paths.get(i);
 				}
-				catch (UserNotDefinedException e) {}
-			}
+				catch(Exception e)
+				{
+					//log it and continue
+					if(m_logger.isWarnEnabled())
+						m_logger.warn(this + ".getSortedUsersOfTypeForLetter: skipping path and continuing. " + e);
+					continue;
+				}
+				if(path == null)
+				{
+					//log it and continue
+					if(m_logger.isWarnEnabled())
+						m_logger.warn(this + ".getSortedUsersOfTypeForLetter: path = null, skipping path.");
+					continue;
+				}
+				try
+				{
+					userId = path.getCandidate();
+				}
+				catch (Exception e)
+				{
+					//log it and continue
+					if(m_logger.isWarnEnabled())
+						m_logger.warn(this + ".getSortedUsersOfTypeForLetter: skipping path '" + path.getId() + "'. " + e);
+					continue;
+				}
+				if(userId == null || userId.equals(""))
+				{
+					//log it and continue
+					if(m_logger.isWarnEnabled())
+						m_logger.warn(this + ".getSortedUsersOfTypeForLetter: skipping path '" + path.getId() + "' userId is null or empty.");
+					continue;	
+				}
+				try
+				{
+					student = UserDirectoryService.getUser(userId);
+				}
+				catch (UserNotDefinedException e) 
+				{
+					//log it and continue
+					if(m_logger.isWarnEnabled())
+						m_logger.warn(this + ".getSortedUsersOfTypeForLetter: for userId '" + userId + "' path '" + path.getId() + "'. " + e);
+					continue;
+				}
+				catch(Exception e)
+				{
+					//log it and continue
+					if(m_logger.isWarnEnabled())
+						m_logger.warn(this + ".getSortedUsersOfTypeForLetter: student = UserDirectoryService.getUser(path.getCandidate()) " + 
+								"for userId '" + userId + "' path '" + path.getId() + "'. " + e);
+					continue;
+				}
+				if(student == null)
+				{
+					//log it and continue
+					if(m_logger.isWarnEnabled())
+						m_logger.warn(this + ".getSortedUsersOfTypeForLetter: User is null," +
+								"for userId '" + userId + "' path '" + path.getId() + "'.");
+					continue;
+				}
+				try
+				{
+					sortName = student.getSortName();
+				}
+				catch(Exception e)
+				{
+					//log it and continue
+					if(m_logger.isWarnEnabled())
+						m_logger.warn(this + ".getSortedUsersOfTypeForLetter: getting sortName " +
+								"for userId '" + userId + "' path '" + path.getId() + "'. " + e);
+					continue;
+				}
+				if(sortName == null || sortName.equals(""))
+				{
+					//log it and continue
+					if(m_logger.isWarnEnabled())
+							m_logger.warn(this + ".getSortedUsersOfTypeForLetter: sortName is null or empty, "
+									+ "for userId '" + userId + "' path '" + path.getId() + "'.");
+					continue;
+				}
+				if(sortName.startsWith(letter.toUpperCase()) || sortName.startsWith(letter.toLowerCase()))
+				{
+					retVal.add(student);
+				}
+				else
+				{
+					//log it and continue
+					if(m_logger.isWarnEnabled())
+						m_logger.warn(this + ".getSortedUsersOfTypeForLetter: student '" + student.getDisplayName() + "' was skipped.");
+				}
+			}//end loop
 			if(retVal.size() > 1)
 				Collections.sort(retVal, new UserComparator());
+		}
+		catch (Exception e)
+		{
+			if(m_logger.isWarnEnabled())
+				m_logger.warn(this + ".getSortedUsersOfTypeForLetter: m_pathStorage.getAllOfTypeForLetter('" + type + "','" + letter + "')" + e);
 		}
 		return retVal;
 	}
