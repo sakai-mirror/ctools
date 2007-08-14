@@ -159,8 +159,9 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="SAK-10483.patch" />
     <applyPatch patchFileName="CT-231.patch" />
 
-    <!-- missing login logout images -->
+    <!-- missing login logout images  in 2.4.x as of 33991
     <applyPatch patchFileName="SAK-10498.patch" />
+    -->
 
     <!-- ====================================== -->
     <!-- 2.4.xB -->
@@ -200,8 +201,10 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="SAK-10810.patch" />
 
     <!-- patch default number of site tabs, and make it 
-    settable via sakai.properties -->
+    settable via sakai.properties 
+    subsumed by SAK-10394, SAK-10938, both now in 2.4.x
     <applyPatch patchFileName="SAK-10497.patch" />
+    -->
 
     <!-- gmt view submissions instead of clicking on assignment to submit -->
     <!-- in assignment post-2-4 as of revision r33315
