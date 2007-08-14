@@ -50,8 +50,9 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="SAK-10483.patch" />
     <applyPatch patchFileName="CT-231.patch" />
 
-    <!-- missing login logout images -->
+    <!-- missing login logout images 
     <applyPatch patchFileName="SAK-10498.patch" />
+    -->
 
     <!-- missing podcasts exception -->
     <!-- seems to be in 2.4.x as of 2007/07/23 
@@ -100,8 +101,9 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="SAK-10810.patch" />
 
     <!-- patch default number of site tabs, and make it 
-    settable via sakai.properties -->
+    settable via sakai.properties 
     <applyPatch patchFileName="SAK-10497.patch" />
+    -->
 
     <!-- gmt view submissions instead of clicking on assignment to submit -->
     <!-- does not patch 
