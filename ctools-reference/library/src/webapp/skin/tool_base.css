@@ -793,3 +793,22 @@ table.checkbox label input {
 	width: 18em;
 }
 
+/*messagecenter stuff*/
+.msgAdvSearch {
+	float:right;
+}
+.msgAdvSearch td{
+}
+.msgNav{
+float:right;
+text-align: right;
+white-space: nowrap;
+}
+.unreadMsg{
+font-weight: bold;
+}
+
+.bordered{
+	border: 1px solid #000000;
+	padding: 0.5em;
+}
