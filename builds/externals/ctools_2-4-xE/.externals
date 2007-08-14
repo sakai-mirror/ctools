@@ -75,11 +75,11 @@
  gmt/gmt -r10144 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
 # assignment -r31377 https://source.sakaiproject.org/svn/assignment/tags/pre_2-5-0_QA_001
 # assignment -r33315 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
- assignment -r33470 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
+ assignment -r33727 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
  # ctools
  ctools-apps -r33104 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
  ctools-providers -r33495 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
- ctools-reference -r33504 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
+ ctools-reference -r33961 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
  gradtools -r33104 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
 # ctools-libhelp https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
  ctools-libhelp -r33513 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
