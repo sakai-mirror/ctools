@@ -12,7 +12,7 @@
 # TTD:
 # - Why assume you are in the right directory?
 # - Better commit message necessary?
-
+set -x
 svn propset -F ./.externals svn:externals .
 svn propget svn:externals
 svn commit -m"Updated externals"
