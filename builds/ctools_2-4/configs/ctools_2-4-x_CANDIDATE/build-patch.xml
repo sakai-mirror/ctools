@@ -247,6 +247,8 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="SAK-11023.patch" />
     -->
 
+    <!-- add logging for gradtools production issue. -->
+    <applyPatch patchFileName="CT-288.patch" />
   </target>
 
 </project>
