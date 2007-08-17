@@ -29,7 +29,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
   -->
 
   <target name="applyPatches" 
-	  depends="applyPatches_2-4-xE" 
+	  depends="applyPatches_2-4-xE,loadtest" 
 	  />
 
 
@@ -243,11 +243,17 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
     <!-- change conncurrent hash map -->
     <!-- 
-	 did not patch cleanly. -->
+	 did not patch cleanly. 
     <applyPatch patchFileName="SAK-11023.patch" />
+    -->
 
     <!-- add logging for gradtools production issue. -->
     <applyPatch patchFileName="CT-288.patch" />
+  </target>
+
+  <target name="loadtest">
+    <!-- change concurrent hash map -->
+    <applyPatch patchFileName="SAK-11023.patch" />
   </target>
 
 </project>
