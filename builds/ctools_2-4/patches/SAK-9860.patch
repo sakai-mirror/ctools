@@ -1,0 +1,342 @@
+Index: user/user-impl/pack/src/webapp/WEB-INF/components.xml
+===================================================================
+--- user/user-impl/pack/src/webapp/WEB-INF/components.xml	(revision 34088)
++++ user/user-impl/pack/src/webapp/WEB-INF/components.xml	(revision 34089)
+@@ -34,6 +34,9 @@
+  		<property name="cacheCleanerMinutes"><value>15</value></property>
+  		<property name="caseSensitiveId"><value>false</value></property>
+  		<property name="separateIdEid"><value>true</value></property>
++ 		
++ 		<!-- This is s LRU cache managed by the memory service currently using ehcache -->
++ 		<property name="cache" ><ref bean="org.sakaiproject.user.api.UserDirectoryService.cache" /></property>
+ 
+         <property name="databaseBeans">
+            <map>
+@@ -98,5 +101,15 @@
+ 		<property name="failureThrottleTimeoutMs" value="120000" />
+ 	</bean>
+ 	
++	
++	<bean id="org.sakaiproject.user.api.UserDirectoryService.cache" 
++	     class="org.springframework.cache.ehcache.EhCacheFactoryBean">
++ 		<property name="cacheManager">
++    		<ref bean="org.sakaiproject.memory.api.MemoryService.cacheManager"/>
++  		</property>
++  		<property name="cacheName">
++    		<value>org.sakaiproject.user.api.UserDirectoryService</value>
++  		</property>
++	</bean>
+ 
+ </beans>
+svn diff -r34089:34090 https://source.sakaiproject.org/svn
+Index: memory/memory-api/api/src/java/org/sakaiproject/memory/api/ehcache.xml
+===================================================================
+--- memory/memory-api/api/src/java/org/sakaiproject/memory/api/ehcache.xml	(revision 0)
++++ memory/memory-api/api/src/java/org/sakaiproject/memory/api/ehcache.xml	(revision 34090)
+@@ -0,0 +1,93 @@
++<ehcache>
++
++    <!-- Sets the path to the directory where cache .data files are created.
++
++         If the path is a Java System Property it is replaced by
++         its value in the running VM.
++
++         The following properties are translated:
++         user.home - User's home directory
++         user.dir - User's current working directory
++         java.io.tmpdir - Default temp file path -->
++    <diskStore path="java.io.tmpdir"/>
++
++
++    <!--Default Cache configuration. These will applied to caches programmatically created through
++        the CacheManager.
++
++        The following attributes are required for defaultCache:
++
++        maxInMemory       - Sets the maximum number of objects that will be created in memory
++        eternal           - Sets whether elements are eternal. If eternal,  timeouts are ignored and the element
++                            is never expired.
++        timeToIdleSeconds - Sets the time to idle for an element before it expires.
++                            i.e. The maximum amount of time between accesses before an element expires
++                            Is only used if the element is not eternal.
++                            Optional attribute. A value of 0 means that an Element can idle for infinity
++        timeToLiveSeconds - Sets the time to live for an element before it expires.
++                            i.e. The maximum time between creation time and when an element expires.
++                            Is only used if the element is not eternal.
++                            Optional attribute. A value of 0 means that and Element can live for infinity
++        overflowToDisk    - Sets whether elements can overflow to disk when the in-memory cache
++                            has reached the maxInMemory limit.
++
++        -->
++    <defaultCache
++        maxElementsInMemory="10000"
++        eternal="false"
++        timeToIdleSeconds="300"
++        timeToLiveSeconds="300"
++        overflowToDisk="false"
++        />
++
++    <!--Predefined caches.  Add your cache configuration settings here.
++        If you do not have a configuration for your cache a WARNING will be issued when the
++        CacheManager starts
++
++        The following attributes are required for defaultCache:
++
++        name              - Sets the name of the cache. This is used to identify the cache. It must be unique.
++        maxInMemory       - Sets the maximum number of objects that will be created in memory
++        eternal           - Sets whether elements are eternal. If eternal,  timeouts are ignored and the element
++                            is never expired.
++        timeToIdleSeconds - Sets the time to idle for an element before it expires.
++                            i.e. The maximum amount of time between accesses before an element expires
++                            Is only used if the element is not eternal.
++                            Optional attribute. A value of 0 means that an Element can idle for infinity
++        timeToLiveSeconds - Sets the time to live for an element before it expires.
++                            i.e. The maximum time between creation time and when an element expires.
++                            Is only used if the element is not eternal.
++                            Optional attribute. A value of 0 means that an Element can live for infinity
++        overflowToDisk    - Sets whether elements can overflow to disk when the in-memory cache
++                            has reached the maxInMemory limit.
++
++        -->
++
++    <!-- Place configuration for your caches following -->
++
++    <cache 
++      name="org.hibernate.cache.UpdateTimestampsCache"
++      maxElementsInMemory="10000"
++      eternal="false"
++      timeToIdleSeconds="300"
++      timeToLiveSeconds="300"
++      overflowToDisk="false" />
++
++    <cache 
++      name="org.hibernate.cache.StandardQueryCache"
++      maxElementsInMemory="10000"
++      eternal="false"
++      timeToIdleSeconds="300"
++      timeToLiveSeconds="300"
++      overflowToDisk="false" />
++
++
++    <cache 
++      name="org.sakaiproject.user.api.UserDirectoryService"
++      maxElementsInMemory="10000"
++      eternal="false"
++      timeToIdleSeconds="300"
++      timeToLiveSeconds="300"
++      overflowToDisk="false" />
++
++</ehcache>
+
+Property changes on: memory/memory-api/api/src/java/org/sakaiproject/memory/api/ehcache.xml
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: memory/memory-impl/pack/src/webapp/WEB-INF/components.xml
+===================================================================
+--- memory/memory-impl/pack/src/webapp/WEB-INF/components.xml	(revision 34089)
++++ memory/memory-impl/pack/src/webapp/WEB-INF/components.xml	(revision 34090)
+@@ -16,4 +16,11 @@
+  		<property name="cacheLogging"><value>false</value></property>
+ 	</bean>
+ 
++
++	<bean id="org.sakaiproject.memory.api.MemoryService.cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
++  		<property name="configLocation">
++    	<value>classpath:org/sakaiproject/memory/api/ehcache.xml</value>
++  		</property>
++	</bean>
++
+ </beans>
+svn diff -r34094:34095 https://source.sakaiproject.org/svn
+Index: memory/memory-api/api/src/java/org/sakaiproject/memory/api/ehcache.xml
+===================================================================
+--- memory/memory-api/api/src/java/org/sakaiproject/memory/api/ehcache.xml	(revision 34094)
++++ memory/memory-api/api/src/java/org/sakaiproject/memory/api/ehcache.xml	(revision 34095)
+@@ -84,10 +84,10 @@
+ 
+     <cache 
+       name="org.sakaiproject.user.api.UserDirectoryService"
+-      maxElementsInMemory="10000"
++      maxElementsInMemory="100000"
+       eternal="false"
+-      timeToIdleSeconds="300"
+-      timeToLiveSeconds="300"
++      timeToIdleSeconds="7200"
++      timeToLiveSeconds="7200"
+       overflowToDisk="false" />
+ 
+ </ehcache>
+Index: user/user-impl/impl/src/java/org/sakaiproject/user/impl/DbUserService.java
+===================================================================
+--- user/user-impl/impl/src/java/org/sakaiproject/user/impl/DbUserService.java	(revision 33946)
++++ user/user-impl/impl/src/java/org/sakaiproject/user/impl/DbUserService.java	(working copy)
+@@ -27,6 +27,9 @@
+ import java.util.List;
+ import java.util.Vector;
+ 
++import net.sf.ehcache.Cache;
++import net.sf.ehcache.Element;
++
+ import org.apache.commons.logging.Log;
+ import org.apache.commons.logging.LogFactory;
+ import org.sakaiproject.db.api.SqlReader;
+@@ -38,6 +41,7 @@
+ import org.sakaiproject.util.StorageUser;
+ import org.sakaiproject.util.StringUtil;
+ 
++
+ /**
+  * <p>
+  * DbCachedUserService is an extension of the BaseUserService with a database storage backed up by an in-memory cache.
+@@ -119,6 +123,10 @@
+ 		m_autoDdl = new Boolean(value).booleanValue();
+ 	}
+ 
++
++    // add for eid<->id ehcache 
++    protected Cache cache = null;
++
+ 	/**********************************************************************************************************************************************************************************************************************************************************
+ 	 * Init and Destroy
+ 	 *********************************************************************************************************************************************************************************************************************************************************/
+@@ -179,6 +187,10 @@
+ 	 */
+ 	protected class DbStorage extends BaseDbFlatStorage implements Storage, SqlReader
+ 	{
++		private static final String EIDCACHE = "eid:";
++		private static final String IDCACHE = "id:";
++		private static final String CACHE_NAME = "DbUserService.DbStorage";
++		
+ 		/** A prior version's storage model. */
+ 		protected Storage m_oldStorage = null;
+ 
+@@ -476,7 +488,12 @@
+ 			fields[0] = id;
+ 			fields[1] = eid;
+ 
+-			return m_sql.dbWrite(statement, fields);
++			if ( m_sql.dbWrite(statement, fields) ) {
++				cache.put(new Element(IDCACHE+eid,id));
++				cache.put(new Element(EIDCACHE+id,eid));
++				return true;
++			}
++			return false;
+ 		}
+ 
+ 		/**
+@@ -505,6 +522,7 @@
+ 			// we have a mapping, is it what we want?
+ 			if (eidAlready.equals(eid)) return true;
+ 
++			// update the cache
+ 			// we have a mapping that needs to be updated
+ 			String statement = "update SAKAI_USER_ID_MAP set EID=? where USER_ID=?";
+ 
+@@ -512,7 +530,13 @@
+ 			fields[0] = eid;
+ 			fields[1] = id;
+ 
+-			return m_sql.dbWrite(statement, fields);
++			if ( m_sql.dbWrite(statement, fields) ) {
++			    cache.put(new Element(IDCACHE+eid,id));
++			    cache.put(new Element(EIDCACHE+id,eid));
++			    return true;
++			}
++			return false;
++			//return m_sql.dbWrite(statement, fields);
+ 		}
+ 
+ 		/**
+@@ -526,6 +550,13 @@
+ 			// if we are not doing separate id/eid, do nothing
+ 			if (!m_separateIdEid) return;
+ 
++			// clear both sides of the cache
++			String eid = checkMapForEid(id);
++			if ( eid != null ) {
++			    cache.remove(IDCACHE+eid);
++			}
++			cache.remove(EIDCACHE+id);
++
+ 			String statement = "delete from SAKAI_USER_ID_MAP where USER_ID=?";
+ 
+ 			Object fields[] = new Object[1];
+@@ -546,6 +577,14 @@
+ 			// if we are not doing separate id/eid, return the id
+ 			if (!m_separateIdEid) return id;
+ 
++
++			{
++			    Element e = cache.get(EIDCACHE+id);
++			    if ( e != null ) {
++				return (String) e.getObjectValue();
++			    }
++			}
++
+ 			String statement = "select EID from SAKAI_USER_ID_MAP where USER_ID=?";
+ 			Object fields[] = new Object[1];
+ 			fields[0] = id;
+@@ -554,12 +593,15 @@
+ 			if (rv.size() > 0)
+ 			{
+ 				String eid = (String) rv.get(0);
++				cache.put(new Element(EIDCACHE+id,eid));
+ 				return eid;
+ 			}
++			cache.put(new Element(EIDCACHE+id,null));
+ 
+ 			return null;
+ 		}
+ 
++
+ 		/**
+ 		 * Check the id -> eid mapping: lookup this eid and return the id if found
+ 		 * 
+@@ -572,6 +614,14 @@
+ 			// if we are not doing separate id/eid, do nothing
+ 			if (!m_separateIdEid) return eid;
+ 
++
++			{
++			    Element e = cache.get(IDCACHE+eid);
++			    if ( e != null ) {
++				return (String) e.getObjectValue();
++			    }
++			}
++
+ 			String statement = "select USER_ID from SAKAI_USER_ID_MAP where EID=?";
+ 			Object fields[] = new Object[1];
+ 			fields[0] = eid;
+@@ -580,10 +630,30 @@
+ 			if (rv.size() > 0)
+ 			{
+ 				String id = (String) rv.get(0);
++				cache.put(new Element(IDCACHE+eid,id));
+ 				return id;
+ 			}
+ 
++			cache.put(new Element(IDCACHE+eid,null));
+ 			return null;
+ 		}
++		
++
+ 	}
++
++	/**
++	 * @return the cache
++	 */
++	public Cache getCache()
++	{
++		return cache;
++	}
++
++	/**
++	 * @param cache the cache to set
++	 */
++	public void setCache(Cache cache)
++	{
++		this.cache = cache;
++	}
+ }
