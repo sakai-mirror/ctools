@@ -1,0 +1,121 @@
+svn diff -r33390:33391 https://source.sakaiproject.org/svn
+Index: metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java
+===================================================================
+--- metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java	(revision 33390)
++++ metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java	(revision 33391)
+@@ -56,6 +55,7 @@
+ import org.sakaiproject.site.cover.SiteService;
+ import org.sakaiproject.tool.api.Placement;
+ import org.sakaiproject.tool.api.ToolManager;
++import org.sakaiproject.tool.api.ToolSession;
+ import org.sakaiproject.tool.cover.SessionManager;
+ import org.sakaiproject.user.api.User;
+ import org.sakaiproject.user.cover.UserDirectoryService;
+@@ -1247,13 +1247,17 @@
+       try {
+          String viewLocation = "/group/PortfolioAdmin/system/formCreate.xslt";
+          StructuredArtifactDefinitionBean sadb = loadHome(type);
+-         if (sadb.getAlternateCreateXslt() != null) {
++         if (sadb == null) {
++            ToolSession toolSession = SessionManager.getCurrentToolSession();
++            sadb = (StructuredArtifactDefinitionBean)toolSession.getAttribute(SAD_SESSION_TAG);
++         }
++         if (sadb != null && sadb.getAlternateCreateXslt() != null) {
+             viewLocation = getContentHosting().resolveUuid(sadb.getAlternateCreateXslt().getValue());
+          }
+          
+          if (readOnly) {
+             viewLocation = "/group/PortfolioAdmin/system/formView.xslt";
+-            if (sadb.getAlternateViewXslt() != null) {
++            if (sadb != null && sadb.getAlternateViewXslt() != null) {
+                viewLocation = getContentHosting().resolveUuid(sadb.getAlternateViewXslt().getValue());
+             }
+          }
+Index: metaobj/metaobj-api/api/src/java/org/sakaiproject/metaobj/shared/mgt/StructuredArtifactDefinitionManager.java
+===================================================================
+--- metaobj/metaobj-api/api/src/java/org/sakaiproject/metaobj/shared/mgt/StructuredArtifactDefinitionManager.java	(revision 33390)
++++ metaobj/metaobj-api/api/src/java/org/sakaiproject/metaobj/shared/mgt/StructuredArtifactDefinitionManager.java	(revision 33391)
+@@ -39,6 +39,8 @@
+ 
+ public interface StructuredArtifactDefinitionManager {
+    public final static String GLOBAL_SAD_QUALIFIER = "theospi.share.sad.global";
++   public static final String SAD_SESSION_TAG =
++      "org.sakaiproject.metaobj.shared.control.AddStructuredArtifactDefinitionController.sad";
+ 
+    public Map getHomes();
+ 
+Index: metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/EditStructuredArtifactDefinitionController.java
+===================================================================
+--- metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/EditStructuredArtifactDefinitionController.java	(revision 33390)
++++ metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/EditStructuredArtifactDefinitionController.java	(revision 33391)
+@@ -29,6 +29,7 @@
+import org.sakaiproject.metaobj.shared.SharedFunctionConstants;
+import org.sakaiproject.metaobj.shared.ArtifactFinder;
+import org.sakaiproject.metaobj.shared.ArtifactFinderManager;
++import org.sakaiproject.metaobj.shared.mgt.StructuredArtifactDefinitionManager;
+import org.sakaiproject.metaobj.shared.model.PersistenceException;
+import org.sakaiproject.metaobj.shared.model.StructuredArtifactDefinitionBean;
+import org.sakaiproject.metaobj.shared.model.StructuredArtifact;
+@@ -43,8 +44,8 @@
+    private SecurityService securityService;
+ 
+    public Object fillBackingObject(Object incomingModel, Map request, Map session, Map application) throws Exception {
+-      if (session.get(SAD_SESSION_TAG) != null) {
+-         return session.remove(SAD_SESSION_TAG);
++      if (session.get(StructuredArtifactDefinitionManager.SAD_SESSION_TAG) != null) {
++         return session.remove(StructuredArtifactDefinitionManager.SAD_SESSION_TAG);
+       }
+ 
+       StructuredArtifactDefinitionBean home = (StructuredArtifactDefinitionBean) incomingModel;
+Index: metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/AddStructuredArtifactDefinitionController.java
+===================================================================
+--- metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/AddStructuredArtifactDefinitionController.java	(revision 33390)
++++ metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/AddStructuredArtifactDefinitionController.java	(revision 33391)
+@@ -36,6 +36,7 @@
+ import org.sakaiproject.metaobj.security.AuthorizationFailedException;
+ import org.sakaiproject.metaobj.shared.SharedFunctionConstants;
+ import org.sakaiproject.metaobj.shared.FormHelper;
++import org.sakaiproject.metaobj.shared.mgt.StructuredArtifactDefinitionManager;
+ import org.sakaiproject.metaobj.shared.model.Id;
+ import org.sakaiproject.metaobj.shared.model.PersistenceException;
+ import org.sakaiproject.metaobj.shared.model.StructuredArtifactDefinitionBean;
+@@ -53,8 +54,8 @@
+ public class AddStructuredArtifactDefinitionController extends AbstractStructuredArtifactDefinitionController
+       implements CustomCommandController, FormController, LoadObjectController {
+ 
+-   protected static final String SAD_SESSION_TAG =
+-         "org.sakaiproject.metaobj.shared.control.AddStructuredArtifactDefinitionController.sad";
++   //protected static final String SAD_SESSION_TAG =
++   //      "org.sakaiproject.metaobj.shared.control.AddStructuredArtifactDefinitionController.sad";
+    private SessionManager sessionManager;
+    private ContentHostingService contentHosting;
+ 
+@@ -69,8 +70,8 @@
+    }
+ 
+    public Object fillBackingObject(Object incomingModel, Map request, Map session, Map application) throws Exception {
+-      if (session.get(SAD_SESSION_TAG) != null) {
+-         return session.remove(SAD_SESSION_TAG);
++      if (session.get(StructuredArtifactDefinitionManager.SAD_SESSION_TAG) != null) {
++         return session.remove(StructuredArtifactDefinitionManager.SAD_SESSION_TAG);
+       }
+       else {
+          return incomingModel;
+@@ -85,7 +86,7 @@
+             StructuredArtifactDefinitionValidator.PICK_TRANSFORM_ACTION.equals(sad.getFilePickerAction()) ||
+             StructuredArtifactDefinitionValidator.PICK_ALTCREATEXSLT_ACTION.equals(sad.getFilePickerAction()) ||
+             StructuredArtifactDefinitionValidator.PICK_ALTVIEWXSLT_ACTION.equals(sad.getFilePickerAction())) {
+-         session.put(SAD_SESSION_TAG, sad);
++         session.put(StructuredArtifactDefinitionManager.SAD_SESSION_TAG, sad);
+          
+          //set the filter for xsl files since it is 3 out of 4 cases
+          session.put(FilePickerHelper.FILE_PICKER_RESOURCE_FILTER,
+@@ -146,7 +147,7 @@
+       }
+ 
+       if ("preview".equals(request.get("previewAction"))) {
+-         session.put(SAD_SESSION_TAG, sad);
++         session.put(StructuredArtifactDefinitionManager.SAD_SESSION_TAG, sad);
+          session.put(FormHelper.PREVIEW_HOME_TAG, sad);
+          return new ModelAndView("preview");
+       }
