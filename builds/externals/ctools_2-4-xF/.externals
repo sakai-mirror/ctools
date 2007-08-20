@@ -69,8 +69,8 @@
 # contrib tools
  ambrosia -r9369 https://source.sakaiproject.org/contrib/muse/ambrosia/tags/0.5.0
  mneme -r9612 https://source.sakaiproject.org/contrib/muse/mneme/tags/0.5.3
-# itunes -r10436 https://source.sakaiproject.org/contrib/umctx/tags/sakai_2-4-0
- itunes -r11218 https://source.sakaiproject.org/contrib/umctx/tags/sakai-post-2-4-WS-Maven1/itunesu-tool
+ itunes -r10436 https://source.sakaiproject.org/contrib/umctx/tags/sakai_2-4-0
+# itunes -r11218 https://source.sakaiproject.org/contrib/umctx/tags/sakai-post-2-4-WS-Maven1/itunesu-tool
  config-viewer -r10021 https://source.sakaiproject.org/contrib/config-viewer/branches/config-viewer-2.4.x
  # special gmt handling for gmt / assignment integration
  gmt/gmt -r10144 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
