@@ -249,6 +249,11 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
     <!-- add logging for gradtools production issue. -->
     <applyPatch patchFileName="CT-288.patch" />
+
+
+    <!-- 2.4.xG -->
+    <!-- Previewing a form during form creation cause a runtime error -->
+    <applyPatch patchFileName="SAK-10953.patch" />
   </target>
 
 </project>
