@@ -20,12 +20,12 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
        applied.  If this doesn't fit particular circumstances (e.g. an
        earlier patch is retracted) please add a comment.
 
-    EXPERIMENT:
-    duplicate prior patches in a new patch level target as they may be
-    non-monotonic.  Later releases of 2.4.x can fix earlier problems. Since 
-    the earlier patch targets won't be right anylonger because of that there
-    is little point in depending on them.
-       
+EXPERIMENT:
+duplicate prior patches in a new patch level target as they may be
+non-monotonic.  Later releases of 2.4.x can fix earlier problems. Since 
+the earlier patch targets won't be right anylonger because of that there
+is little point in depending on them.
+
   -->
 
   <target name="applyPatches" 
@@ -40,7 +40,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
 
   <target name="noPatches" > 
-   <echo>No patches to apply.</echo>
+    <echo>No patches to apply.</echo>
   </target>
 
 
@@ -89,7 +89,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
     <!-- assignment tool Word file corruption -->
     <!-- in assignment post-2-4 as of r3315 
-    <applyPatch patchFileName="SAK-10683.patch" />
+	 <applyPatch patchFileName="SAK-10683.patch" />
     -->
     <!-- in 2.4.x as of 2007/07/23 
 	 <applyPatch patchFileName="SAK-8449.patch" />
@@ -102,18 +102,18 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <echo message="applying patch set 2-4-xC" />
 
     <!-- ct-225 will have the right bschool sakai.properties configuration by
-    virtue of using later ctools-reference revision. -->
+	 virtue of using later ctools-reference revision. -->
 
     <!-- home grown patch for rss _blank in library reserves. -->
     <applyPatch patchFileName="SAK-10810.patch" />
 
     <!-- patch default number of site tabs, and make it 
-    settable via sakai.properties -->
+	 settable via sakai.properties -->
     <applyPatch patchFileName="SAK-10497.patch" />
 
     <!-- gmt view submissions instead of clicking on assignment to submit -->
     <!-- in assignment post-2-4 as of revision r33315
-    <applyPatch patchFileName="SAK-10252.patch" />
+	 <applyPatch patchFileName="SAK-10252.patch" />
     -->
 
   </target>
@@ -128,7 +128,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="SAK-10939.patch" />
 
     <!-- doesn't patch cleanly
-    <applyPatch patchFileName="SAK-10953.patch" />
+	 <applyPatch patchFileName="SAK-10953.patch" />
     -->
 
     <!-- cannot add roster via site info -->
@@ -138,7 +138,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="SAK-10997.patch" />
 
     <!-- doesn't patch cleanly 
-    <applyPatch patchFileName="SAK-10419.patch" />
+	 <applyPatch patchFileName="SAK-10419.patch" />
     -->
 
   </target>
@@ -160,7 +160,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="CT-231.patch" />
 
     <!-- missing login logout images  in 2.4.x as of 33991
-    <applyPatch patchFileName="SAK-10498.patch" />
+	 <applyPatch patchFileName="SAK-10498.patch" />
     -->
 
     <!-- ====================================== -->
@@ -185,7 +185,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
     <!-- assignment tool Word file corruption -->
     <!-- in assignment post-2-4 as of r3315 
-    <applyPatch patchFileName="SAK-10683.patch" />
+	 <applyPatch patchFileName="SAK-10683.patch" />
     -->
     <!-- in 2.4.x as of 2007/07/23 
 	 <applyPatch patchFileName="SAK-8449.patch" />
@@ -195,21 +195,21 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
     <!-- 2.4.xC -->
     <!-- ct-225 will have the right bschool sakai.properties configuration by
-    virtue of using later ctools-reference revision. -->
+	 virtue of using later ctools-reference revision. -->
 
     <!-- home grown patch for rss _blank in library reserves. -->
     <applyPatch patchFileName="SAK-10810.patch" />
 
     <!-- patch default number of site tabs, and make it 
-    settable via sakai.properties 
-    subsumed by SAK-10394, SAK-10938, both now in 2.4.x (WRONG)
+	 settable via sakai.properties 
+	 subsumed by SAK-10394, SAK-10938, both now in 2.4.x (WRONG)
     -->
     <applyPatch patchFileName="SAK-10497.patch" />
 
 
     <!-- gmt view submissions instead of clicking on assignment to submit -->
     <!-- in assignment post-2-4 as of revision r33315
-    <applyPatch patchFileName="SAK-10252.patch" />
+	 <applyPatch patchFileName="SAK-10252.patch" />
     -->
 
     <!-- ====================================== -->
@@ -222,7 +222,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <applyPatch patchFileName="SAK-10939.patch" />
 
     <!-- doesn't patch cleanly
-    <applyPatch patchFileName="SAK-10953.patch" />
+	 <applyPatch patchFileName="SAK-10953.patch" />
     -->
 
     <!-- cannot add roster via site info -->
@@ -230,11 +230,11 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
 
     <!-- Changed point value in assignments doesn't show up changed in Gbook -->
     <!--
-    <applyPatch patchFileName="SAK-10997.patch" />
+	<applyPatch patchFileName="SAK-10997.patch" />
     -->
 
     <!-- doesn't patch cleanly 
-    <applyPatch patchFileName="SAK-10419.patch" />
+	 <applyPatch patchFileName="SAK-10419.patch" />
     -->
 
     <!-- ====================================== -->
@@ -244,7 +244,7 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <!-- change conncurrent hash map -->
     <!-- 
 	 did not patch cleanly.
-    <applyPatch patchFileName="SAK-11023.patch" />
+	 <applyPatch patchFileName="SAK-11023.patch" />
     -->
 
     <!-- add logging for gradtools production issue. -->
@@ -254,6 +254,13 @@ Apply patches to the code.  This is used to avoid having to have a UMich specifi
     <!-- 2.4.xG -->
     <!-- Previewing a form during form creation cause a runtime error -->
     <applyPatch patchFileName="SAK-10953.patch" />
+
+
+    <!-- assignments / grading -draft -->
+    <!--
+    <applyPatch patchFileName="SAK-11027.patch" />
+    -->
+
   </target>
 
 </project>
