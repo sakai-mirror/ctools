@@ -76,7 +76,9 @@
  gmt/gmt -r10144 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
 # assignment -r31377 https://source.sakaiproject.org/svn/assignment/tags/pre_2-5-0_QA_001
 # assignment -r33315 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
- assignment -r33727 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
+# assignment -r33727 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
+# fix for bad vm file name SAK-11232
+ assignment -r34247 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
  # ctools
  ctools-apps -r33104 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
  ctools-providers -r33495 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
