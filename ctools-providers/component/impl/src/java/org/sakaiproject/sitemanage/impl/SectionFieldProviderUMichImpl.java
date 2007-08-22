@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers/component/impl/src/java/org/sakaiproject/sitemanage/impl/SectionFieldManagerImpl.java $
- * $Id: SectionFieldManagerImpl.java 31306 2007-06-01 18:31:16Z zqian@umich.edu $
+ * $HeadURL:  $
+ * $Id:  $
  ***********************************************************************************
  *
  * Copyright (c) 2007 The Sakai Foundation.
@@ -27,12 +27,12 @@ import java.util.Hashtable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.sitemanage.api.SectionField;
-import org.sakaiproject.sitemanage.api.SectionFieldManager;
+import org.sakaiproject.sitemanage.api.SectionFieldProvider;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.util.api.umiac.UmiacClient;
 
-public class SectionFieldManagerUMichImpl implements SectionFieldManager {
-	private static final Log log = LogFactory.getLog(SectionFieldManagerUMichImpl.class);
+public class SectionFieldProviderUMichImpl implements SectionFieldProvider {
+	private static final Log log = LogFactory.getLog(SectionFieldProviderUMichImpl.class);
 
 	/**
 	 * Dependency: UmiacClient.

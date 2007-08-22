@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>sakai-ctools-providers-base</artifactId>
+    <groupId>org.sakaiproject</groupId>
+    <version>M2</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+  
+  <name>sakai-ctools-providers-components</name>
+  
+  <groupId>org.sakaiproject</groupId>
+  
+  <artifactId>ctools-providers-pack</artifactId>
+  
+  <organization>
+    <name>University of Michigan</name>
+    <url>http://sakaiproject.org/</url>
+  </organization>
+  
+  <inceptionYear>2003</inceptionYear>
+  
+  <packaging>sakai-component</packaging>
+  
+  <properties>
+    <deploy.target>components</deploy.target>
+  </properties>
+  
+  <dependencies>
+    <dependency>
+		<groupId>org.sakaiproject</groupId>
+		<artifactId>sakai-ctools-providers-impl</artifactId>
+		<version>${sakai.version}</version>
+	</dependency>
+  </dependencies>
+  
+  <build>
+	<!-- java source -->
+	<sourceDirectory>src/java</sourceDirectory>
+  </build>
+  
+</project>
