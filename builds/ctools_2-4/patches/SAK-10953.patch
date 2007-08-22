@@ -49,13 +49,13 @@ Index: metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/co
 --- metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/EditStructuredArtifactDefinitionController.java	(revision 33390)
 +++ metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/EditStructuredArtifactDefinitionController.java	(revision 33391)
 @@ -29,6 +29,7 @@
-import org.sakaiproject.metaobj.shared.SharedFunctionConstants;
-import org.sakaiproject.metaobj.shared.ArtifactFinder;
-import org.sakaiproject.metaobj.shared.ArtifactFinderManager;
+ import org.sakaiproject.metaobj.shared.SharedFunctionConstants;
+ import org.sakaiproject.metaobj.shared.ArtifactFinder;
+ import org.sakaiproject.metaobj.shared.ArtifactFinderManager;
 +import org.sakaiproject.metaobj.shared.mgt.StructuredArtifactDefinitionManager;
-import org.sakaiproject.metaobj.shared.model.PersistenceException;
-import org.sakaiproject.metaobj.shared.model.StructuredArtifactDefinitionBean;
-import org.sakaiproject.metaobj.shared.model.StructuredArtifact;
+ import org.sakaiproject.metaobj.shared.model.PersistenceException;
+ import org.sakaiproject.metaobj.shared.model.StructuredArtifactDefinitionBean;
+ import org.sakaiproject.metaobj.shared.model.StructuredArtifact;
 @@ -43,8 +44,8 @@
     private SecurityService securityService;
  
