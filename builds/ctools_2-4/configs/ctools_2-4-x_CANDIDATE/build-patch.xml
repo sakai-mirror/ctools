@@ -256,10 +256,24 @@ is little point in depending on them.
     <applyPatch patchFileName="SAK-10953.patch" />
 
 
-    <!-- assignments / grading -draft -->
+    <!-- assignments / grading -draft will be done in post-2.4 -->
     <!--
     <applyPatch patchFileName="SAK-11027.patch" />
     -->
+
+    <!-- not clean patch yet 
+    <applyPatch patchFileName="SAK-10419.patch" />
+    -->
+
+    <!--  Data truncated for column 'RESOURCE_ID' -->
+    <applyPatch patchFileName="SAK-10752.patch" />
+
+    <!--  Assignments / reordering of assignments -->
+    <applyPatch patchFileName="SAK-11016.patch" />
+
+    <!--  Skip to Add Course(s) lookup page -->
+    <applyPatch patchFileName="SAK-10575.patch" />
+
 
   </target>
 
