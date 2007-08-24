@@ -41,6 +41,7 @@ $Id$
     <tool id = "sakai.assignment" />
     <tool id = "sakai.assignment.grades" />
     <tool id = "sakai.samigo" />
+    <tool id = "sakai.mneme" />
     <tool id = "sakai.poll" />
     <tool id = "sakai.gradebook.tool" />
     <tool id = "sakai.postem" />
@@ -100,9 +101,8 @@ $Id$
     <tool id = "sakai.assignment" />
     <tool id = "sakai.assignment.grades" />
     <tool id = "sakai.samigo" />
-    <tool id = "sakai.poll" />
-    <tool id = "sakai.mneme.test" />
     <tool id = "sakai.mneme" />
+    <tool id = "sakai.poll" />
     <tool id = "sakai.gradebook.tool" />
     <tool id = "sakai.postem" />
     <tool id = "sakai.dropbox" />
@@ -162,9 +162,8 @@ $Id$
     <tool id = "sakai.assignment" />
     <tool id = "sakai.assignment.grades" />
     <tool id = "sakai.samigo" />
-    <tool id = "sakai.poll" />
-    <tool id = "sakai.mneme.test" />
     <tool id = "sakai.mneme" />
+    <tool id = "sakai.poll" />
     <tool id = "sakai.gradebook.tool" />
     <tool id = "sakai.postem" />
     <tool id = "sakai.dropbox" />
