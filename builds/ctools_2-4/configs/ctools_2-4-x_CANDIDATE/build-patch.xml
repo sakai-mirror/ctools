@@ -274,6 +274,18 @@ is little point in depending on them.
     <!--  Skip to Add Course(s) lookup page -->
     <applyPatch patchFileName="SAK-10575.patch" />
 
+    <!--  Odd flow updates only first user in grade list -->
+    <applyPatch patchFileName="SAK-10823.patch" />
+
+    <!--  Reordering Resources changes the Modified date for all items 
+    <applyPatch patchFileName="SAK-7585.patch" />
+    not easy to patch
+    --> 
+
+    <!-- Problem uploading grades.csv file for non-electronic assignment -->
+    <!-- not easy to patch 
+    <applyPatch patchFileName="SAK-11215.patch" />
+    -->
 
   </target>
 
