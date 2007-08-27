@@ -242,10 +242,7 @@ is little point in depending on them.
     <!-- 2.4.xE -->
 
     <!-- change conncurrent hash map -->
-    <!-- 
-	 did not patch cleanly.
 	 <applyPatch patchFileName="SAK-11023.patch" />
-    -->
 
     <!-- add logging for gradtools production issue. -->
     <applyPatch patchFileName="CT-288.patch" />
