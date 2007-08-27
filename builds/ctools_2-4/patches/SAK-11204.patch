@@ -49,25 +49,6 @@ Index: calendar/calendar-impl/impl/src/java/org/sakaiproject/calendar/impl/BaseC
  			// filter out based on the filter
  			if (filter != null)
  			{
-@@ -4715,11 +4706,16 @@
- 		public boolean checkEvent(Calendar calendar, String eventId);
- 
- 		/**
--		 * Get the events from a calendar (within this time range, or all if null)
-+		 * Get all events from a calendar
- 		 */
- 		public List getEvents(Calendar calendar);
- 
- 		/**
-+		 * Get the events from a calendar, within this time range
-+		 */
-+		public List getEvents(Calendar calendar, String startDate, String endDate);
-+      
-+		/**
- 		 * Make and lock a new event.
- 		 */
- 		public CalendarEventEdit putEvent(Calendar calendar, String id);
-
 Index: calendar/calendar-impl/impl/src/sql/mysql/SAK-11204.sql
 ===================================================================
 --- calendar/calendar-impl/impl/src/sql/mysql/SAK-11204.sql	(revision 0)
