@@ -10,7 +10,8 @@
  calendar -r34389 https://source.sakaiproject.org/svn/calendar/branches/sakai_2-4-x
  chat -r34389 https://source.sakaiproject.org/svn/chat/branches/sakai_2-4-x
 # citations -r34389 https://source.sakaiproject.org/svn/citations/branches/sakai_2-4-x
-citations -r34390 https://source.sakaiproject.org/svn/citations/branches/post-2-4
+# using special version of citations.  see below.
+
  cluster -r34389 https://source.sakaiproject.org/svn/cluster/branches/sakai_2-4-x
  component -r34389 https://source.sakaiproject.org/svn/component/branches/sakai_2-4-x
  content -r34389 https://source.sakaiproject.org/svn/content/branches/sakai_2-4-x
@@ -67,6 +68,8 @@ citations -r34390 https://source.sakaiproject.org/svn/citations/branches/post-2-
  mailtool -r34389 https://source.sakaiproject.org/svn/mailtool/branches/sakai_2-4-x
  usermembership -r34389 https://source.sakaiproject.org/svn/usermembership/branches/sakai_2-4-x
  polls -r34389 https://source.sakaiproject.org/svn/polls/branches/sakai_2-4-x
+## Not your normal svn source directories.
+ citations -r34390 https://source.sakaiproject.org/svn/citations/branches/post-2-4
 # contrib tools
  ambrosia -r9369 https://source.sakaiproject.org/contrib/muse/ambrosia/tags/0.5.0
  mneme -r9612 https://source.sakaiproject.org/contrib/muse/mneme/tags/0.5.3
