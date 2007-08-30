@@ -197,8 +197,9 @@ is little point in depending on them.
     <!-- ct-225 will have the right bschool sakai.properties configuration by
 	 virtue of using later ctools-reference revision. -->
 
-    <!-- home grown patch for rss _blank in library reserves. -->
-    <applyPatch patchFileName="SAK-10810.patch" />
+    <!-- home grown patch for rss _blank in library reserves. 
+    combined with SAK-10338 below. -->
+    <!-- <applyPatch patchFileName="SAK-10810.patch" /> -->
 
     <!-- patch default number of site tabs, and make it 
 	 settable via sakai.properties 
@@ -294,6 +295,9 @@ is little point in depending on them.
 
     <!--   Spurious presence events -->
     <applyPatch patchFileName="SAK-11279.patch" />
+
+    <!-- receiving an alert message when editing text that contains an https link in the WYSIWYG -->
+    <applyPatch patchFileName="SAK-10338-10810.patch" />
 
   </target>
 
