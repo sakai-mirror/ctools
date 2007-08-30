@@ -287,6 +287,7 @@ is little point in depending on them.
     <!-- Schedule (frequency not working) -->
     <!-- patch has handwork -->
     <applyPatch patchFileName="SAK-11204.patch" />
+    <applyPatch patchFileName="SAK-11204B.patch" />
 
     <!--  Default chat room setting affects all chat tools on single site -->
     <applyPatch patchFileName="SAK-10163.patch" />
