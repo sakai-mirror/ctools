@@ -299,6 +299,9 @@ is little point in depending on them.
     <!-- receiving an alert message when editing text that contains an https link in the WYSIWYG -->
     <applyPatch patchFileName="SAK-10338-10810.patch" />
 
+    <!-- dropbox -->
+    <applyPatch patchFileName="SAK-10108.patch" />
+
   </target>
 
 </project>
