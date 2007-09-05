@@ -302,6 +302,9 @@ is little point in depending on them.
     <!-- dropbox -->
     <applyPatch patchFileName="SAK-10108.patch" />
 
+    <!-- back out student assignment read logging -->
+    <applyPatch patchFileName="SAK-11180A.patch" />
+
   </target>
 
 </project>
