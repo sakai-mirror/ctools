@@ -84,3 +84,7 @@
  gradtools  https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
 # ctools-libhelp https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
  ctools-libhelp  https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
+# added per Dick Ellis for evaluation.
+evaluation https://source.sakaiproject.org/contrib/evaluation/trunk/
+entitybroker https://source.sakaiproject.org/contrib/caret/entitybroker/trunk/
+hierarchy https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
