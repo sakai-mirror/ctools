@@ -63,6 +63,11 @@ This doesn't supply the sakai.properties files you want to customize.
   <import file="./build-sitestats.xml" />
   <import file="./build-search.xml" />
   <import file="./build-rwiki.xml" />
+  <import file="./build-muse.xml" />
+  <import file="./build-assignment.xml" />
+  <import file="./build-config-viewer.xml" />
+  <import file="./build-gmt.xml" />
+  <import file="./build-chat.xml" />
   <import file="./build-ocw.xml" />
 
 
@@ -82,7 +87,7 @@ This doesn't supply the sakai.properties files you want to customize.
   <!-- customization targets -->
 
   <target name="getBuildTypeSrc"
-	  depends="extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc,getRwikiSrc,getOcwSrc"
+	  depends="extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc,getRwikiSrc,getMuseSrc,getAssignmentSrc,getConfig-ViewerSRc,getGmtSrc,getOcwSrc"
 	  description="get the source specific to the prod build" >
     <echo> melete.extract.skip = [${melete.extract.skip}]</echo>
     <echo> itunesu.install.skip = [${itunesu.install.skip}]</echo>
@@ -108,7 +113,7 @@ This doesn't supply the sakai.properties files you want to customize.
 
     <buildPropertiesFile instanceName="ctpilot" />
     <buildPropertiesFile instanceName="testctools" />
-    <buildPropertiesFile instanceName="ctpilot.testctools" />
+    <!-- <buildPropertiesFile instanceName="ctpilot.testctools" /> -->
     <buildPropertiesFile instanceName="localhost" />
     
   </target>
