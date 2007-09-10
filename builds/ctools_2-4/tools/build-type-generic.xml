@@ -103,6 +103,7 @@ createConfig - add dependencies to customize which instances have properties fil
     <buildPropertiesFileSimple instanceName="ctoolsload" />
     <buildPropertiesFileSimple instanceName="testctools" />
     <buildPropertiesFileSimple instanceName="localhost" />
+    <buildPropertiesFileSimple instanceName="ctpilot" />
     
   </target>
 

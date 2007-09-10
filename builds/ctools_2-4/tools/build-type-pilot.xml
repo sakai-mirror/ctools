@@ -68,7 +68,7 @@ This doesn't supply the sakai.properties files you want to customize.
   <import file="./build-config-viewer.xml" />
   <import file="./build-gmt.xml" />
   <import file="./build-chat.xml" />
-  <import file="./build-ocw.xml" />
+  <!-- <import file="./build-ocw.xml" /> -->
 
 
   <!-- ========================= -->
@@ -87,7 +87,7 @@ This doesn't supply the sakai.properties files you want to customize.
   <!-- customization targets -->
 
   <target name="getBuildTypeSrc"
-	  depends="extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc,getRwikiSrc,getMuseSrc,getAssignmentSrc,getConfig-ViewerSRc,getGmtSrc,getOcwSrc"
+	  depends="extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc,getRwikiSrc,getMuseSrc,getAssignmentSrc,getConfig-ViewerSrc,getGmtSrc"
 	  description="get the source specific to the prod build" >
     <echo> melete.extract.skip = [${melete.extract.skip}]</echo>
     <echo> itunesu.install.skip = [${itunesu.install.skip}]</echo>
@@ -108,14 +108,21 @@ This doesn't supply the sakai.properties files you want to customize.
     <removeFromBuild deleteDir="sam" />
   </target>
 
+  <!--
   <target name="createConfig" 
 	  description="Customize the properties files on an instance by instance basis.">
 
     <buildPropertiesFile instanceName="ctpilot" />
     <buildPropertiesFile instanceName="testctools" />
-    <!-- <buildPropertiesFile instanceName="ctpilot.testctools" /> -->
+    <!\-\- <buildPropertiesFile instanceName="ctpilot.testctools" /> \-\->
     <buildPropertiesFile instanceName="localhost" />
     
+  </target>
+  -->
+  <target name="printBuildInfo"
+	  depends="meleteInfo,itunesuInfo,sitestatsInfo,searchInfo,rwikiInfo,museInfo,assignmentInfo,config-ViewerInfo,gmtInfo,chatInfo"
+	  description="print information on the project versions." >
+
   </target>
 
   

@@ -199,13 +199,52 @@
       <arg value="-b" />
       <!-- <arg value="-X" /> -->
       <!--  sometimes need to avoid this with a new build, but usually speeds things up. -->
-      <arg value="-o" />
+      <!-- <arg value="-o" /> -->
 
       <arg value="sakai:clean" />
       <arg value="sakai:build" />
       <arg value="sakai:deploy-zip" />
-      <arg value="pack-src" />
+      <arg value="pack-src" /> 
     </exec>
+  </target>
+
+  <!--
+	<goal name="pack-src"  description="package the sakai source">
+
+		<zip destfile="sakai-src.zip" compress="yes" >
+			<zipfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" />
+		</zip>
+		<ant:echo>* * * sakai-src.zip</ant:echo>
+
+		<tar destfile="sakai-src.tar" longfile="gnu" >
+			<tarfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" />
+		</tar>
+		<gzip zipfile="sakai-src.tar.gz" src="sakai-src.tar"/>
+		<delete file="sakai-src.tar" />
+		<ant:echo>* * * sakai-src.tar.gz</ant:echo>
+
+	</goal>
+	-->
+
+  <!--
+  <defaultexcludes remove="**/*~"/>
+
+  (do several fileset based tasks here)
+
+  <defaultexcludes default="true"/>
+-->
+  <target name="packSource">
+    <defaultexcludes remove="**/.svn"/>
+    <defaultexcludes remove="**/.svn/**"/>
+    <tar destfile="sakai-src-svn.tar" longfile="gnu" >
+      <tarfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" 
+		  compression="gzip" />
+    </tar>
+    <!--
+    <gzip zipfile="sakai-src-svn.tar.gz" src="sakai-src-svn.tar"/>
+    <delete file="sakai-src-svn.tar" />
+    -->
+    <defaultexcludes default="true"/>
   </target>
 
 
