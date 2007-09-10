@@ -4,7 +4,6 @@
 
 $Id$
 $HeadURL$
-
 This should have nothing specific to a particular build type.
 
   -->
@@ -56,6 +55,11 @@ This should have nothing specific to a particular build type.
   <!-- There may be multiple targets to support multiple different build types. -->
   <!-- ========================= -->
 
+  <target name="buildCToolsImageNew" depends="prepare,getSource,applyPatches,editSource,compileSakai,buildImage,buildConfig,printBuildInfo"
+	  description="Build a ctools image based on the properties files specified.">
+    <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
+  </target>
+
   <target name="buildCToolsImage" depends="prepare,getSource,applyPatches,editSource,compileSakai,buildImage,buildConfig,printBuildInfo"
 	  description="Build a ctools image based on the properties files specified.">
     <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
@@ -64,6 +68,12 @@ This should have nothing specific to a particular build type.
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
   <!-- ========================= -->
+
+
+  <target name="updateSupportFiles"
+	  description="update the files that support the build process, not the source files themselves." >
+    <execSvnCmd url="${ctools.svnurl.apps}/ctools-apps" revision="${ctools.revision}"  destination="ctools-apps"/> 
+  </target>
 
 
   <!-- Update the configuration files -->
