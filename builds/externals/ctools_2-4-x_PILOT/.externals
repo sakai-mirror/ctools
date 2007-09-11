@@ -9,7 +9,8 @@
  blog  https://source.sakaiproject.org/svn/blog/branches/sakai_2-4-x
  calendar  https://source.sakaiproject.org/svn/calendar/branches/sakai_2-4-x
  chat  https://source.sakaiproject.org/svn/chat/branches/sakai_2-4-x
- citations  https://source.sakaiproject.org/svn/citations/branches/sakai_2-4-x
+# citations  https://source.sakaiproject.org/svn/citations/branches/sakai_2-4-x
+ citations  https://source.sakaiproject.org/svn/citations/branches/post-2-4
  cluster  https://source.sakaiproject.org/svn/cluster/branches/sakai_2-4-x
  component  https://source.sakaiproject.org/svn/component/branches/sakai_2-4-x
  content  https://source.sakaiproject.org/svn/content/branches/sakai_2-4-x
