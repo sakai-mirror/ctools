@@ -45,7 +45,7 @@ import org.sakaiproject.event.api.Event;
 //import org.sakaiproject.service.framework.log.cover.Logger;
 import org.sakaiproject.memory.api.Cache;
 import org.sakaiproject.memory.api.CacheRefresher;
-import org.sakaiproject.memory.cover.MemoryService;
+import org.sakaiproject.memory.cover.MemoryServiceLocator;
 import org.sakaiproject.user.api.UserEdit;
 import org.sakaiproject.util.api.umiac.UmiacClient;
 import org.sakaiproject.util.StringUtil;
@@ -107,7 +107,7 @@ public class UmiacClientImpl
 		}
 
 		// build a synchronized map for the call cache, automatiaclly checking for expiration every 15 mins.
-		m_callCache = MemoryService.newHardCache(this, 15 * 60);
+		m_callCache = MemoryServiceLocator.getInstance().newHardCache(this, 15 * 60);
 
 		if (M_instance == null)
 		{
