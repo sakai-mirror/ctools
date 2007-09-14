@@ -36,10 +36,12 @@ import org.sakaiproject.api.app.dissertation.CandidatePath;
 import org.sakaiproject.api.app.dissertation.CandidatePathEdit;
 import org.sakaiproject.api.app.dissertation.Dissertation;
 import org.sakaiproject.api.app.dissertation.DissertationEdit;
+//import org.sakaiproject.api.app.dissertation.DissertationService;
+import org.sakaiproject.api.app.dissertation.cover.DissertationService;
 import org.sakaiproject.api.app.dissertation.DissertationStep;
 import org.sakaiproject.api.app.dissertation.StepStatus;
 import org.sakaiproject.api.app.dissertation.StepStatusEdit;
-import org.sakaiproject.api.app.dissertation.cover.DissertationService;
+//import org.sakaiproject.api.app.dissertation.cover.DissertationService;
 import org.sakaiproject.cheftool.Context;
 import org.sakaiproject.cheftool.JetspeedRunData;
 import org.sakaiproject.cheftool.RunData;
@@ -49,19 +51,20 @@ import org.sakaiproject.cheftool.api.Menu;
 import org.sakaiproject.cheftool.api.MenuItem;
 import org.sakaiproject.cheftool.menu.MenuEntry;
 import org.sakaiproject.cheftool.menu.MenuImpl;
+import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.content.api.ContentResource;
-import org.sakaiproject.content.cover.ContentHostingService;
+//import org.sakaiproject.content.cover.ContentHostingService;
 import org.sakaiproject.event.api.SessionState;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.site.api.Site;
-import org.sakaiproject.site.cover.SiteService;
+//import org.sakaiproject.site.cover.SiteService;
 import org.sakaiproject.time.api.Time;
-import org.sakaiproject.time.cover.TimeService;
-import org.sakaiproject.tool.cover.ToolManager;
+//import org.sakaiproject.time.cover.TimeService;
+//import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserNotDefinedException;
-import org.sakaiproject.user.cover.UserDirectoryService;
+//import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.util.ParameterParser;
 
 /**
@@ -74,6 +77,28 @@ import org.sakaiproject.util.ParameterParser;
 public class DissertationAction
 	extends VelocityPortletPaneledAction
 {
+	private static final long serialVersionUID = 1L;
+
+	private org.sakaiproject.content.api.ContentHostingService contentHostingService =
+		(org.sakaiproject.content.api.ContentHostingService) ComponentManager.get(org.sakaiproject.content.api.ContentHostingService.class);
+	
+	private org.sakaiproject.site.api.SiteService siteService =
+		(org.sakaiproject.site.api.SiteService) ComponentManager.get(org.sakaiproject.site.api.SiteService.class);
+	
+	private org.sakaiproject.time.api.TimeService timeService = 
+		(org.sakaiproject.time.api.TimeService) ComponentManager.get(org.sakaiproject.time.api.TimeService.class);
+	
+	private org.sakaiproject.tool.api.ToolManager toolManager = 
+		(org.sakaiproject.tool.api.ToolManager) ComponentManager.get(org.sakaiproject.tool.api.ToolManager.class);
+	
+	private org.sakaiproject.user.api.UserDirectoryService userDirectoryService =
+		(org.sakaiproject.user.api.UserDirectoryService) ComponentManager.get(org.sakaiproject.user.api.UserDirectoryService.class);
+	
+	/*
+	private org.sakaiproject.api.app.dissertation.DissertationService DissertationService = 
+		(org.sakaiproject.api.app.dissertation.DissertationService) ComponentManager.get(org.sakaiproject.api.app.dissertation.DissertationService.class);
+	*/
+	
 	/** The state mode	*/
 	private static final String STATE_MODE = "Dissertation.mode";
 	
@@ -1686,7 +1711,7 @@ public class DissertationAction
 					statusEdit = null;
 					CandidatePath candidatePath = DissertationService.getCandidatePath((String)state.getAttribute(STATE_CURRENT_CANDIDATE_PATH_REFERENCE));
 					statusEdit = DissertationService.editStepStatus(stepStatusRefs[x]);
-					statusEdit.setTimeCompleted(TimeService.newTime());
+					statusEdit.setTimeCompleted(timeService.newTime());
 					statusEdit.setCompleted(true);
 					DissertationService.commitEdit(statusEdit);
 					state.setAttribute(STATE_CANDIDATE_PATH_TEMPLATE_STEPS, getTemplateSteps(candidatePath, state, true));
@@ -4038,7 +4063,7 @@ public class DissertationAction
 				{
 					candidatePath = DissertationService.getCandidatePath(pathRef);
 					statusEdit = DissertationService.editStepStatus(stepStatusRefs[x]);
-					statusEdit.setTimeCompleted(TimeService.newTime());
+					statusEdit.setTimeCompleted(timeService.newTime());
 					statusEdit.setCompleted(true);
 					DissertationService.commitEdit(statusEdit);
 					state.setAttribute(STATE_CANDIDATE_PATH_TEMPLATE_STEPS, getTemplateSteps(candidatePath, state, false));
@@ -4077,7 +4102,7 @@ public class DissertationAction
 					statusEdit = null;
 					CandidatePath candidatePath = DissertationService.getCandidatePathForCandidate((String)state.getAttribute(STATE_SELECTED_CANDIDATE_ID));
 					statusEdit = DissertationService.editStepStatus(stepStatusRefs[x]);
-					statusEdit.setTimeCompleted(TimeService.newTime());
+					statusEdit.setTimeCompleted(timeService.newTime());
 					statusEdit.setCompleted(true);
 					DissertationService.commitEdit(statusEdit);
 					state.setAttribute(STATE_CANDIDATE_PATH_TEMPLATE_STEPS, getTemplateSteps(candidatePath, state, false));
@@ -4127,7 +4152,7 @@ public class DissertationAction
 		if (currentSite==null)
 		{
 			//currentSite = PortalService.getCurrentSiteId();
-			currentSite = ToolManager.getCurrentPlacement().getContext();
+			currentSite = toolManager.getCurrentPlacement().getContext();
 			state.setAttribute(STATE_CURRENT_SITE, currentSite);
 		}
 		
@@ -4252,12 +4277,19 @@ public class DissertationAction
 			catch(IdUnusedException e)
 			{
 				if(Log.isWarnEnabled())
-					Log.warn("chef", this + ".doAlphabeticalChoice map emplid " + e);
+					Log.warn("chef", this + ".doAlphabeticalChoice map emplid for chefid '" + chefid + "' " + e);
+				continue;
 			}
 			catch(PermissionException e)
 			{
 				if(Log.isWarnEnabled())
-					Log.warn("chef", this + ".doAlphabeticalChoice map emplid " + e);
+					Log.warn("chef", this + ".doAlphabeticalChoice map emplid for chefid '" + chefid + "' "  + e);
+				continue;
+			}
+			catch(Exception e) {
+				if(Log.isWarnEnabled())
+					Log.warn("chef", this + ".doAlphabeticalChoice map emplid for chefid '" + chefid + "' "  + e);
+				continue;
 			}
 			allUsersEmplids.put(chefid,emplid);
 		}
@@ -4286,7 +4318,7 @@ public class DissertationAction
 			//moving to admin view candidate path mode
 			try
 			{
-				User selectedUser = UserDirectoryService.getUser(selectedCandidate);
+				User selectedUser = userDirectoryService.getUser(selectedCandidate);
 				String displayName = selectedUser.getDisplayName();
 				if(displayName == null)
 					displayName = "The candidate ";
@@ -4296,7 +4328,7 @@ public class DissertationAction
 					emplid = "";
 				state.setAttribute(STATE_SELECTED_CANDIDATE_EMPLID, emplid);
 				String siteId = DissertationService.getParentSiteForUser(selectedUser.getId());
-				Site site = SiteService.getSite(siteId);
+				Site site = siteService.getSite(siteId);
 				String groupDisplayName = site.getTitle();
 				if(groupDisplayName == null)
 					groupDisplayName = "";
@@ -4348,12 +4380,33 @@ public class DissertationAction
 	protected void initState(SessionState state, VelocityPortlet portlet, JetspeedRunData rundata)
 	{
 		super.initState(state, portlet, rundata);
-
+		
+		if(contentHostingService == null)
+			contentHostingService =
+				(org.sakaiproject.content.api.ContentHostingService) ComponentManager.get(org.sakaiproject.content.api.ContentHostingService.class);
+		if(siteService == null)	
+			siteService =
+				(org.sakaiproject.site.api.SiteService) ComponentManager.get(org.sakaiproject.site.api.SiteService.class);
+		if(timeService == null)
+			timeService =
+				(org.sakaiproject.time.api.TimeService) ComponentManager.get(org.sakaiproject.time.api.TimeService.class);
+		if(toolManager == null)
+			toolManager =
+				(org.sakaiproject.tool.api.ToolManager) ComponentManager.get(org.sakaiproject.tool.api.ToolManager.class);
+		if(userDirectoryService == null)	
+			userDirectoryService =
+				(org.sakaiproject.user.api.UserDirectoryService) ComponentManager.get(org.sakaiproject.user.api.UserDirectoryService.class);
+		/*
+		if(DissertationService == null)	
+			DissertationService =
+				(org.sakaiproject.api.app.dissertation.DissertationService) ComponentManager.get(org.sakaiproject.api.app.dissertation.DissertationService.class);
+		*/
+		
 		//this user
 		User currentUser = null;
 		if (state.getAttribute(STATE_USER) == null)
 		{
-			currentUser = UserDirectoryService.getCurrentUser();
+			currentUser = userDirectoryService.getCurrentUser();
 			state.setAttribute(STATE_USER, currentUser);
 		}
 		else
@@ -4384,13 +4437,13 @@ public class DissertationAction
 		if (state.getAttribute(STATE_CURRENT_SITE)==null)
 		{
 			//currentSite = PortalService.getCurrentSiteId();
-			currentSite = ToolManager.getCurrentPlacement().getContext();
+			currentSite = toolManager.getCurrentPlacement().getContext();
 			state.setAttribute(STATE_CURRENT_SITE, currentSite);
 			
 			//this department
 			try
 			{
-				deptSite = SiteService.getSite(currentSite);
+				deptSite = siteService.getSite(currentSite);
 				String fullName = deptSite.getTitle();
 				if(fullName == null)
 					fullName = "";
@@ -4617,7 +4670,7 @@ public class DissertationAction
 			try
 			{
 				//path.getCandidate() returns User id
-				candidate = UserDirectoryService.getUser(path.getCandidate());
+				candidate = userDirectoryService.getUser(path.getCandidate());
 			}
 			catch(UserNotDefinedException e)
 			{
@@ -5019,10 +5072,10 @@ public class DissertationAction
 		boolean retVal = false;
 		String id = null;
 		ContentResource resource = null;
-		id = ContentHostingService.getSiteCollection(ToolManager.getCurrentPlacement().getContext()) + SNAPSHOT_FILENAME;
+		id = contentHostingService.getSiteCollection(toolManager.getCurrentPlacement().getContext()) + SNAPSHOT_FILENAME;
 		try
 		{
-			resource = ContentHostingService.getResource(id);
+			resource = contentHostingService.getResource(id);
 		}
 		catch(IdUnusedException e)
 		{
@@ -5947,7 +6000,7 @@ public class DissertationAction
 		{
 			try
 			{
-				String sortName = UserDirectoryService.getUser(chefId).getSortName();
+				String sortName = userDirectoryService.getUser(chefId).getSortName();
 				if(sortName != null)
 				{
 					retVal = sortName.substring(0,1).toUpperCase();
@@ -5972,221 +6025,34 @@ public class DissertationAction
 	private Vector getLetters(String schoolSite, String site, String stepsType)
 	{
 		Vector retVal = new Vector();
+		String[] letters = new String[] {"A","B","C","D","E","F","G","H","I","J","K","L","M","N",
+				"O","P","Q","R","S","T","U","V","W","X","Y","Z"};
+		for(int i = 0; i < letters.length; i++) {
+			getLetter(letters[i],schoolSite, site, stepsType, retVal);
+		}
+		return retVal;
+	}
+
+	/**
+	 * Add a new LetterCarrier to the collection of LetterCarrier objects for a site.
+	 * @param letter
+	 * @param schoolSite
+	 * @param site
+	 * @param stepsType
+	 * @param retVal
+	 */
+	private void getLetter(String letter, String schoolSite, String site, String stepsType, Vector retVal) {
 		boolean hasMembers = false;
 		LetterCarrier aCarrier = null;
+		aCarrier = new LetterCarrier(letter);
+		if(site.equals(schoolSite))
+			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,letter);
+		else
+			hasMembers = DissertationService.isUserOfParentForLetter(site,letter);
 		
-		//TODO move to service
-		
-		aCarrier = new LetterCarrier("A");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"A");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"A");
 		aCarrier.setHasMembers(hasMembers);
 		retVal.add(aCarrier);
-
-		aCarrier = new LetterCarrier("B");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"B");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"B");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-
-		aCarrier = new LetterCarrier("C");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"C");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"C");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-
-		aCarrier = new LetterCarrier("D");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"D");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"D");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-
-		aCarrier = new LetterCarrier("E");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"E");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"E");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-
-		aCarrier = new LetterCarrier("F");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"F");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"F");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-
-		aCarrier = new LetterCarrier("G");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"G");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"G");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-
-		aCarrier = new LetterCarrier("H");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"H");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"H");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-
-		aCarrier = new LetterCarrier("I");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"I");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"I");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-
-		aCarrier = new LetterCarrier("J");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"J");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"J");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("K");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"K");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"K");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("L");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"L");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"L");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("M");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"M");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"M");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("N");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"N");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"N");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("O");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"O");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"O");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("P");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"P");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"P");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("Q");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"Q");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"Q");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("R");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"R");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"R");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("S");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"S");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"S");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("T");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"T");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"T");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("U");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"U");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"U");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("V");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"V");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"V");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("W");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"W");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"W");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("X");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"X");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"X");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("Y");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"Y");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"Y");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		
-		aCarrier = new LetterCarrier("Z");
-		if(site.equals(schoolSite))
-			hasMembers = DissertationService.isUserOfTypeForLetter(stepsType,"Z");
-		else
-			hasMembers = DissertationService.isUserOfParentForLetter(site,"Z");
-		aCarrier.setHasMembers(hasMembers);
-		retVal.add(aCarrier);
-		return retVal;
-		
-	} // getLetters
+	}
 	
 	
 	/**

@@ -54,23 +54,24 @@ import org.sakaiproject.cheftool.api.Menu;
 import org.sakaiproject.cheftool.api.MenuItem;
 import org.sakaiproject.cheftool.menu.MenuEntry;
 import org.sakaiproject.cheftool.menu.MenuImpl;
+import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.content.api.ContentResource;
 import org.sakaiproject.content.api.ContentResourceEdit;
-import org.sakaiproject.content.cover.ContentHostingService;
+//import org.sakaiproject.content.cover.ContentHostingService;
 import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.entity.api.ResourcePropertiesEdit;
 import org.sakaiproject.event.api.SessionState;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.site.api.Site;
-import org.sakaiproject.site.cover.SiteService;
+//import org.sakaiproject.site.cover.SiteService;
 import org.sakaiproject.thread_local.cover.ThreadLocalManager;
 import org.sakaiproject.time.api.Time;
-import org.sakaiproject.time.cover.TimeService;
+//import org.sakaiproject.time.cover.TimeService;
 import org.sakaiproject.tool.api.Session;
-import org.sakaiproject.tool.cover.SessionManager;
-import org.sakaiproject.tool.cover.ToolManager;
+//import org.sakaiproject.tool.cover.SessionManager;
+//import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.user.api.User;
-import org.sakaiproject.user.cover.UserDirectoryService;
+//import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.util.FileItem;
 import org.sakaiproject.util.ParameterParser;
 import org.sakaiproject.util.SortedIterator;
@@ -85,6 +86,26 @@ import org.sakaiproject.util.StringUtil;
 */
 public class DissertationUploadAction extends VelocityPortletPaneledAction
 {
+	private static final long serialVersionUID = 1L;
+	
+	private org.sakaiproject.content.api.ContentHostingService contentHostingService =
+		(org.sakaiproject.content.api.ContentHostingService) ComponentManager.get(org.sakaiproject.content.api.ContentHostingService.class);
+	
+	private org.sakaiproject.site.api.SiteService siteService =
+		(org.sakaiproject.site.api.SiteService) ComponentManager.get(org.sakaiproject.site.api.SiteService.class);
+	
+	private org.sakaiproject.time.api.TimeService timeService =
+		(org.sakaiproject.time.api.TimeService) ComponentManager.get(org.sakaiproject.time.api.TimeService.class);
+	
+	private org.sakaiproject.tool.api.ToolManager toolManager =
+		(org.sakaiproject.tool.api.ToolManager) ComponentManager.get(org.sakaiproject.tool.api.ToolManager.class);
+	
+	private org.sakaiproject.user.api.UserDirectoryService userDirectoryService =
+		(org.sakaiproject.user.api.UserDirectoryService) ComponentManager.get(org.sakaiproject.user.api.UserDirectoryService.class);
+	
+	private org.sakaiproject.tool.api.SessionManager sessionManager =
+		(org.sakaiproject.tool.api.SessionManager) ComponentManager.get(org.sakaiproject.tool.api.SessionManager.class);
+	
 	/** The state attributes */
 	private final static String  STATE_INITIALIZED = "initialized";
 	private final static String  STATE_ACTION = "DisserationUploadAction";
@@ -202,13 +223,13 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 
 		//is this the Rackham site?
 		//if(!DissertationService.getSchoolSite().equals(PortalService.getCurrentSiteId()))
-		if(!DissertationService.getSchoolSite().equals(ToolManager.getCurrentPlacement().getContext()))
+		if(!DissertationService.getSchoolSite().equals(toolManager.getCurrentPlacement().getContext()))
 		{
 			mode = MODE_SITEID_NOT_RACKHAM;
 		}
 		
 		//does this user have permission to update the Rackham site?
-		if(!SiteService.allowUpdateSite(DissertationService.getSchoolSite()))
+		if(!siteService.allowUpdateSite(DissertationService.getSchoolSite()))
 		{
 			mode = MODE_NO_UPLOAD_PERMISSION;
 		}
@@ -423,7 +444,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		{
 			try
 			{
-				Site site = SiteService.getSite(id);
+				Site site = siteService.getSite(id);
 			}
 			catch(IdUnusedException e)
 			{
@@ -792,12 +813,12 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		String fname = null;
 		String lname = null;
 		StringBuffer buf = null;
-		Time now = TimeService.newTime();
+		Time now = timeService.newTime();
 		List sections = getSectionHeads();
 		try
 		{
 			//path.getCandidate() returns User id
-			User candidate = UserDirectoryService.getUser(path.getCandidate());
+			User candidate = userDirectoryService.getUser(path.getCandidate());
 			if(candidate != null)
 			{
 				fname = candidate.getFirstName();
@@ -1009,10 +1030,10 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		//get the static checklist template
 		try
 		{
-			home = ContentHostingService.getSiteCollection(ToolManager.getCurrentPlacement().getContext());
+			home = contentHostingService.getSiteCollection(toolManager.getCurrentPlacement().getContext());
 			try
 			{
-				ContentHostingService.checkCollection(home);
+				contentHostingService.checkCollection(home);
 			}
 			catch(Exception e)
 			{
@@ -1020,7 +1041,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 					Log.warn("chef", this + ".getStaticTemplate checkCollection " + e);
 				return body;
 			}
-			ContentResource checklist = ContentHostingService.getResource(home + DissertationService.STATIC_CHECKLIST_TEMPLATE);
+			ContentResource checklist = contentHostingService.getResource(home + DissertationService.STATIC_CHECKLIST_TEMPLATE);
 			
 			// read the body
 			if (checklist.getContent () != null)
@@ -1450,14 +1471,14 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		byte[] results = buf.toString().getBytes();
 		try
 		{
-			edit = ContentHostingService.addResource("/group/rackham/duplicates.txt");
+			edit = contentHostingService.addResource("/group/rackham/duplicates.txt");
 			edit.setContent(results);
 			edit.setContentType("text/plain");
 			edit.setContentLength(results.length);
 			ResourcePropertiesEdit props = edit.getPropertiesEdit();
 			props.addProperty(ResourceProperties.PROP_DISPLAY_NAME,"Duplicate Steps");
 			props.addProperty(ResourceProperties.PROP_DESCRIPTION, "Duplicate Steps");
-			ContentHostingService.commitResource(edit);
+			contentHostingService.commitResource(edit);
 		}
 		catch(Exception e)
 		{
@@ -1465,7 +1486,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 			{
 				try
 				{
-					ContentHostingService.removeResource(edit);
+					contentHostingService.removeResource(edit);
 				}
 				catch(Exception ee)
 				{
@@ -1615,7 +1636,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		try
 		{
 			//path.getCandidate() returns User id
-			name = ((User)UserDirectoryService.getUser(path.getCandidate())).getDisplayName();
+			name = ((User)userDirectoryService.getUser(path.getCandidate())).getDisplayName();
 		}
 		catch(Exception e){}
 		
@@ -1712,7 +1733,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 				try
 				{
 					//currentSite = PortalService.getCurrentSiteId();
-					currentSite = ToolManager.getCurrentPlacement().getContext();
+					currentSite = toolManager.getCurrentPlacement().getContext();
 					edit = DissertationService.addBlockGrantGroup(currentSite);
 					edit.setCode(field.getGroupCode());
 					edit.setDescription(field.getGroupName());
@@ -2148,7 +2169,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		String mpFileName = (String)state.getAttribute(STATE_MP_FILE_NAME);
 		String msg = null;
 		//String currentSite = PortalService.getCurrentSiteId();
-		String currentSite = ToolManager.getCurrentPlacement().getContext();
+		String currentSite = toolManager.getCurrentPlacement().getContext();
 		
 		//get the content of the files uploaded
 		if(state.getAttribute(STATE_OARD_CONTENT_STRING)!= null)
@@ -2769,10 +2790,10 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		    try
 			{
 				// set the current user to admin
-				Session s = SessionManager.getCurrentSession();
+				Session s = sessionManager.getCurrentSession();
 				if (s != null)
 				{
-					s.setUserId(UserDirectoryService.ADMIN_ID);
+					s.setUserId(userDirectoryService.ADMIN_ID);
 				}
 				else
 				{
@@ -2786,22 +2807,22 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 					if(m_checklist != null)
 					{
 						//check student's Resources collection is accessible
-						collectionId = ContentHostingService.getSiteCollection(m_id);
+						collectionId = contentHostingService.getSiteCollection(m_id);
 						try
 						{
-							ContentHostingService.checkCollection(collectionId);
+							contentHostingService.checkCollection(collectionId);
 							
 							//save the student's checklist in Resources
 							try
 							{
-								edit = ContentHostingService.addResource(collectionId + DissertationService.STATIC_CHECKLIST_NAME);
+								edit = contentHostingService.addResource(collectionId + DissertationService.STATIC_CHECKLIST_NAME);
 								edit.setContent(m_checklist.getBytes());
 								edit.setContentType("text/html");
 								edit.setContentLength(m_checklist.length());
 								ResourcePropertiesEdit props = edit.getPropertiesEdit();
 								props.addProperty(ResourceProperties.PROP_DISPLAY_NAME,DissertationService.STATIC_CHECKLIST_DISPLAY_NAME);
 								props.addProperty(ResourceProperties.PROP_DESCRIPTION, DissertationService.STATIC_CHECKLIST_DESCRIPTION);
-								ContentHostingService.commitResource(edit);
+								contentHostingService.commitResource(edit);
 							}
 							catch(Exception e)
 							{
@@ -2809,7 +2830,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 								{
 									try
 									{
-										ContentHostingService.removeResource(edit);
+										contentHostingService.removeResource(edit);
 									}
 									catch(Exception ee)
 									{
