@@ -31,6 +31,15 @@
 		
 		<dependency>
 			<groupId>sakaiproject</groupId>
+			<artifactId>ctools-provider</artifactId>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<version>${sakai.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>sakaiproject</groupId>
 			<artifactId>sakai-component-api</artifactId>
 			<properties>
 				<war.bundle>true</war.bundle>
