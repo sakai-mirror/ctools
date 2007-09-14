@@ -63,8 +63,10 @@ import org.sakaiproject.api.app.dissertation.DissertationStep;
 import org.sakaiproject.api.app.dissertation.DissertationStepEdit;
 import org.sakaiproject.api.app.dissertation.StepStatus;
 import org.sakaiproject.api.app.dissertation.StepStatusEdit;
-import org.sakaiproject.authz.cover.FunctionManager;
-import org.sakaiproject.authz.cover.SecurityService;
+import org.sakaiproject.authz.api.FunctionManager;
+import org.sakaiproject.authz.api.SecurityService;
+//import org.sakaiproject.authz.cover.FunctionManager;
+//import org.sakaiproject.authz.cover.SecurityService;
 import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.entity.api.Edit;
 import org.sakaiproject.entity.api.Entity;
@@ -74,23 +76,27 @@ import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.entity.api.ResourcePropertiesEdit;
 import org.sakaiproject.event.api.Event;
+import org.sakaiproject.event.api.EventTrackingService;
 import org.sakaiproject.event.api.SessionStateBindingListener;
-import org.sakaiproject.event.cover.EventTrackingService;
+//import org.sakaiproject.event.cover.EventTrackingService;
 import org.sakaiproject.exception.IdInvalidException;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.exception.IdUsedException;
 import org.sakaiproject.exception.InUseException;
 import org.sakaiproject.exception.PermissionException;
-import org.sakaiproject.id.cover.IdManager;
+import org.sakaiproject.id.api.IdManager;
+//import org.sakaiproject.id.cover.IdManager;
 import org.sakaiproject.memory.api.Cache;
 import org.sakaiproject.memory.api.CacheRefresher;
 import org.sakaiproject.memory.api.MemoryService;
 import org.sakaiproject.time.api.Time;
-import org.sakaiproject.time.cover.TimeService;
+import org.sakaiproject.time.api.TimeService;
+//import org.sakaiproject.time.cover.TimeService;
 import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.user.api.User;
+import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
-import org.sakaiproject.user.cover.UserDirectoryService;
+//import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.util.BaseResourcePropertiesEdit;
 import org.sakaiproject.util.StorageUser;
 import org.sakaiproject.util.StringUtil;
@@ -112,6 +118,32 @@ import org.w3c.dom.NodeList;
 public abstract class BaseDissertationService
 	implements DissertationService
 {	
+	//String injection
+	private EventTrackingService eventTrackingService;
+	public void setEventTrackingService(EventTrackingService eventTrackingService) {
+		this.eventTrackingService = eventTrackingService;
+	}
+	private FunctionManager functionManager;
+	public void setFunctionManager(FunctionManager functionManager){
+		this.functionManager = functionManager;
+	}
+	private IdManager idManager;
+	public void setIdManager(IdManager idManager) {
+		this.idManager = idManager;
+	}
+	private SecurityService securityService;
+	public void setSecurityService(SecurityService securityService) {
+		this.securityService = securityService;
+	}
+	private TimeService timeService;
+	public void setTimeService(TimeService timeService) {
+		this.timeService = timeService;
+	}
+	private UserDirectoryService userDirectoryService;
+	public void setUserDirectoryService(UserDirectoryService userDirectoryService) {
+		this.userDirectoryService = userDirectoryService;
+	}
+
 	private static final Log m_logger = LogFactory.getLog(BaseDissertationService.class);
 	
 	/** A Storage object for persistent storage of Dissertations. */
@@ -403,7 +435,7 @@ public abstract class BaseDissertationService
 	*/
 	protected boolean unlockCheck(String lock, String resource)
 	{
-		if (!SecurityService.unlock(lock, resource))
+		if (!securityService.unlock(lock, resource))
 		{
 			return false;
 		}
@@ -612,31 +644,31 @@ public abstract class BaseDissertationService
 			m_entityManager.registerEntityProducer(this, REFERENCE_ROOT);
 
 			// register functions
-			FunctionManager.registerFunction(SECURE_ADD_DISSERTATION);
-			FunctionManager.registerFunction(SECURE_ACCESS_DISSERTATION);
-			FunctionManager.registerFunction(SECURE_UPDATE_DISSERTATION);
-			FunctionManager.registerFunction(SECURE_REMOVE_DISSERTATION);
-			FunctionManager.registerFunction(SECURE_ADD_DISSERTATION_CANDIDATEPATH);
-			FunctionManager.registerFunction(SECURE_ACCESS_DISSERTATION_CANDIDATEPATH);
-			FunctionManager.registerFunction(SECURE_UPDATE_DISSERTATION_CANDIDATEPATH);
-			FunctionManager.registerFunction(SECURE_UPDATE_DISSERTATION_CANDIDATEPATH_COMM);
-			FunctionManager.registerFunction(SECURE_REMOVE_DISSERTATION_CANDIDATEPATH);
-			FunctionManager.registerFunction(SECURE_ADD_DISSERTATION_STEP);
-			FunctionManager.registerFunction(SECURE_ACCESS_DISSERTATION_STEP);
-			FunctionManager.registerFunction(SECURE_UPDATE_DISSERTATION_STEP);
-			FunctionManager.registerFunction(SECURE_REMOVE_DISSERTATION_STEP);
-			FunctionManager.registerFunction(SECURE_ADD_DISSERTATION_STEPSTATUS);
-			FunctionManager.registerFunction(SECURE_ACCESS_DISSERTATION_STEPSTATUS);
-			FunctionManager.registerFunction(SECURE_UPDATE_DISSERTATION_STEPSTATUS);
-			FunctionManager.registerFunction(SECURE_REMOVE_DISSERTATION_STEPSTATUS);
-			FunctionManager.registerFunction(SECURE_ADD_DISSERTATION_CANDIDATEINFO);
-			FunctionManager.registerFunction(SECURE_ACCESS_DISSERTATION_CANDIDATEINFO);
-			FunctionManager.registerFunction(SECURE_UPDATE_DISSERTATION_CANDIDATEINFO);
-			FunctionManager.registerFunction(SECURE_REMOVE_DISSERTATION_CANDIDATEINFO);
-			FunctionManager.registerFunction(SECURE_ACCESS_DISSERTATION_GROUP);
-			FunctionManager.registerFunction(SECURE_ADD_DISSERTATION_GROUP);
-			FunctionManager.registerFunction(SECURE_REMOVE_DISSERTATION_GROUP);
-			FunctionManager.registerFunction(SECURE_UPDATE_DISSERTATION_GROUP);
+			functionManager.registerFunction(SECURE_ADD_DISSERTATION);
+			functionManager.registerFunction(SECURE_ACCESS_DISSERTATION);
+			functionManager.registerFunction(SECURE_UPDATE_DISSERTATION);
+			functionManager.registerFunction(SECURE_REMOVE_DISSERTATION);
+			functionManager.registerFunction(SECURE_ADD_DISSERTATION_CANDIDATEPATH);
+			functionManager.registerFunction(SECURE_ACCESS_DISSERTATION_CANDIDATEPATH);
+			functionManager.registerFunction(SECURE_UPDATE_DISSERTATION_CANDIDATEPATH);
+			functionManager.registerFunction(SECURE_UPDATE_DISSERTATION_CANDIDATEPATH_COMM);
+			functionManager.registerFunction(SECURE_REMOVE_DISSERTATION_CANDIDATEPATH);
+			functionManager.registerFunction(SECURE_ADD_DISSERTATION_STEP);
+			functionManager.registerFunction(SECURE_ACCESS_DISSERTATION_STEP);
+			functionManager.registerFunction(SECURE_UPDATE_DISSERTATION_STEP);
+			functionManager.registerFunction(SECURE_REMOVE_DISSERTATION_STEP);
+			functionManager.registerFunction(SECURE_ADD_DISSERTATION_STEPSTATUS);
+			functionManager.registerFunction(SECURE_ACCESS_DISSERTATION_STEPSTATUS);
+			functionManager.registerFunction(SECURE_UPDATE_DISSERTATION_STEPSTATUS);
+			functionManager.registerFunction(SECURE_REMOVE_DISSERTATION_STEPSTATUS);
+			functionManager.registerFunction(SECURE_ADD_DISSERTATION_CANDIDATEINFO);
+			functionManager.registerFunction(SECURE_ACCESS_DISSERTATION_CANDIDATEINFO);
+			functionManager.registerFunction(SECURE_UPDATE_DISSERTATION_CANDIDATEINFO);
+			functionManager.registerFunction(SECURE_REMOVE_DISSERTATION_CANDIDATEINFO);
+			functionManager.registerFunction(SECURE_ACCESS_DISSERTATION_GROUP);
+			functionManager.registerFunction(SECURE_ADD_DISSERTATION_GROUP);
+			functionManager.registerFunction(SECURE_REMOVE_DISSERTATION_GROUP);
+			functionManager.registerFunction(SECURE_UPDATE_DISSERTATION_GROUP);
 		}
 		catch (Throwable t)
 		{
@@ -911,7 +943,7 @@ public abstract class BaseDissertationService
 		{
 			try
 			{
-				retVal[x] = UserDirectoryService.getUser((String) userIds.get(x));
+				retVal[x] = userDirectoryService.getUser((String) userIds.get(x));
 			}
 			catch(UserNotDefinedException e)
 			{
@@ -1021,7 +1053,7 @@ public abstract class BaseDissertationService
 		do
 		{
 			badId = false;
-			blockGrantGroupId = IdManager.createUuid();
+			blockGrantGroupId = idManager.createUuid();
 			badId = !Validator.checkResourceId(blockGrantGroupId);
 			if(m_stepStorage.check(blockGrantGroupId))
 				badId = true;
@@ -1163,8 +1195,8 @@ public abstract class BaseDissertationService
 		m_groupStorage.commit(blockGrantGroup);
 		
 		// track it
-		EventTrackingService.post(
-			EventTrackingService.newEvent(((BaseBlockGrantGroupEdit) blockGrantGroup).getEvent(), blockGrantGroup.getReference(), true));
+		eventTrackingService.post(
+			eventTrackingService.newEvent(((BaseBlockGrantGroupEdit) blockGrantGroup).getEvent(), blockGrantGroup.getReference(), true));
 
 		// close the edit object
 		((BaseBlockGrantGroupEdit) blockGrantGroup).closeEdit();
@@ -1262,7 +1294,7 @@ public abstract class BaseDissertationService
 			
 			m_groupStorage.remove(blockGrantGroupEdit);
 			
-			EventTrackingService.post(EventTrackingService.newEvent(SECURE_REMOVE_DISSERTATION_GROUP, blockGrantGroupEdit.getReference(), true));
+			eventTrackingService.post(eventTrackingService.newEvent(SECURE_REMOVE_DISSERTATION_GROUP, blockGrantGroupEdit.getReference(), true));
 
 			((BaseBlockGrantGroupEdit)blockGrantGroupEdit).closeEdit();
 		}
@@ -1325,7 +1357,7 @@ public abstract class BaseDissertationService
 		do
 		{
 			badId = false;
-			dissertationId = IdManager.createUuid();
+			dissertationId = idManager.createUuid();
 			badId = !Validator.checkResourceId(dissertationId);
 			if(m_dissertationStorage.check(dissertationId))
 				badId = true;
@@ -1561,8 +1593,8 @@ public abstract class BaseDissertationService
 		m_dissertationStorage.commit(dissertation);
 
 		// track it
-		EventTrackingService.post(
-			EventTrackingService.newEvent(((BaseDissertationEdit) dissertation).getEvent(), dissertation.getReference(), true));
+		eventTrackingService.post(
+			eventTrackingService.newEvent(((BaseDissertationEdit) dissertation).getEvent(), dissertation.getReference(), true));
 
 		// close the edit object
 		((BaseDissertationEdit) dissertation).closeEdit();
@@ -1612,7 +1644,7 @@ public abstract class BaseDissertationService
 			
 			m_dissertationStorage.remove(dissertation);
 			
-			EventTrackingService.post(EventTrackingService.newEvent(SECURE_REMOVE_DISSERTATION, dissertation.getReference(), true));
+			eventTrackingService.post(eventTrackingService.newEvent(SECURE_REMOVE_DISSERTATION, dissertation.getReference(), true));
 			
 			((BaseDissertationEdit)dissertation).closeEdit();
 		}
@@ -1633,7 +1665,7 @@ public abstract class BaseDissertationService
 		do
 		{
 			badId = false;
-			stepId = IdManager.createUuid();
+			stepId = idManager.createUuid();
 			badId = !Validator.checkResourceId(stepId);
 			if(m_stepStorage.check(stepId))
 				badId = true;
@@ -1669,7 +1701,7 @@ public abstract class BaseDissertationService
 		do
 		{
 			badId = false;
-			stepId = IdManager.createUuid();
+			stepId = idManager.createUuid();
 			badId = !Validator.checkResourceId(stepId);
 			if(m_stepStorage.check(stepId))
 				badId = true;
@@ -1887,8 +1919,8 @@ public abstract class BaseDissertationService
 		m_stepStorage.commit(step);
 		
 		// track it
-		EventTrackingService.post(
-			EventTrackingService.newEvent(((BaseDissertationStepEdit) step).getEvent(), step.getReference(), true));
+		eventTrackingService.post(
+			eventTrackingService.newEvent(((BaseDissertationStepEdit) step).getEvent(), step.getReference(), true));
 		
 		// close the edit object
 		((BaseDissertationStepEdit) step).closeEdit();
@@ -1937,7 +1969,7 @@ public abstract class BaseDissertationService
 
 			m_stepStorage.remove(step);
 
-			EventTrackingService.post(EventTrackingService.newEvent(SECURE_REMOVE_DISSERTATION_STEP, step.getReference(), true));
+			eventTrackingService.post(eventTrackingService.newEvent(SECURE_REMOVE_DISSERTATION_STEP, step.getReference(), true));
 			
 			((BaseDissertationStepEdit)step).closeEdit();
 		}
@@ -1960,7 +1992,7 @@ public abstract class BaseDissertationService
 		{
 			badId = false;
 			//pathId = IdService.getUniqueId();
-			pathId = IdManager.createUuid();
+			pathId = idManager.createUuid();
 			badId = !Validator.checkResourceId(pathId);
 			if(m_pathStorage.check(pathId))
 				badId = true;
@@ -2018,9 +2050,9 @@ public abstract class BaseDissertationService
 	
 	/**
 	* Check whether there exists a CandidatePath with this parent site
-	* for which corresponding sort name’s first letter of the last name matches the letter.
+	* for which corresponding sort name ’s first letter of the last name matches the letter.
 	* @param parent - The parent site from which this candidate path steps come.
-	* @param letter – A letter of the alphabet, A-Z,a-z.
+	* @param letter A letter of the alphabet, A-Z,a-z.
 	* @return True if there exists such a CandidatePath, false otherwise.
 	*/
 	public boolean isUserOfParentForLetter(String parent, String letter)
@@ -2041,14 +2073,18 @@ public abstract class BaseDissertationService
 				try
 				{
 					//path.getCandidate() returns User id
-					User student = UserDirectoryService.getUser(path.getCandidate());
+					User student = userDirectoryService.getUser(path.getCandidate());
 					sortName = student.getSortName();
 					if(sortName.startsWith(letter.toUpperCase()) || sortName.startsWith(letter.toLowerCase()))
 					{
 						return true;
 					}
 				}
-				catch (UserNotDefinedException e) {};
+				catch (UserNotDefinedException e) {
+					if(m_logger.isWarnEnabled())
+						m_logger.warn(path.getCandidate() + " was not found in the UserDirectoryService. " + e);
+					continue;
+				}
 			}
 		}
 		return retVal;
@@ -2080,14 +2116,18 @@ public abstract class BaseDissertationService
 				try
 				{
 					//path.getCandidate() returns User id
-					User student = UserDirectoryService.getUser(path.getCandidate());
+					User student = userDirectoryService.getUser(path.getCandidate());
 					sortName = student.getSortName();
 					if(sortName.startsWith(letter.toUpperCase()) || sortName.startsWith(letter.toLowerCase()))
 					{
 						return true;
 					}
 				}
-				catch (UserNotDefinedException e) {};
+				catch (UserNotDefinedException e) {
+					if(m_logger.isWarnEnabled())
+						m_logger.warn(path.getCandidate() + " was not found in the UserDirectoryService. " + e);
+					continue;
+				}
 			}
 		}
 		return retVal;
@@ -2105,7 +2145,7 @@ public abstract class BaseDissertationService
 		{
 			try
 			{
-				String sortName = UserDirectoryService.getUser(chefId).getSortName();
+				String sortName = userDirectoryService.getUser(chefId).getSortName();
 				if(sortName != null)
 				{
 					retVal = sortName.substring(0,1).toUpperCase();
@@ -2148,7 +2188,7 @@ public abstract class BaseDissertationService
 				try
 				{
 					//path.getCandidate() returns User id
-					User student = UserDirectoryService.getUser(path.getCandidate());
+					User student = userDirectoryService.getUser(path.getCandidate());
 					sortName = student.getSortName();
 					if(sortName.startsWith(letter.toUpperCase()) || sortName.startsWith(letter.toLowerCase()))
 					{
@@ -2188,7 +2228,7 @@ public abstract class BaseDissertationService
 				try
 				{
 					//path.getCandidate() returns User id
-					User student = UserDirectoryService.getUser(path.getCandidate());
+					User student = userDirectoryService.getUser(path.getCandidate());
 					sortName = student.getSortName();
 					if(sortName.startsWith(letter.toUpperCase()) || sortName.startsWith(letter.toLowerCase()))
 					{
@@ -2393,8 +2433,8 @@ public abstract class BaseDissertationService
 		m_pathStorage.commit(path);
 
 		// track it
-		EventTrackingService.post(
-			EventTrackingService.newEvent(((BaseCandidatePathEdit) path).getEvent(), path.getReference(), true));
+		eventTrackingService.post(
+			eventTrackingService.newEvent(((BaseCandidatePathEdit) path).getEvent(), path.getReference(), true));
 
 		// close the edit object
 		((BaseCandidatePathEdit) path).closeEdit();
@@ -2442,7 +2482,7 @@ public abstract class BaseDissertationService
 
 			m_pathStorage.remove(path);
 			
-			EventTrackingService.post(EventTrackingService.newEvent(SECURE_REMOVE_DISSERTATION_CANDIDATEPATH, path.getReference(), true));
+			eventTrackingService.post(eventTrackingService.newEvent(SECURE_REMOVE_DISSERTATION_CANDIDATEPATH, path.getReference(), true));
 			
 			((BaseCandidatePathEdit)path).closeEdit();
 		}
@@ -2465,7 +2505,7 @@ public abstract class BaseDissertationService
 		do
 		{
 			badId = false;
-			statusId = IdManager.createUuid();
+			statusId = idManager.createUuid();
 			badId = !Validator.checkResourceId(statusId);
 			if(m_statusStorage.check(statusId))
 				badId = true;
@@ -2500,7 +2540,7 @@ public abstract class BaseDissertationService
 		do
 		{
 			badId = false;
-			statusId = IdManager.createUuid();
+			statusId = idManager.createUuid();
 			badId = !Validator.checkResourceId(statusId);
 			if(m_statusStorage.check(statusId))
 				badId = true;
@@ -2530,7 +2570,7 @@ public abstract class BaseDissertationService
 		do
 		{
 			badId = false;
-			statusId = IdManager.createUuid();
+			statusId = idManager.createUuid();
 			badId = !Validator.checkResourceId(statusId);
 			if(m_statusStorage.check(statusId))
 				badId = true;
@@ -2745,8 +2785,8 @@ public abstract class BaseDissertationService
 		m_statusStorage.commit(status);
 
 		// track it
-		EventTrackingService.post(
-			EventTrackingService.newEvent(((BaseStepStatusEdit) status).getEvent(), status.getReference(), true));
+		eventTrackingService.post(
+			eventTrackingService.newEvent(((BaseStepStatusEdit) status).getEvent(), status.getReference(), true));
 
 		// close the edit object
 		((BaseStepStatusEdit) status).closeEdit();
@@ -2796,7 +2836,7 @@ public abstract class BaseDissertationService
 
 			m_statusStorage.remove(status);
 			
-			EventTrackingService.post(EventTrackingService.newEvent(SECURE_REMOVE_DISSERTATION_STEPSTATUS, status.getReference(), true));
+			eventTrackingService.post(eventTrackingService.newEvent(SECURE_REMOVE_DISSERTATION_STEPSTATUS, status.getReference(), true));
 
 			((BaseStepStatusEdit)status).closeEdit();		
 		}
@@ -2817,7 +2857,7 @@ public abstract class BaseDissertationService
 		do
 		{
 			badId = false;
-			infoId = IdManager.createUuid();
+			infoId = idManager.createUuid();
 			badId = !Validator.checkResourceId(infoId);
 			if(m_infoStorage.check(infoId))
 				badId = true;
@@ -3064,8 +3104,8 @@ public abstract class BaseDissertationService
 		m_infoStorage.commit(info);
 		
 		// track it
-		EventTrackingService.post(
-			EventTrackingService.newEvent(((BaseCandidateInfoEdit) info).getEvent(), info.getReference(), true));
+		eventTrackingService.post(
+			eventTrackingService.newEvent(((BaseCandidateInfoEdit) info).getEvent(), info.getReference(), true));
 
 		// close the edit object
 		((BaseCandidateInfoEdit) info).closeEdit();
@@ -3115,7 +3155,7 @@ public abstract class BaseDissertationService
 
 			m_infoStorage.remove(info);
 			
-			EventTrackingService.post(EventTrackingService.newEvent(SECURE_REMOVE_DISSERTATION_CANDIDATEINFO, info.getReference(), true));
+			eventTrackingService.post(eventTrackingService.newEvent(SECURE_REMOVE_DISSERTATION_CANDIDATEINFO, info.getReference(), true));
 
 			((BaseCandidateInfoEdit)info).closeEdit();		
 		}
@@ -3351,7 +3391,7 @@ public abstract class BaseDissertationService
 				SessionManager.getCurrentSessionUserId());
 
 		props.addProperty(ResourceProperties.PROP_MODIFIED_DATE,
-			TimeService.newTime().toString());
+			timeService.newTime().toString());
 	}
 
 	/**
@@ -3363,7 +3403,7 @@ public abstract class BaseDissertationService
 		props.addProperty(ResourceProperties.PROP_CREATOR, current);
 		props.addProperty(ResourceProperties.PROP_MODIFIED_BY, current);
 		
-		String now = TimeService.newTime().toString();
+		String now = timeService.newTime().toString();
 		props.addProperty(ResourceProperties.PROP_CREATION_DATE, now);
 		props.addProperty(ResourceProperties.PROP_MODIFIED_DATE, now);
 
@@ -5396,7 +5436,7 @@ public abstract class BaseDissertationService
 			m_instructionsText = "";
 			m_autoValidationId = "";
 			m_section = "0";
-			m_timeLastModified = TimeService.newTime();
+			m_timeLastModified = timeService.newTime();
 			m_validationType = "0";
 			m_prerequisiteSteps = new Vector();
 			m_properties = new BaseResourcePropertiesEdit();
@@ -8704,7 +8744,7 @@ public abstract class BaseDissertationService
 		*/
 		public void setCompleted(boolean completed)
 		{
-			m_timeCompleted = TimeService.newTime();
+			m_timeCompleted = timeService.newTime();
 			m_completed = completed;
 		}
 
@@ -11585,7 +11625,7 @@ public abstract class BaseDissertationService
 
 			try
 			{
-				retVal = UserDirectoryService.getUser(id);
+				retVal = userDirectoryService.getUser(id);
 			}
 			catch(UserNotDefinedException nde)
 			{
@@ -11608,7 +11648,7 @@ public abstract class BaseDissertationService
 			try
 			{
 				long longTime = Long.parseLong(timeString);
-				aTime = TimeService.newTime(longTime);
+				aTime = timeService.newTime(longTime);
 			}
 			catch(Exception e)
 			{
@@ -11832,7 +11872,7 @@ public abstract class BaseDissertationService
 		jobDataMap.put("CURRENT_USER", (String)SessionManager.getCurrentSessionUserId());
 		
 		//job name + group should be unique
-		String jobGroup = IdManager.createUuid();
+		String jobGroup = idManager.createUuid();
 		
 		//associate a trigger with the job
 		SimpleTrigger trigger = new SimpleTrigger("NewStepTrigger", jobGroup, new Date());
@@ -11984,7 +12024,7 @@ public abstract class BaseDissertationService
 		jobDataMap.put("CURRENT_USER",(String)SessionManager.getCurrentSessionUserId());
 		
 		//job name + group should be unique
-		String jobGroup = IdManager.createUuid();
+		String jobGroup = idManager.createUuid();
 		
 		//associate a trigger with the job
 		SimpleTrigger trigger = new SimpleTrigger("ReviseStepTrigger", jobGroup, new Date());
@@ -12101,7 +12141,7 @@ public abstract class BaseDissertationService
 		/** update the current Dissertation so display may be refreshed.
 		 * take current Dissertation out of Collection to be updated in job. */
 		//job name + group should be unique
-		String jobGroup = IdManager.createUuid();
+		String jobGroup = idManager.createUuid();
 		
 		//associate a trigger with the job
 		SimpleTrigger trigger = new SimpleTrigger("MoveStepTrigger", jobGroup, new Date());
@@ -12257,7 +12297,7 @@ public abstract class BaseDissertationService
 		/** update the current Dissertation so display may be refreshed.
 		 * take current Dissertation out of Collection to be updated in job. */
 		//job name + group should be unique
-		String jobGroup = IdManager.createUuid();
+		String jobGroup = idManager.createUuid();
 		
 		//associate a trigger with the job
 		SimpleTrigger trigger = new SimpleTrigger("DeleteStepTrigger", jobGroup, new Date());
@@ -12422,7 +12462,7 @@ public abstract class BaseDissertationService
 		Scheduler scheduler = null;
 		
 		//job name + group should be unique
-		String jobGroup = IdManager.createUuid();
+		String jobGroup = idManager.createUuid();
 		
 		//pass the parameters to the job as job detail data
 		JobDetail jobDetail = new JobDetail("UploadExtractJob",
