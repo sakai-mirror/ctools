@@ -92,4 +92,6 @@ hierarchy https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
 # Per request from Peter Knoop
 imagequiz https://source.sakaiproject.org/contrib/imagequiz/tags/imagequiz-0.1/
 # From Joseph
-ocw https://source.sakaiproject.org/contrib/ocw/trunk/
+ocw -r9215 https://source.sakaiproject.org/contrib/ocw/trunk/
+#
+checklist -r9832 https://source.sakaiproject.org/contrib/checklist/trunk
