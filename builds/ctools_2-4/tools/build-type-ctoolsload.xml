@@ -91,6 +91,7 @@ This doesn't supply the sakai.properties files you want to customize.
     <buildPropertiesFile instanceName="ctoolsload" />
     <buildPropertiesFile instanceName="testctools" />
     <buildPropertiesFile instanceName="localhost" />
+    <buildPropertiesFile instanceName="ctpilot" />
 
   </target>
 
