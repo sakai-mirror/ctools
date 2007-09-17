@@ -350,7 +350,9 @@ is little point in depending on them.
 	 <applyPatch patchFileName="SAK-11023.patch" />
 
     <!-- add logging for gradtools production issue. -->
+    <!--
     <applyPatch patchFileName="CT-288.patch" />
+    -->
 
 
     <!-- 2.4.xG -->
