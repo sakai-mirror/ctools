@@ -33,15 +33,11 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-
 use SOAP::Lite;
 
 use strict;
 
 # set up some variables
-my $session = "";
-my $usertoadd ="";		# name of user to be created
-my $usertodelete = "";		# name of user to be deleted	
 
 my $true = SOAP::Data->value('true')->type('boolean');
 my $false = SOAP::Data->value('')->type('boolean');
@@ -50,24 +46,9 @@ my $false = SOAP::Data->value('')->type('boolean');
 my $loginURI = "http://SAKAISERVER/sakai-axis/SakaiLogin.jws?wsdl";
 my $scriptURI = "http://SAKAISERVER/sakai-axis/SakaiScript.jws?wsdl";
 
-my $adminuser = "ADMINUSER";
-my $adminpw = "ADMINPW";
-
-my $csvfile="FILE";
-
-# generate radmon password -- see below
-sub generate_random_string
-{
-  my $stringsize = shift;
-  my @alphanumeric = ('a'..'z', 'A'..'Z', 0..9);
-  my $randstring = join '', (map { $alphanumeric[rand @alphanumeric] } @alphanumeric)[0 .. $stringsize];
-  return $randstring;
-}
-
-
 sub establishSakaiSession {
 	# start a session, reuse established one if it exists.
-	my($loginURI,$session) = @_;
+	my($loginURI,$session,$user,$pw) = @_;
 	### Start a Sakai session
 
 	if (!$session) {
@@ -77,7 +58,7 @@ sub establishSakaiSession {
 		    -> proxy($loginURI)
 		    -> uri($loginURI)
 		;
-		$session = $soap->login($adminuser,$adminpw)->result;
+		$session = $soap->login($user,$pw)->result;
 
 	} else {
 		print "Sakai session id (after login) -> ";
