@@ -1,8 +1,12 @@
 #!/usr/bin/perl -w
+# Utilites to do common web services tasks.
+#
+### TTD:
+# - logout doesn't work except for admin?
 #
 # $HeadURL:https://source.sakaiproject.org/svn/ctools/trunk/ctools-ws-client/src/perl/sakaiSoapUtil.pm $
 # $Id:sakaiSoapUtil.pm 35684 2007-09-22 19:40:53Z dlhaines@umich.edu $
-# Archived from copy provided by Seth Theriault at Columbia University.
+# Based on version provided by Seth Theriault at Columbia University.
 #######
 # Utility module for Sakai web services.
 # Based on:
