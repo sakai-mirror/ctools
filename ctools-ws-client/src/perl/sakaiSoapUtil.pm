@@ -75,6 +75,18 @@ sub establishSakaiSession {
 	return $session;
 }
 
+sub endSakaiSession {
+  # logout of an existing sakai session.
+
+  my($logInOutWSURI,$session) = @_;
+  print "logging out of session [$session]\n" if ($trace);
+
+  my $soap = connectToSakaiWebService($logInOutWSURI);
+  my $result = $soap->logout($session)->result;
+  print "logout result is: [$result]\n" if ($trace);
+
+}
+
 sub connectToSakaiWebService {
   my($sakaiWSURI) = @_;
   ### Connect and futz

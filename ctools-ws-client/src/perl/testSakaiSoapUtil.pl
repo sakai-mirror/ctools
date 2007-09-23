@@ -46,12 +46,20 @@ sub runTest {
 	  unless ( $foundUser =~ $user );
 	print "get session user: [$foundUser]\n";
 
-	# logout
+
 	# Need to change establishSakaiSession to return connection to logout.
 	print "web service connection test successful.\n";
+
+	my $sleep = 120;
+	print "sleeping for $sleep seconds before logging out\n";
+	sleep $sleep;
+	# logout
+	my $result = endSakaiSession($logInOutWSURI,$user,$sakaiSession);
+	print "logout result: [$result]\n";
+#	print "can't log out of session for: [$user]\n" unless($result);
 }
 
-runTest("localhost:8080","USER","PW");
-#runTest("localhost:8080","admin","admin");
+#runTest("localhost:8080","USER","PW");
+runTest("localhost:8080","admin","admin");
 
 #end
