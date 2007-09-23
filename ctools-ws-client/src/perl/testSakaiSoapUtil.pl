@@ -1,6 +1,6 @@
 #!/usr/bin/perl
-# $HeadURL:$
-# $Id:$
+# $HeadURL$
+# $Id$
 
 use sakaiSoapUtil;
 use strict;
@@ -32,7 +32,7 @@ sub runTest {
 
  	# login and start sakai session
 	$sakaiSession = establishSakaiSession( $logInOutWSURI, $sakaiSession, $user, $pw );
-	die("no sakai session $!") unless ($sakaiSession);
+	die("failed to create sakai session") unless ($sakaiSession);
 	print "established session: [$sakaiSession]\n";
 
 	# connect to the web service
@@ -51,7 +51,7 @@ sub runTest {
 	print "web service connection test successful.\n";
 }
 
-#runTest("localhost:8080","USER","PW");
-runTest("localhost:8080","admin","admin");
+runTest("localhost:8080","USER","PW");
+#runTest("localhost:8080","admin","admin");
 
 #end

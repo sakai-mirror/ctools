@@ -39,7 +39,7 @@ use strict;
 
 # set up some variables
 
-my $trace = 1;
+my ($trace,$oldTrace) = (0,0);
 
 my $true = SOAP::Data->value('true')->type('boolean');
 my $false = SOAP::Data->value('')->type('boolean');
@@ -48,25 +48,30 @@ my $false = SOAP::Data->value('')->type('boolean');
 my $loginURI = "http://SAKAISERVER/sakai-axis/SakaiLogin.jws?wsdl";
 my $scriptURI = "http://SAKAISERVER/sakai-axis/SakaiScript.jws?wsdl";
 
+sub setTrace {
+  $oldTrace = $trace;
+  $trace = shift;
+  return $oldTrace;
+}
+
 sub establishSakaiSession {
 	# start a session, reuse established one if it exists.
 	my($loginURI,$session,$user,$pw) = @_;
+
+	return $session if ($session);
+
 	### Start a Sakai session
-
-	if (!$session) {
-		print "No Sakai session found. Starting one...\n";
-		print "Sakai session id (after login) -> ";
-# 		my $soap = SOAP::Lite
-# 		    -> proxy($loginURI)
-# 		    -> uri($loginURI)
-# 		;
-		my $soap = connectToSakaiWebService($loginURI);
-		$session = $soap->login($user,$pw)->result;
-
-	} else {
-		print "Sakai session id (after login) -> ";
+	
+	if ($trace) {
+	  print "No Sakai session found. Starting one...\n";
+	  print "Sakai session id (after login) -> ";
 	}
-	print "$session\n";
+
+	my $soap = connectToSakaiWebService($loginURI);
+	$session = $soap->login($user,$pw)->result;
+	
+	print "$session\n" if ($trace);
+
 	return $session;
 }
 
