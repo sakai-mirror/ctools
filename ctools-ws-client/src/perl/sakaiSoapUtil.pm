@@ -39,6 +39,8 @@ use strict;
 
 # set up some variables
 
+my $trace = 1;
+
 my $true = SOAP::Data->value('true')->type('boolean');
 my $false = SOAP::Data->value('')->type('boolean');
 
@@ -54,10 +56,11 @@ sub establishSakaiSession {
 	if (!$session) {
 		print "No Sakai session found. Starting one...\n";
 		print "Sakai session id (after login) -> ";
-		my $soap = SOAP::Lite
-		    -> proxy($loginURI)
-		    -> uri($loginURI)
-		;
+# 		my $soap = SOAP::Lite
+# 		    -> proxy($loginURI)
+# 		    -> uri($loginURI)
+# 		;
+		my $soap = connectToSakaiWebService($loginURI);
 		$session = $soap->login($user,$pw)->result;
 
 	} else {
@@ -68,15 +71,16 @@ sub establishSakaiSession {
 }
 
 sub connectToSakaiWebService {
-		my($sakaiWSURI) = @_;
-	### Connect and futz
-
-	my $soap2 = SOAP::Lite
-	    -> proxy($sakaiWSURI)
-	    -> uri($sakaiWSURI)
+  my($sakaiWSURI) = @_;
+  ### Connect and futz
+  
+  print "sSU: trying web service: [$sakaiWSURI]\n" if ($trace);
+  my $soap2 = SOAP::Lite
+    -> proxy($sakaiWSURI)
+      -> uri($sakaiWSURI)
 	;
-
-	return $soap2;
+  print "sSU: return value from SOAP::Lite: [$soap2] result: [",$soap2->result,"]\n" if ($trace);
+  return $soap2;
 }
 
  ## example of creating a user.
