@@ -154,6 +154,8 @@ is little point in depending on them.
 
   <!-- end of 2.4.xI -->
 
+  <!-- ================================================== -->
+
   <target name="applyPatches_2-4-xH" >
     <echo message="applying patch set 2-4-xH" />
 
