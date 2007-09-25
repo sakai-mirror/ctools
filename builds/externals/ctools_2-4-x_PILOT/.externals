@@ -86,7 +86,7 @@
 # ctools-libhelp https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
  ctools-libhelp  https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
 # added per Dick Ellis for evaluation.
-evaluation  -r12241 https://source.sakaiproject.org/contrib/evaluation/branches/umich
+evaluation  -r12249 https://source.sakaiproject.org/contrib/evaluation/branches/umich
 entitybroker -r12107 https://source.sakaiproject.org/contrib/caret/entitybroker/trunk/
 hierarchy -r11987 https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
 #evaluation https://source.sakaiproject.org/contrib/evaluation/trunk/
