@@ -93,7 +93,7 @@ sub addPageToMyWorkspace {
 }
 
 sub listUserSiteId {
-  my ($testHost,$loginUser,$pw,$userEid) = @_;
+  my ($testHost,$loginUser,$pw,@userEids) = @_;
   my $sakaiScriptWSURI  = "http://$testHost/sakai-axis/SakaiScript.jws?wsdl";
   my $logInOutWSURI     = "http://$testHost/sakai-axis/SakaiLogin.jws?wsdl";
   my $sakaiSiteWSURI    = "http://$testHost/sakai-axis/SakaiSite.jws?wsdl";
@@ -116,11 +116,13 @@ sub listUserSiteId {
   print "established sakai script ws connection\n";
 
   
-  # get all the sites
 #  my $userWorkspaceId = $sakaiScriptConnection->getUserMyWorkspaceSiteId($sakaiSession,$userEid)->result;
-  my $userWorkspaceId = $sakaiScriptConnection->getUserMyWorkspaceSiteId($userEid)->result;
+#  my $userWorkspaceId = $sakaiScriptConnection->getUserMyWorkspaceSiteId($userEid)->result;
 
-  print "user: [$userEid] workspacedId: [$userWorkspaceId]\n";
+  foreach my $uEid (@userEids) {
+    my $userWorkspaceId = $sakaiScriptConnection->getUserMyWorkspaceSiteId($uEid)->result;
+    print "user: [$uEid] workspacedId: [$userWorkspaceId]\n";
+  }
   ############################
   ## terminate the session.
 #  endSakaiSession($logInOutWSURI,$sakaiSession);
@@ -135,10 +137,11 @@ sub listUserSiteId {
 # String addNewPageToSite( String sessionid, String siteid, String pagetitle, int pagelayout) throws AxisFault
 
 
-#addPageToMyWorkspace("localhost:8080","newuser01","newuser01","Tools");
-listUserSiteId("localhost:8080","admin","admin","newuser01");
-listUserSiteId("localhost:8080","admin","admin","admin");
-listUserSiteId("localhost:8080","admin","admin","abba");
-listUserSiteId("localhost:8080","admin","admin","NONSENSE");
+##addPageToMyWorkspace("localhost:8080","newuser01","newuser01","Tools");
+#listUserSiteId("localhost:8080","admin","admin","newuser01");
+#listUserSiteId("localhost:8080","admin","admin","admin");
+#listUserSiteId("localhost:8080","admin","admin","abba");
+#listUserSiteId("localhost:8080","admin","admin","NONSENSE");
+listUserSiteId("localhost:8080","admin","admin","newuser01","admin","abba","NONSENSE");
 
 #end
