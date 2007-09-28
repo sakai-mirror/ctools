@@ -11,7 +11,7 @@
 # - factor out tool information
 # - get rid of those globals (if will use again).
 # - rethink WSURI approach
-# - what about deleteing these later on?
+# - what about deleteing the added pages later on?
 
 use sakaiSoapUtil;
 use strict;
