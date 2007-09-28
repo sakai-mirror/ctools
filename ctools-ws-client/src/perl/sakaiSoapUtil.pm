@@ -43,7 +43,7 @@ use strict;
 
 # set up some variables
 
-my ($trace,$oldTrace) = (1,0);
+my ($trace,$oldTrace) = (0,0);
 
 my $true = SOAP::Data->value('true')->type('boolean');
 my $false = SOAP::Data->value('')->type('boolean');
