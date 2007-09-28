@@ -151,10 +151,10 @@ sub addPageAndToolToUserMyWorkspace {
 
 # test script
 #addNewToolPageFromEids("localhost:8080","admin","admin","newuser02","newuser01","karma");
-my $i=0;
-my $reps = 1;
-while ($i++ < $reps) {
-#  addNewToolPageFromEids("localhost:8080","admin","admin","newuser01","newuser02","NOACCOUNT","NOACCOUNT2","NEVERLOGIN","NOACCOUNT");
-  addNewToolPageFromEids("localhost:8080","admin","admin","newuser01","newuser02","newuser01","newuser02","newuser01","newuser02");
-}
+# my $i=0;
+# my $reps = 1;
+# while ($i++ < $reps) {
+# #  addNewToolPageFromEids("localhost:8080","admin","admin","newuser01","newuser02","NOACCOUNT","NOACCOUNT2","NEVERLOGIN","NOACCOUNT");
+#   addNewToolPageFromEids("localhost:8080","admin","admin","newuser01","newuser02","newuser01","newuser02","newuser01","newuser02");
+# }
 #end
