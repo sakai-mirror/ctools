@@ -28,7 +28,7 @@ is little point in depending on them.
 
   -->
 
-  <target name="applyPatches" depends="applyPatches_2-4-xI" />
+  <target name="applyPatches" depends="applyPatches_2-4-xJ" />
 
 
 
@@ -46,6 +46,10 @@ is little point in depending on them.
   sets are kept below this.
   -->
 
+  <!-- J is just like H but with evaluation and updated sakai.properties -->
+  <target name="applyPatches_2-4-xJ" depends="applyPatches_2-4-xH" />
+
+  <!-- I is still born -->
   <target name="applyPatches_2-4-xI" >
     <echo message="applying patch set 2-4-xI" />
 
@@ -153,6 +157,7 @@ is little point in depending on them.
   </target>
 
   <!-- end of 2.4.xI -->
+
 
   <!-- ================================================== -->
 
