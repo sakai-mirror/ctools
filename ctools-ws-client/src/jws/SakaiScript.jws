@@ -1,6 +1,7 @@
 /*
  *   SakaiScript.jws - updated for Sakai 2.1
- *
+ * $HeadURL:$
+ * $Id:$
  */
  
 import java.util.Date;
@@ -253,7 +254,7 @@ public String getUserMyWorkspaceSiteIdOld(String sessionid, String eid) throws A
 }
 
 //getUserMyWorkspaceSiteId: return the site id of this users myworkspace site.
-public String getUserMyWorkspaceSiteId(String sessionid, String eid) throws AxisFault
+public String getUserMyWorkspaceSiteIdRefactored(String sessionid, String eid) throws AxisFault
 {
 	Session s = establishSession(sessionid);
 	
@@ -275,45 +276,112 @@ public String getUserMyWorkspaceSiteId(String sessionid, String eid) throws Axis
 	return result;
 }
 
-public String getUserMyWorkspaceSiteIdNew(String sessionid, String eid) throws AxisFault
+public String getUserMyWorkspaceSiteId(String sessionid, String eid) throws AxisFault
 {
 	Session s = establishSession(sessionid);
 	
+	String result = resolveUserMyWorkspaceSiteId(eid);
+	
+	return result;
+}
+
+public String getUserMyWorkspaceSiteIdList(String sessionid, List<String> eids) throws AxisFault
+{
+	Session s = establishSession(sessionid);
 	String result = "";
 	
-	try {
-		User u = null;
-		String userid = UserDirectoryService.getUserByEid(eid).getId();
-		//		result += "eid: [",eid,"] userid: ["+userid+"]";
-		if (userid != null)
-		result = "~"+userid;
-	}
-	catch (Exception e)
-	{
-		result = "Exception:" +e;
+	for (String eid : eids) {
+	    result += resolveUserMyWorkspaceSiteId(eid);
 	}
 	
 	return result;
 }
 
-public String resolveUserMyWorkspaceSiteId(String eid) throws AxisFault
-{
+
+    private String resolveUserMyWorkspaceSiteId(String eid) throws AxisFault
+    {
+	
 	String result = "";
 	
 	try {
-		User u = null;
-		String userid = UserDirectoryService.getUserByEid(eid).getId();
-		//		u = UserDirectoryService.getUser(userid);
-		//		if (u != null)
+	    String userid = UserDirectoryService.getUserByEid(eid).getId();
+	    if (userid != null)
 		result = "~"+userid;
 	}
 	catch (Exception e)
-	{
+	    {
 		result = "Exception:" +e;
-	}
+	    }
 	
 	return result;
-}
+    }
+
+     public String addPageAndToolToUserMyWorkspace(String pageTitle, String toolTitle, String toolId,
+						   String sakaiSession, String eid) throws AxisFault
+     {
+	 String result = "";
+
+
+ 	// get the my workspace id
+	 // 	String userWorkspaceId = getUserMyworkspaceSiteId(sakaiSession,eid);
+	 String userWorkspaceId = getUserMyWorkspaceSiteId(sakaiSession,eid);
+	 if (userWorkspaceId == null) {
+	     result = "-user_workspace";
+	     return result;
+	 }
+	 else {
+	     result += "+user_workspace";
+	 }
+
+	 //	 return "found workspace ["+userWorkspaceId+"]";
+
+ 	// add the page
+ 	String pageAdded = addNewPageToSite(sakaiSession,userWorkspaceId,pageTitle,0);
+	if (pageAdded == "success") {
+	    result += " +page";
+	}
+	else {
+	    result += " -page never logged in?";
+	}
+
+
+	String toolAdded = addNewToolToPage(sakaiSession,userWorkspaceId,pageTitle,toolTitle,toolId,"");
+	if (toolAdded == "success") {
+	    result += " +tool";
+	}
+	else {
+	    result += " -tool";
+	}
+
+	 /******* temp comment out for testing		
+	***** end temp comment ******/
+	// final return
+ 	return result;
+
+     }
+
+// public String getUserMyWorkspaceSiteId(String sessionid, String eid) throws AxisFault
+// {
+// 	Session s = establishSession(sessionid);
+	
+// 	String result = "";
+	
+// 	try {
+// 	    //		User u = null;
+// 		String userid = UserDirectoryService.getUserByEid(eid).getId();
+// 		//		u = UserDirectoryService.getUser(userid);
+// 		// if (u != null)
+// 		if (userid != null)
+// 		result = "~"+userid;
+// 	}
+// 	catch (Exception e)
+// 	{
+// 		result = "Exception:" +e;
+// 	}
+	
+// 	return result;
+// }
+
 
 public String getUserDisplayName( String sessionid ) throws AxisFault
 {
