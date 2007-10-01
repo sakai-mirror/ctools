@@ -89,3 +89,9 @@
  gradtools -r31834 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
 # ctools-libhelp https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
  ctools-libhelp -r33513 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
+# added per Dick Ellis for evaluation.
+# Only taking from trunk for the moment since there is no tag.  Will take version frozen at revision number so 
+# don't get unexpected version.
+evaluation  -r12249 https://source.sakaiproject.org/contrib/evaluation/branches/umich
+entitybroker -r12107 https://source.sakaiproject.org/contrib/caret/entitybroker/trunk/
+hierarchy -r11987 https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
