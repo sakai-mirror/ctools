@@ -1,6 +1,6 @@
 #!/usr/bin/perl
-# $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/ctools-ws-client/src/perl/testSakaiSoapUtil.pl $
-# $Id: testSakaiSoapUtil.pl 35696 2007-09-23 18:56:05Z dlhaines@umich.edu $
+# $HeadURL$
+# $Id$
 
 ## Demonstrate how to get the my workspace for a particular user.
 ## There may (must) be better ways.

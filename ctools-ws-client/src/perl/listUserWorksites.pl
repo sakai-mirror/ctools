@@ -1,6 +1,6 @@
 #!/usr/bin/perl
-# $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/ctools-ws-client/src/perl/testSakaiSoapUtil.pl $
-# $Id: testSakaiSoapUtil.pl 35696 2007-09-23 18:56:05Z dlhaines@umich.edu $
+# $HeadURL$
+# $Id$
 
 ## List the sites that the user can see.
 
