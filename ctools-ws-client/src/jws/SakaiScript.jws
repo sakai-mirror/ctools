@@ -234,7 +234,7 @@ public String getUserEmail( String sessionid ) throws AxisFault
 }
 
 //getUserMyWorkspaceSiteId: return the site id of this users myworkspace site.
-public String getUserMyWorkspaceSiteId(String sessionid, String eid) throws AxisFault
+public String getUserMyWorkspaceSiteIdOld(String sessionid, String eid) throws AxisFault
 {
 	Session s = establishSession(sessionid);
 	
@@ -252,31 +252,67 @@ public String getUserMyWorkspaceSiteId(String sessionid, String eid) throws Axis
 	}
 }
 
-public String getUserMyWorkspaceSiteIdDebug(String sessionid, String eid) throws AxisFault
+//getUserMyWorkspaceSiteId: return the site id of this users myworkspace site.
+public String getUserMyWorkspaceSiteId(String sessionid, String eid) throws AxisFault
 {
 	Session s = establishSession(sessionid);
 	
-	String result = "eid: ["+eid+"] ";
-
+	String result = "";
+	
 	try {
 		User u = null;
 		String userid = UserDirectoryService.getUserByEid(eid).getId();
-		result += "["+userid+"] ";
 		u = UserDirectoryService.getUser(userid);
 		if (u != null)
-		    //			return "~"+u;
-		    result += "u: |"+u+"|";
-		else
-		    //			return "";
-		    result += " empty u";
+		    //			result = "~"+u;
+		result = "~"+userid;
 	}
 	catch (Exception e)
 	{
-	    //	    return "exception: e:"+e;
-	    result += " exception: "+e;
-	    //		return "";
+		result = "Exception:" +e;
 	}
-	return "result: ["+ result +"]";
+	
+	return result;
+}
+
+public String getUserMyWorkspaceSiteIdNew(String sessionid, String eid) throws AxisFault
+{
+	Session s = establishSession(sessionid);
+	
+	String result = "";
+	
+	try {
+		User u = null;
+		String userid = UserDirectoryService.getUserByEid(eid).getId();
+		//		result += "eid: [",eid,"] userid: ["+userid+"]";
+		if (userid != null)
+		result = "~"+userid;
+	}
+	catch (Exception e)
+	{
+		result = "Exception:" +e;
+	}
+	
+	return result;
+}
+
+public String resolveUserMyWorkspaceSiteId(String eid) throws AxisFault
+{
+	String result = "";
+	
+	try {
+		User u = null;
+		String userid = UserDirectoryService.getUserByEid(eid).getId();
+		//		u = UserDirectoryService.getUser(userid);
+		//		if (u != null)
+		result = "~"+userid;
+	}
+	catch (Exception e)
+	{
+		result = "Exception:" +e;
+	}
+	
+	return result;
 }
 
 public String getUserDisplayName( String sessionid ) throws AxisFault
