@@ -86,16 +86,16 @@ sub addNewToolPageFromEidsRemote {
   # for every user add the page and tool				
   print ("Adding new page and tool to users. page: [$pageName] tool: [$toolName] toolId: [$toolId]\n");
   print ("user\tworkspaceid\tresult\n");
-  foreach my $uEid (@userEids) {
+#  foreach my $uEid (@userEids) {
     $eids++;
-    my $result = addPageAndToolToUserMyWorkspaceRemote($pageName,$toolName,$toolId,$sakaiScriptConnection,$sakaiSession,$uEid);
+    my $result = addPageAndToolToUserMyWorkspaceRemote($pageName,$toolName,$toolId,$sakaiScriptConnection,$sakaiSession,@userEids);
     print "result: [$result]\n";
     $noWorkspace++ if ($result =~ /-userworkspace/);
     $nopage++ if ($result =~ /-page/);
     $notool++ if ($result =~ /-tool/);
     $added++ if ($result =~ /\+tool/);
     print "\n";
-  }
+#  }
 
   print "eids: $eids noWorkspace: $noWorkspace nopage: $nopage notool: $notool added: $added\n";
 
@@ -113,10 +113,30 @@ sub addNewToolPageFromEidsRemote {
 }
 
 sub addPageAndToolToUserMyWorkspaceRemote {
-  my ($pageName,$toolName,$toolId,$sakaiScriptConnection,$sakaiSession,$uEid) = @_;
+  my ($pageName,$toolName,$toolId,$sakaiScriptConnection,$sakaiSession,@uEids) = @_;
+  my $result;
+  #  my ($pageName,$toolName,$toolId,$sakaiScriptConnection,$sakaiSession,$uEid) = @_;
   print "aPATTUMWR: args: |",join("|",@_),"|\n";
-  my $result = $sakaiScriptConnection->addPageAndToolToUserMyWorkspace($pageName,$toolName,$toolId,$sakaiSession,$uEid)->result;
-  print "aPATTUMWR: result: [$result]\n";
+  #  my $result = $sakaiScriptConnection->addPageAndToolToUserMyWorkspace($pageName,$toolName,$toolId,$sakaiSession,@uEids)->result;
+  #    my $remote = $sakaiScriptConnection->addPageAndToolToUserMyWorkspace($pageName,$toolName,$toolId,$sakaiSession,\@uEids);
+
+  my $use;
+  foreach $use (@uEids) {
+#    my $use = shift(@uEids);
+    print " eid: [$use]\n";
+    my $remote = $sakaiScriptConnection->addPageAndToolToUserMyWorkspace($pageName,$toolName,$toolId,$sakaiSession,[$use]);
+#    my $remote = "";
+
+    ### need to use reference to list or just uses all in list as args, and will usually fail to find that remote java method.
+    my $fault = $remote->fault;
+    if (defined($fault)) {
+      print "fault: ",join(",",$remote->faultcode,$remote->faultstring);"\n";
+    } else {
+      $result = $remote->result;
+    }
+    print "aPATTUMWR: result: [$result]\n";
+    pop(@uEids);
+  }
   return $result;
 }
 
