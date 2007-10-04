@@ -12,6 +12,8 @@
 # - get rid of those globals (if will use again).
 # - rethink WSURI approach
 # - what about deleteing the added pages later on?
+# - what about checking that not adding a page twice?
+# - way testhost is used is silly.
 
 use sakaiSoapUtil;
 use strict;
@@ -45,7 +47,6 @@ my ($startTime,$endTime);
 my ($success,$nologin,$noaccount,$eids);
 
 # Keep a current session so can reuse it.
-#my $currentSakaiSession = "";
 my $sakaiSession;
 
 my $testHost;
@@ -63,8 +64,7 @@ sub WSURI{
   return join("",$prefix,$service,$suffix);
 }
 
-# Specify the page title, the tool title and the tool id.
-#my($pageName,$toolName,$toolId) = ("Added Config Viewer","Added Config Viewer Tool","sakai.configviewer");
+# Hold the page title, the tool title and the tool id.
 my($pageName,$toolName,$toolId);
 
 # set a persistant value for the page and tool combination
@@ -80,10 +80,8 @@ sub addNewToolPageFromEids {
   $startTime = time();
 
   ###############################
-  # login and start sakai session
-#  my $sakaiSession = establishSakaiSession( WSURI("SakaiLogin"), $currentSakaiSession, $loginUser, $pw );
+  # login and start sakai session if there isn't one already
   $sakaiSession = establishSakaiSession( WSURI("SakaiLogin"), $sakaiSession, $loginUser, $pw );
-#  $currentSakaiSession = $sakaiSession;
 
   die("failed to create sakai session") unless ($sakaiSession);
   print "established [$loginUser] session: [$sakaiSession]\n" if ($verbose);
@@ -92,7 +90,6 @@ sub addNewToolPageFromEids {
   # connect to the sakai script WS
   my $sakaiScriptConnection = connectToSakaiWebService(WSURI("SakaiScript"));
   die("no sakai web service sakaiScriptConnection $!") unless ($sakaiScriptConnection);
-
 
   print ("Adding new page and tool to users. page: [$pageName] tool: [$toolName] toolId: [$toolId]\n");
   print ("user\tworkspaceid\tresult\n");
@@ -118,6 +115,9 @@ sub addNewToolPageFromEids {
   printf " seconds per user: %3.1f\n",($endTime-$startTime)/$eids;
 
 }
+
+# Should not have to make three calls, should be able to do this
+# on the JWS side.
 
 sub addPageAndToolToUserMyWorkspace {
   my($uEid,$pageTitle,$toolTitle,$toolId,$sakaiScriptConnection,$sakaiSession) = @_;
