@@ -19,6 +19,9 @@ use strict;
 ## be able to set verbose level.
 my $verbose = 1;
 
+# from web
+#my @chars=('A'..'Z','0'..'9');
+
 sub setVerbose {
   my ($newVerbose) = @_;
   my $oldVerbose = $verbose;
@@ -42,7 +45,8 @@ my ($startTime,$endTime);
 my ($success,$nologin,$noaccount,$eids);
 
 # Keep a current session so can reuse it.
-my $currentSakaiSession = "";
+#my $currentSakaiSession = "";
+my $sakaiSession;
 
 my $testHost;
 
@@ -60,8 +64,13 @@ sub WSURI{
 }
 
 # Specify the page title, the tool title and the tool id.
-my($pageName,$toolName,$toolId) = ("Added Config Viewer","Added Config Viewer Tool","sakai.configviewer");
+#my($pageName,$toolName,$toolId) = ("Added Config Viewer","Added Config Viewer Tool","sakai.configviewer");
+my($pageName,$toolName,$toolId);
 
+# set a persistant value for the page and tool combination
+sub setPageAndToolNames {
+  ($pageName,$toolName,$toolId) = @_;
+}
 
 # Add a page and tool to the my workspace sites of these users.
 sub addNewToolPageFromEids {
@@ -72,7 +81,10 @@ sub addNewToolPageFromEids {
 
   ###############################
   # login and start sakai session
-  my $sakaiSession = establishSakaiSession( WSURI("SakaiLogin"), $currentSakaiSession, $loginUser, $pw );
+#  my $sakaiSession = establishSakaiSession( WSURI("SakaiLogin"), $currentSakaiSession, $loginUser, $pw );
+  $sakaiSession = establishSakaiSession( WSURI("SakaiLogin"), $sakaiSession, $loginUser, $pw );
+#  $currentSakaiSession = $sakaiSession;
+
   die("failed to create sakai session") unless ($sakaiSession);
   print "established [$loginUser] session: [$sakaiSession]\n" if ($verbose);
   ##############################
@@ -81,19 +93,24 @@ sub addNewToolPageFromEids {
   my $sakaiScriptConnection = connectToSakaiWebService(WSURI("SakaiScript"));
   die("no sakai web service sakaiScriptConnection $!") unless ($sakaiScriptConnection);
 
-  # for every user add the page and tool				
+
   print ("Adding new page and tool to users. page: [$pageName] tool: [$toolName] toolId: [$toolId]\n");
   print ("user\tworkspaceid\tresult\n");
   foreach my $uEid (@userEids) {
+    # for every user add the page and tool			
     addPageAndToolToUserMyWorkspace($uEid,$pageName,$toolName,$toolId,$sakaiScriptConnection,$sakaiSession);
     print "\n";
   }
 
+  # This batch is over.
+  $endTime = time();
+
   ############################
   ## terminate the session.
-  endSakaiSession(WSURI("SakaiLogin"),$sakaiSession);
-  $endTime = time();
-  print("terminate session for $loginUser\n");
+  # Not logging out for now.
+ #  endSakaiSession(WSURI("SakaiLogin"),$sakaiSession);
+
+ #  print("terminate session for $loginUser\n");
   ##############################
 
   print "users: $eids success: $success noaccount: $noaccount nologin: $nologin";
@@ -148,5 +165,5 @@ sub addPageAndToolToUserMyWorkspace {
     return;
   }
 }
-
+1;
 #end
