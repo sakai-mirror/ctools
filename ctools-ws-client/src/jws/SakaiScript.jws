@@ -1,7 +1,7 @@
 /*
  *   SakaiScript.jws - updated for Sakai 2.1
- * $HeadURL:$
- * $Id:$
+ * $HeadURL$
+ * $Id$
  */
  
 import java.util.Date;
@@ -316,7 +316,59 @@ public String getUserMyWorkspaceSiteIdList(String sessionid, List<String> eids) 
 	return result;
     }
 
-     public String addPageAndToolToUserMyWorkspace(String pageTitle, String toolTitle, String toolId,
+public String addPageAndToolToUserMyWorkspace(String pageTitle, String toolTitle, String toolId,
+					      String sakaiSession, List<String> eids) throws AxisFault
+{
+    String result = "";
+	 
+
+    for (String eid: eids) {
+		     result += "*"+eid+"*";
+
+
+
+
+  	// get the my workspace id
+	// 	String userWorkspaceId = getUserMyworkspaceSiteId(sakaiSession,eid);
+	String userWorkspaceId = getUserMyWorkspaceSiteId(sakaiSession,eid);
+	if (userWorkspaceId == null) {
+	    result = "-user_workspace";
+	    return result;
+	}
+	else {
+	    result += "+user_workspace";
+	}
+
+ 	/***** start temp comment
+	//	 return "found workspace ["+userWorkspaceId+"]";
+
+  	// add the page
+  	String pageAdded = addNewPageToSite(sakaiSession,userWorkspaceId,pageTitle,0);
+ 	if (pageAdded == "success") {
+ 	    result += " +page";
+ 	}
+ 	else {
+ 	    result += " -page never logged in?";
+ 	}
+
+
+ 	String toolAdded = addNewToolToPage(sakaiSession,userWorkspaceId,pageTitle,toolTitle,toolId,"");
+ 	if (toolAdded == "success") {
+ 	    result += " +tool";
+ 	}
+ 	else {
+ 	    result += " -tool";
+ 	}
+
+
+	 ***** end temp comment ******/
+ 	// final return
+    }
+    return result;
+
+}
+
+     public String addPageAndToolToUserMyWorkspaceWorksForOne(String pageTitle, String toolTitle, String toolId,
 						   String sakaiSession, String eid) throws AxisFault
      {
 	 String result = "";
