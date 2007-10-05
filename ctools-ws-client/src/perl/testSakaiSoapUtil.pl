@@ -26,9 +26,9 @@ sub runTest {
 	  print "testHost: [$testHost] user: [$user] pw: [SUPPRESSED]\n";
 	}
 
-	my $logInOutWSURI     = "http://$testHost/sakai-axis/SakaiLogin.jws?wsdl";
-	my $sakaiScriptWSURI  = "http://$testHost/sakai-axis/SakaiScript.jws?wsdl";
-	my $sakaiSessionWSURI = "http://$testHost/sakai-axis/SakaiSession.jws?wsdl";
+	my $logInOutWSURI     = "https://$testHost/sakai-axis/SakaiLogin.jws?wsdl";
+	my $sakaiScriptWSURI  = "https://$testHost/sakai-axis/SakaiScript.jws?wsdl";
+	my $sakaiSessionWSURI = "https://$testHost/sakai-axis/SakaiSession.jws?wsdl";
 
  	# login and start sakai session
 	$sakaiSession = establishSakaiSession( $logInOutWSURI, $sakaiSession, $user, $pw );
@@ -60,7 +60,8 @@ sub runTest {
 }
 
 #runTest("localhost:8080","USER","PW");
-runTest("localhost:8080","admin","admin");
+#runTest("localhost:8080","admin","admin");
+runTest("chitlin.ds.itd.umich.edu",'dlhaines@gmail.com',"DancingVase");
 
 
 #end

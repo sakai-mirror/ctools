@@ -19,7 +19,7 @@ use sakaiSoapUtil;
 use strict;
 
 ## be able to set verbose level.
-my $verbose = 1;
+my $verbose = 0;
 
 # from web
 #my @chars=('A'..'Z','0'..'9');
@@ -59,7 +59,7 @@ my $testHost;
 
 sub WSURI{
   my($service) = @_;
-  my($prefix) = "http://$testHost/sakai-axis/";
+  my($prefix) = "https://$testHost/sakai-axis/";
   my($suffix) = ".jws?wsdl";
   return join("",$prefix,$service,$suffix);
 }
@@ -92,8 +92,10 @@ sub addNewToolPageFromEids {
   die("no sakai web service sakaiScriptConnection $!") unless ($sakaiScriptConnection);
 
   print ("Adding new page and tool to users. page: [$pageName] tool: [$toolName] toolId: [$toolId]\n");
+  print "@userEids: [",join("][",@userEids),"]\n" if ($verbose);
   print ("user\tworkspaceid\tresult\n");
   foreach my $uEid (@userEids) {
+      print "uEid: [$uEid]\n" if ($verbose);
     # for every user add the page and tool			
     addPageAndToolToUserMyWorkspace($uEid,$pageName,$toolName,$toolId,$sakaiScriptConnection,$sakaiSession);
     print "\n";
@@ -122,8 +124,15 @@ sub addNewToolPageFromEids {
 sub addPageAndToolToUserMyWorkspace {
   my($uEid,$pageTitle,$toolTitle,$toolId,$sakaiScriptConnection,$sakaiSession) = @_;
   print "aPATTUMW: args: |",join("|",@_),"|\n" if ($trace);
-  my $userWorkspaceId = $sakaiScriptConnection->getUserMyWorkspaceSiteId($sakaiSession,$uEid)->result;
-  print "[$uEid]\t[$userWorkspaceId]" if ($verbose);
+#  my $userWorkspaceId = $sakaiScriptConnection->getUserMyWorkspaceSiteId($sakaiSession,$uEid)->result;
+  my $response = $sakaiScriptConnection->getUserMyWorkspaceSiteId($sakaiSession,$uEid);
+  my $fault = $response->fault;
+  if (defined($fault)) {
+      print "fault: ",join(",",$response->faultcode,$response->faultstring),"\n";
+  }
+  my $userWorkspaceId = $response->result;
+
+  print "[$uEid]\t[$userWorkspaceId]";
 
   $eids++;
 
