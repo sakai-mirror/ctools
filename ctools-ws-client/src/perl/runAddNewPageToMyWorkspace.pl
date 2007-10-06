@@ -5,18 +5,26 @@
 # $HeadURL$
 # $Id$
 
+# Take a list of eids from stdin and add the defined page / tool to the user's My Workspace.  
+# The processing can be batched.  After each batch a summary is printed.  Also will login / out 
+# for each batch which will keep the session active.
+
+#### TTD
+# - why is account in a global and toolInfo passed as an argument?
+# - startTime as global?
+# - Why have processfile code and setup in the same file?
+# - Recognize that page already exists?
+
 use strict;
 use Class::Struct;
 use addNewPageToMyWorkspace;
 
 # hold the host and account information
-#struct( HostAccount => [ hostProtocol=> '$', hostUrl => '$', user => '$', pw => '$']);
 my $accnt;
-
 my $trace = 0;
 
 # Keep track of some values
-my ($startTime,$endTime,$currentTime);
+my ($startTime);
 
 my $count;
 
@@ -24,7 +32,7 @@ my $count;
 # get summary after each batch, so can keep track of progress and
 # will login / logout for each batch so have shorter sessions.
 
-# size of batch to be processed.
+# default size of batch to be processed.
 my $batchSize = 10;
 my @batch;
 
@@ -55,7 +63,6 @@ sub processFile {
 
 sub processBatch {
   my(@batch) = @_;
-  #  addNewToolPageFromEids($accnt->user,$accnt->pw,@batch);
   addNewToolPageFromEids($accnt,@batch);
   printSummary($count,$startTime,time());
 }
@@ -69,17 +76,13 @@ sub printSummary {
   printf " seconds per user: %3.1f\n",$elapsedSecs/$cnt;
 }
 
-
 ############ setup and run #################
 
 addNewPageToMyWorkspace::setVerbose(0);
 addNewPageToMyWorkspace::setTrace(0);
 
 # specify the tool id and the name to be shown for the page and tool.
-#setPageAndToolNames("Teaching Questionnaires","Teaching Questionnaires","sakai.rsf.evaluation");
 my $toolInfo = new PageToolIdNames(pageName => "Teaching Questionnaires", toolName => "Teaching Questionnaires", toolId =>"sakai.rsf.evaluation");
-#setPageAndToolNames("Teaching Questionnaires","Teaching Questionnaires","sakai.rsf.evaluation");
-#setPageAndToolNames($toolInfo->pageName,$toolInfo->toolName,$toolInfo->toolId);
 setPageAndToolNames($toolInfo);
 
 $accnt = new HostAccount( user => 'admin', pw => 'admin');

@@ -7,13 +7,13 @@
 ## This is quick and dirty.  See TTD (Things To Do).
 
 ### TTD
-# - factor out account information
-# - factor out tool information
 # - get rid of those globals (if will use again).
 # - rethink WSURI approach
 # - what about deleteing the added pages later on?
 # - what about checking that not adding a page twice?
-# - way testhost is used is silly.
+# - send tool info over as an object?
+# - enhance sakaiScript to prevent having to make multiple WS calls 
+#   to process a single user.
 
 ######## 
 # These structs are for information passed between the caller and this module.
@@ -80,13 +80,10 @@ my $sakaiSession;
 ## Utility to generate proper URI for a Sakai web service.
 # Return the appropriate URI for the desired service.
 # The argument is the name of Sakai web services jws file.
-# It uses the global value of the variable testHost to 
-# figure out which host to address.
 
-my($protocol) = "https";
-#my($prefix) = "$protocol://XXXXX/sakai-axis/";
+my ($protocol) = "https";
 my ($prefix);
-my($suffix) = ".jws?wsdl";
+my ($suffix) = ".jws?wsdl";
 
 # set the values that are likely to change.
 sub setWSURI {
@@ -100,34 +97,26 @@ sub WSURI{
   my $uri = join("",$prefix,$service,$suffix);
   print "WSURI: uri: [$uri]\n" if ($trace);
   return($uri);
-#  return join("",$prefix,$service,$suffix);
 }
 
 ################
 ## setup to hold the page / tool information
 
-# Hold the page title, the tool title and the tool id.
-#my($pageName,$toolName,$toolId);
-
 my($toolInfo);
-# set a persistant value for the page and tool info
 sub setPageAndToolNames {
   $toolInfo = shift;
-#  ($pageName,$toolName,$toolId) = @_;
 }
 
 ##############
 
 # Add a page and tool to the my workspace sites of these users.
 sub addNewToolPageFromEids {
-#  my ($loginUser,$pw,@userEids) = @_;
   my ($account,@userEids) = @_;
 
   my $startTime = time();
 
   ###############################
   # login and start sakai session if there isn't one already
-  #  $sakaiSession = establishSakaiSession( WSURI("SakaiLogin"), $sakaiSession, $loginUser, $pw );
   $sakaiSession = establishSakaiSession( WSURI("SakaiLogin"), $sakaiSession, $account->user, $account->pw );
 
   die("failed to create sakai session") unless ($sakaiSession);
@@ -142,12 +131,15 @@ sub addNewToolPageFromEids {
 	 "] tool: [",$toolInfo->toolName,
 	 "] toolId: [",$toolInfo->toolId,
 	 "]\n");
+
   print "@userEids: [",join("][",@userEids),"]\n" if ($verbose);
   print ("user\tworkspaceid\tresult\n");
+
   foreach my $uEid (@userEids) {
       print "uEid: [$uEid]\n" if ($verbose);
-    # for every user add the page and tool			
-    addPageAndToolToUserMyWorkspace($uEid,$toolInfo->pageName,$toolInfo->toolName,$toolInfo->toolId,$sakaiScriptConnection,$sakaiSession);
+      # for every user add the page and tool		
+      # If pass toolInfo as an object put the struct into sakaiSoapUtils.pm
+      addPageAndToolToUserMyWorkspace($uEid,$toolInfo->pageName,$toolInfo->toolName,$toolInfo->toolId,$sakaiScriptConnection,$sakaiSession);
     print "\n";
   }
 
@@ -172,12 +164,9 @@ sub addNewToolPageFromEids {
 sub addPageAndToolToUserMyWorkspace {
   my($uEid,$pageTitle,$toolTitle,$toolId,$sakaiScriptConnection,$sakaiSession) = @_;
   print "aPATTUMW: args: |",join("|",@_),"|\n" if ($trace);
+
   my $response = $sakaiScriptConnection->getUserMyWorkspaceSiteId($sakaiSession,$uEid);
-  my $fault = $response->fault;
-  if (defined($fault)) {
-      print "fault: ",join(",",$response->faultcode,$response->faultstring),"\n";
-  }
-  my $userWorkspaceId = $response->result;
+  my $userWorkspaceId = checkWSResponseAndReturnResult($response);
 
   print "[$uEid]\t[$userWorkspaceId]";
 
@@ -193,13 +182,9 @@ sub addPageAndToolToUserMyWorkspace {
   ## add a page.
   print "using userWorkspaceId: [$userWorkspaceId]\n" if ($trace);
 
-  
   my $response = $sakaiScriptConnection->addNewPageToSite($sakaiSession,$userWorkspaceId,$pageTitle,0);
-  my $fault = $response->fault;
-  if (defined($fault)) {
-      print "fault: ",join(",",$response->faultcode,$response->faultstring),"\n";
-  }
-  my $pageAdded = $response->result;
+  my $pageAdded = checkWSResponseAndReturnResult($response);
+
   print "result from adding page: [$pageAdded]\n" if ($trace);
 
   if ($pageAdded =~ "success") {
@@ -219,11 +204,7 @@ sub addPageAndToolToUserMyWorkspace {
   ## add a tool to page
   my $response = $sakaiScriptConnection->addNewToolToPage($sakaiSession,$userWorkspaceId,$pageTitle,
 							   $toolTitle,$toolId,"");
-  my $fault = $response->fault;
-  if (defined($fault)) {
-      print "fault: ",join(",",$response->faultcode,$response->faultstring),"\n";
-  }
-  my $toolAdded = $response->result;
+  my $toolAdded = checkWSResponseAndReturnResult($response);
 
   print "result from adding tool: [$toolAdded]\n" if ($trace);
   if ($toolAdded =~ "success") {
@@ -234,5 +215,18 @@ sub addPageAndToolToUserMyWorkspace {
     return;
   }
 }
+
+# check the response, print fault if it exists and return undefined result,
+# otherwise return the result.
+sub checkWSResponseAndReturnResult {
+  my $response = shift;
+  my $fault = $response->fault;
+  if (defined($fault)) {
+      print " fault: ",join(",",$response->faultcode,$response->faultstring),"\n";
+      return undef;
+  }
+  return $response->result;
+}
+
 1;
-#end
+# end
