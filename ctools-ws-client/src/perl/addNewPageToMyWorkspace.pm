@@ -15,11 +15,21 @@
 # - what about checking that not adding a page twice?
 # - way testhost is used is silly.
 
-package addNewPageToMyWorkspace;
-require Exporter;
+# These structs are passed between caller and module, so might as well
+# have them in each.
 
-# this is not working?
-@EXPORT = qw(setPageAndToolNames);
+# hold the host and account information
+struct( HostAccount => [ hostProtocol=> '$', hostUrl => '$', user => '$', pw => '$']);
+
+package addNewPageToMyWorkspace;
+
+# Need all 3 of these to export
+require Exporter;
+@ISA = ('Exporter');
+# export common routines.
+# Don't export setVerbose and setTrace as requiring prefix makes it easier to tell what
+# you are setting verbose and trace for.
+@EXPORT = qw(setPageAndToolNames setWSURI,WSURI addNewToolPageFromEids addPageAndToolToUserMyWorkspace setWSURI WSURI);
 
 use sakaiSoapUtil;
 use strict;
@@ -84,7 +94,6 @@ sub WSURI{
 ################
 ## setup to hold the page / tool information
 
-
 # Hold the page title, the tool title and the tool id.
 my($pageName,$toolName,$toolId);
 
@@ -128,7 +137,6 @@ sub addNewToolPageFromEids {
 
   ############################
   ## terminate the session.
-  # Not logging out for now.
   endSakaiSession(WSURI("SakaiLogin"),$sakaiSession);
   $sakaiSession = undef;
   ##############################

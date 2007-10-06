@@ -109,3 +109,4 @@ sub connectToSakaiWebService {
  #		print $soap2->addNewUser($session, $usertoadd,$first,$last,$mail,"registered",$newpass)->result . "\n" ;
 	
 
+1;
