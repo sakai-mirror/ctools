@@ -25,7 +25,7 @@ use sakaiSoapUtil;
 use strict;
 
 ## be able to set verbose level.
-my $verbose = 1;
+my $verbose = 0;
 
 # from web
 #my @chars=('A'..'Z','0'..'9');
@@ -38,7 +38,7 @@ sub setVerbose {
 }
 
 ## be able to set trace level.
-my $trace = 1;
+my $trace = 0;
 
 sub setTrace {
   my ($newTrace) = @_;
@@ -55,8 +55,10 @@ my ($success,$nologin,$noaccount,$eids);
 # Keep a current session so can reuse it.
 my $sakaiSession;
 
-my $testHost;
+#my $testHost;
 
+#################
+### setup URIs for web services
 ## Utility to generate proper URI for a Sakai web service.
 # Return the appropriate URI for the desired service.
 # The argument is the name of Sakai web services jws file.
@@ -79,6 +81,10 @@ sub WSURI{
   return join("",$prefix,$service,$suffix);
 }
 
+################
+## setup to hold the page / tool information
+
+
 # Hold the page title, the tool title and the tool id.
 my($pageName,$toolName,$toolId);
 
@@ -86,6 +92,8 @@ my($pageName,$toolName,$toolId);
 sub setPageAndToolNames {
   ($pageName,$toolName,$toolId) = @_;
 }
+
+##############
 
 # Add a page and tool to the my workspace sites of these users.
 sub addNewToolPageFromEids {
@@ -157,7 +165,14 @@ sub addPageAndToolToUserMyWorkspace {
 
   ## add a page.
   print "using userWorkspaceId: [$userWorkspaceId]\n" if ($trace);
-  my $pageAdded = $sakaiScriptConnection->addNewPageToSite($sakaiSession,$userWorkspaceId,$pageTitle,0)->result;
+
+  
+  my $response = $sakaiScriptConnection->addNewPageToSite($sakaiSession,$userWorkspaceId,$pageTitle,0);
+  my $fault = $response->fault;
+  if (defined($fault)) {
+      print "fault: ",join(",",$response->faultcode,$response->faultstring),"\n";
+  }
+  my $pageAdded = $response->result;
   print "result from adding page: [$pageAdded]\n" if ($trace);
 
   if ($pageAdded =~ "success") {
@@ -175,8 +190,14 @@ sub addPageAndToolToUserMyWorkspace {
   }
       
   ## add a tool to page
-  my $toolAdded = $sakaiScriptConnection->addNewToolToPage($sakaiSession,$userWorkspaceId,$pageTitle,
-							   $toolTitle,$toolId,"")->result;
+  my $response = $sakaiScriptConnection->addNewToolToPage($sakaiSession,$userWorkspaceId,$pageTitle,
+							   $toolTitle,$toolId,"");
+  my $fault = $response->fault;
+  if (defined($fault)) {
+      print "fault: ",join(",",$response->faultcode,$response->faultstring),"\n";
+  }
+  my $toolAdded = $response->result;
+
   print "result from adding tool: [$toolAdded]\n" if ($trace);
   if ($toolAdded =~ "success") {
     print "\t+tool";

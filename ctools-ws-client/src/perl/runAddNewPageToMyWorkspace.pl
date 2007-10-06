@@ -11,7 +11,7 @@ struct( HostAccount => [ hostProtocol=> '$', hostUrl => '$', user => '$', pw => 
 my $accnt;
 
 
-my $trace = 1;
+my $trace = 0;
 
 # Keep track of some values
 my ($startTime,$endTime,$currentTime);
@@ -65,6 +65,8 @@ sub printSummary {
   printf " seconds per user: %3.1f\n",$elapsedSecs/$cnt;
 }
 
+addNewPageToMyWorkspace::setVerbose(0);
+addNewPageToMyWorkspace::setTrace(0);
 $accnt = new HostAccount( user => 'admin', pw => 'admin');
 addNewPageToMyWorkspace::setWSURI('http','localhost:8080');
 
