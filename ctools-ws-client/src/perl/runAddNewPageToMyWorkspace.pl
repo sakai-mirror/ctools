@@ -55,7 +55,8 @@ sub processFile {
 
 sub processBatch {
   my(@batch) = @_;
-  addNewToolPageFromEids($accnt->user,$accnt->pw,@batch);
+  #  addNewToolPageFromEids($accnt->user,$accnt->pw,@batch);
+  addNewToolPageFromEids($accnt,@batch);
   printSummary($count,$startTime,time());
 }
 
@@ -69,11 +70,18 @@ sub printSummary {
 }
 
 
+############ setup and run #################
+
 addNewPageToMyWorkspace::setVerbose(0);
 addNewPageToMyWorkspace::setTrace(0);
 
 # specify the tool id and the name to be shown for the page and tool.
-setPageAndToolNames("Teaching Questionnaires","Teaching Questionnaires","sakai.rsf.evaluation");
+#setPageAndToolNames("Teaching Questionnaires","Teaching Questionnaires","sakai.rsf.evaluation");
+my $toolInfo = new PageToolIdNames(pageName => "Teaching Questionnaires", toolName => "Teaching Questionnaires", toolId =>"sakai.rsf.evaluation");
+#setPageAndToolNames("Teaching Questionnaires","Teaching Questionnaires","sakai.rsf.evaluation");
+#setPageAndToolNames($toolInfo->pageName,$toolInfo->toolName,$toolInfo->toolId);
+setPageAndToolNames($toolInfo);
+
 $accnt = new HostAccount( user => 'admin', pw => 'admin');
 setWSURI('http','localhost:8080');
 

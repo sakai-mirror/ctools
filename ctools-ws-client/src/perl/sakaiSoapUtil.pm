@@ -73,7 +73,9 @@ sub establishSakaiSession {
 	}
 
 	my $soap = connectToSakaiWebService($loginURI);
+	# error recognition?
 	$session = $soap->login($user,$pw)->result;
+
 	
 	print "$session\n" if ($trace);
 
@@ -87,7 +89,9 @@ sub endSakaiSession {
   print "logging out of session [$session]\n" if ($trace);
 
   my $soap = connectToSakaiWebService($logInOutWSURI);
+  # error recognition?
   my $result = $soap->logout($session)->result;
+  
   print "logout result is: [$result]\n" if ($trace);
 
 }
@@ -95,7 +99,7 @@ sub endSakaiSession {
 sub connectToSakaiWebService {
   my($sakaiWSURI) = @_;
   ### Connect and futz
-  
+  ## Does this have error recognition?
   print "sSU: trying web service: [$sakaiWSURI]\n" if ($trace);
   my $soap2 = SOAP::Lite
     -> proxy($sakaiWSURI)

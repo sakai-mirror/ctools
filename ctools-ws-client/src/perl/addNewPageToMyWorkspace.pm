@@ -15,15 +15,23 @@
 # - what about checking that not adding a page twice?
 # - way testhost is used is silly.
 
-# These structs are passed between caller and module, so might as well
-# have them in each.
+######## 
+# These structs are for information passed between the caller and this module.
+# By putting them before the package statement they will appear directly in 
+# the namespace of each module with no extra effort.
 
 # hold the host and account information
 struct( HostAccount => [ hostProtocol=> '$', hostUrl => '$', user => '$', pw => '$']);
 
+# bind new page name, tool name and the Sakai tool id together.
+struct( PageToolIdNames => [ pageName=> '$', toolName => '$', toolId => '$']);
+
+#################
+
 package addNewPageToMyWorkspace;
 
-# Need all 3 of these to export
+# Need all 3 of these to export values.  NOTE: put no commas in the qw list.
+
 require Exporter;
 @ISA = ('Exporter');
 # export common routines.
@@ -37,10 +45,10 @@ use strict;
 ## be able to set verbose level.
 my $verbose = 0;
 
-# from web
-#my @chars=('A'..'Z','0'..'9');
-
 sub setVerbose {
+  # would this work?
+  # my ($oldVerbose,$verbose) = ($verbose,@_);
+  # return $oldVerbose;
   my ($newVerbose) = @_;
   my $oldVerbose = $verbose;
   $verbose = $newVerbose;
@@ -51,21 +59,21 @@ sub setVerbose {
 my $trace = 0;
 
 sub setTrace {
+  # see setVerbose to see if the alternate method would work.
   my ($newTrace) = @_;
   my $oldTrace = $trace;
   $trace = $newTrace;
   return($oldTrace);
 }
 
-## 
+###################
 
-my ($startTime,$endTime);
+## For accounting
+#my ($startTime,$endTime);
 my ($success,$nologin,$noaccount,$eids);
 
 # Keep a current session so can reuse it.
 my $sakaiSession;
-
-#my $testHost;
 
 #################
 ### setup URIs for web services
@@ -76,7 +84,8 @@ my $sakaiSession;
 # figure out which host to address.
 
 my($protocol) = "https";
-my($prefix) = "$protocol://XXXXX/sakai-axis/";
+#my($prefix) = "$protocol://XXXXX/sakai-axis/";
+my ($prefix);
 my($suffix) = ".jws?wsdl";
 
 # set the values that are likely to change.
@@ -88,52 +97,62 @@ sub setWSURI {
 
 sub WSURI{
   my($service) = @_;
-  return join("",$prefix,$service,$suffix);
+  my $uri = join("",$prefix,$service,$suffix);
+  print "WSURI: uri: [$uri]\n" if ($trace);
+  return($uri);
+#  return join("",$prefix,$service,$suffix);
 }
 
 ################
 ## setup to hold the page / tool information
 
 # Hold the page title, the tool title and the tool id.
-my($pageName,$toolName,$toolId);
+#my($pageName,$toolName,$toolId);
 
-# set a persistant value for the page and tool combination
+my($toolInfo);
+# set a persistant value for the page and tool info
 sub setPageAndToolNames {
-  ($pageName,$toolName,$toolId) = @_;
+  $toolInfo = shift;
+#  ($pageName,$toolName,$toolId) = @_;
 }
 
 ##############
 
 # Add a page and tool to the my workspace sites of these users.
 sub addNewToolPageFromEids {
-  my ($loginUser,$pw,@userEids) = @_;
+#  my ($loginUser,$pw,@userEids) = @_;
+  my ($account,@userEids) = @_;
 
-  $startTime = time();
+  my $startTime = time();
 
   ###############################
   # login and start sakai session if there isn't one already
-  $sakaiSession = establishSakaiSession( WSURI("SakaiLogin"), $sakaiSession, $loginUser, $pw );
+  #  $sakaiSession = establishSakaiSession( WSURI("SakaiLogin"), $sakaiSession, $loginUser, $pw );
+  $sakaiSession = establishSakaiSession( WSURI("SakaiLogin"), $sakaiSession, $account->user, $account->pw );
 
   die("failed to create sakai session") unless ($sakaiSession);
-  print "established [$loginUser] session: [$sakaiSession]\n" if ($verbose);
+  print "established [",$account->user,"] session: [$sakaiSession]\n" if ($verbose);
   ##############################
 
   # connect to the sakai script WS
   my $sakaiScriptConnection = connectToSakaiWebService(WSURI("SakaiScript"));
   die("no sakai web service sakaiScriptConnection $!") unless ($sakaiScriptConnection);
 
-  print ("Adding new page and tool to users. page: [$pageName] tool: [$toolName] toolId: [$toolId]\n");
+  print ("Adding new page and tool to users. page: [",$toolInfo->pageName,
+	 "] tool: [",$toolInfo->toolName,
+	 "] toolId: [",$toolInfo->toolId,
+	 "]\n");
   print "@userEids: [",join("][",@userEids),"]\n" if ($verbose);
   print ("user\tworkspaceid\tresult\n");
   foreach my $uEid (@userEids) {
       print "uEid: [$uEid]\n" if ($verbose);
     # for every user add the page and tool			
-    addPageAndToolToUserMyWorkspace($uEid,$pageName,$toolName,$toolId,$sakaiScriptConnection,$sakaiSession);
+    addPageAndToolToUserMyWorkspace($uEid,$toolInfo->pageName,$toolInfo->toolName,$toolInfo->toolId,$sakaiScriptConnection,$sakaiSession);
     print "\n";
   }
 
   # This batch is over.
-  $endTime = time();
+  my $endTime = time();
 
   ############################
   ## terminate the session.
