@@ -2,6 +2,9 @@
 
 # Script to add a page and a tool to a user's my workspace.
 
+# $HeadURL:$
+# $Id:$
+
 use Class::Struct;
 use strict;
 use addNewPageToMyWorkspace qw( setPageAndToolNames );
