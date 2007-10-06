@@ -1,61 +1,59 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 
 # Script to add a page and a tool to a user's my workspace.
 
+use Class::Struct;
 use strict;
-use addNewPageToMyWorkspace;
+use addNewPageToMyWorkspace qw( setPageAndToolNames );
 
-my $trace = 0;
+# hold the host and account information
+struct( HostAccount => [ hostProtocol=> '$', hostUrl => '$', user => '$', pw => '$']);
+my $accnt;
+
+
+my $trace = 1;
 
 # Keep track of some values
 my ($startTime,$endTime,$currentTime);
 
 my ($count);
 my $lastCntReported;
-# how often to print the processing summary
-my $batchSize = 20;
+# size of batch to be processed.
+my $batchSize = 1;
 my @batch;
 
 # specify the tool id and the name to be shown for the page and tool.
-setPageAndToolNames("Teaching Questionnaires","Teaching Questionnaires","sakai.rsf.evaluation");
+addNewPageToMyWorkspace::setPageAndToolNames("Teaching Questionnaires","Teaching Questionnaires","sakai.rsf.evaluation");
 
-# set the batch size.  Will process the eids in batches of this size and will 
 # generate summary statistics after every batch.
 
 $startTime = time();
 
-# expect a file with 1 eid per line.  Empty and commented lines are ignored.
-while(<>) {
-  chomp;
-  next if (/^\s*$/);
-  next if (/^\s*#/); 
-	   $count++;
-	   print "eid: [$_]\n" if ($trace);
-  # accumulate a batch of the eids to process.
-  push(@batch,$_);
-  unless($count % $batchSize) {
-    processBatch(@batch);
-    @batch = ();
+sub processFile {
+  # expect a file with 1 eid per line.  Empty and commented lines are ignored.
+  while (<>) {
+    chomp;
+    next if (/^\s*$/);
+    next if (/^\s*#/); 
+    $count++;
+    print "eid: [$_]\n" if ($trace);
+    # accumulate a batch of the eids to process.
+    push(@batch,$_);
+    unless($count % $batchSize) {
+      @batch = processBatch(@batch);
+    }
   }
-}
 
-# Get the last batch (which may not be full).
-END {
-    processBatch(@batch) if (@batch);
-    @batch = ();
+  # Get the last batch (which may not be full).
+  @batch = processBatch(@batch) if (@batch);
 }
-
 ##################################
 
 sub processBatch {
-    my(@batch) = @_;
-#  addNewToolPageFromEids("localhost:8080","XXXX","XXXX",@_);
-#  addNewToolPageFromEids("chitlin.ds.itd.umich.edu",'dlhaines@gmail.com',"XXXXX",@_);
-#  addNewToolPageFromEids("bologna.ds.itd.umich.edu",'dlhaines@gmail.com',"XXXXX",@_);
-#    addNewToolPageFromEids("bologna.ds.itd.umich.edu",'admin','admin');
-    addNewToolPageFromEids("bologna.ds.itd.umich.edu",'dlhaines','XXXX',@batch);
+  my(@batch) = @_;
+  addNewPageToMyWorkspace::addNewToolPageFromEids($accnt->user,$accnt->pw,@batch);
   printSummary($count,$startTime,time());
-  @batch = ();
+  return ();
 }
 
 sub printSummary {
@@ -66,5 +64,10 @@ sub printSummary {
   print " elapsed time (secs) : ",$elapsedSecs;
   printf " seconds per user: %3.1f\n",$elapsedSecs/$cnt;
 }
+
+$accnt = new HostAccount( user => 'admin', pw => 'admin');
+addNewPageToMyWorkspace::setWSURI('http','localhost:8080');
+
+processFile();
 
 #end

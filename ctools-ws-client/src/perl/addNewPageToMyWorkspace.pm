@@ -15,11 +15,17 @@
 # - what about checking that not adding a page twice?
 # - way testhost is used is silly.
 
+package addNewPageToMyWorkspace;
+require Exporter;
+
+# this is not working?
+@EXPORT = qw(setPageAndToolNames);
+
 use sakaiSoapUtil;
 use strict;
 
 ## be able to set verbose level.
-my $verbose = 0;
+my $verbose = 1;
 
 # from web
 #my @chars=('A'..'Z','0'..'9');
@@ -32,7 +38,7 @@ sub setVerbose {
 }
 
 ## be able to set trace level.
-my $trace = 0;
+my $trace = 1;
 
 sub setTrace {
   my ($newTrace) = @_;
@@ -57,10 +63,19 @@ my $testHost;
 # It uses the global value of the variable testHost to 
 # figure out which host to address.
 
+my($protocol) = "https";
+my($prefix) = "$protocol://XXXXX/sakai-axis/";
+my($suffix) = ".jws?wsdl";
+
+# set the values that are likely to change.
+sub setWSURI {
+  my $host;
+  ($protocol,$host) = @_;
+  $prefix = "$protocol://$host/sakai-axis/";
+}
+
 sub WSURI{
   my($service) = @_;
-  my($prefix) = "https://$testHost/sakai-axis/";
-  my($suffix) = ".jws?wsdl";
   return join("",$prefix,$service,$suffix);
 }
 
@@ -74,8 +89,7 @@ sub setPageAndToolNames {
 
 # Add a page and tool to the my workspace sites of these users.
 sub addNewToolPageFromEids {
-  my ($useHost,$loginUser,$pw,@userEids) = @_;
-  $testHost = $useHost;
+  my ($loginUser,$pw,@userEids) = @_;
 
   $startTime = time();
 
@@ -107,9 +121,8 @@ sub addNewToolPageFromEids {
   ############################
   ## terminate the session.
   # Not logging out for now.
- #  endSakaiSession(WSURI("SakaiLogin"),$sakaiSession);
-
- #  print("terminate session for $loginUser\n");
+  endSakaiSession(WSURI("SakaiLogin"),$sakaiSession);
+  $sakaiSession = undef;
   ##############################
 
   print "users: $eids success: $success noaccount: $noaccount nologin: $nologin";
@@ -124,7 +137,6 @@ sub addNewToolPageFromEids {
 sub addPageAndToolToUserMyWorkspace {
   my($uEid,$pageTitle,$toolTitle,$toolId,$sakaiScriptConnection,$sakaiSession) = @_;
   print "aPATTUMW: args: |",join("|",@_),"|\n" if ($trace);
-#  my $userWorkspaceId = $sakaiScriptConnection->getUserMyWorkspaceSiteId($sakaiSession,$uEid)->result;
   my $response = $sakaiScriptConnection->getUserMyWorkspaceSiteId($sakaiSession,$uEid);
   my $fault = $response->fault;
   if (defined($fault)) {
