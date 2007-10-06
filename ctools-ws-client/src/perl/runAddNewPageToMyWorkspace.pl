@@ -2,12 +2,15 @@
 
 # Script to add a page and a tool to a user's my workspace.
 
-# $HeadURL:$
-# $Id:$
+# $HeadURL$
+# $Id$
 
 use Class::Struct;
-use strict;
+
 use addNewPageToMyWorkspace qw( setPageAndToolNames );
+
+# use strict need to come after modules?
+use strict;
 
 # hold the host and account information
 struct( HostAccount => [ hostProtocol=> '$', hostUrl => '$', user => '$', pw => '$']);
