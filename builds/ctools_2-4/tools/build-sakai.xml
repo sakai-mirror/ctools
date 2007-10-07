@@ -57,9 +57,11 @@
 	  seperate build scripts for the different versions.
 -->
 
+  <!--
   <target name="deleteLinktool" if="linktool.install.skip">
         <removeFromBuild deleteDir="linktool" />
   </target>
+  -->
 
   <target name="deleteBlog" if="blog.install.skip">
         <removeFromBuild deleteDir="blog" />
@@ -69,7 +71,7 @@
     <removeFromBuild deleteDir="webservices" />
   </target>
 
-  <target name="removeUnneededSakai" depends="deleteSamigo,deleteLinktool,deleteBlog,deleteWebservices" >
+  <target name="removeUnneededSakai" depends="deleteSamigo,deleteBlog,deleteWebservices" >
 
     <removeFromBuild deleteDir="portal/mercury" />
     <removeFromBuild deleteDir="common/common-composite-component/src/test" />
@@ -200,7 +202,7 @@
       <arg value="-Dmaven.junit.fork=true" />
       <!-- <arg value="-X" /> -->
       <!--  sometimes need to avoid this with a new build, but usually speeds things up. -->
-      <arg value="-o" /> 
+      <!-- <arg value="-o" />  -->
 
       <arg value="sakai:clean" />
       <arg value="sakai:build" />

@@ -122,6 +122,18 @@
        the svn specific syntax.
   -->
 
+  <target name="revertSrc">
+      <exec executable="svn"
+	    dir="${build.dir}"
+	    failonerror="true"
+	    output="@{logdir}/${ant.project.name}.log"
+	    append="true" >
+	<arg value="@{additionalArguments}" />
+	<arg value="revert" />
+	<arg value="-R" />
+      </exec>
+  </target>
+
   <macrodef name="execSvnCmd">
     <attribute name="cmd" default="${svnCmd}" />
     <attribute name="url" default="${sakai.svnurl}" />

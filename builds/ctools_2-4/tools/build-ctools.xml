@@ -69,7 +69,7 @@ $HeadURL$
 
   <!-- change source as required -->
  <!--  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades,editCourseManagement" > at the moment don't need to do course management -->
-  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades" >
+  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades,editLinktool" >
     <!-- edit the files that need to be modified for ctools -->
   </target>
 
@@ -181,6 +181,15 @@ $HeadURL$
     <copy file="${reference.dir}/${gradebook.grades.config.sourcefile}"
 	  tofile="${build.dir}/${gradebook.grades.config.tofile}"
 	  overwrite="true"/>
+  </target>
+
+  <!-- copy the linktool jws file to the web-services directory -->
+  <target name="editLinktool">
+    <echo> Copy the linktool jws files to sakai webservices. </echo>
+    <copy todir="${build.dir}/webservices/axis/src/webapp"
+	  overwrite="true">
+      <fileset dir="${build.dir}/linktool" includes="*.jws" />
+    </copy>
   </target>
 
 </project>

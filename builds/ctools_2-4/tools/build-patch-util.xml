@@ -35,12 +35,12 @@
     <applyPatch patchFileName="${patchFileName}" />
   </target>
 
-  <!-- Macro definition to invoce the patch utility -->
+  <!-- Macro definition to invoke the patch utility -->
   <macrodef name="applyPatch">
     <attribute name="patchFileName" />
     <sequential>
     <echo> applying patch @{patchFileName}</echo>
-    <echo file="${logs.dir}/${ant.project.name}.log" append="true" >
+    <echo file="${logs.dir}/${ant.project.name}.patches.log" append="true" >
      ********************************************************** 
      applying patch @{patchFileName}
      ********************************************************** 
@@ -48,7 +48,7 @@
     <exec executable="patch"
 	  dir="${build.dir}"
 	  failonerror="true"
-	  output="${logs.dir}/${ant.project.name}.log"
+	  output="${logs.dir}/${ant.project.name}.patches.log"
 	  append="true">
       <arg value="-p0" />
       <arg value="--verbose" />
@@ -58,7 +58,7 @@
       <arg value="--input=${patches.dir}/@{patchFileName}" />
       <!--      <arg value="\-\-backup" /> -->
       <arg value="--remove-empty-files" />
-      <arg value="--debug=15" />
+      <!-- <arg value="\-\-debug=15" /> -->
     </exec>
     </sequential>
   </macrodef>
