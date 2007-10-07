@@ -28,7 +28,7 @@ is little point in depending on them.
 
   -->
 
-  <target name="applyPatches" depends="applyPatches_2-4-xJ" />
+  <target name="applyPatches" depends="applyPatches_2-4-xK" />
 
 
 
@@ -45,6 +45,116 @@ is little point in depending on them.
   <!-- patch set for the current release candidate is first. Older patch
   sets are kept below this.
   -->
+
+  <!-- ================================================== -->
+
+  <target name="applyPatches_2-4-xK" >
+    <echo message="applying patch set 2-4-xK" />
+
+    <!-- ====================================== -->
+    <!-- 
+    This applies all the patches needed in the current build.  It may vary 
+    from older patch targets since some patches needed before may be
+    incorporated in the maintenance branch now.
+    -->
+
+    <!-- =========== 2.4.xA ================== -->
+
+    <!-- query speedup -->
+    <applyPatch patchFileName="SPEED.patch" />
+
+    <!-- change site dropdown from 'more' to 'more sites' -->
+    <applyPatch patchFileName="SAK-7489.patch" />
+
+    <!-- chat migration fixes -->
+    <applyPatch patchFileName="SAK-10483.patch" />
+    <applyPatch patchFileName="CT-231.patch" />
+
+    <!-- =========== 2.4.xB ================== -->
+
+    <!-- patches for the OSP for the med school -->
+    <applyPatch patchFileName="SAK-9725.patch" /> <!-- requires db change -->
+    <applyPatch patchFileName="SAK-10583.patch" />
+
+    <!-- =========== 2.4.xC ================== -->
+
+    <!-- patch default number of site tabs, and make it 
+	 settable via sakai.properties 
+	 subsumed by SAK-10394, SAK-10938, both now in 2.4.x (WRONG)
+    -->
+    <applyPatch patchFileName="SAK-10497.patch" />
+
+    <!-- =========== 2.4.xD ================== -->
+
+    <!-- chat room stack dumps -->
+    <applyPatch patchFileName="SAK-10726.patch" />
+
+    <!-- Cannot import forms -->
+    <applyPatch patchFileName="SAK-10939.patch" />
+
+    <!-- cannot add roster via site info -->
+    <applyPatch patchFileName="SAK-10831.patch" />
+
+    <!-- =========== 2.4.xE ================== -->
+
+    <!-- change conncurrent hash map -->
+	 <applyPatch patchFileName="SAK-11023.patch" />
+
+    <!-- =========== 2.4.xG ================== -->
+
+    <!-- Previewing a form during form creation cause a runtime error -->
+    <applyPatch patchFileName="SAK-10953.patch" />
+
+    <!--  Data truncated for column 'RESOURCE_ID' -->
+    <!--
+    <applyPatch patchFileName="SAK-10752.patch" />
+    --> 
+
+    <!--  Assignments / reordering of assignments -->
+    <applyPatch patchFileName="SAK-11016.patch" />
+
+    <!--  Skip to Add Course(s) lookup page -->
+    <applyPatch patchFileName="SAK-10575.patch" />
+
+    <!--  Odd flow updates only first user in grade list -->
+    <applyPatch patchFileName="SAK-10823.patch" />
+
+    <!-- Schedule (frequency not working) -->
+    <!-- patch has handwork -->
+    <applyPatch patchFileName="SAK-11204.patch" />
+    <applyPatch patchFileName="SAK-11204B.patch" />
+
+    <!--  Default chat room setting affects all chat tools on single site -->
+    <applyPatch patchFileName="SAK-10163.patch" />
+
+    <!--   Spurious presence events -->
+    <applyPatch patchFileName="SAK-11279.patch" />
+
+    <!-- receiving an alert message when editing text that contains an https link in the WYSIWYG -->
+    <applyPatch patchFileName="SAK-10338-10810.patch" />
+
+    <!-- dropbox -->
+    <!--
+    <applyPatch patchFileName="SAK-10108.patch" />
+    -->
+
+    <!-- back out student assignment read logging -->
+    <applyPatch patchFileName="SAK-11180A.patch" />
+
+    <!-- ====================================== -->
+
+    <!-- added for 2.4.xH -->
+
+    <!-- Disable double click on 'grade' link - it causes double submissions for non-electronic assignments -->
+    <applyPatch patchFileName="SAK-11172.patch" />
+
+  </target>
+
+  <!-- end of 2.4.xK -->
+
+  <!-- ============================================================== -->
+  <!-- ========================= old patch sets ===================== -->
+  <!-- ============================================================== -->
 
   <!-- J is just like H but with evaluation and updated sakai.properties -->
   <target name="applyPatches_2-4-xJ" depends="applyPatches_2-4-xH" />
@@ -260,10 +370,6 @@ is little point in depending on them.
   </target>
 
   <!-- end of 2.4.xH -->
-
-  <!-- ============================================================== -->
-  <!-- ========================= old patch sets ===================== -->
-  <!-- ============================================================== -->
 
   <target name="applyPatches_2-4-xA" >
     <echo message="applying patch set 2-4-xA" />
