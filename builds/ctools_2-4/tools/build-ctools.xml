@@ -184,7 +184,7 @@ $HeadURL$
   </target>
 
   <!-- copy the linktool jws file to the web-services directory -->
-  <target name="editLinktool">
+  <target name="editLinktool" unless="linktool.install.skip" >
     <echo> Copy the linktool jws files to sakai webservices. </echo>
     <copy todir="${build.dir}/webservices/axis/src/webapp"
 	  overwrite="true">

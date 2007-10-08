@@ -9,8 +9,6 @@
 use strict;
 
 my ($trace) = 0;
-#my ($lines, $linesUsed);
-#my ($linesTrunk, $linesContrib, $lineBranch);
 my (%lines);
 my ($module,$revision,$path);
 my ($log);
@@ -20,36 +18,36 @@ my ($logFileName) = "./svnCheckout.log";
 
 $startTime = time();
 
-while(<>) {
-  $lines{TOTAL}++;
+sub getSrcViaExternalsFile {
 
- #   next if ($lines{TOTAL} > 2 && $lines{TOTAL} <70); # use for testing to cut down on processing.
-  # sample externals file format
-  # access -r35024 https://source.sakaiproject.org/svn/access/branches/sakai_2-4-x
-  next if (/^\s*#/);
-  next if (/^\s*$/);
-  ($module,$revision,$path) = m/\s*(\S+)\s+-r(\d+)\s+(.*)\s+/;
-  next unless ($module);
+  while (<>) {
+    $lines{TOTAL}++;
+
+    #   next if ($lines{TOTAL} > 2 && $lines{TOTAL} <70); # use for testing to cut down on processing.
+    # sample externals file format
+    # access -r35024 https://source.sakaiproject.org/svn/access/branches/sakai_2-4-x
+    next if (/^\s*#/);
+    next if (/^\s*$/);
+    ($module,$revision,$path) = m/\s*(\S+)\s+-r(\d+)\s+(.*)\s+/;
+    next unless ($module);
   
-  # Count the types of modules.
-  $lines{USED}++;
-  $lines{TRUNK}++ if (m|/trunk/|);
-  $lines{CONTRIB}++ if (m|/contrib/|);
-  $lines{BRANCH}++ if (m|/branches/|);
+    # Count the types of modules.
+    $lines{USED}++;
+    $lines{TRUNK}++ if (m|/trunk/|);
+    $lines{CONTRIB}++ if (m|/contrib/|);
+    $lines{BRANCH}++ if (m|/branches/|);
 
- #  $linesUsed++;
- #  $linesTrunk++ if (m|/trunk/|);
- #  $lineContrib++ if (
-  print "module: [$module] revision: [$revision] path: [$path]\n" if ($trace);
+    #  $linesUsed++;
+    #  $linesTrunk++ if (m|/trunk/|);
+    #  $lineContrib++ if (
+    print "module: [$module] revision: [$revision] path: [$path]\n" if ($trace);
 
-  my $cmd = checkoutCmd($module,$revision,$path);
-  print "cmd: [$cmd]\n";
-  my $result = `$cmd`;
-  print "result: [$result]\n" if ($trace);
-  $log += $result;
-
-
-
+    my $cmd = checkoutCmd($module,$revision,$path);
+    print "cmd: [$cmd]\n";
+    my $result = `$cmd`;
+    print "result: [$result]\n" if ($trace);
+    $log += $result;
+  }
 }
 
 END {
@@ -84,4 +82,6 @@ sub checkoutCmd {
   return "svn checkout -r$revision $path $module";
 }
 
+
+getSrcViaExternalsFile();
 #end

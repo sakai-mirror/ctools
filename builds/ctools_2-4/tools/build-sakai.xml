@@ -28,6 +28,19 @@
   <!--               deal with Sakai proper               -->
   <!-- ================================================== -->
 
+  <target name="getSakaiSrcPerl" depends="prepareBuildDirs">
+    <echo> Get source via perl script </echo>
+    <exec dir="." executable="perl" failonerror="true">
+      <arg value="svnCheckoutExternalsFormat.pl" />
+      <arg value="0" />
+      <arg value="${ant.property.One}" /> 
+      <!-- <arg line="perlFromAnt.pl 1 ${ant.property.One}" /> -->
+    </exec>
+
+
+    <antcall target="removeUnneededSakai" />
+  </target>
+
   <target name="getSakaiSrc" depends="prepareBuildDirs">
     <execSvnCmd url="${sakai.svnurl}" revision="${sakai.revision}"/>
     <!--
@@ -57,11 +70,11 @@
 	  seperate build scripts for the different versions.
 -->
 
-  <!--
+  <!-- -->
   <target name="deleteLinktool" if="linktool.install.skip">
         <removeFromBuild deleteDir="linktool" />
   </target>
-  -->
+  <!-- -->
 
   <target name="deleteBlog" if="blog.install.skip">
         <removeFromBuild deleteDir="blog" />
@@ -71,7 +84,7 @@
     <removeFromBuild deleteDir="webservices" />
   </target>
 
-  <target name="removeUnneededSakai" depends="deleteSamigo,deleteBlog,deleteWebservices" >
+  <target name="removeUnneededSakai" depends="deleteSamigo,deleteLinktool,deleteBlog,deleteWebservices" >
 
     <removeFromBuild deleteDir="portal/mercury" />
     <removeFromBuild deleteDir="common/common-composite-component/src/test" />
