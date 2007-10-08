@@ -106,9 +106,7 @@ is little point in depending on them.
     <applyPatch patchFileName="SAK-10953.patch" />
 
     <!--  Data truncated for column 'RESOURCE_ID' -->
-    <!--
     <applyPatch patchFileName="SAK-10752.patch" />
-    --> 
 
     <!--  Assignments / reordering of assignments -->
     <applyPatch patchFileName="SAK-11016.patch" />
@@ -134,9 +132,7 @@ is little point in depending on them.
     <applyPatch patchFileName="SAK-10338-10810.patch" />
 
     <!-- dropbox -->
-    <!--
     <applyPatch patchFileName="SAK-10108.patch" />
-    -->
 
     <!-- back out student assignment read logging -->
     <applyPatch patchFileName="SAK-11180A.patch" />
