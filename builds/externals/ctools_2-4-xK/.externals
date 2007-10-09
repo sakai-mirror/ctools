@@ -92,6 +92,7 @@
 # added per Dick Ellis for evaluation.
 # Only taking from trunk for the moment since there is no tag.  Will take version frozen at revision number so 
 # don't get unexpected version.
-evaluation  -r12613 https://source.sakaiproject.org/contrib/evaluation/branches/umich
+#evaluation  -r12613 https://source.sakaiproject.org/contrib/evaluation/branches/umich
+evaluation  -r12634 https://source.sakaiproject.org/contrib/evaluation/branches/umich
 entitybroker -r12107 https://source.sakaiproject.org/contrib/caret/entitybroker/trunk/
 hierarchy -r11987 https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
