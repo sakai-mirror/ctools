@@ -90,7 +90,7 @@
   ctools-reference -r35975 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
 # gradtools -r31834 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
 # F&M issue
-gradtools -r35101 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
+gradtools -r35111 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
 # ctools-libhelp https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
  ctools-libhelp -r33513 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
 # added per Dick Ellis for evaluation.
