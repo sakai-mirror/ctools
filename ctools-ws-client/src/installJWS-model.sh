@@ -27,8 +27,8 @@
 #DEST_SCRIPTS=./bin
 #mkdir $DEST_SCRIPTS
 #cp ./perl/addNewPageToMyWorkspace.pm $DEST_SCRIPTS
-#cp ./perl/runAddNewPageToMyWorkspace.pm $DEST_SCRIPTS
-#cp ./sakaiSoapUtil.pm $DEST_SCRIPTS
+#cp ./perl/runAddNewPageToMyWorkspace.pl $DEST_SCRIPTS
+#cp ./perl/sakaiSoapUtil.pm $DEST_SCRIPTS
 #chmod +x $DEST_SCRIPTS/*.pl
 
 #end
