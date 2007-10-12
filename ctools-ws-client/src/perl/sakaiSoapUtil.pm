@@ -38,8 +38,8 @@
 #
 
 #package sakaiSoupUtil;
-use SOAP::Lite;
 
+use SOAP::Lite;
 use strict;
 
 # set up some variables
@@ -114,3 +114,45 @@ sub connectToSakaiWebService {
 	
 
 1;
+
+__END__
+
+=head1 NAME
+
+sakaiSoapUtil - Utilities for using SOAP clients with Sakai.
+
+=head1 SYNOPSIS
+
+  use sakaiSoapUtil;
+
+  establishSakaiSession(loginURI, session, user, password)
+  This will use the login URI, the user and password supplied to create (and return) a 
+  Sakai user session.  If a session is provided it will simply be returned.
+
+  endSakaiSession(loginURI,session)
+  This will logout of the Sakai session supplied.
+
+  connectToSakaiWebService(sakaiWSURI)
+  This method will return a Soap connection object to the URI specified.
+
+  setTrace(integer)
+  This will set the current trace level of sakaiSoapUtil.  It returns the prior value.
+  If set to 0 the trace is disabled, if set to any other value traceing is enabled.
+
+=head1 DESCRIPTION
+
+  See SYNOPSIS
+
+
+=head1 COPYRIGHT
+
+ you can use it
+
+
+=head1 AUTHORS
+
+  David Haines (University of Michigan) distorted code from Seth Theriault.  Don't
+  blame him for my mistakes.
+
+
+=cut

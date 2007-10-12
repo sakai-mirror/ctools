@@ -229,4 +229,71 @@ sub checkWSResponseAndReturnResult {
 }
 
 1;
-# end
+
+__END__
+
+=head1 NAME
+
+addNewPageToMyWorkspace.pm
+
+=head1 SYNOPSIS
+
+Methods to add a page and a tool to a site.
+
+This module provides two objects for storing HostAccount and
+PageToolIdNames information.  The HostAccount object hold the user
+name and password for the account used for authentication.  The
+PageToolIdNames object binds the desired Page name, Tool name, and
+Sakai Tool Id together.
+
+These can be used directly by any code that includes this module.
+
+WEB SERVICE METHODS
+
+=item setWSURI - set the host and protocol to use for the web services
+connections.  
+
+=item WSURI - return a web services URI for a particular JWS file.
+
+=item setPageAndToolNames - Store the value of the page name, the tool name, and the tool id for later use.
+
+=item setVerbose - set module to be verbose.
+
+=item setTrace - set module to trace behavior.
+
+=item addNewToolPageFromEids - Using the specified account add the page and
+tool to the My Workspace for all the Eids in the list of Eids passed
+in.  This will log in and log out for the batch of Eids provided.  It
+will print a summary at the end.
+
+=item addPageAndToolToUserMyWorkspace - Add a single page and tool to a My
+Workspace.  This assumes that a valid Sakai Script connection is
+passed in along with a Sakai Session.  It will document results and
+inform if the user does not have a workspace and if the page and tool
+have been successfully added.
+
+=item checkWSResponseAndReturnResult - Examine the result of a SOAP call.
+If there is a fault it will print the fault and return undef.  If
+there is no fault it will return the result of the invocation.
+
+=head1 DESCRIPTION
+
+See SYNOPSIS and BUGS AND LIMITATIONS
+
+=head1 BUGS AND LIMITATIONS
+
+Currently limited to adding pages to My Workspace sites.  Probably can
+be refactored to good effect.
+
+=head1 COPYRIGHT
+
+You can use it.
+
+=head1 AUTHORS
+
+David Haines (University of Michigan).  Originally based on code
+supplied by Seth Theriault.  Don't blame him for my mistakes.
+
+=cut
+
+#end

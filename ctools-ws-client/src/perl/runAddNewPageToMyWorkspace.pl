@@ -49,6 +49,7 @@ sub processFile {
     # accumulate a batch of the eids to process.
     push(@batch,$_);
     unless($count % $batchSize) {
+      print "process batch: ",join("|",@batch),"\n";
       processBatch(@batch);
       # empty batch so don't process again.
       @batch = ();
@@ -78,11 +79,13 @@ sub printSummary {
 
 ############ setup and run #################
 
-addNewPageToMyWorkspace::setVerbose(0);
-addNewPageToMyWorkspace::setTrace(0);
+$trace=1;
+addNewPageToMyWorkspace::setVerbose(1);
+addNewPageToMyWorkspace::setTrace(1);
 
 # specify the tool id and the name to be shown for the page and tool.
 my $toolInfo = new PageToolIdNames(pageName => "Teaching Questionnaires", toolName => "Teaching Questionnaires", toolId =>"sakai.rsf.evaluation");
+#my $toolInfo = new PageToolIdNames(pageName => ".", toolName => "Teaching Questionnaires", toolId =>"sakai.rsf.evaluation");
 setPageAndToolNames($toolInfo);
 
 $accnt = new HostAccount( user => 'admin', pw => 'admin');
@@ -90,5 +93,47 @@ setWSURI('http','localhost:8080');
 
 $batchSize = 20;
 processFile();
+
+__END__
+
+=head1 NAME
+runAddNewPageToMyWorkspace
+
+This consists of some utility methods and configuration to add specific page and tool a users My Workspace.
+It could be improved a lot.
+
+=head1 SYNOPSIS
+
+Customize the page / tool / toolId, the account information, and the
+server to be addressed.  Input is a file of Sakai Eids, one per line,
+to which the page will be added.  Blank lines and lines starting with
+a '#' will be ignored.
+
+=head1 DESCRIPTION
+
+See SYNOPSIS and BUGS AND LIMITATIONS
+
+=head1 BUGS AND LIMITATIONS
+
+It does not check if the page already exists, a new page will be
+added.  As of 2.4.x not only will there be multiple pages, the tool
+will be added to EVERY page with a matching name, so you end with way
+to many instances.
+
+If the user has never logged in their My Workspace doesn't exist and
+pages can't be added to it.  A message will be printed in this case.
+
+It could be refactored and improved greatly.
+
+=head1 COPYRIGHT
+
+You can use it.
+
+=head1 AUTHORS
+
+  David Haines (University of Michigan) extended and distorted code
+  from Seth Theriault.  Don't blame Seth for my mistakes.
+
+=cut
 
 #end
