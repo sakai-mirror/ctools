@@ -1,23 +1,12 @@
-<project name="build-patch-util" basedir="." default="info" >
-
-
-
+<project name="build-patch-util2" basedir="." default="info" >
   <!--
-
    $Id$
    $HeadURL$
    
    Apply patches to the code.  Note that the code has been exported, so that need to apply patch files.
-
   -->
 
-  <!-- 
-       TTD:
-       
-  -->
-
-
-  <import file="${user.dir}/build-patch.xml" />  
+  <import file="${user.dir}/build-patch2.xml" />  
 
   <target name="applyPatchesInfo">
     <echo>
@@ -35,6 +24,7 @@
     <applyPatch patchFileName="${patchFileName}" />
   </target>
 
+  <!--      ~/dev/ctools/trunk/builds/ctools_2-4/tools2/applyPatches.pl ~/dev/ctools/trunk/builds/ctools_2-4/patches/SPEED.patch ./log .  -->
   <!-- Macro definition to invoke the patch utility -->
   <macrodef name="applyPatch">
     <attribute name="patchFileName" />
@@ -42,23 +32,18 @@
     <echo> applying patch @{patchFileName}</echo>
     <echo file="${logs.dir}/${ant.project.name}.patches.log" append="true" >
      ********************************************************** 
-     applying patch @{patchFileName}
+     applying patch @{patchFileName} 
      ********************************************************** 
     </echo>
-    <exec executable="patch"
+    <exec executable="perl"
 	  dir="${build.dir}"
 	  failonerror="true"
 	  output="${logs.dir}/${ant.project.name}.patches.log"
 	  append="true">
-      <arg value="-p0" />
-      <arg value="--verbose" />
-      <arg value ="--ignore-whitespace" />
-      <!-- <arg value="\-\-debug=10" /> -->
-      <!-- <arg value="\-\-dry-run" />   -->
-      <arg value="--input=${patches.dir}/@{patchFileName}" />
-      <!--      <arg value="\-\-backup" /> -->
-      <arg value="--remove-empty-files" />
-      <!-- <arg value="\-\-debug=15" /> -->
+      <arg value="${scripts.dir}/applyPatches.pl" />
+      <arg value="${patches.dir}/@{patchFileName}" />
+      <arg value="${logs.dir}/${ant.project.name}.patches.log" />
+      <arg value="${build.dir}" />
     </exec>
     </sequential>
   </macrodef>
