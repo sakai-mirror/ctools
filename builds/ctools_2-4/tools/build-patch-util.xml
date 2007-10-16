@@ -6,7 +6,9 @@
    Apply patches to the code.  Note that the code has been exported, so that need to apply patch files.
   -->
 
+  <!-- should not need this 
   <import file="${user.dir}/build-patch2.xml" />  
+  -->
 
   <target name="applyPatchesInfo">
     <echo>
