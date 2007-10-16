@@ -55,15 +55,56 @@ This should have nothing specific to a particular build type.
   <!-- There may be multiple targets to support multiple different build types. -->
   <!-- ========================= -->
 
+  <!--
   <target name="buildCToolsImageNew" depends="prepare,getSource,applyPatches,editSource,compileSakai,buildImage,buildConfig,printBuildInfo"
 	  description="Build a ctools image based on the properties files specified.">
     <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
   </target>
+  -->
 
+
+  <!-- applyPatches2 works patch by patch, 
+  <target name="buildCToolsImage" depends="prepare,getSource,applyPatches2,editSource,compileSakai,buildImage,buildConfig,printBuildInfo"
+	  description="Build a ctools image based on the properties files specified.">
+    <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
+  </target>
+  -->
+
+  <target name="buildCToolsImage" depends="prepare,getSource,applyPatches3,editSource,compileSakai,buildImage,buildConfig,printBuildInfo"
+	  description="Build a ctools image based on the properties files specified.">
+    <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
+  </target>
+
+
+  <target name="applyPatches3" >
+    <echo> applying patches aP3 [${patchFileNames}]</echo>
+    <echo file="${logs.dir}/${ant.project.name}.patches.log" append="true" >
+     ********************************************************** 
+     applying patches [${patchFileNames}]
+     ********************************************************** 
+    </echo>
+    <exec executable="perl"
+	  dir="${build.dir}"
+	  failonerror="true"
+	  output="${logs.dir}/${ant.project.name}.patches.log"
+	  append="true">
+      <arg value="${scripts.dir}/applyPatches.pl" />
+      <arg value="${logs.dir}/${ant.project.name}.patches.log" />
+      <!-- with multiple files, need to pass the patch and the names separately -->
+      <!-- <arg value="${patches.dir}/${patchFileNames}" /> -->
+      <arg value="${patches.dir}" /> 
+      <arg value="${build.dir}" />
+      <arg value="${patchFileNames}" /> 
+    </exec>
+
+  </target>
+
+  <!--
   <target name="buildCToolsImage" depends="prepare,getSource,applyPatches,editSource,compileSakai,buildImage,buildConfig,printBuildInfo"
 	  description="Build a ctools image based on the properties files specified.">
     <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
   </target>
+  -->
 
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->

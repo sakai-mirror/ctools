@@ -69,7 +69,7 @@ $HeadURL$
 
   <!-- change source as required -->
  <!--  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades,editCourseManagement" > at the moment don't need to do course management -->
-  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades,editLinktool" >
+  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS" >
     <!-- edit the files that need to be modified for ctools -->
   </target>
 
@@ -189,7 +189,20 @@ $HeadURL$
     <copy todir="${build.dir}/webservices/axis/src/webapp"
 	  overwrite="true">
       <fileset dir="${build.dir}/linktool" includes="*.jws" />
+      <fileset dir="${build.dir}/ctools-webservices" includes="ActivityTracker.jws" />
     </copy>
   </target>
+
+  <!-- copy in the CTools web services -->
+  <target name="editCToolsJWS" unless="ctools.install.skip" >
+    <echo> Copy the ctools jws files to sakai webservices webapp. </echo>
+    <copy todir="${build.dir}/webservices/axis/src/webapp"
+	  overwrite="true"
+	  flatten="true">
+      <fileset dir="${build.dir}/ctools-webservices" includes="**/ActivityTracker.jws" />
+    </copy>
+  </target>
+
+
 
 </project>

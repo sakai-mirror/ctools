@@ -25,7 +25,8 @@
 
   <import file="${scripts.dir}/build-type-${type}.xml" />  
   <import file="${scripts.dir}/build-type-util.xml" /> 
-  <import file="${scripts.dir}/build-patch-util.xml" />
+  <!-- <import file="${scripts.dir}/build-patch-util.xml" /> -->
+  <import file="${scripts.dir}/build-patch-util2.xml" /> 
 
   <target name="info" >
     <echo> Base ant script to build CTools releases.</echo>
