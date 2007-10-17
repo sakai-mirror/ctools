@@ -23,14 +23,15 @@
   <!-- <property file="${user.dir}/{$ctoolsBuildFileName}" />  -->
   <property file="${user.dir}/${ctoolsBuildFileName}" />  
 
-  <property name="scripts.dir" value="${basedir}/tools2" />
-  <property name="work.dir" value="${basedir}/tools2-work/${sakai.tag}/work.${type}" /> 
+  <property name="scripts.dir" value="${basedir}/tools" />
+  <!--  <property name="work.dir" value="${basedir}/tools-work/${sakai.tag}/work.${type}" />  -->
+  <property name="work.dir" value="${basedir}/${sakai.tag}/work.${type}" /> 
   <property name="patches.dir" value="${basedir}/patches" />
-  <property name="artifacts.dir" value="${basedir}/tools2-artifacts/${sakai.tag}.${type}" />
+  <property name="artifacts.dir" value="${basedir}/artifacts/${sakai.tag}.${type}" />
 
   <import file="${scripts.dir}/build-type-${type}.xml" />  
   <import file="${scripts.dir}/build-type-util.xml" /> 
-  <import file="${scripts.dir}/build-patch-util2.xml" />
+  <import file="${scripts.dir}/build-patch-util.xml" />
 
   <target name="info" >
     <echo> Base ant script to build CTools releases.</echo>
