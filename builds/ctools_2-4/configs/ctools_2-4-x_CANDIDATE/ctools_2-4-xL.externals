@@ -88,7 +88,8 @@
  ctools-providers -r33495 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
 # ctools-reference -r34389 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
 # ctools-reference -r34585 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
-  ctools-reference -r35975 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
+#  ctools-reference -r35975 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
+  ctools-reference -r37138 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
   ctools-webservices -r36802 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-webservices
 # gradtools -r31834 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
 # F&M issue
