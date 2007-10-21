@@ -19,15 +19,12 @@ This should have nothing specific to a particular build type.
   <!--  <property name="config-file" value="ctools-pilot-200602.properties" /> -->
   <!-- set a default value -->
   <property name="config-file" value="project.properties" /> 
-
   <property file="${config-file}" />
-<!--  <property name="patches.dir" value="../patches" /> -->
-<!--  <property name="patches.dir" value="/home/dlhaines/ws/builds/ctools_2-2/ctools-summer-06/patches" />  -->
+
   <property name="build.dir" value="${work.dir}/build" />
   <property name="logs.dir" value="${work.dir}/logs" />
   <property name="image.dir" value="${work.dir}/image" />
   <property name="instances.dir" value="${work.dir}/instances" />
-<!--  <property name="image.dest.dir" value="${work.dir}" /> -->
   <property name="image.dest.dir" value="${artifacts.dir}" /> 
   <property name="reference.dir" value="${build.dir}/ctools-reference" />
   <property name="config.dir" value="${reference.dir}/config" />
@@ -54,21 +51,6 @@ This should have nothing specific to a particular build type.
   <!-- primary targets.  These shouldn't have to change.  -->
   <!-- There may be multiple targets to support multiple different build types. -->
   <!-- ========================= -->
-
-  <!--
-  <target name="buildCToolsImageNew" depends="prepare,getSource,applyPatches,editSource,compileSakai,buildImage,buildConfig,printBuildInfo"
-	  description="Build a ctools image based on the properties files specified.">
-    <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
-  </target>
-  -->
-
-
-  <!-- applyPatches2 works patch by patch, 
-  <target name="buildCToolsImage" depends="prepare,getSource,applyPatches2,editSource,compileSakai,buildImage,buildConfig,printBuildInfo"
-	  description="Build a ctools image based on the properties files specified.">
-    <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
-  </target>
-  -->
 
   <target name="buildCToolsImage" depends="prepare,getSource,applyPatches3,editSource,compileSakai,buildImage,buildConfig,printBuildInfo"
 	  description="Build a ctools image based on the properties files specified.">
@@ -98,13 +80,6 @@ This should have nothing specific to a particular build type.
     </exec>
 
   </target>
-
-  <!--
-  <target name="buildCToolsImage" depends="prepare,getSource,applyPatches,editSource,compileSakai,buildImage,buildConfig,printBuildInfo"
-	  description="Build a ctools image based on the properties files specified.">
-    <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
-  </target>
-  -->
 
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
@@ -138,10 +113,6 @@ This should have nothing specific to a particular build type.
   <available property="image.exists.tar.gz" file="${image.dest.dir}/image.${sakai.tag}.tar.gz" />
 
   <!-- use zip not tar since the ant tar won't untar the files with long path names -->
-	<!--
-  <target name="installImageLocal" depends="installTomcatImage,installZipImage,installTgzImageZip,installTomcatImageTgz" 
-    description="install the image to a local test directory" />
--->
 
   <target name="installImageLocal" depends="assureTargetDir,installTomcatImageZip,installTomcatImageTgz,installZipImage,installTgzImage"
     description="install the image to a local test directory" />
@@ -153,14 +124,6 @@ This should have nothing specific to a particular build type.
     -->
     <!-- Run appropriate target from the build-install-config.xml file -->
   </target>
-
-<!--
-  <target name="installTomcatImage" >
-    <unzip src="${tomcat.base.zip}"
-	   dest="${install.test.dir}/">
-    </unzip>
-  </target>
-	-->
 
   <target name="assureTargetDir" >
     <mkdir dir="${install.test.dir}"/>
@@ -195,19 +158,6 @@ This should have nothing specific to a particular build type.
 	   compression="gzip" />
   </target>
 
-  <!-- use zip not tar since the ant tar won't untar the files with long path names -->
-  <!--
-  <target name="installTestImage"
-	  description="install the image to a local test directory">
-    <unzip src="${tomcat.base.zip}"
-	   dest="${install.test.dir}/">
-    </unzip>
-    <unzip src="${image.dest.dir}/image.${sakai.tag}.zip"
-	   dest="${install.test.dir}/">
-    </unzip>
-  </target>
-
-  -->
   <!--
       to uncompress a tar file into an existing tomcat directory you can use something like:
       tar \-\-gunzip -f sakai_2-1_4840.tar.gz -C ~/tomcats/image-test -x
@@ -247,52 +197,6 @@ This should have nothing specific to a particular build type.
 	<property name="propertiesfileslist" value="${propertiesfileslist}" />
       </ant>
     </sequential>
-
   </macrodef>
-
-<!--
-  Set list of files to include from properties file?
-  
-  <target name="buildPropertiesFileConcat"> 
-    <concat destfile="${instances.dir}/${instance-type}/sakai.properties">
-      <filelist dir="??" files="${propertiesFiles}" />
-    </concat>
-  </target>
--->
-<!--
-<filelist 
-    id="docfiles" 
-    dir="${doc.src}"
-    files="foo.xml,bar.xml"/> 
--->
-
-  <!--
-  <target name="copyConfig">
-    <echo> copy from config.dir: ${config.dir} </echo>
-    <echo> copy to instances.dir: ${instances.dir} </echo>
-    <echo> copy keystore: ${keystore.dir}/${keystore} </echo>
-    <copy todir="${instances.dir}/${instance-type}">
-      <fileset dir="${config.dir}">
-	<exclude name="**/sakai.properties"/>
-	<exclude name="**/.project" />
-      </fileset>
-    </copy>
-    <copy todir="${instances.dir}/${instance-type}">
-      <fileset dir="${keystore.dir}">
-	<include name="${keystore}" />
-      </fileset>
-    </copy>
-  </target>
--->
-
-<!--     <concat destfile="${docbook.dir}/all-sections.xml" -->
-<!--           force="no"> -->
-<!--     <filelist dir="${docbook.dir}/sections"  -->
-<!--          files="introduction.xml,overview.xml"/> -->
-<!--     <fileset dir="${docbook.dir}"  -->
-<!--          includes="sections/*.xml"  -->
-<!--          excludes="introduction.xml,overview.xml"/> -->
-<!--   </concat> -->
-
 
 </project>
