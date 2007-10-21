@@ -132,6 +132,7 @@ sub makeSvnCmd {
 #$svncmd="checkout";
 chdir $destinationDir;
 
-getSrcViaExternalsFile();
+getSrcViaExternalsFile() if (@ARGV);
 
+1;
 #end
