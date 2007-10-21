@@ -1,8 +1,12 @@
 #!/usr/bin/perl
 # Remove parts of a build that shouldn't be in the final image.
-# $HeadURL:$
-# $Id:$
+# $HeadURL$
+# $Id$
 
+
+sub removeBuildParts{
+  print "removeBuildParts called with arguments: |",join("|",@ARGV),"|\n";
+}
 
 #     <removeFromBuild deleteDir="portal/mercury" />
 #   <!-- remove files from build directory -->
@@ -28,4 +32,7 @@
 #     </sequential>
 #   </macrodef>
 
+removeBuildParts(@ARGV) if (@ARGV);
+
+1;
 #end
