@@ -6,10 +6,6 @@
    Apply patches to the code.  Note that the code has been exported, so that need to apply patch files.
   -->
 
-  <!-- should not need this 
-  <import file="${user.dir}/build-patch2.xml" />  
-  -->
-
   <target name="applyPatchesInfo">
     <echo>
       Ant utility targets for applying patches to source code.  To use include this in the master build file.  Override the 
