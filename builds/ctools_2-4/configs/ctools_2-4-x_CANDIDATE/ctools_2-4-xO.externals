@@ -1,4 +1,9 @@
 # Get just the top level files (license, maven files)
+# This is the final (?) 2.4.x catchup release for Fall 07.
+
+# $HeadURL:$
+# $Id:$
+
 # Yes that is a single period at the start of the line.
 . -r34389 https://source.sakaiproject.org/svn/sakai/branches/sakai_2-4-x | --ignore-externals
 #
