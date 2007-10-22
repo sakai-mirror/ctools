@@ -4,12 +4,8 @@
 # $HeadURL$
 # $Id$
 # take .externals file in svn, get the latest revision number for
-# each entry in it.  Then write 2 files in the externals format:
+# each entry in it.  Then write a file in the externals format:
 # - A file with the exact revision number for each entry
-# - A file where all the revision numbers are the maximum revision number found in the prior set.
-# These files can be used as the basis for a customized externals file for a specific build.
-
-# This second file will get the same set of files, with less maintenance of revision numbers.
 
 # TTD:
 # - 
@@ -28,10 +24,9 @@ if [ x$URL == x ]; then
 fi
 
 ## See if this is a local file or a remote url .externals file.
-#set -x
 
 http_match_length=`expr "$URL" : 'http'`;
-#echo "http_match_length: $http_match_length";
+
 if [ "$http_match_length" -eq "0" ]; then
     file=$URL
 elif [ "$http_match_length" -gt "0" ]; then
@@ -40,19 +35,10 @@ elif [ "$http_match_length" -gt "0" ]; then
     file=./externals.tmp.svn.$$
 fi
 
-#echo "file: [$file]"
-
-#exit;
-
 # Take existing externals and create a script to get current revision numbers
-#svn cat $URL/.externals | perl -n -e 'm|(\S+).*(http.*)| && print "svn --limit 1 -q log $2\necho $1 -rREVISION $2\n"'  >| ./externals.tmp.1.$$
-
-#cat $file | perl -n -e 'm|(\S+).*(http.*)| && print "svn --limit 1 -q log $2\necho $1 -rREVISION $2\n"'  >| ./externals.tmp.1.$$
 
 # skip the commented lines
 cat $file | perl -n -e 'next LINE if (/^\s*#/); m|(\S+).*(http.*)| && print "svn --limit 1 -q log $2\necho $1 -rREVISION $2\n"'  >| ./externals.tmp.1.$$
-
-#cat $file | perl -n -e 'if(m|(\S+).*(http.*)|) { print "svn --limit 1 -q log $2\necho $1 -rREVISION $2\n"}'  >| ./externals.tmp.1.$$
 
 # create externals file with the exact revision for each reference.
 echo "# " $(date) >| ./externals.exact
@@ -61,8 +47,6 @@ echo "# " $(date) >| ./externals.exact
 
 # find the updated information and format as a .externals script.
 source ./externals.tmp.1.$$ | perl -n -e 'chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {s/REVISION/$R/; print " $_\n"}' >> ./externals.exact
-#source ./externals.tmp.1.$$ | perl -n -e 'print "LINE: [$_]"; chomp; next LINE if (/^\s*#/); if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {s/REVISION/$R/; print " $_\n"}' >> ./externals.exact
-
 
 ### Take out max revision processing since it doesn't respect the fact that different
 ### branches may be used.
@@ -73,16 +57,6 @@ source ./externals.tmp.1.$$ | perl -n -e 'chomp; if (m/r(\d+)\s/) {$R=$1}; if (m
 mv ./externals.exact ./externals.tmp.3.$$
 cat  ./externals.tmp.3.$$ | perl -n -e 'BEGIN { $maxR = -1} chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {$maxR = ($R > $maxR ? $R : $maxR);} END { print "# maxR: $maxR\n";}' >| ./externals.tmp.4.$$
 cat ./externals.tmp.4.$$ ./externals.tmp.3.$$ >| ./exernals.exact
-#mv  ./externals.tmp.4.$$ ./exernals.exact
-#cat  ./externals.exact | perl -n -e 'BEGIN { $maxR = -1} chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {$maxR = ($R > $maxR ? $R : $maxR);} END { print "# maxR: $maxR\n";}' >| ./externals.tmp.2.$$
-
-
-# # make the maximum revision number the first line of the file.
-# Keeping the max revision makes it possible to know when this cut of the maintenance branch was taken.
-#cat ./externals.exact >> ./externals.tmp.2.$$
-
-# # reset all the revision numbers to the max revision number.
-# cat ./externals.tmp.2.$$ | perl -p -e ' $maxR = $1 if (/maxR:\s+(\d+)/); s|-r\d+\s+http|-r$maxR http|' >| externals.max
 
 # clean up
 rm ./externals.tmp.*.$$
