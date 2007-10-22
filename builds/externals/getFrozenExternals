@@ -17,12 +17,36 @@
 URL=$1
 
 if [ x$URL == x ]; then
-    echo must specify a svn url to a directory with a .externals file
+    echo must specify a svn url to a directory with a .externals file or a local path name to any file in externals format.
     exit 1;
 fi
 
+## See if this is a local file or a remote url .externals file.
+set -x
+
+http_match_length=`expr "$URL" : 'http'`;
+#echo "http_match_length: $http_match_length";
+if [ "$http_match_length" -eq "0" ]; then
+    file=$URL
+elif [ "$http_match_length" -gt "0" ]; then
+    #echo "http length: $http_match_length";
+    svn cat $URL/.externals >| ./externals.tmp.svn.$$
+    file=./externals.tmp.svn.$$
+fi
+
+#echo "file: [$file]"
+
+#exit;
+
 # Take existing externals and create a script to get current revision numbers
-svn cat $URL/.externals | perl -n -e 'm|(\S+).*(http.*)| && print "svn --limit 1 -q log $2\necho $1 -rREVISION $2\n"'  >| ./externals.tmp.1.$$
+#svn cat $URL/.externals | perl -n -e 'm|(\S+).*(http.*)| && print "svn --limit 1 -q log $2\necho $1 -rREVISION $2\n"'  >| ./externals.tmp.1.$$
+
+#cat $file | perl -n -e 'm|(\S+).*(http.*)| && print "svn --limit 1 -q log $2\necho $1 -rREVISION $2\n"'  >| ./externals.tmp.1.$$
+
+# skip the commented lines
+cat $file | perl -n -e 'next LINE if (/^\s*#/); m|(\S+).*(http.*)| && print "svn --limit 1 -q log $2\necho $1 -rREVISION $2\n"'  >| ./externals.tmp.1.$$
+
+#cat $file | perl -n -e 'if(m|(\S+).*(http.*)|) { print "svn --limit 1 -q log $2\necho $1 -rREVISION $2\n"}'  >| ./externals.tmp.1.$$
 
 # create externals file with the exact revision for each reference.
 echo "# " $(date) >| ./externals.exact
@@ -30,19 +54,22 @@ echo "# " $(date) >| ./externals.exact
 #set -x
 
 # find the updated information and format as a .externals script.
-#source ./externals.tmp.1.$$ | perl -n -e 'chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {s/REVISION/$R/; print " $_\n"}' >> ./externals.exact
 source ./externals.tmp.1.$$ | perl -n -e 'chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {s/REVISION/$R/; print " $_\n"}' >> ./externals.exact
+#source ./externals.tmp.1.$$ | perl -n -e 'print "LINE: [$_]"; chomp; next LINE if (/^\s*#/); if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {s/REVISION/$R/; print " $_\n"}' >> ./externals.exact
 
-# find and print the maximum revision number.
 
-cat  ./externals.exact | perl -n -e 'BEGIN { $maxR = -1} chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {$maxR = ($R > $maxR ? $R : $maxR);} END { print "# maxR: $maxR\n";}' >| ./externals.tmp.2.$$
+### Take out max revision processing since it doesn't respect the fact that different
+### branches may be used.
 
-# make the maximum revision number the first line of the file.
-cat ./externals.exact >> ./externals.tmp.2.$$
+# # find and print the maximum revision number.
+# cat  ./externals.exact | perl -n -e 'BEGIN { $maxR = -1} chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {$maxR = ($R > $maxR ? $R : $maxR);} END { print "# maxR: $maxR\n";}' >| ./externals.tmp.2.$$
 
-# reset all the revision numbers to the max revision number.
-cat ./externals.tmp.2.$$ | perl -p -e ' $maxR = $1 if (/maxR:\s+(\d+)/); s|-r\d+\s+http|-r$maxR http|' >| externals.max
+# # make the maximum revision number the first line of the file.
+# cat ./externals.exact >> ./externals.tmp.2.$$
+
+# # reset all the revision numbers to the max revision number.
+# cat ./externals.tmp.2.$$ | perl -p -e ' $maxR = $1 if (/maxR:\s+(\d+)/); s|-r\d+\s+http|-r$maxR http|' >| externals.max
 
 # clean up
-rm ./externals.tmp.*.$$
+#rm ./externals.tmp.*.$$
 #end
