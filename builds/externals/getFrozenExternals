@@ -14,6 +14,12 @@
 # TTD:
 # - 
 
+echo <<EOF
+Doesn't deal with the svn options on a line (e.g. --ignore-externals).
+Loses comments.
+Should document max revision.
+EOF
+
 URL=$1
 
 if [ x$URL == x ]; then
@@ -22,7 +28,7 @@ if [ x$URL == x ]; then
 fi
 
 ## See if this is a local file or a remote url .externals file.
-set -x
+#set -x
 
 http_match_length=`expr "$URL" : 'http'`;
 #echo "http_match_length: $http_match_length";
@@ -61,15 +67,23 @@ source ./externals.tmp.1.$$ | perl -n -e 'chomp; if (m/r(\d+)\s/) {$R=$1}; if (m
 ### Take out max revision processing since it doesn't respect the fact that different
 ### branches may be used.
 
+#set -x
+
 # # find and print the maximum revision number.
-# cat  ./externals.exact | perl -n -e 'BEGIN { $maxR = -1} chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {$maxR = ($R > $maxR ? $R : $maxR);} END { print "# maxR: $maxR\n";}' >| ./externals.tmp.2.$$
+mv ./externals.exact ./externals.tmp.3.$$
+cat  ./externals.tmp.3.$$ | perl -n -e 'BEGIN { $maxR = -1} chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {$maxR = ($R > $maxR ? $R : $maxR);} END { print "# maxR: $maxR\n";}' >| ./externals.tmp.4.$$
+cat ./externals.tmp.4.$$ ./externals.tmp.3.$$ >| ./exernals.exact
+#mv  ./externals.tmp.4.$$ ./exernals.exact
+#cat  ./externals.exact | perl -n -e 'BEGIN { $maxR = -1} chomp; if (m/r(\d+)\s/) {$R=$1}; if (m/https/i) {$maxR = ($R > $maxR ? $R : $maxR);} END { print "# maxR: $maxR\n";}' >| ./externals.tmp.2.$$
+
 
 # # make the maximum revision number the first line of the file.
-# cat ./externals.exact >> ./externals.tmp.2.$$
+# Keeping the max revision makes it possible to know when this cut of the maintenance branch was taken.
+#cat ./externals.exact >> ./externals.tmp.2.$$
 
 # # reset all the revision numbers to the max revision number.
 # cat ./externals.tmp.2.$$ | perl -p -e ' $maxR = $1 if (/maxR:\s+(\d+)/); s|-r\d+\s+http|-r$maxR http|' >| externals.max
 
 # clean up
-#rm ./externals.tmp.*.$$
+rm ./externals.tmp.*.$$
 #end
