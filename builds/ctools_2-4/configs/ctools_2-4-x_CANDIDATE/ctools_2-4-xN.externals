@@ -110,3 +110,4 @@ content -r36525 https://source.sakaiproject.org/svn/content/branches/SAK-11767
 msgcntr -r36827 https://source.sakaiproject.org/svn/msgcntr/branches/sakai_2-4-x
 # msgcntr needs reference updated too.
 reference -r36828 https://source.sakaiproject.org/svn/reference/branches/sakai_2-4-x
+### end
