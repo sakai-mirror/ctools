@@ -8,6 +8,24 @@ sub removeBuildParts{
   print "removeBuildParts called with arguments: |",join("|",@ARGV),"|\n";
 }
 
+sub removeFromBuild {
+  my($entry) = @_;
+  print "remove from build: [$entry}\n";
+  if (-d $entry) {
+    rmdir($entry) || exit 1;
+  }
+  else {
+    unlink($entry) || exit 1;
+  }
+  exit 0;
+}
+
+sub removeWarFromImage {
+  my($warpath) = @_;
+  print "remove war from image: [$warpath]\n";
+  exit 1;
+}
+
 #     <removeFromBuild deleteDir="portal/mercury" />
 #   <!-- remove files from build directory -->
 #   <macrodef name="removeFromBuild">

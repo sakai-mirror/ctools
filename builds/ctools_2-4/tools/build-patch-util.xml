@@ -18,8 +18,9 @@
   </target>
 
   <!-- Target to apply a single patch.  Used to test patches.  -->
-  <target name="testOnePatch" description="target to test single patch application">
-    <applyPatch patchFileName="${patchFileName}" />
+  <target name="testOnePatch" description="target to test single patch application" depends="applyPatches3">
+    <!-- <applyPatch patchFileName="${patchFileName}" /> -->
+
   </target>
 
   <!--      ~/dev/ctools/trunk/builds/ctools_2-4/tools2/applyPatches.pl ~/dev/ctools/trunk/builds/ctools_2-4/patches/SPEED.patch ./log .  -->
