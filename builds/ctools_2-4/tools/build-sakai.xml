@@ -217,7 +217,7 @@
       <arg value="-Dmaven.junit.fork=true" />
       <!-- <arg value="-X" /> -->
       <!--  sometimes need to avoid this with a new build, but usually speeds things up. -->
-      <!-- <arg value="-o" />  -->
+      <arg value="-o" />  
 
       <arg value="sakai:clean" />
       <arg value="sakai:build" />
