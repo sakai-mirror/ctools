@@ -1,8 +1,8 @@
 #!/usr/bin/perl -w
 # Apply diff patch file to code.
 #
-# $HeadURL:$
-# $Id:$
+# $HeadURL$
+# $Id$
 #
 # Routines to apply a patch to files in the current directory.  It
 # will run standalone or can be included in another Perl script.
@@ -21,7 +21,7 @@
 use strict;
 
 my ($log,$patchDir);
-my ($applyPatchesTrace) = 0;
+my $applyPatchesTrace = 0;
 
 print "ap: args:",join("|",@ARGV),"\n" if ($applyPatchesTrace);
 
@@ -50,12 +50,13 @@ sub applyPatchFileList {
   my ($maxRc,$fullLog);
   $maxRc = 0;
   foreach (@patchFileNames) {
-    print "patch file: [$_]\n";
+    print "******** patch file: [$_] ***********\n";
     my $rc = applyOnePatchFile("$patchesDir/$_",$logFileName);
     print "aPFL: rc: [$rc]\n" if ($applyPatchesTrace);
     $maxRc = ($rc != 0 ? abs($rc) : $maxRc);
+    print "*************************************\n";
   }
-  print "aPFL: maxRc: [$maxRc]\n";
+  print "aPFL: maxRc: [$maxRc]\n" if ($applyPatchesTrace);
   exit ($maxRc == 0 ? 0 : 1);
 }
 
@@ -76,7 +77,7 @@ sub applyOnePatchFile {
   print "$0: patchFileName: [$patchFileName] logfile: [$logfile]\n" if ($applyPatchesTrace);
   my($rc,$log) = applyPatchFile($patchFileName);
   appendTextToFile($logfile,$log);
-  print "aOPF: rc: [$rc]\n";
+  print "aOPF: rc: [$rc]\n" if ($applyPatchesTrace);
   return($rc);
 }
 
@@ -113,7 +114,7 @@ sub makePatchCmd {
 sub appendTextToFile{
   my($fileName,$text) = @_;
   $text .= `date`;
-  print "USING TEXTFILE: [$fileName]\n";
+  print "USING TEXTFILE: [$fileName]\n" if ($applyPatchesTrace);
   open(TEXTFILE,">>$fileName") or die("Can't open text file: [$fileName] $!");
   print TEXTFILE $text;
   close(TEXTFILE) or die("can't close text file $!");

@@ -122,16 +122,12 @@
        the svn specific syntax.
   -->
 
+
   <target name="revertSrc">
-      <exec executable="svn"
-	    dir="${build.dir}"
-	    failonerror="true"
-	    output="@{logdir}/${ant.project.name}.log"
-	    append="true" >
-	<arg value="@{additionalArguments}" />
-	<arg value="revert" />
-	<arg value="-R" />
-      </exec>
+    <exec command="bash -c 'cd ${build.dir}; /usr/local/bin/svn revert -R * ;'"
+	  failonerror="true"
+	  output="${logs.dir}/${ant.project.name}.patches.log"
+	  append="true" />
   </target>
 
   <macrodef name="execSvnCmd">
@@ -177,6 +173,8 @@
       <delete dir="${build.dir}/@{deleteDir}"  verbose="false" quiet="true" />
     </sequential>
   </macrodef>
+
+  
 
   <!-- remove war files from image directory -->
   <macrodef name="removeWarFromImage">

@@ -1,21 +1,31 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 # Remove parts of a build that shouldn't be in the final image.
 # $HeadURL$
 # $Id$
+
+
+use strict;
+user File::Path;
 
 
 sub removeBuildParts{
   print "removeBuildParts called with arguments: |",join("|",@ARGV),"|\n";
 }
 
-sub removeFromBuild {
+sub removeFileFromBuild {
   my($entry) = @_;
-  print "remove from build: [$entry}\n";
-  if (-d $entry) {
-    rmdir($entry) || exit 1;
-  }
-  else {
-    unlink($entry) || exit 1;
+  print "-- remove file from build: [$entry}\n";
+  unlink($entry) || exit 1;
+  exit 0;
+}
+
+sub removeDirFromBuild {
+  my($entry) = @_;
+  print "-- remove dir from build: [$entry}\n";
+  eval { rmtree($entry) };
+  if ($0) {
+    print "Couldn't remove dir: [$entry] $@";
+    exit 1;
   }
   exit 0;
 }
@@ -23,7 +33,7 @@ sub removeFromBuild {
 sub removeWarFromImage {
   my($warpath) = @_;
   print "remove war from image: [$warpath]\n";
-  exit 1;
+  removeFileFromBuild($warpath);
 }
 
 #     <removeFromBuild deleteDir="portal/mercury" />
