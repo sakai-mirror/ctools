@@ -1,117 +1,118 @@
-# Get just the top level files (license, maven files)
-# This is the final (?) 2.4.x catchup release for Fall 07.
+#  Mon Oct 22 14:20:07 EDT 2007
 
 # $HeadURL$
 # $Id$
 
+# Get just the top level files (license, maven files) from the sakai_2-4-x externals directory.
+# This is the final (?) 2.4.x catchup release for Fall 07.
+
+# Most of the files will be take from the same release.  By convention
+# anything that departs for this is at the end of the file, so you
+# don't have to look though the whole file and wonder.  Typical
+# departures are later release numbers, or taking from a different
+# branch such as a post-2.4 branch.
+
+# Most modules in prior few releases were taken from 2.4.x r34389
+# There may be revision numbers lower than that here because they
+# haven't been changed in svn for a long time, so the contents of the
+# file at the higher revision defaults to the file at the lower
+# revision.
+
+# Yes that is a single period at the start of the line, so the files
+# get put at the top of the build directory.
+
 # Yes that is a single period at the start of the line.
 . -r34389 https://source.sakaiproject.org/svn/sakai/branches/sakai_2-4-x | --ignore-externals
-#
- access -r34389 https://source.sakaiproject.org/svn/access/branches/sakai_2-4-x
- alias -r34389 https://source.sakaiproject.org/svn/alias/branches/sakai_2-4-x
- announcement -r34389 https://source.sakaiproject.org/svn/announcement/branches/sakai_2-4-x
- archive -r34389 https://source.sakaiproject.org/svn/archive/branches/sakai_2-4-x
-# assignment -r34389 https://source.sakaiproject.org/svn/assignment/branches/sakai_2-4-x
- authz -r34389 https://source.sakaiproject.org/svn/authz/branches/sakai_2-4-x
- blog -r34389 https://source.sakaiproject.org/svn/blog/branches/sakai_2-4-x
- calendar -r34389 https://source.sakaiproject.org/svn/calendar/branches/sakai_2-4-x
- chat -r34389 https://source.sakaiproject.org/svn/chat/branches/sakai_2-4-x
-# citations -r34389 https://source.sakaiproject.org/svn/citations/branches/sakai_2-4-x
-# using special version of citations.  see below.
- cluster -r34389 https://source.sakaiproject.org/svn/cluster/branches/sakai_2-4-x
- component -r34389 https://source.sakaiproject.org/svn/component/branches/sakai_2-4-x
- # special content module
-# content -r34389 https://source.sakaiproject.org/svn/content/branches/sakai_2-4-x
- content-review -r34389 https://source.sakaiproject.org/svn/content-review/branches/sakai_2-4-x
- courier -r34389 https://source.sakaiproject.org/svn/courier/branches/sakai_2-4-x
- course-management -r34389 https://source.sakaiproject.org/svn/course-management/branches/sakai_2-4-x
- dav -r34389 https://source.sakaiproject.org/svn/dav/branches/sakai_2-4-x
- db -r34389 https://source.sakaiproject.org/svn/db/branches/sakai_2-4-x
- discussion -r34389 https://source.sakaiproject.org/svn/discussion/branches/sakai_2-4-x
- email -r34389 https://source.sakaiproject.org/svn/email/branches/sakai_2-4-x
- entity -r34389 https://source.sakaiproject.org/svn/entity/branches/sakai_2-4-x
- event -r34389 https://source.sakaiproject.org/svn/event/branches/sakai_2-4-x
- gradebook -r34389 https://source.sakaiproject.org/svn/gradebook/branches/sakai_2-4-x
- help -r34389 https://source.sakaiproject.org/svn/help/branches/sakai_2-4-x
- jobscheduler -r34389 https://source.sakaiproject.org/svn/jobscheduler/branches/sakai_2-4-x
- jsf -r34389 https://source.sakaiproject.org/svn/jsf/branches/sakai_2-4-x
- linktool -r34389 https://source.sakaiproject.org/svn/linktool/branches/sakai_2-4-x
- login -r34389 https://source.sakaiproject.org/svn/login/branches/sakai_2-4-x
- mailarchive -r34389 https://source.sakaiproject.org/svn/mailarchive/branches/sakai_2-4-x
- master -r34389 https://source.sakaiproject.org/svn/master/branches/sakai_2-4-x
- memory -r34389 https://source.sakaiproject.org/svn/memory/branches/sakai_2-4-x
- message -r34389 https://source.sakaiproject.org/svn/message/branches/sakai_2-4-x
- metaobj -r34389 https://source.sakaiproject.org/svn/metaobj/branches/sakai_2-4-x
-# efficiency issues
-# msgcntr -r34389 https://source.sakaiproject.org/svn/msgcntr/branches/sakai_2-4-x
- osid -r34389 https://source.sakaiproject.org/svn/osid/branches/sakai_2-4-x
- osp -r34389 https://source.sakaiproject.org/svn/osp/branches/sakai_2-4-x
- podcasts -r34389 https://source.sakaiproject.org/svn/podcasts/branches/sakai_2-4-x
- portal -r34389 https://source.sakaiproject.org/svn/portal/branches/sakai_2-4-x
- postem -r34389 https://source.sakaiproject.org/svn/postem/branches/sakai_2-4-x
- presence -r34389 https://source.sakaiproject.org/svn/presence/branches/sakai_2-4-x
- presentation -r34389 https://source.sakaiproject.org/svn/presentation/branches/sakai_2-4-x
- privacy -r34389 https://source.sakaiproject.org/svn/privacy/branches/sakai_2-4-x
- profile -r34389 https://source.sakaiproject.org/svn/profile/branches/sakai_2-4-x
- providers -r34389 https://source.sakaiproject.org/svn/providers/branches/sakai_2-4-x
-# reference -r34389 https://source.sakaiproject.org/svn/reference/branches/sakai_2-4-x
- rights -r34389 https://source.sakaiproject.org/svn/rights/branches/sakai_2-4-x
- roster -r34389 https://source.sakaiproject.org/svn/roster/branches/sakai_2-4-x
- rwiki -r34389 https://source.sakaiproject.org/svn/rwiki/branches/sakai_2-4-x
- sam -r34389 https://source.sakaiproject.org/svn/sam/branches/sakai_2-4-x
- samples -r34389 https://source.sakaiproject.org/svn/samples/branches/sakai_2-4-x
- search -r34389 https://source.sakaiproject.org/svn/search/branches/sakai_2-4-x
- sections -r34389 https://source.sakaiproject.org/svn/sections/branches/sakai_2-4-x
- site -r34389 https://source.sakaiproject.org/svn/site/branches/sakai_2-4-x
- site-manage -r34389 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
- syllabus -r34389 https://source.sakaiproject.org/svn/syllabus/branches/sakai_2-4-x
- test-harness -r34389 https://source.sakaiproject.org/svn/test-harness/branches/sakai_2-4-x
- textarea -r34389 https://source.sakaiproject.org/svn/textarea/branches/sakai_2-4-x
- tool -r34389 https://source.sakaiproject.org/svn/tool/branches/sakai_2-4-x
- user -r34389 https://source.sakaiproject.org/svn/user/branches/sakai_2-4-x
- util -r34389 https://source.sakaiproject.org/svn/util/branches/sakai_2-4-x
- velocity -r34389 https://source.sakaiproject.org/svn/velocity/branches/sakai_2-4-x
- web -r34389 https://source.sakaiproject.org/svn/web/branches/sakai_2-4-x
- webservices -r34389 https://source.sakaiproject.org/svn/webservices/branches/sakai_2-4-x
- mailtool -r34389 https://source.sakaiproject.org/svn/mailtool/branches/sakai_2-4-x
- usermembership -r34389 https://source.sakaiproject.org/svn/usermembership/branches/sakai_2-4-x
- polls -r34389 https://source.sakaiproject.org/svn/polls/branches/sakai_2-4-x
-## Not your normal svn source directories.
+
+#  Default Sakai 2.4.x modules
+ access -r32339 https://source.sakaiproject.org/svn/access/branches/sakai_2-4-x
+ alias -r28277 https://source.sakaiproject.org/svn/alias/branches/sakai_2-4-x
+ announcement -r32297 https://source.sakaiproject.org/svn/announcement/branches/sakai_2-4-x
+ archive -r28700 https://source.sakaiproject.org/svn/archive/branches/sakai_2-4-x
+ authz -r28692 https://source.sakaiproject.org/svn/authz/branches/sakai_2-4-x
+ blog -r35738 https://source.sakaiproject.org/svn/blog/branches/sakai_2-4-x
+ calendar -r34735 https://source.sakaiproject.org/svn/calendar/branches/sakai_2-4-x
+ chat -r36795 https://source.sakaiproject.org/svn/chat/branches/sakai_2-4-x
+ cluster -r28013 https://source.sakaiproject.org/svn/cluster/branches/sakai_2-4-x
+ component -r32992 https://source.sakaiproject.org/svn/component/branches/sakai_2-4-x
+ content-review -r29427 https://source.sakaiproject.org/svn/content-review/branches/sakai_2-4-x
+ courier -r36653 https://source.sakaiproject.org/svn/courier/branches/sakai_2-4-x
+ course-management -r28313 https://source.sakaiproject.org/svn/course-management/branches/sakai_2-4-x
+ dav -r32338 https://source.sakaiproject.org/svn/dav/branches/sakai_2-4-x
+ db -r36813 https://source.sakaiproject.org/svn/db/branches/sakai_2-4-x
+ discussion -r28020 https://source.sakaiproject.org/svn/discussion/branches/sakai_2-4-x
+ email -r28021 https://source.sakaiproject.org/svn/email/branches/sakai_2-4-x
+ entity -r29631 https://source.sakaiproject.org/svn/entity/branches/sakai_2-4-x
+ event -r28023 https://source.sakaiproject.org/svn/event/branches/sakai_2-4-x
+ gradebook -r34412 https://source.sakaiproject.org/svn/gradebook/branches/sakai_2-4-x
+ help -r32278 https://source.sakaiproject.org/svn/help/branches/sakai_2-4-x
+ jobscheduler -r37045 https://source.sakaiproject.org/svn/jobscheduler/branches/sakai_2-4-x
+ jsf -r33285 https://source.sakaiproject.org/svn/jsf/branches/sakai_2-4-x
+ linktool -r28027 https://source.sakaiproject.org/svn/linktool/branches/sakai_2-4-x
+ login -r32265 https://source.sakaiproject.org/svn/login/branches/sakai_2-4-x
+ mailarchive -r32266 https://source.sakaiproject.org/svn/mailarchive/branches/sakai_2-4-x
+ master -r29207 https://source.sakaiproject.org/svn/master/branches/sakai_2-4-x
+ memory -r34184 https://source.sakaiproject.org/svn/memory/branches/sakai_2-4-x
+ message -r28032 https://source.sakaiproject.org/svn/message/branches/sakai_2-4-x
+ metaobj -r32325 https://source.sakaiproject.org/svn/metaobj/branches/sakai_2-4-x
+ msgcntr -r36827 https://source.sakaiproject.org/svn/msgcntr/branches/sakai_2-4-x
+ osid -r34195 https://source.sakaiproject.org/svn/osid/branches/sakai_2-4-x
+ osp -r33738 https://source.sakaiproject.org/svn/osp/branches/sakai_2-4-x
+ podcasts -r33195 https://source.sakaiproject.org/svn/podcasts/branches/sakai_2-4-x
+ portal -r35703 https://source.sakaiproject.org/svn/portal/branches/sakai_2-4-x
+ postem -r29114 https://source.sakaiproject.org/svn/postem/branches/sakai_2-4-x
+ presence -r31907 https://source.sakaiproject.org/svn/presence/branches/sakai_2-4-x
+ presentation -r32291 https://source.sakaiproject.org/svn/presentation/branches/sakai_2-4-x
+ privacy -r28043 https://source.sakaiproject.org/svn/privacy/branches/sakai_2-4-x
+ profile -r32289 https://source.sakaiproject.org/svn/profile/branches/sakai_2-4-x
+ providers -r32279 https://source.sakaiproject.org/svn/providers/branches/sakai_2-4-x
+ reference -r36828 https://source.sakaiproject.org/svn/reference/branches/sakai_2-4-x
+ rights -r28047 https://source.sakaiproject.org/svn/rights/branches/sakai_2-4-x
+ roster -r34733 https://source.sakaiproject.org/svn/roster/branches/sakai_2-4-x
+ rwiki -r37039 https://source.sakaiproject.org/svn/rwiki/branches/sakai_2-4-x
+ sam -r36809 https://source.sakaiproject.org/svn/sam/branches/sakai_2-4-x
+ samples -r28051 https://source.sakaiproject.org/svn/samples/branches/sakai_2-4-x
+ search -r32309 https://source.sakaiproject.org/svn/search/branches/sakai_2-4-x
+ sections -r33489 https://source.sakaiproject.org/svn/sections/branches/sakai_2-4-x
+ site -r33408 https://source.sakaiproject.org/svn/site/branches/sakai_2-4-x
+ site-manage -r37145 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
+ syllabus -r33437 https://source.sakaiproject.org/svn/syllabus/branches/sakai_2-4-x
+ test-harness -r28057 https://source.sakaiproject.org/svn/test-harness/branches/sakai_2-4-x
+ textarea -r28058 https://source.sakaiproject.org/svn/textarea/branches/sakai_2-4-x
+ tool -r32332 https://source.sakaiproject.org/svn/tool/branches/sakai_2-4-x
+ user -r34174 https://source.sakaiproject.org/svn/user/branches/sakai_2-4-x
+ util -r32343 https://source.sakaiproject.org/svn/util/branches/sakai_2-4-x
+ velocity -r29059 https://source.sakaiproject.org/svn/velocity/branches/sakai_2-4-x
+ web -r32275 https://source.sakaiproject.org/svn/web/branches/sakai_2-4-x
+ webservices -r28064 https://source.sakaiproject.org/svn/webservices/branches/sakai_2-4-x
+ mailtool -r32648 https://source.sakaiproject.org/svn/mailtool/branches/sakai_2-4-x
+ usermembership -r32566 https://source.sakaiproject.org/svn/usermembership/branches/sakai_2-4-x
+ polls -r31964 https://source.sakaiproject.org/svn/polls/branches/sakai_2-4-x
  citations -r34390 https://source.sakaiproject.org/svn/citations/branches/post-2-4
-# contrib tools
+########
+######## DEVIANT BRANCHES
+########
+ content -r36525 https://source.sakaiproject.org/svn/content/branches/SAK-11767
+ gmt/gmt -r11392 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
+ assignment -r37120 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
+#####
+##### Michigan specific code.
+########
+ ctools-apps -r31824 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
+ ctools-providers -r33495 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
+ ctools-reference -r37138 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
+ ctools-webservices -r36804 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-webservices
+ gradtools -r35111 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
+ ctools-libhelp -r33513 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
+########
+####### Contrib tools
+########
  ambrosia -r9369 https://source.sakaiproject.org/contrib/muse/ambrosia/tags/0.5.0
  mneme -r9612 https://source.sakaiproject.org/contrib/muse/mneme/tags/0.5.3
  itunes -r10436 https://source.sakaiproject.org/contrib/umctx/tags/sakai_2-4-0
 # itunes -r11218 https://source.sakaiproject.org/contrib/umctx/tags/sakai-post-2-4-WS-Maven1/itunesu-tool
  config-viewer -r10021 https://source.sakaiproject.org/contrib/config-viewer/branches/config-viewer-2.4.x
- # special gmt handling for gmt / assignment integration
- gmt/gmt -r10144 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
-# assignment -r31377 https://source.sakaiproject.org/svn/assignment/tags/pre_2-5-0_QA_001
- assignment -r34391 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
- # ctools
- ctools-apps -r31824 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
- ctools-providers -r33495 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
-# ctools-reference -r34389 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
-# ctools-reference -r34585 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
-#  ctools-reference -r35975 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
-  ctools-reference -r37138 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
-  ctools-webservices -r36802 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-webservices
-# gradtools -r31834 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
-# F&M issue
-gradtools -r35111 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
-# ctools-libhelp https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
- ctools-libhelp -r33513 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
-# added per Dick Ellis for evaluation.
-# Only taking from trunk for the moment since there is no tag.  Will take version frozen at revision number so 
-# don't get unexpected version.
-#evaluation  -r12249 https://source.sakaiproject.org/contrib/evaluation/branches/umich
-#evaluation  -r12634 https://source.sakaiproject.org/contrib/evaluation/branches/umich
-evaluation  -r12933 https://source.sakaiproject.org/contrib/evaluation/branches/umich
-entitybroker -r12107 https://source.sakaiproject.org/contrib/caret/entitybroker/trunk/
-hierarchy -r11987 https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
-# To deal with efficency issues per Jim Eng
-content -r36525 https://source.sakaiproject.org/svn/content/branches/SAK-11767
-# efficiency issues
-msgcntr -r36827 https://source.sakaiproject.org/svn/msgcntr/branches/sakai_2-4-x
-# msgcntr needs reference updated too.
-reference -r36828 https://source.sakaiproject.org/svn/reference/branches/sakai_2-4-x
+ evaluation -r12634 https://source.sakaiproject.org/contrib/evaluation/branches/umich
+ entitybroker -r12107 https://source.sakaiproject.org/contrib/caret/entitybroker/trunk/
+ hierarchy -r11987 https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
+#end
