@@ -1,8 +1,8 @@
 # Get just the top level files (license, maven files)
 # This is the final (?) 2.4.x catchup release for Fall 07.
 
-# $HeadURL:$
-# $Id:$
+# $HeadURL$
+# $Id$
 
 # Yes that is a single period at the start of the line.
 . -r34389 https://source.sakaiproject.org/svn/sakai/branches/sakai_2-4-x | --ignore-externals
@@ -105,7 +105,8 @@ gradtools -r35111 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4
 # Only taking from trunk for the moment since there is no tag.  Will take version frozen at revision number so 
 # don't get unexpected version.
 #evaluation  -r12249 https://source.sakaiproject.org/contrib/evaluation/branches/umich
-evaluation  -r12634 https://source.sakaiproject.org/contrib/evaluation/branches/umich
+#evaluation  -r12634 https://source.sakaiproject.org/contrib/evaluation/branches/umich
+evaluation  -r12933 https://source.sakaiproject.org/contrib/evaluation/branches/umich
 entitybroker -r12107 https://source.sakaiproject.org/contrib/caret/entitybroker/trunk/
 hierarchy -r11987 https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
 # To deal with efficency issues per Jim Eng
