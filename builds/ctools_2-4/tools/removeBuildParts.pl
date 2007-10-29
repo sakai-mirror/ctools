@@ -3,9 +3,11 @@
 # $HeadURL$
 # $Id$
 
-
 use strict;
-user File::Path;
+use File::Path;
+
+## TTD:
+# - use to remove the entire work directory rather than having ant do it (slowly).
 
 
 sub removeBuildParts{
@@ -14,20 +16,20 @@ sub removeBuildParts{
 
 sub removeFileFromBuild {
   my($entry) = @_;
-  print "-- remove file from build: [$entry}\n";
-  unlink($entry) || exit 1;
-  exit 0;
+  # print "-- remove file from build: [$entry}\n";
+  unlink($entry) || return 0;
+  return 1;
 }
 
 sub removeDirFromBuild {
   my($entry) = @_;
-  print "-- remove dir from build: [$entry}\n";
+  print "-- remove dir from build: [$entry]\n";
   eval { rmtree($entry) };
-  if ($0) {
+  if ($@) {
     print "Couldn't remove dir: [$entry] $@";
-    exit 1;
+    return 0;
   }
-  exit 0;
+  return 1;
 }
 
 sub removeWarFromImage {

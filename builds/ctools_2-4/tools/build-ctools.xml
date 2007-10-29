@@ -32,44 +32,50 @@ $HeadURL$
   <!-- entry points -->
   
   <!-- get the source -->
-  <target name="getCtoolsSrcOld" unless="ctools.extract.skip" >
-    <echo> Extract ctools source ctools.extract.skip=[${ctools.extract.skip}]</echo>
-    <echo> ctools url: ${ctools.svnurl} ctools.revision: ${ctools.revision} </echo>
-    <execSvnCmd url="${ctools.svnurl.apps}/ctools-apps" revision="${ctools.revision}"  destination="ctools-apps"/> 
-    <execSvnCmd url="${ctools.svnurl.providers}/ctools-providers" revision="${ctools.revision}"  destination="ctools-providers"/>   
- <!--    <execSvnCmd url="${ctools.svnurl}/ctools-providers" revision="${ctools.revision}"  destination="ctools-providers"/>   -->
-    <execSvnCmd url="${ctools.svnurl.reference}/ctools-reference" revision="${ctools.revision}"  destination="ctools-reference"/> 
-    <echo> gradtools url: ${ctools.svnurl} uses ctools.revision: ${ctools.revision} </echo>
-    <execSvnCmd url="${gradtools.svnurl}" revision="${ctools.revision}"  destination="gradtools" /> 
+  <!--
+      <target name="getCtoolsSrcOld" unless="ctools.extract.skip" >
+      <echo> Extract ctools source ctools.extract.skip=[${ctools.extract.skip}]</echo>
+      <echo> ctools url: ${ctools.svnurl} ctools.revision: ${ctools.revision} </echo>
+      <execSvnCmd url="${ctools.svnurl.apps}/ctools-apps" revision="${ctools.revision}"  destination="ctools-apps"/> 
+      <execSvnCmd url="${ctools.svnurl.providers}/ctools-providers" revision="${ctools.revision}"  destination="ctools-providers"/>   
+      <execSvnCmd url="${ctools.svnurl.reference}/ctools-reference" revision="${ctools.revision}"  destination="ctools-reference"/> 
+      <echo> gradtools url: ${ctools.svnurl} uses ctools.revision: ${ctools.revision} </echo>
+      <execSvnCmd url="${gradtools.svnurl}" revision="${ctools.revision}"  destination="gradtools" /> 
 
+<antcall target="removeUnneededCtools" />
+
+</target>
+
+<target name="getCtoolsSrcExplicit" unless="ctools.extract.skip" >
+<echo> Extract ctools source ctools.extract.skip=[${ctools.extract.skip}]</echo>
+<echo> ctools url: ${ctools.svnurl.apps} ctools.revision: ${ctools.revision} </echo>
+<echo> ctools url: ${ctools.svnurl.providers} ctools.revision: ${ctools.revision} </echo>
+<echo> ctools url: ${ctools.svnurl.reference} ctools.revision: ${ctools.revision} </echo>
+<execSvnCmd url="${ctools.svnurl.apps}/ctools-apps" revision="${ctools.revision}"  destination="ctools-apps"/> 
+<execSvnCmd url="${ctools.svnurl.providers}/ctools-providers" revision="${ctools.revision}"  destination="ctools-providers"/>   
+<execSvnCmd url="${ctools.svnurl.reference}/ctools-reference" revision="${ctools.revision}"  destination="ctools-reference"/> 
+<echo> gradtools url: ${gradtools.svnurl} uses ctools.revision: ${ctools.revision} </echo>
+<execSvnCmd url="${gradtools.svnurl}" revision="${ctools.revision}"  destination="gradtools" /> 
+
+</target>
+  -->
+  <!--
+      <target name="getCtoolsSrc" depends="getCtoolsSrcExplicit" >
+
+<antcall target="removeUnneededCtools" />
+
+</target>
+  -->
+
+  <!-- test to see if this is necessary -->
+  <target name="getCtoolsSrc">
     <antcall target="removeUnneededCtools" />
-
   </target>
 
-  <target name="getCtoolsSrcExplicit" unless="ctools.extract.skip" >
-    <echo> Extract ctools source ctools.extract.skip=[${ctools.extract.skip}]</echo>
-    <echo> ctools url: ${ctools.svnurl.apps} ctools.revision: ${ctools.revision} </echo>
-    <echo> ctools url: ${ctools.svnurl.providers} ctools.revision: ${ctools.revision} </echo>
-    <echo> ctools url: ${ctools.svnurl.reference} ctools.revision: ${ctools.revision} </echo>
-    <execSvnCmd url="${ctools.svnurl.apps}/ctools-apps" revision="${ctools.revision}"  destination="ctools-apps"/> 
-    <execSvnCmd url="${ctools.svnurl.providers}/ctools-providers" revision="${ctools.revision}"  destination="ctools-providers"/>   
- <!--    <execSvnCmd url="${ctools.svnurl}/ctools-providers" revision="${ctools.revision}"  destination="ctools-providers"/>   -->
-    <execSvnCmd url="${ctools.svnurl.reference}/ctools-reference" revision="${ctools.revision}"  destination="ctools-reference"/> 
-    <echo> gradtools url: ${gradtools.svnurl} uses ctools.revision: ${ctools.revision} </echo>
-    <execSvnCmd url="${gradtools.svnurl}" revision="${ctools.revision}"  destination="gradtools" /> 
-
-  </target>
-
-  <target name="getCtoolsSrc" depends="getCtoolsSrcExplicit" >
-
-    <!-- get source, either the from the explicit urls or from an externals file. -->
-    <antcall target="removeUnneededCtools" />
-
-  </target>
 
   <!-- change source as required -->
- <!--  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades,editCourseManagement" > at the moment don't need to do course management -->
-  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS" >
+  <!--  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades,editCourseManagement" > at the moment don't need to do course management -->
+  <target name="editCtools" depends="editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editRwikiSrc" >
     <!-- edit the files that need to be modified for ctools -->
   </target>
 
@@ -95,20 +101,20 @@ $HeadURL$
     <!-- add the gradtools student site type. -->
 
     <replaceregexp >
-	<fileset dir="${build.dir}/site-manage" >
-	  <include name="**/webapp/tools/sakai.sitesetup.xml" />
-	  <include name="**/webapp/tools/sakai.siteinfo.xml" />
-	</fileset>
+      <fileset dir="${build.dir}/site-manage" >
+	<include name="**/webapp/tools/sakai.sitesetup.xml" />
+	<include name="**/webapp/tools/sakai.siteinfo.xml" />
+      </fileset>
       <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
       <substitution 
 	  expression="configuration name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
     </replaceregexp>
 
     <replaceregexp >
-	<fileset dir="${build.dir}/site-manage" >
-	  <include name="**/webapp/tools/sakai.sitesetup.xml" />
-	  <include name="**/webapp/tools/sakai.siteinfo.xml" />
-	</fileset>
+      <fileset dir="${build.dir}/site-manage" >
+	<include name="**/webapp/tools/sakai.sitesetup.xml" />
+	<include name="**/webapp/tools/sakai.siteinfo.xml" />
+      </fileset>
 
       <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
       <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
@@ -116,7 +122,7 @@ $HeadURL$
 
 
     <!-- update the tool references to add gradtools tools as appropriate.
-    This adds student, department, and rackham. -->
+	 This adds student, department, and rackham. -->
 
     <replaceregexp>
 
@@ -138,7 +144,7 @@ $HeadURL$
 
 
     <!-- update the tool references to add gradtools tools as appropriate.
-    This adds just student. -->
+	 This adds just student. -->
 
     <replaceregexp>
 
@@ -152,16 +158,16 @@ $HeadURL$
       </fileset>
 
       <!--
-      <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
-      <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
+	  <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
+	  <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
       -->
     </replaceregexp>
 
-
+    
   </target>
 
   <!-- Be sure these tools don't appear in the project category -->
-  <target name="editDefaultTools">
+  <target name="editDefaultTools" >
 
     <echo> edit registrations under ${build.dir} to make sure the tool categories are as desired.</echo>
 
@@ -171,7 +177,7 @@ $HeadURL$
       <!-- this works, but not on sakai.samigo.tool.xml ?? -->
       <regexp pattern="&lt;category.*name=&quot;project&quot;.*"/>
       <!-- -->
- 
+      
       <substitution  expression="" />
     </replaceregexp>
 
@@ -203,6 +209,14 @@ $HeadURL$
     </copy>
   </target>
 
-
+  <!-- copy in the rwiki default pages properties file. -->
+  <target name="editRwikiSrc">
+    <echo> Copy in the UMich rwiki default pages </echo>
+    <copy 	  file="${config.dir}/09PrepopulatePages.properties"
+		  tofile="${build.dir}/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/PrepopulatePages.properties"
+		  overwrite="true"
+		  flatten="true"
+		  />
+  </target>
 
 </project>
