@@ -1,0 +1,13 @@
+Index: announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml
+===================================================================
+--- announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml	(revision 32297)
++++ announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml	(working copy)
+@@ -18,7 +18,7 @@
+ 		<category name="GradToolsDepartment" />
+ 		<category name="GradToolsRackham" />
+ 
+-		<configuration name="functions.require" value="annc.read" /> 
++		  
+ 
+ 	</tool>
+ 
