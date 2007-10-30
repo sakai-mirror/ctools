@@ -18,13 +18,39 @@
   </target>
 
   <!-- Target to apply a single patch.  Used to test patches.  -->
+  <target name="testOnePatch" description="target to test single patch application">
+    <applyPatch patchFileName="${patchFileName}" /> 
+  </target>
+
+  <!--
   <target name="testOnePatch" description="target to test single patch application" depends="applyPatches3">
-    <!-- <applyPatch patchFileName="${patchFileName}" /> -->
+  </target>
+  -->
+
+ <target name="applyPatches3" >
+    <echo> applying patches aP3 [${patchFileNames}]</echo>
+    <echo file="${logs.dir}/${ant.project.name}.patches.log" append="true" >
+     ********************************************************** 
+     applying patches [${patchFileNames}]
+     ********************************************************** 
+    </echo>
+    <exec executable="perl"
+	  dir="${build.dir}"
+	  failonerror="true"
+	  output="${logs.dir}/${ant.project.name}.patches.log"
+	  append="true">
+      <arg value="${scripts.dir}/applyPatches.pl" />
+      <arg value="${logs.dir}/${ant.project.name}.patches.log" />
+      <!-- with multiple files, need to pass the patch and the names separately -->
+      <!-- <arg value="${patches.dir}/${patchFileNames}" /> -->
+      <arg value="${patches.dir}" /> 
+      <arg value="${build.dir}" />
+      <arg value="${patchFileNames}" /> 
+    </exec>
 
   </target>
 
-  <!--      ~/dev/ctools/trunk/builds/ctools_2-4/tools2/applyPatches.pl ~/dev/ctools/trunk/builds/ctools_2-4/patches/SPEED.patch ./log .  -->
-  <!-- Macro definition to invoke the patch utility -->
+<!--
   <macrodef name="applyPatch">
     <attribute name="patchFileName" />
     <sequential>
@@ -46,5 +72,5 @@
     </exec>
     </sequential>
   </macrodef>
-
+ -->
 </project>

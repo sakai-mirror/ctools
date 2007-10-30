@@ -58,6 +58,7 @@ This should have nothing specific to a particular build type.
   </target>
 
 
+  <!--
   <target name="applyPatches3" >
     <echo> applying patches aP3 [${patchFileNames}]</echo>
     <echo file="${logs.dir}/${ant.project.name}.patches.log" append="true" >
@@ -72,8 +73,8 @@ This should have nothing specific to a particular build type.
 	  append="true">
       <arg value="${scripts.dir}/applyPatches.pl" />
       <arg value="${logs.dir}/${ant.project.name}.patches.log" />
-      <!-- with multiple files, need to pass the patch and the names separately -->
-      <!-- <arg value="${patches.dir}/${patchFileNames}" /> -->
+      <!/-/- with multiple files, need to pass the patch and the names separately /-/->
+      <!/-/- <arg value="${patches.dir}/${patchFileNames}" /> /-/->
       <arg value="${patches.dir}" /> 
       <arg value="${build.dir}" />
       <arg value="${patchFileNames}" /> 
@@ -81,6 +82,7 @@ This should have nothing specific to a particular build type.
 
   </target>
 
+-->
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
   <!-- ========================= -->
