@@ -50,27 +50,4 @@
 
   </target>
 
-<!--
-  <macrodef name="applyPatch">
-    <attribute name="patchFileName" />
-    <sequential>
-    <echo> applying patch @{patchFileName}</echo>
-    <echo file="${logs.dir}/${ant.project.name}.patches.log" append="true" >
-     ********************************************************** 
-     applying patch @{patchFileName} 
-     ********************************************************** 
-    </echo>
-    <exec executable="perl"
-	  dir="${build.dir}"
-	  failonerror="true"
-	  output="${logs.dir}/${ant.project.name}.patches.log"
-	  append="true">
-      <arg value="${scripts.dir}/applyPatches.pl" />
-      <arg value="${patches.dir}/@{patchFileName}" />
-      <arg value="${logs.dir}/${ant.project.name}.patches.log" />
-      <arg value="${build.dir}" />
-    </exec>
-    </sequential>
-  </macrodef>
- -->
 </project>
