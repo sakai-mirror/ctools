@@ -1,7 +1,7 @@
-Index: messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java
+Index: msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java
 ===================================================================
---- messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 36827)
-+++ messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(working copy)
+--- msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 36827)
++++ msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(working copy)
 @@ -967,12 +967,16 @@
    {
      LOG.debug("processActionHome()");
@@ -76,10 +76,10 @@ Index: messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMes
  		this.msgNavMode = msgNavMode;
  	}	
  	
-Index: messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp
+Index: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp
 ===================================================================
---- messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp	(revision 36827)
-+++ messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp	(working copy)
+--- msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp	(revision 36827)
++++ msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp	(working copy)
 @@ -15,14 +15,7 @@
         		<sakai:script contextBase="/sakai-messageforums-tool" path="/js/sak-10625.js"/>
  			<sakai:script contextBase="/sakai-messageforums-tool" path="/js/forum.js"/>		
@@ -96,10 +96,10 @@ Index: messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp
  
  			<h:messages styleClass="alertMessage" id="errorMessages" />
  			<%@include file="msgHeader.jsp"%>
-Index: messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp
+Index: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp
 ===================================================================
---- messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp	(revision 36827)
-+++ messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp	(working copy)
+--- msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp	(revision 36827)
++++ msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp	(working copy)
 @@ -37,33 +37,7 @@
  			<sakai:script contextBase="/sakai-messageforums-tool" path="/js/forum.js"/>		
  			
