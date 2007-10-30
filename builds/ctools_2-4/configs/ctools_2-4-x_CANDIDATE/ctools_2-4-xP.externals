@@ -94,7 +94,8 @@
 ########
  content -r36525 https://source.sakaiproject.org/svn/content/branches/SAK-11767
  gmt/gmt -r11392 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
- assignment -r37120 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
+# assignment -r37120 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
+ assignment -r37636 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
 #####
 ##### Michigan specific code.
 ########
