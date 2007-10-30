@@ -36,7 +36,6 @@
       <arg value="${logs.dir}/source.log" />
       <arg value="${svnCmd}" />
       <arg value="${user.dir}/${build.externals.file}" />
-      <!-- <arg line="perlFromAnt.pl 1 ${ant.property.One}" /> -->
     </exec>
 
 
@@ -45,24 +44,15 @@
 
   <target name="getSakaiSrcOld" depends="prepareBuildDirs">
     <execSvnCmd url="${sakai.svnurl}" revision="${sakai.revision}"/>
-    <!--
-    <place fromdir="${build.dir}/${sakai.svndir}" />
-    -->
     <antcall target="removeUnneededSakai" />
   </target>
 
   <target name="getConfigurationSrc"
 	  description="update the configuration information (not the executable files)." >
     <echo> update configuration from ${build.configuration.svnurl}/${build.configuration.configdir} revision: ${build.configuration.revision}</echo>
-<!--    <echo>  fromdir="${build.dir}/${sakai.svndir}" </echo> -->
-<!-- force is added since this will checkout over existing files -->
+    <!-- force is added since this will checkout over existing files -->
     <execSvnCmd url="${build.configuration.svnurl}/${build.configuration.configdir}" revision="${build.configuration.revision}"
 		additionalArguments="--force" />
-    <!--
-    <place fromdir="${build.dir}/${build.configuration.configdir}" 
-	   todir="${build.dir}/${build.configuration.configdir}"
-	   verbose="yes" />
-    -->
   </target>
 
   <!-- remove things that should not be there.  
