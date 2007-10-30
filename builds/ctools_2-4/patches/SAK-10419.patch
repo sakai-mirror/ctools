@@ -1,28 +1,44 @@
-svn diff -r31876:31877 https://source.sakaiproject.org/svn
-Index: msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java
+Index: messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java
 ===================================================================
---- msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 31876)
-+++ msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 31877)
-@@ -1679,6 +1679,11 @@
+--- messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 36827)
++++ messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(working copy)
+@@ -967,12 +967,16 @@
+   {
+     LOG.debug("processActionHome()");
+     msgNavMode = "privateMessages";
++    if (searchPvtMsgs != null)
++     	searchPvtMsgs.clear();
+     return  MAIN_PG;
+   }  
+   public String processActionPrivateMessages()
+   {
+     LOG.debug("processActionPrivateMessages()");                    
+     msgNavMode = "privateMessages";            
++    if (searchPvtMsgs != null) 
++   	searchPvtMsgs.clear();
+     return  MESSAGE_HOME_PG;
+   }        
+   public String processDisplayForum()
+@@ -1643,6 +1647,11 @@
        //set prev/next message
        setPrevNextMessageDetails();
        
 +      if (searchPvtMsgs != null)
 +      {
-+    	  searchPvtMsgs = null;
++    	  searchPvtMsgs.clear();
 +    	  return DISPLAY_MESSAGES_PG;
 +      }
      }
      return null;
    }
-@@ -1711,7 +1716,14 @@
+@@ -1674,7 +1683,14 @@
        setPrevNextTopicDetails(msgNavMode);
        //set prev/next message
        setPrevNextMessageDetails();
 +      
 +      if (searchPvtMsgs != null)
 +      {
-+    	  searchPvtMsgs = null;
++    	  searchPvtMsgs.clear();
 +    	  return DISPLAY_MESSAGES_PG;
 +      }
      }
@@ -30,66 +46,42 @@ Index: msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/Pr
      return null;
    }
  /////////////////////////////////////     DISPLAY NEXT/PREVIOUS TOPIC     //////////////////////////////////
-Index: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp
+@@ -3157,7 +3173,8 @@
+     }
+ 
+ 
+-    public String getAuthorString() {
++    public String getAuthorString() 
++    {
+        String authorString = getUserId();
+        
+        try
+@@ -3173,12 +3190,17 @@
+        return authorString;
+     }
+     
+-    public String getPlacementId() {
++    public String getPlacementId() 
++    {
+        return Validator.escapeJavascript("Main" + ToolManager.getCurrentPlacement().getId());
+     }
+ 
++    public boolean isSearchPvtMsgsEmpty()
++    {
++    	return searchPvtMsgs == null || searchPvtMsgs.isEmpty();
++    }
+ 
+-	public void setMsgNavMode(String msgNavMode) {
++    public void setMsgNavMode(String msgNavMode) {
+ 		this.msgNavMode = msgNavMode;
+ 	}	
+ 	
+Index: messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp
 ===================================================================
---- msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp	(revision 0)
-+++ msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp	(revision 31877)
-@@ -0,0 +1,41 @@
-+<%-- For breadcrumb, displays either Messages & Forums / Messages / or just Messages /
-+	 also displays the Previous/Next folder links --%>
-+ <h:panelGrid columns="2" summary="layout" width="100%" styleClass="navPanel">	 		
-+	<h:panelGroup>
-+		<f:verbatim><div class="breadCrumb specialLink"><h3></f:verbatim>
-+			<h:panelGroup rendered="#{PrivateMessagesTool.messagesandForums}" >
-+				<h:commandLink action="#{PrivateMessagesTool.processActionHome}" value="#{msgs.cdfm_message_forums}" title="#{msgs.cdfm_message_forums}"/>
-+				<h:outputText value=" / " />
-+			</h:panelGroup>
-+	  	
-+			<h:commandLink action="#{PrivateMessagesTool.processActionPrivateMessages}" value="#{msgs.pvt_message_nav}" title=" #{msgs.cdfm_message_forums}"/>
-+			<h:outputText value=" " /><h:outputText value=" / " /><h:outputText value=" " />
-+			
-+			<h:outputText value="#{PrivateMessagesTool.msgNavMode}" rendered="#{PrivateMessagesTool.searchPvtMsgs == null}" />
-+		
-+			<h:commandLink action="#{PrivateMessagesTool.processDisplayForum}" value="#{PrivateMessagesTool.msgNavMode}" title=" #{msgs.cdfm_message_forums}"
-+								rendered="#{PrivateMessagesTool.searchPvtMsgs != null}" />
-+			<h:outputText value=" " />
-+			<h:outputText value=" / " rendered="#{PrivateMessagesTool.searchPvtMsgs != null}" />
-+			<h:outputText value=" " />
-+			
-+			<h:outputText value="#{msgs.pvt_search}" rendered="#{PrivateMessagesTool.searchPvtMsgs != null}" />
-+		
-+		<f:verbatim></h3></div></f:verbatim>
-+	</h:panelGroup>
-+	<h:panelGroup styleClass="itemNav specialLink">
-+		<%-- gsilver:huh? renders anyway - because it is looking at topics instead of at folders?--%>
-+		<h:commandLink action="#{PrivateMessagesTool.processDisplayPreviousTopic}" value="#{msgs.pvt_prev_folder}"  
-+			                rendered="#{PrivateMessagesTool.selectedTopic.hasPreviousTopic}" title=" #{msgs.pvt_prev_folder}">
-+			<f:param value="#{PrivateMessagesTool.selectedTopic.previousTopicTitle}" name="previousTopicTitle"/>
-+		</h:commandLink>
-+		<h:outputText value="#{msgs.pvt_prev_folder}" rendered="#{!PrivateMessagesTool.selectedTopic.hasPreviousTopic}" />
-+		<f:verbatim><h:outputText value=" | " /></f:verbatim>
-+	
-+		<h:commandLink action="#{PrivateMessagesTool.processDisplayNextTopic}" value="#{msgs.pvt_next_folder}" 
-+				  		                  rendered="#{PrivateMessagesTool.selectedTopic.hasNextTopic}" title=" #{msgs.pvt_next_folder}">
-+			<f:param value="#{PrivateMessagesTool.selectedTopic.nextTopicTitle}" name="nextTopicTitle"/>
-+		</h:commandLink>
-+		<h:outputText value="#{msgs.pvt_next_folder}" rendered="#{!PrivateMessagesTool.selectedTopic.hasNextTopic}" />
-+	</h:panelGroup>
-+</h:panelGrid>
-
-Property changes on: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp
-___________________________________________________________________
-Name: svn:eol-style
-   + native
-Name: svn:keywords
-   + Date Revision Author HeadURL Id
-
-Index: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp
-===================================================================
---- msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp	(revision 31876)
-+++ msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp	(revision 31877)
-@@ -13,14 +13,7 @@
- 		<h:form id="prefs_form_search">
+--- messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp	(revision 36827)
++++ messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp	(working copy)
+@@ -15,14 +15,7 @@
+        		<sakai:script contextBase="/sakai-messageforums-tool" path="/js/sak-10625.js"/>
  			<sakai:script contextBase="/sakai-messageforums-tool" path="/js/forum.js"/>		
  			
 -			<div class="breadCrumb">
@@ -104,11 +96,11 @@ Index: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp
  
  			<h:messages styleClass="alertMessage" id="errorMessages" />
  			<%@include file="msgHeader.jsp"%>
-Index: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp
+Index: messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp
 ===================================================================
---- msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp	(revision 31876)
-+++ msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp	(revision 31877)
-@@ -35,33 +35,7 @@
+--- messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp	(revision 36827)
++++ messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp	(working copy)
+@@ -37,33 +37,7 @@
  			<sakai:script contextBase="/sakai-messageforums-tool" path="/js/forum.js"/>		
  			
  			<%--<sakai:tool_bar_message value="#{msgs.pvt_pvtmsg}- #{PrivateMessagesTool.msgNavMode}" /> --%>
@@ -142,385 +134,4 @@ Index: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp
 +			<%@include file="topNav.jsp" %>
   
   			<h:messages styleClass="alertMessage" id="errorMessages" /> 
-  			<!-- Display successfully moving checked messsages to Deleted folder -->
-svn diff -r31879:31880 https://source.sakaiproject.org/svn
-Index: msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java
-===================================================================
---- msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 31879)
-+++ msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 31880)
-@@ -1000,6 +1000,7 @@
-     LOG.debug("processActionHome()");
-     msgNavMode = "privateMessages";
-     multiDeleteSuccess = false;
-+    searchPvtMsgs.clear();
-     return  MAIN_PG;
-   }  
-   public String processActionPrivateMessages()
-@@ -1007,6 +1008,7 @@
-     LOG.debug("processActionPrivateMessages()");                    
-     msgNavMode = "privateMessages";            
-     multiDeleteSuccess = false;
-+    searchPvtMsgs.clear();
-     return  MESSAGE_HOME_PG;
-   }        
-   public String processDisplayForum()
-@@ -1681,7 +1683,7 @@
-       
-       if (searchPvtMsgs != null)
-       {
--    	  searchPvtMsgs = null;
-+    	  searchPvtMsgs.clear();
-     	  return DISPLAY_MESSAGES_PG;
-       }
-     }
-@@ -1719,7 +1721,7 @@
-       
-       if (searchPvtMsgs != null)
-       {
--    	  searchPvtMsgs = null;
-+    	  searchPvtMsgs.clear();
-     	  return DISPLAY_MESSAGES_PG;
-       }
-     }
-@@ -3250,7 +3252,8 @@
-     }
- 
- 
--    public String getAuthorString() {
-+    public String getAuthorString() 
-+    {
-        String authorString = getUserId();
-        
-        try
-@@ -3266,12 +3269,17 @@
-        return authorString;
-     }
-     
--    public String getPlacementId() {
-+    public String getPlacementId() 
-+    {
-        return Validator.escapeJavascript("Main" + ToolManager.getCurrentPlacement().getId());
-     }
- 
-+    public boolean isSearchPvtMsgsEmpty()
-+    {
-+    	return searchPvtMsgs == null || searchPvtMsgs.isEmpty();
-+    }
- 
--	public void setMsgNavMode(String msgNavMode) {
-+    public void setMsgNavMode(String msgNavMode) {
- 		this.msgNavMode = msgNavMode;
- 	}	
- 	
-Index: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp
-===================================================================
---- msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp	(revision 31879)
-+++ msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp	(revision 31880)
-@@ -11,15 +11,15 @@
- 			<h:commandLink action="#{PrivateMessagesTool.processActionPrivateMessages}" value="#{msgs.pvt_message_nav}" title=" #{msgs.cdfm_message_forums}"/>
- 			<h:outputText value=" " /><h:outputText value=" / " /><h:outputText value=" " />
- 			
--			<h:outputText value="#{PrivateMessagesTool.msgNavMode}" rendered="#{PrivateMessagesTool.searchPvtMsgs == null}" />
-+			<h:outputText value="#{PrivateMessagesTool.msgNavMode}" rendered="#{PrivateMessagesTool.searchPvtMsgsEmpty}" />
- 		
- 			<h:commandLink action="#{PrivateMessagesTool.processDisplayForum}" value="#{PrivateMessagesTool.msgNavMode}" title=" #{msgs.cdfm_message_forums}"
--								rendered="#{PrivateMessagesTool.searchPvtMsgs != null}" />
-+								rendered="#{! PrivateMessagesTool.searchPvtMsgsEmpty}" />
- 			<h:outputText value=" " />
--			<h:outputText value=" / " rendered="#{PrivateMessagesTool.searchPvtMsgs != null}" />
-+			<h:outputText value=" / " rendered="#{! PrivateMessagesTool.searchPvtMsgsEmpty}" />
- 			<h:outputText value=" " />
- 			
--			<h:outputText value="#{msgs.pvt_search}" rendered="#{PrivateMessagesTool.searchPvtMsgs != null}" />
-+			<h:outputText value="#{msgs.pvt_search}" rendered="#{! PrivateMessagesTool.searchPvtMsgsEmpty}" />
- 		
- 		<f:verbatim></h3></div></f:verbatim>
- 	</h:panelGroup>
-svn diff -r31884:31885 https://source.sakaiproject.org/svn
-Index: msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java
-===================================================================
---- msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 31884)
-+++ msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 31885)
-@@ -1000,7 +1000,8 @@
-     LOG.debug("processActionHome()");
-     msgNavMode = "privateMessages";
-     multiDeleteSuccess = false;
--    searchPvtMsgs.clear();
-+    if (searchPvtMsgs != null)
-+    	searchPvtMsgs.clear();
-     return  MAIN_PG;
-   }  
-   public String processActionPrivateMessages()
-@@ -1008,7 +1009,8 @@
-     LOG.debug("processActionPrivateMessages()");                    
-     msgNavMode = "privateMessages";            
-     multiDeleteSuccess = false;
--    searchPvtMsgs.clear();
-+    if (searchPvtMsgs != null) 
-+    	searchPvtMsgs.clear();
-     return  MESSAGE_HOME_PG;
-   }        
-   public String processDisplayForum()
-svn diff -r31876:31877 https://source.sakaiproject.org/svn
-Index: msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java
-===================================================================
---- msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 31876)
-+++ msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 31877)
-@@ -1679,6 +1679,11 @@
-       //set prev/next message
-       setPrevNextMessageDetails();
-       
-+      if (searchPvtMsgs != null)
-+      {
-+    	  searchPvtMsgs = null;
-+    	  return DISPLAY_MESSAGES_PG;
-+      }
-     }
-     return null;
-   }
-@@ -1711,7 +1716,14 @@
-       setPrevNextTopicDetails(msgNavMode);
-       //set prev/next message
-       setPrevNextMessageDetails();
-+      
-+      if (searchPvtMsgs != null)
-+      {
-+    	  searchPvtMsgs = null;
-+    	  return DISPLAY_MESSAGES_PG;
-+      }
-     }
-+
-     return null;
-   }
- /////////////////////////////////////     DISPLAY NEXT/PREVIOUS TOPIC     //////////////////////////////////
-Index: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp
-===================================================================
---- msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp	(revision 0)
-+++ msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp	(revision 31877)
-@@ -0,0 +1,41 @@
-+<%-- For breadcrumb, displays either Messages & Forums / Messages / or just Messages /
-+	 also displays the Previous/Next folder links --%>
-+ <h:panelGrid columns="2" summary="layout" width="100%" styleClass="navPanel">	 		
-+	<h:panelGroup>
-+		<f:verbatim><div class="breadCrumb specialLink"><h3></f:verbatim>
-+			<h:panelGroup rendered="#{PrivateMessagesTool.messagesandForums}" >
-+				<h:commandLink action="#{PrivateMessagesTool.processActionHome}" value="#{msgs.cdfm_message_forums}" title="#{msgs.cdfm_message_forums}"/>
-+				<h:outputText value=" / " />
-+			</h:panelGroup>
-+	  	
-+			<h:commandLink action="#{PrivateMessagesTool.processActionPrivateMessages}" value="#{msgs.pvt_message_nav}" title=" #{msgs.cdfm_message_forums}"/>
-+			<h:outputText value=" " /><h:outputText value=" / " /><h:outputText value=" " />
-+			
-+			<h:outputText value="#{PrivateMessagesTool.msgNavMode}" rendered="#{PrivateMessagesTool.searchPvtMsgs == null}" />
-+		
-+			<h:commandLink action="#{PrivateMessagesTool.processDisplayForum}" value="#{PrivateMessagesTool.msgNavMode}" title=" #{msgs.cdfm_message_forums}"
-+								rendered="#{PrivateMessagesTool.searchPvtMsgs != null}" />
-+			<h:outputText value=" " />
-+			<h:outputText value=" / " rendered="#{PrivateMessagesTool.searchPvtMsgs != null}" />
-+			<h:outputText value=" " />
-+			
-+			<h:outputText value="#{msgs.pvt_search}" rendered="#{PrivateMessagesTool.searchPvtMsgs != null}" />
-+		
-+		<f:verbatim></h3></div></f:verbatim>
-+	</h:panelGroup>
-+	<h:panelGroup styleClass="itemNav specialLink">
-+		<%-- gsilver:huh? renders anyway - because it is looking at topics instead of at folders?--%>
-+		<h:commandLink action="#{PrivateMessagesTool.processDisplayPreviousTopic}" value="#{msgs.pvt_prev_folder}"  
-+			                rendered="#{PrivateMessagesTool.selectedTopic.hasPreviousTopic}" title=" #{msgs.pvt_prev_folder}">
-+			<f:param value="#{PrivateMessagesTool.selectedTopic.previousTopicTitle}" name="previousTopicTitle"/>
-+		</h:commandLink>
-+		<h:outputText value="#{msgs.pvt_prev_folder}" rendered="#{!PrivateMessagesTool.selectedTopic.hasPreviousTopic}" />
-+		<f:verbatim><h:outputText value=" | " /></f:verbatim>
-+	
-+		<h:commandLink action="#{PrivateMessagesTool.processDisplayNextTopic}" value="#{msgs.pvt_next_folder}" 
-+				  		                  rendered="#{PrivateMessagesTool.selectedTopic.hasNextTopic}" title=" #{msgs.pvt_next_folder}">
-+			<f:param value="#{PrivateMessagesTool.selectedTopic.nextTopicTitle}" name="nextTopicTitle"/>
-+		</h:commandLink>
-+		<h:outputText value="#{msgs.pvt_next_folder}" rendered="#{!PrivateMessagesTool.selectedTopic.hasNextTopic}" />
-+	</h:panelGroup>
-+</h:panelGrid>
-
-Property changes on: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp
-___________________________________________________________________
-Name: svn:eol-style
-   + native
-Name: svn:keywords
-   + Date Revision Author HeadURL Id
-
-Index: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp
-===================================================================
---- msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp	(revision 31876)
-+++ msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsgEx.jsp	(revision 31877)
-@@ -13,14 +13,7 @@
- 		<h:form id="prefs_form_search">
- 			<sakai:script contextBase="/sakai-messageforums-tool" path="/js/forum.js"/>		
- 			
--			<div class="breadCrumb">
--				<h3>
--				<h:commandLink action="#{PrivateMessagesTool.processActionHome}" value="#{msgs.cdfm_message_forums}" title=" #{msgs.cdfm_message_forums}"/> /
--	  		  <h:commandLink action="#{PrivateMessagesTool.processActionPrivateMessages}" value="#{msgs.cdfm_message_pvtarea}" title=" #{msgs.cdfm_message_forums}"/> /
--				<h:commandLink action="#{PrivateMessagesTool.processDisplayForum}" value="#{PrivateMessagesTool.msgNavMode}" title=" #{msgs.cdfm_message_forums}"/> /
--				<h:outputText value="#{msgs.pvt_search}" />
--				</h3>
--		  </div>
-+			<%@include file="topNav.jsp" %>
- 
- 			<h:messages styleClass="alertMessage" id="errorMessages" />
- 			<%@include file="msgHeader.jsp"%>
-Index: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp
-===================================================================
---- msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp	(revision 31876)
-+++ msgcntr/messageforums-app/src/webapp/jsp/privateMsg/pvtMsg.jsp	(revision 31877)
-@@ -35,33 +35,7 @@
- 			<sakai:script contextBase="/sakai-messageforums-tool" path="/js/forum.js"/>		
- 			
- 			<%--<sakai:tool_bar_message value="#{msgs.pvt_pvtmsg}- #{PrivateMessagesTool.msgNavMode}" /> --%>
--			<h:panelGrid columns="2" summary="layout" width="100%" styleClass="navPanel">
--        <h:panelGroup>
--          	<f:verbatim><div class="breadCrumb specialLink"><h3></f:verbatim>
--				  <h:panelGroup rendered="#{PrivateMessagesTool.messagesandForums}" >
--				  	<h:commandLink action="#{PrivateMessagesTool.processActionHome}" value="#{msgs.cdfm_message_forums}" title="#{msgs.cdfm_message_forums}"/>
--				  	<f:verbatim><h:outputText value=" / " /></f:verbatim>
--				  </h:panelGroup>
--	  		      <h:commandLink action="#{PrivateMessagesTool.processActionPrivateMessages}" value="#{msgs.pvt_message_nav}" title=" #{msgs.cdfm_message_forums}"/>
--	              <f:verbatim><h:outputText value=" " /><h:outputText value=" / " /><h:outputText value=" " /></f:verbatim>
--	 		      <h:outputText value="#{PrivateMessagesTool.msgNavMode}"/>
--			    <f:verbatim></h3></div></f:verbatim>
--        </h:panelGroup>
--        <h:panelGroup styleClass="itemNav specialLink">
--		<%-- gsilver:huh? renders anyway - because it is looking at topics instead of at folders?--%>
--				 <h:commandLink action="#{PrivateMessagesTool.processDisplayPreviousTopic}" value="#{msgs.pvt_prev_folder}"  
--				                rendered="#{PrivateMessagesTool.selectedTopic.hasPreviousTopic}" title=" #{msgs.pvt_prev_folder}">
--	  			   <f:param value="#{PrivateMessagesTool.selectedTopic.previousTopicTitle}" name="previousTopicTitle"/>
--	  		   </h:commandLink>
--				<h:outputText 	value="#{msgs.pvt_prev_folder}"  rendered="#{!PrivateMessagesTool.selectedTopic.hasPreviousTopic}" />
--				  <f:verbatim><h:outputText value=" | " /></f:verbatim>
--	  		   <h:commandLink action="#{PrivateMessagesTool.processDisplayNextTopic}" value="#{msgs.pvt_next_folder}" 
--	  		                  rendered="#{PrivateMessagesTool.selectedTopic.hasNextTopic}" title=" #{msgs.pvt_next_folder}">
--	  			  <f:param value="#{PrivateMessagesTool.selectedTopic.nextTopicTitle}" name="nextTopicTitle"/>
--	  		   </h:commandLink>
--			   				<h:outputText 	 value="#{msgs.pvt_next_folder}"  rendered="#{!PrivateMessagesTool.selectedTopic.hasNextTopic}" />
--        </h:panelGroup>
--      </h:panelGrid>
-+			<%@include file="topNav.jsp" %>
-  
-  			<h:messages styleClass="alertMessage" id="errorMessages" /> 
-  			<!-- Display successfully moving checked messsages to Deleted folder -->
-svn diff -r31879:31880 https://source.sakaiproject.org/svn
-Index: msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java
-===================================================================
---- msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 31879)
-+++ msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 31880)
-@@ -1000,6 +1000,7 @@
-     LOG.debug("processActionHome()");
-     msgNavMode = "privateMessages";
-     multiDeleteSuccess = false;
-+    searchPvtMsgs.clear();
-     return  MAIN_PG;
-   }  
-   public String processActionPrivateMessages()
-@@ -1007,6 +1008,7 @@
-     LOG.debug("processActionPrivateMessages()");                    
-     msgNavMode = "privateMessages";            
-     multiDeleteSuccess = false;
-+    searchPvtMsgs.clear();
-     return  MESSAGE_HOME_PG;
-   }        
-   public String processDisplayForum()
-@@ -1681,7 +1683,7 @@
-       
-       if (searchPvtMsgs != null)
-       {
--    	  searchPvtMsgs = null;
-+    	  searchPvtMsgs.clear();
-     	  return DISPLAY_MESSAGES_PG;
-       }
-     }
-@@ -1719,7 +1721,7 @@
-       
-       if (searchPvtMsgs != null)
-       {
--    	  searchPvtMsgs = null;
-+    	  searchPvtMsgs.clear();
-     	  return DISPLAY_MESSAGES_PG;
-       }
-     }
-@@ -3250,7 +3252,8 @@
-     }
- 
- 
--    public String getAuthorString() {
-+    public String getAuthorString() 
-+    {
-        String authorString = getUserId();
-        
-        try
-@@ -3266,12 +3269,17 @@
-        return authorString;
-     }
-     
--    public String getPlacementId() {
-+    public String getPlacementId() 
-+    {
-        return Validator.escapeJavascript("Main" + ToolManager.getCurrentPlacement().getId());
-     }
- 
-+    public boolean isSearchPvtMsgsEmpty()
-+    {
-+    	return searchPvtMsgs == null || searchPvtMsgs.isEmpty();
-+    }
- 
--	public void setMsgNavMode(String msgNavMode) {
-+    public void setMsgNavMode(String msgNavMode) {
- 		this.msgNavMode = msgNavMode;
- 	}	
- 	
-Index: msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp
-===================================================================
---- msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp	(revision 31879)
-+++ msgcntr/messageforums-app/src/webapp/jsp/privateMsg/topNav.jsp	(revision 31880)
-@@ -11,15 +11,15 @@
- 			<h:commandLink action="#{PrivateMessagesTool.processActionPrivateMessages}" value="#{msgs.pvt_message_nav}" title=" #{msgs.cdfm_message_forums}"/>
- 			<h:outputText value=" " /><h:outputText value=" / " /><h:outputText value=" " />
- 			
--			<h:outputText value="#{PrivateMessagesTool.msgNavMode}" rendered="#{PrivateMessagesTool.searchPvtMsgs == null}" />
-+			<h:outputText value="#{PrivateMessagesTool.msgNavMode}" rendered="#{PrivateMessagesTool.searchPvtMsgsEmpty}" />
- 		
- 			<h:commandLink action="#{PrivateMessagesTool.processDisplayForum}" value="#{PrivateMessagesTool.msgNavMode}" title=" #{msgs.cdfm_message_forums}"
--								rendered="#{PrivateMessagesTool.searchPvtMsgs != null}" />
-+								rendered="#{! PrivateMessagesTool.searchPvtMsgsEmpty}" />
- 			<h:outputText value=" " />
--			<h:outputText value=" / " rendered="#{PrivateMessagesTool.searchPvtMsgs != null}" />
-+			<h:outputText value=" / " rendered="#{! PrivateMessagesTool.searchPvtMsgsEmpty}" />
- 			<h:outputText value=" " />
- 			
--			<h:outputText value="#{msgs.pvt_search}" rendered="#{PrivateMessagesTool.searchPvtMsgs != null}" />
-+			<h:outputText value="#{msgs.pvt_search}" rendered="#{! PrivateMessagesTool.searchPvtMsgsEmpty}" />
- 		
- 		<f:verbatim></h3></div></f:verbatim>
- 	</h:panelGroup>
-svn diff -r31884:31885 https://source.sakaiproject.org/svn
-Index: msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java
-===================================================================
---- msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 31884)
-+++ msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java	(revision 31885)
-@@ -1000,7 +1000,8 @@
-     LOG.debug("processActionHome()");
-     msgNavMode = "privateMessages";
-     multiDeleteSuccess = false;
--    searchPvtMsgs.clear();
-+    if (searchPvtMsgs != null)
-+    	searchPvtMsgs.clear();
-     return  MAIN_PG;
-   }  
-   public String processActionPrivateMessages()
-@@ -1008,7 +1009,8 @@
-     LOG.debug("processActionPrivateMessages()");                    
-     msgNavMode = "privateMessages";            
-     multiDeleteSuccess = false;
--    searchPvtMsgs.clear();
-+    if (searchPvtMsgs != null) 
-+    	searchPvtMsgs.clear();
-     return  MESSAGE_HOME_PG;
-   }        
-   public String processDisplayForum()
+   	
