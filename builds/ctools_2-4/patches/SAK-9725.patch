@@ -1075,3 +1075,32 @@ Name: svn:eol-style
 Name: svn:keywords
    + Date Revision Author HeadURL Id
 
+svn diff -r31931:31932 https://source.sakaiproject.org/svn
+Index: metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java
+===================================================================
+--- metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java	(revision 31931)
++++ metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java	(revision 31932)
+@@ -774,13 +774,17 @@
+       attrNode.addContent(new CDATA(bean.getDocumentRoot()));
+       rootNode.addContent(attrNode);
+       
+-      attrNode = new Element("altCreateXslt");
+-      attrNode.addContent(new CDATA(bean.getAlternateCreateXslt().getValue()));
+-      rootNode.addContent(attrNode);
++      if ( bean.getAlternateCreateXslt() != null ) {
++         attrNode = new Element("altCreateXslt");
++         attrNode.addContent(new CDATA(bean.getAlternateCreateXslt().getValue()));
++         rootNode.addContent(attrNode);
++      }
+       
+-      attrNode = new Element("altViewXslt");
+-      attrNode.addContent(new CDATA(bean.getAlternateViewXslt().getValue()));
+-      rootNode.addContent(attrNode);
++      if ( bean.getAlternateViewXslt() != null ) {
++         attrNode = new Element("altViewXslt");
++         attrNode.addContent(new CDATA(bean.getAlternateViewXslt().getValue()));
++         rootNode.addContent(attrNode);
++      }
+       
+       return new Document(rootNode);
+    }
