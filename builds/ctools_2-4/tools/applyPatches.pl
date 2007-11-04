@@ -6,6 +6,8 @@
 #
 # Routines to apply a patch to files in the current directory.  It
 # will run standalone or can be included in another Perl script.
+# Since it wraps a bash script it returns bash type return codes.
+# I.e. 0 means success, non-zero means failure.
 
 #### TTD: 
 #
