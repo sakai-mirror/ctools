@@ -6,12 +6,15 @@
 # To be consistant with applyPatches.pl this returns shell style return codes.
 # I.e. 0 means success, non-zero means failure.
 
+# Currently just works on full paths.  Doesn't know about builds per sec.
+
 use strict;
 use File::Path;
 
 ## TTD:
 # - use to remove the entire work directory rather than having ant do it (slowly).
 
+## Setup variables and methods to set them for debugging.
 our ($dryRun)  = 0;
 our ($verbose) = 0;
 
@@ -29,16 +32,17 @@ sub dryRun {
 	return $olddryRun;
 }
 
+# Is this useful?
 sub removeBuildParts {
 	print "removeBuildParts called with arguments: |", join( "|", @ARGV ),
 	  "|\n";
 }
 
+# Remove a file if it can.  It needs a full path.
 sub removeFile {
 	my ($fileName) = @_;
 	print "-- remove file: [$fileName}\n" if ($verbose);
 
-	#  my $cmd = "$unlink($fileName) || return 0";
 	my $cmd = "unlink(\"$fileName\")";
 	if ( $dryRun || $verbose ) {
 		print "rF: cmd: [$cmd]\n";
@@ -52,22 +56,10 @@ sub removeFile {
 		return 1;
 	}
 
-	#  unless ($unlink($fileName) || return 0;
 	return 0;
 }
 
-
-#sub removeDirFromBuild {
-	#my ( $buildDir, $entry ) = @_;
-	#print "-- remove dir: [$entry] from build: [$buildDir]\n" if ($verbose);
-	#eval { rmtree("$buildDir/$entry") };
-	#if ($@) {
-		#print "Couldn't remove directory: [$buildDir/$entry] $@";
-		#return 0;
-	#}
-	#return 1;
-#}
-
+# Remove a directory if it can.  Requires a full path.
 sub removeDir {
 	my ($entry) = @_;
 	print "-- remove dir from build: [$entry]\n" if ($verbose);
@@ -79,11 +71,12 @@ sub removeDir {
 	return 0;
 }
 
-sub removeWarFromImage {
-	my ($warpath) = @_;
-	print "remove war from image: [$warpath]\n" if ($verbose);
-	removeFileFromBuild($warpath);
-}
+# These perl methods should replace these ant tasks. 
+#sub removeWarFromImage {
+#	my ($warpath) = @_;
+#	print "remove war from image: [$warpath]\n" if ($verbose);
+#	removeFileFromBuild($warpath);
+#}
 
 #     <removeFromBuild deleteDir="portal/mercury" />
 #   <!-- remove files from build directory -->

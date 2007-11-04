@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl 
 use strict;
 use Fcntl;
 use POSIX;
@@ -19,10 +19,11 @@ my $testDir = "/tmp/$scriptName.test.$$";
 #print "testDir: $testDir\n";
 
 makeTestDir($testDir);
-
 is( -d $testDir, 1, "create test directory" );
 
 testRemoveFile($testDir);
+
+testRemoveFileWithoutPermission($testDir.".noperm");
 
 testRemoveDir($testDir);
 
@@ -44,6 +45,21 @@ sub testRemoveFile {
 	is( ( -e $file1 ), ( $rc == 0 ? undef: 1 ), "remove added file [$file1]" );
 }
 
+sub testRemoveFileWithoutPermission {
+	my($testDir) = shift;
+	my $file1 = "$testDir/TESTNoPermission";
+	makeTestDir($testDir);
+    is( -d $testDir, 1, "create test directory without permissions." );
+    `chmod a-w $testDir`;	
+    eval {
+		makeTestFile($file1);
+    };
+	isnt( -e $file1, 1, "no permission file created" );
+    `chmod a+w $testDir`;	
+    testRemoveDir($testDir);
+}
+
+
 sub testRemoveDir {
 	my $dir1   = shift;
 	my $badDir = $dir1 . "X";
@@ -52,7 +68,7 @@ sub testRemoveDir {
 	isnt( -d $badDir, 1, "badDir is absent" );
 
 	my $rc;
-	my $badDir = $dir1 . "X";
+#	my $badDir = $dir1 . "X";
 	$rc = removeDir($badDir);
 	is(
 		( -d $badDir ),
@@ -67,11 +83,10 @@ sub testRemoveDir {
 
 sub makeTestFile {
 	my ($fileName) = shift;
+	# print "makeTestFile: fileName: [$fileName]\n";
 	open TESTFILE, "+>$fileName" || die("Can't open file: [$fileName] $!");
 	print TESTFILE "test file: [$fileName] created from $0 at ", `date`;
 	close TESTFILE || die("Can't close file: [$fileName] $!");
-
-	#  print `cat $fileName`;
 }
 
 sub makeTestDir {
