@@ -3,69 +3,82 @@ use strict;
 use Fcntl;
 use POSIX;
 use File::Path;
+
 #use Test::Simple tests=>3;
-use Test::More tests=>11;
+use Test::More qw(no_plan);
 
 require "removeBuildParts.pl";
 
-my $testDir = "/tmp/$0.test.$$";
+#verbose(1);
+#dryRun(1);
 
-print "testDir: $testDir\n";
+my ($scriptName) = ( $0 =~ m|.*/(.*)| );
+
+my $testDir = "/tmp/$scriptName.test.$$";
+
+#print "testDir: $testDir\n";
 
 makeTestDir($testDir);
-is (-d $testDir, 1, "create test directory");
 
-testRemoveFileFromBuild();
+is( -d $testDir, 1, "create test directory" );
 
-removeDirFromBuild($testDir);
-is (-d $testDir, undef, "removed test directory");
+testRemoveFile($testDir);
 
-removeTestDir($testDir);
-is (-d $testDir, undef, "removed test directory");
+testRemoveDir($testDir);
 
-#print "tmpname: [",tmpnam(),"]\n";
+sub testRemoveFile {
+	my($testDir) = shift;
+	my $file1 = "$testDir/TEST";
+	makeTestFile($file1);
+	is( -e $file1, 1, "file created" );
 
-#$tmpDirName = tmpnam();
-# how use tmpnam to also get file names? Won't they have the /var/tmp in them?
+	my $rc;
+	my $badFile = $file1 . "X";
+	$rc = removeFile($badFile);
+	is(
+		( -e $badFile ),
+		( $rc == 0 ? undef: 1 ),
+		"don't remove file that doesn't exist [$badFile]"
+	);
+	$rc = removeFile($file1);
+	is( ( -e $file1 ), ( $rc == 0 ? undef: 1 ), "remove added file [$file1]" );
+}
 
-#mkdir($tmpDirName,0777) || die("can't make temp directory: [$tmpDirName]");
+sub testRemoveDir {
+	my $dir1   = shift;
+	my $badDir = $dir1 . "X";
 
-#my ($rc,$list);
-#ok (1 eq 1,"test test");
+	is( -d $dir1, 1, "dir exists" );
+	isnt( -d $badDir, 1, "badDir is absent" );
 
-## check command handling without checking log
-#($rc,$list) = runShellCmdGetResult("[ 1 -eq 1 ]");
-#is ($rc, "0","shell command success rc (array context)");
-#is ($list,"cmd: [[ 1 -eq 1 ]] cmd result: []","shell command success log (array)lskdfjlaskdfjlsa
+	my $rc;
+	my $badDir = $dir1 . "X";
+	$rc = removeDir($badDir);
+	is(
+		( -d $badDir ),
+		( $rc == 0 ? undef: 1 ),
+		"don't remove dir that doesn't exist [$badDir]"
+	);
 
-sub testRemoveFileFromBuild{
-  my $file1 = "$testDir/TEST";
-  makeTestFile($file1);
-  is(-e $file1, 1, "file created");
-  removeFileFromBuild($file1);
-  is(-e $file1, undef, "file removed");
+	$rc = removeDir($dir1);
+
+	is( ( -d $dir1 ), ( $rc == 0 ? undef: 1 ), "removed test dir [$dir1]" );
 }
 
 sub makeTestFile {
-  my($fileName) = shift;
-  open TESTFILE, "+>$fileName" || die("Can't open file: [$fileName] $!");
-  print TESTFILE "test file: [$fileName] created from $0 at ",`date`;
-  close TESTFILE || die("Can't close file: [$fileName] $!");
-  #  print `cat $fileName`;
-}
+	my ($fileName) = shift;
+	open TESTFILE, "+>$fileName" || die("Can't open file: [$fileName] $!");
+	print TESTFILE "test file: [$fileName] created from $0 at ", `date`;
+	close TESTFILE || die("Can't close file: [$fileName] $!");
 
-sub removeTestFile {
+	#  print `cat $fileName`;
 }
 
 sub makeTestDir {
-  my($testDir) = @_;
-  mkdir($testDir,0777) || die("Can not make test directory: [$testDir] $!");
-}
-
-sub removeTestDir {
-  my($testDir) = @_;
-#  print "remove: [$testDir]\n";
-  rmtree($testDir);
+	my ($testDir) = @_;
+	mkdir( $testDir, 0777 )
+	  || die("Can not make test directory: [$testDir] $!");
 }
 
 #end
+
