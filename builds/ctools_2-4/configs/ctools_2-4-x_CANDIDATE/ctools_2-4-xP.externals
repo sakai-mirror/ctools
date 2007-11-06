@@ -29,7 +29,8 @@
  alias -r28277 https://source.sakaiproject.org/svn/alias/branches/sakai_2-4-x
  announcement -r32297 https://source.sakaiproject.org/svn/announcement/branches/sakai_2-4-x
  archive -r28700 https://source.sakaiproject.org/svn/archive/branches/sakai_2-4-x
- authz -r28692 https://source.sakaiproject.org/svn/authz/branches/sakai_2-4-x
+# authz -r28692 https://source.sakaiproject.org/svn/authz/branches/sakai_2-4-x
+ authz -r37756 https://source.sakaiproject.org/svn/authz/branches/sakai_2-4-x
  blog -r35738 https://source.sakaiproject.org/svn/blog/branches/sakai_2-4-x
  calendar -r34735 https://source.sakaiproject.org/svn/calendar/branches/sakai_2-4-x
  chat -r36795 https://source.sakaiproject.org/svn/chat/branches/sakai_2-4-x
@@ -75,7 +76,8 @@
  search -r32309 https://source.sakaiproject.org/svn/search/branches/sakai_2-4-x
  sections -r33489 https://source.sakaiproject.org/svn/sections/branches/sakai_2-4-x
  site -r33408 https://source.sakaiproject.org/svn/site/branches/sakai_2-4-x
- site-manage -r37145 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
+# site-manage -r37145 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
+ site-manage -r37768 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
  syllabus -r33437 https://source.sakaiproject.org/svn/syllabus/branches/sakai_2-4-x
  test-harness -r28057 https://source.sakaiproject.org/svn/test-harness/branches/sakai_2-4-x
  textarea -r28058 https://source.sakaiproject.org/svn/textarea/branches/sakai_2-4-x
