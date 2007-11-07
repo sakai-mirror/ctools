@@ -1,0 +1,15 @@
+--- assignment/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java	2007/07/18 16:41:09	32684
++++ assignment/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java	2007/07/18 17:01:20	32685
+@@ -2944,6 +2944,12 @@
+ 				sEdit.setTimeReturned(TimeService.newTime());
+ 				sEdit.setHonorPledgeFlag(Boolean.FALSE.booleanValue());
+ 			}
++			else if (gradeOption.equals("save"))
++			{
++				sEdit.setGradeReleased(false);
++				sEdit.setReturned(false);
++				sEdit.setTimeReturned(null);
++			}
+ 
+ 			if (state.getAttribute(AssignmentSubmission.ALLOW_RESUBMIT_NUMBER) != null)
+ 			{
