@@ -38,6 +38,31 @@ sub removeBuildParts {
 	  "|\n";
 }
 
+# Remove a list of files
+sub removeBuildPartsListFromArgs {
+  removeBuildPartsList(@_);
+}
+
+sub removeBuildPartsList {
+  my($buildDir,$removeFileNames) = @_;
+  my($dirsRemoved,$filesRemoved,$otherElement) = (0,0,0);
+  foreach (split(",",$removeFileNames)) {
+    print "removeFilesNames: [$_]\n" if ($verbose);
+    my($rc);
+    if (-d $_) {
+      $rc = removeDir($_);
+      return $rc if ($rc) ;
+	$dirsRemoved++;
+    }
+    if (-f $_) {
+      $rc = removeFile($_);
+      return $rc if ($rc);
+	$filesRemoved++;
+    } 
+  }
+  return 0;
+}
+
 # Remove a file if it can.  It needs a full path.
 sub removeFile {
 	my ($fileName) = @_;
@@ -101,7 +126,8 @@ sub removeDir {
 #     </sequential>
 #   </macrodef>
 
-removeBuildParts(@ARGV) if (@ARGV);
+#removeBuildParts(@ARGV) if (@ARGV);
+removeBuildPartsListFromArgs(@ARGV) if (@ARGV);
 
 1;
 
