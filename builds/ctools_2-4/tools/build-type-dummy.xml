@@ -5,6 +5,11 @@
   overridden to create a useful build file.
   -->
 
+<target name="info">	
+		<echo> build-type-dummy info target </echo>
+</target>
+	
+	
   <target name="buildCToolsImage">
 	<fail>
 	

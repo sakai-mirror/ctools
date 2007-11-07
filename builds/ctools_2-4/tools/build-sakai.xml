@@ -1,4 +1,4 @@
-<project name="build-sakai" basedir="." default="info" >
+<project name="build-sakai" basedir="." default="sakaiBuildInfo" >
 
 
 <!--
@@ -76,7 +76,8 @@
     <removeFromBuild deleteDir="webservices" />
   </target>
 
-  <target name="removeUnneededSakai" depends="deleteSamigo,deleteLinktool,deleteBlog,deleteWebservices" >
+	<!--	  <target name="removeUnneededSakai" depends="deleteSamigo,deleteLinktool,deleteBlog,deleteWebservices" > -->
+	<target name="removeUnneededSakai" depends="deleteSamigo,deleteLinktool,deleteBlog,deleteWebservices" >
 
     <removeFromBuild deleteDir="portal/mercury" />
     <removeFromBuild deleteDir="common/common-composite-component/src/test" />

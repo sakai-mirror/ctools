@@ -1,4 +1,4 @@
-<project name="build-patch-util2" basedir="." default="info" >
+<project name="build-patch-util2" basedir="." default="applyPatchesInfo" >
   <!--
    $Id$
    $HeadURL$

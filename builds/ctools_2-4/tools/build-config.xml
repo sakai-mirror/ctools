@@ -1,4 +1,4 @@
-<project name="build-config" basedir="." default="info-instance" >
+<project name="build-config" basedir="." default="configInfo" >
 
   <!--
 
