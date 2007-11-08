@@ -1,7 +1,7 @@
-Index: sakai.announcements.xml
+Index: announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml
 ===================================================================
---- sakai.announcements.xml	(revision 32297)
-+++ sakai.announcements.xml	(working copy)
+--- announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml	(revision 32297)
++++ announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml	(working copy)
 @@ -9,6 +9,7 @@
  
  		<configuration name="channel" value="" />
@@ -10,3 +10,16 @@ Index: sakai.announcements.xml
  
  		<category name="course" />
  		<category name="project" />
+Index: announcement/announcement-tool/tool/src/webapp/tools/sakai.synoptic.announcement.xml
+===================================================================
+--- announcement/announcement-tool/tool/src/webapp/tools/sakai.synoptic.announcement.xml	(revision 32297)
++++ announcement/announcement-tool/tool/src/webapp/tools/sakai.synoptic.announcement.xml	(working copy)
+@@ -18,7 +18,7 @@
+ 		<configuration name="reset.button" value="false" type="final" />
+ 		<configuration name="help.id" value="sakai.announcements" type="final" />
+ 
+-		<configuration name="functions.require" value="annc.read" />
++		<configuration name="functions.require" value="" />
+ 
+ 	</tool>
+ 
