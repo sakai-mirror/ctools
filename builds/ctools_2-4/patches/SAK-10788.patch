@@ -101,10 +101,10 @@ Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/Sit
  				}
  			}
  		}
-Index: ctools/ctools-providers/component/impl/src/java/org/sakaiproject/coursemanagement/impl/CourseManagementServiceUnivOfMichImpl.java
+Index: ctools-providers/component/impl/src/java/org/sakaiproject/coursemanagement/impl/CourseManagementServiceUnivOfMichImpl.java
 ===================================================================
---- ctools/ctools-providers/component/impl/src/java/org/sakaiproject/coursemanagement/impl/CourseManagementServiceUnivOfMichImpl.java	(revision 38022)
-+++ ctools/ctools-providers/component/impl/src/java/org/sakaiproject/coursemanagement/impl/CourseManagementServiceUnivOfMichImpl.java	(revision 38024)
+--- ctools-providers/component/impl/src/java/org/sakaiproject/coursemanagement/impl/CourseManagementServiceUnivOfMichImpl.java	(revision 38022)
++++ ctools-providers/component/impl/src/java/org/sakaiproject/coursemanagement/impl/CourseManagementServiceUnivOfMichImpl.java	(revision 38024)
 @@ -344,7 +344,7 @@
  			Set<String> instructors = new HashSet<String>();
  			instructors.add("instructorOne");
