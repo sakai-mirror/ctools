@@ -90,10 +90,10 @@
  mailtool -r32648 https://source.sakaiproject.org/svn/mailtool/branches/sakai_2-4-x
  usermembership -r32566 https://source.sakaiproject.org/svn/usermembership/branches/sakai_2-4-x
  polls -r31964 https://source.sakaiproject.org/svn/polls/branches/sakai_2-4-x
- citations -r34390 https://source.sakaiproject.org/svn/citations/branches/post-2-4
 ########
 ######## DEVIANT BRANCHES
 ########
+ citations -r34390 https://source.sakaiproject.org/svn/citations/branches/post-2-4
  content -r36525 https://source.sakaiproject.org/svn/content/branches/SAK-11767
  gmt/gmt -r11392 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
 # assignment -r37120 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
