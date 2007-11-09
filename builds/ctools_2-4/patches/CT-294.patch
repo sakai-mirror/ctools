@@ -2,7 +2,7 @@ Index: announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.
 ===================================================================
 --- announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml	(revision 32297)
 +++ announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml	(working copy)
-@@ -9,6 +9,7 @@
+@@ -9,7 +9,8 @@
  
  		<configuration name="channel" value="" />
  		<configuration name="pagesize" value="10" />
@@ -10,16 +10,4 @@ Index: announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.
  
  		<category name="course" />
  		<category name="project" />
-Index: announcement/announcement-tool/tool/src/webapp/tools/sakai.synoptic.announcement.xml
-===================================================================
---- announcement/announcement-tool/tool/src/webapp/tools/sakai.synoptic.announcement.xml	(revision 32297)
-+++ announcement/announcement-tool/tool/src/webapp/tools/sakai.synoptic.announcement.xml	(working copy)
-@@ -18,7 +18,7 @@
- 		<configuration name="reset.button" value="false" type="final" />
- 		<configuration name="help.id" value="sakai.announcements" type="final" />
- 
--		<configuration name="functions.require" value="annc.read" />
-+		<configuration name="functions.require" value="" />
- 
- 	</tool>
  
