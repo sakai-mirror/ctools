@@ -11,7 +11,7 @@ Index: announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.
  
  		<category name="course" />
 -		<category name="project" />
-+		<category name="project" /> <category name="GradToolsStudent" />  <category name="GradToolsDepartment" />  <category name="GradToolsRackham" />
++		<category name="project" />
  		<category name="portfolio" />
  		<category name="myworkspace" />
  		<category name="GradToolsStudent" />
