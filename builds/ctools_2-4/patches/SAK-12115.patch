@@ -1,7 +1,7 @@
-Index: rwiki-impl/impl/src/test/uk/ac/cam/caret/sakai/rwiki/component/service/impl/test/RWikiObjectServiceImplTest.java
+Index: rwiki/rwiki-impl/impl/src/test/uk/ac/cam/caret/sakai/rwiki/component/service/impl/test/RWikiObjectServiceImplTest.java
 ===================================================================
---- rwiki-impl/impl/src/test/uk/ac/cam/caret/sakai/rwiki/component/service/impl/test/RWikiObjectServiceImplTest.java	(revision 0)
-+++ rwiki-impl/impl/src/test/uk/ac/cam/caret/sakai/rwiki/component/service/impl/test/RWikiObjectServiceImplTest.java	(revision 0)
+--- rwiki/rwiki-impl/impl/src/test/uk/ac/cam/caret/sakai/rwiki/component/service/impl/test/RWikiObjectServiceImplTest.java	(revision 0)
++++ rwiki/rwiki-impl/impl/src/test/uk/ac/cam/caret/sakai/rwiki/component/service/impl/test/RWikiObjectServiceImplTest.java	(revision 0)
 @@ -0,0 +1,112 @@
 +/**********************************************************************************
 + * $URL$
@@ -123,10 +123,10 @@ Name: svn:keywords
 Name: svn:eol-style
    + native
 
-Index: rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/impl/RWikiObjectServiceImpl.java
+Index: rwiki/rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/impl/RWikiObjectServiceImpl.java
 ===================================================================
---- rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/impl/RWikiObjectServiceImpl.java	(revision 34389)
-+++ rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/impl/RWikiObjectServiceImpl.java	(working copy)
+--- rwiki/rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/impl/RWikiObjectServiceImpl.java	(revision 34389)
++++ rwiki/rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/impl/RWikiObjectServiceImpl.java	(working copy)
 @@ -591,21 +591,38 @@
  			renderService.renderPage(rwo, currentSpace, plr);
  
@@ -154,7 +154,7 @@ Index: rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/im
 +	 * @param rwo - The rwiki object
 +	 * @param referenced - the hash of the references to save.
 +	 */
-+	protected StringBuffer extractReferences(RWikiCurrentObject rwo, final HashSet referenced) {
++	public StringBuffer extractReferences(RWikiCurrentObject rwo, final HashSet referenced) {
 +		final int maxReferencesStringSize = 4000;
 +		StringBuffer sb = new StringBuffer();
 +		Iterator i = referenced.iterator();
