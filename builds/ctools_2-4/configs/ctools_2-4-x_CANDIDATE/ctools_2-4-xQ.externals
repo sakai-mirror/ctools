@@ -43,7 +43,8 @@
  db -r36813 https://source.sakaiproject.org/svn/db/branches/sakai_2-4-x
  discussion -r28020 https://source.sakaiproject.org/svn/discussion/branches/sakai_2-4-x
  email -r28021 https://source.sakaiproject.org/svn/email/branches/sakai_2-4-x
- entity -r29631 https://source.sakaiproject.org/svn/entity/branches/sakai_2-4-x
+# require later entity for conversion.
+# entity -r29631 https://source.sakaiproject.org/svn/entity/branches/sakai_2-4-x
  event -r28023 https://source.sakaiproject.org/svn/event/branches/sakai_2-4-x
  gradebook -r34412 https://source.sakaiproject.org/svn/gradebook/branches/sakai_2-4-x
  help -r32278 https://source.sakaiproject.org/svn/help/branches/sakai_2-4-x
@@ -124,5 +125,6 @@
 # evaluation -r12634 https://source.sakaiproject.org/contrib/evaluation/branches/umich
  evaluation -r13047 https://source.sakaiproject.org/contrib/evaluation/branches/umich
  entitybroker -r12107 https://source.sakaiproject.org/contrib/caret/entitybroker/trunk/
+ entity -r38821 https://source.sakaiproject.org/svn/entity/branches/sakai_2-4-x
  hierarchy -r11987 https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
 #end
