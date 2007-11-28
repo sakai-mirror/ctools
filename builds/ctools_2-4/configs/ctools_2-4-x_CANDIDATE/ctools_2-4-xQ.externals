@@ -83,7 +83,8 @@
  textarea -r28058 https://source.sakaiproject.org/svn/textarea/branches/sakai_2-4-x
  tool -r32332 https://source.sakaiproject.org/svn/tool/branches/sakai_2-4-x
  user -r34174 https://source.sakaiproject.org/svn/user/branches/sakai_2-4-x
- util -r32343 https://source.sakaiproject.org/svn/util/branches/sakai_2-4-x
+# need new util for the new assignments.
+# util -r32343 https://source.sakaiproject.org/svn/util/branches/sakai_2-4-x
  velocity -r29059 https://source.sakaiproject.org/svn/velocity/branches/sakai_2-4-x
  web -r32275 https://source.sakaiproject.org/svn/web/branches/sakai_2-4-x
  webservices -r28064 https://source.sakaiproject.org/svn/webservices/branches/sakai_2-4-x
@@ -101,6 +102,7 @@
 # assignment -r37806 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
 # assignment -r37930 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
  assignment -r38821 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
+ util -r38227 https://source.sakaiproject.org/svn/util/branches/sakai_2-4-x
 #####
 ##### Michigan specific code.
 ########
