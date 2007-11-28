@@ -30,4 +30,5 @@ database is used, a new version of the config file will be needed.
    
 		> ./runconversion.sh upgradeschema_oracle.config 
    
-   
+   $HeadURL:$
+   $Id:$

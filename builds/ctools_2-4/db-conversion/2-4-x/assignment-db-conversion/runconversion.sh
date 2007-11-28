@@ -1,4 +1,6 @@
 #!/bin/sh
+# $HeadURL:$
+# $Id:$
 CLASSPATH="$CLASSPATH:$CATALINA_HOME/common/lib/sakai-util-log-2-4-x.jar"
 CLASSPATH="$CLASSPATH:$CATALINA_HOME/common/lib/log4j-1.2.8.jar"
 CLASSPATH="$CLASSPATH:$CATALINA_HOME/components/sakai-util-pack/WEB-INF/lib/sakai-util-2-4-x.jar"
