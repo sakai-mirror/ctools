@@ -104,7 +104,7 @@
 ## assignment -r37930 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
 # assignment -r38821 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
 #  assignment -r38869 https://source.sakaiproject.org/svn/assignment/branches/post-2-4-solution1
-  assignment -r39106 https://source.sakaiproject.org/svn/assignment/branches/post-2-4-solution1
+  assignment -r39106 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
  util -r38227 https://source.sakaiproject.org/svn/util/branches/sakai_2-4-x
 #####
 ##### Michigan specific code.
