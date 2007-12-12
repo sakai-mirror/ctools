@@ -102,7 +102,7 @@
  citations -r34390 https://source.sakaiproject.org/svn/citations/branches/post-2-4
 # content -r36525 https://source.sakaiproject.org/svn/content/branches/SAK-11767
 # For content conversion
- content -r39144 https://source.sakaiproject.org/svn/content/branches/SAK-12239
+ content -r39160 https://source.sakaiproject.org/svn/content/branches/SAK-12239
  gmt/gmt -r11392 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
 # assignment -r37120 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
 # assignment -r37636 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
@@ -110,7 +110,7 @@
 ## assignment -r37930 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
 # assignment -r38821 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
 #  assignment -r38869 https://source.sakaiproject.org/svn/assignment/branches/post-2-4-solution1
-  assignment -r39106 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
+  assignment -r39161 https://source.sakaiproject.org/svn/assignment/branches/assignment-post-2-4-umich
 # util verified for content conversion  SAK-12239
  util -r38227 https://source.sakaiproject.org/svn/util/branches/sakai_2-4-x
 #####
