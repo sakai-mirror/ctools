@@ -135,7 +135,7 @@ $HeadURL$
 
     <!-- make the project category disappear for these. -->
     <replaceregexp >
-      <fileset dir="${build.dir}" includes="**/sakai.gradebook.tool.xml,**/sakai.samigo.tool.xml" />
+      <fileset dir="${build.dir}" includes="**/sakai.gradebook.tool.xml,**/sakai.samigo.tool.xml,**/sakai.dropbox.xml,**/sakai.melete.xml" />
       <!-- this works, but not on sakai.samigo.tool.xml ?? -->
       <regexp pattern="&lt;category.*name=&quot;project&quot;.*"/>
       <!-- -->
