@@ -111,7 +111,8 @@
 # assignment -r38821 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
 #  assignment -r38869 https://source.sakaiproject.org/svn/assignment/branches/post-2-4-solution1
 #  assignment -r39161 https://source.sakaiproject.org/svn/assignment/branches/post-2-4-umich
-  assignment -r39279 https://source.sakaiproject.org/svn/assignment/branches/post-2-4-umich
+#  assignment -r39279 https://source.sakaiproject.org/svn/assignment/branches/post-2-4-umich
+  assignment -r39380 https://source.sakaiproject.org/svn/assignment/branches/post-2-4-umich
 # util verified for content conversion  SAK-12239
  util -r38227 https://source.sakaiproject.org/svn/util/branches/sakai_2-4-x
 #####
