@@ -1,5 +1,7 @@
 #  Mon Oct 22 14:20:07 EDT 2007
 
+# Build with just assignments conversion for ctload testing.
+
 # $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-4/configs/ctools_2-4-x_CANDIDATE/ctools_2-4-xQ.externals $
 # $Id: ctools_2-4-xQ.externals 39381 2007-12-17 18:37:13Z dlhaines@umich.edu $
 
@@ -40,9 +42,10 @@
  courier -r36653 https://source.sakaiproject.org/svn/courier/branches/sakai_2-4-x
  course-management -r28313 https://source.sakaiproject.org/svn/course-management/branches/sakai_2-4-x
  dav -r32338 https://source.sakaiproject.org/svn/dav/branches/sakai_2-4-x
-# db -r36813 https://source.sakaiproject.org/svn/db/branches/sakai_2-4-x
+ db -r36813 https://source.sakaiproject.org/svn/db/branches/sakai_2-4-x
+# reverted so just assignments
 # Changed for content conversion
- db -r39144 https://source.sakaiproject.org/svn/db/branches/SAK-12239
+# db -r39144 https://source.sakaiproject.org/svn/db/branches/SAK-12239
  discussion -r28020 https://source.sakaiproject.org/svn/discussion/branches/sakai_2-4-x
  email -r28021 https://source.sakaiproject.org/svn/email/branches/sakai_2-4-x
 # require later entity for conversion.
@@ -58,9 +61,10 @@
  master -r29207 https://source.sakaiproject.org/svn/master/branches/sakai_2-4-x
  memory -r34184 https://source.sakaiproject.org/svn/memory/branches/sakai_2-4-x
  message -r28032 https://source.sakaiproject.org/svn/message/branches/sakai_2-4-x
-# metaobj -r32325 https://source.sakaiproject.org/svn/metaobj/branches/sakai_2-4-x
+# reverted so just assignments 
+ metaobj -r32325 https://source.sakaiproject.org/svn/metaobj/branches/sakai_2-4-x
 # For resources conversion
- metaobj -r39144 https://source.sakaiproject.org/svn/metaobj/branches/sakai_2-4-x
+# metaobj -r39144 https://source.sakaiproject.org/svn/metaobj/branches/sakai_2-4-x
  msgcntr -r36827 https://source.sakaiproject.org/svn/msgcntr/branches/sakai_2-4-x
  osid -r34195 https://source.sakaiproject.org/svn/osid/branches/sakai_2-4-x
  osp -r33738 https://source.sakaiproject.org/svn/osp/branches/sakai_2-4-x
@@ -100,9 +104,10 @@
 ######## DEVIANT BRANCHES
 ########
  citations -r34390 https://source.sakaiproject.org/svn/citations/branches/post-2-4
-# content -r36525 https://source.sakaiproject.org/svn/content/branches/SAK-11767
+# reverted so just assignments
+ content -r36525 https://source.sakaiproject.org/svn/content/branches/SAK-11767
 # For content conversion
- content -r39160 https://source.sakaiproject.org/svn/content/branches/SAK-12239
+# content -r39160 https://source.sakaiproject.org/svn/content/branches/SAK-12239
  gmt/gmt -r11392 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
 # assignment -r37120 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
 # assignment -r37636 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
@@ -136,8 +141,9 @@
 # evaluation -r12634 https://source.sakaiproject.org/contrib/evaluation/branches/umich
  evaluation -r13047 https://source.sakaiproject.org/contrib/evaluation/branches/umich
  entitybroker -r12107 https://source.sakaiproject.org/contrib/caret/entitybroker/trunk/
-# entity -r38821 https://source.sakaiproject.org/svn/entity/branches/sakai_2-4-x
+# reverted so just assignments 
+ entity -r38821 https://source.sakaiproject.org/svn/entity/branches/sakai_2-4-x
 # require later entity for content conversion
- entity -r39144 https://source.sakaiproject.org/svn/entity/branches/SAK-12239
+# entity -r39144 https://source.sakaiproject.org/svn/entity/branches/SAK-12239
  hierarchy -r11987 https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
 #end
