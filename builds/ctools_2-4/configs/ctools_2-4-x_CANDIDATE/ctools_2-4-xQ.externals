@@ -42,7 +42,8 @@
  dav -r32338 https://source.sakaiproject.org/svn/dav/branches/sakai_2-4-x
 # db -r36813 https://source.sakaiproject.org/svn/db/branches/sakai_2-4-x
 # Changed for content conversion
- db -r39144 https://source.sakaiproject.org/svn/db/branches/SAK-12239
+# db -r39144 https://source.sakaiproject.org/svn/db/branches/SAK-12239
+ db -r39460 https://source.sakaiproject.org/svn/db/branches/SAK-12239
  discussion -r28020 https://source.sakaiproject.org/svn/discussion/branches/sakai_2-4-x
  email -r28021 https://source.sakaiproject.org/svn/email/branches/sakai_2-4-x
 # require later entity for conversion.
@@ -102,7 +103,8 @@
  citations -r34390 https://source.sakaiproject.org/svn/citations/branches/post-2-4
 # content -r36525 https://source.sakaiproject.org/svn/content/branches/SAK-11767
 # For content conversion
- content -r39160 https://source.sakaiproject.org/svn/content/branches/SAK-12239
+# content -r39160 https://source.sakaiproject.org/svn/content/branches/SAK-12239
+ content -r39460 https://source.sakaiproject.org/svn/content/branches/SAK-12239
  gmt/gmt -r11392 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
 # assignment -r37120 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
 # assignment -r37636 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
