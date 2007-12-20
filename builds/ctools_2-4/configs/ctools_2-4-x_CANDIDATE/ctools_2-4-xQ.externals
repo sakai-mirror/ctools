@@ -43,7 +43,8 @@
 # db -r36813 https://source.sakaiproject.org/svn/db/branches/sakai_2-4-x
 # Changed for content conversion
 # db -r39144 https://source.sakaiproject.org/svn/db/branches/SAK-12239
- db -r39460 https://source.sakaiproject.org/svn/db/branches/SAK-12239
+# db -r39460 https://source.sakaiproject.org/svn/db/branches/SAK-12239
+ db -r39516 https://source.sakaiproject.org/svn/db/branches/SAK-12239
  discussion -r28020 https://source.sakaiproject.org/svn/discussion/branches/sakai_2-4-x
  email -r28021 https://source.sakaiproject.org/svn/email/branches/sakai_2-4-x
 # require later entity for conversion.
