@@ -344,7 +344,7 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 			Set<String> instructors = new HashSet<String>();
 			instructors.add("instructorOne");
 	
-			EnrollmentSet eSet = new EnrollmentSetCmImpl(coEid,coEid,coEid, "lct","3", co, instructors);
+			EnrollmentSet eSet = new EnrollmentSetCmImpl(providerId,providerId,providerId, "lct","3", co, instructors);
 	
 			SectionCmImpl section = new SectionCmImpl();
 			section.setCategory(getUmiac().getClassCategory(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]));
