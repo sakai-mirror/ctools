@@ -63,7 +63,7 @@
 # metaobj -r32325 https://source.sakaiproject.org/svn/metaobj/branches/sakai_2-4-x
 # For resources conversion
  metaobj -r39144 https://source.sakaiproject.org/svn/metaobj/branches/sakai_2-4-x
- msgcntr -r36827 https://source.sakaiproject.org/svn/msgcntr/branches/sakai_2-4-x
+ msgcntr -r38941 https://source.sakaiproject.org/svn/msgcntr/branches/sakai_2-4-x
  osid -r34195 https://source.sakaiproject.org/svn/osid/branches/sakai_2-4-x
  osp -r33738 https://source.sakaiproject.org/svn/osp/branches/sakai_2-4-x
  podcasts -r33195 https://source.sakaiproject.org/svn/podcasts/branches/sakai_2-4-x
@@ -117,7 +117,9 @@
 #  assignment -r39279 https://source.sakaiproject.org/svn/assignment/branches/post-2-4-umich
 #  assignment -r39380 https://source.sakaiproject.org/svn/assignment/branches/post-2-4-umich
 #  assignment -r39520 https://source.sakaiproject.org/svn/assignment/branches/post-2-4-umich
-  assignment -r39566 https://source.sakaiproject.org/svn/assignment/branches/post-2-4-umich
+# this below doesn't as the branch is gone as of 39735
+#  assignment -r39566 https://source.sakaiproject.org/svn/assignment/branches/post-2-4-umich
+  assignment -r39817 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
 # util verified for content conversion  SAK-12239
  util -r38227 https://source.sakaiproject.org/svn/util/branches/sakai_2-4-x
 #####
