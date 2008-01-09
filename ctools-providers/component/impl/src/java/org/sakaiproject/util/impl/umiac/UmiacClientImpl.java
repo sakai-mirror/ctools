@@ -436,6 +436,12 @@ public class UmiacClientImpl
 				String[] res = StringUtil.split((String)result.elementAt(i),"|");
 				String exId = res[0];
 				String role = res[1];
+				// watch out for secondary role, 
+				// set role to be Instructor if it is Instructor|Primary, otherwise, set the role to be Assistant
+				if (res[1].equals("Instructor") && res[2].equals("GSI"))
+				{
+					role = "Teaching Assistant";
+				}
 				map.put(exId, role);
 			}
 		}
