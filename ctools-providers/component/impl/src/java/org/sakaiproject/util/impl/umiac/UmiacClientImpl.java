@@ -440,7 +440,7 @@ public class UmiacClientImpl
 				// set role to be Instructor if it is Instructor|Primary, otherwise, set the role to be Assistant
 				if (res[1].equals("Instructor") && res[2].equals("GSI"))
 				{
-					role = "Teaching Assistant";
+					role = "Assistant";
 				}
 				map.put(exId, role);
 			}
