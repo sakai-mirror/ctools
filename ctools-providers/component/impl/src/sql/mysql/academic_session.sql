@@ -1,7 +1,6 @@
 -----------------------------------------------------------------------------
 -- CM_ACADEMIC_SESSION_T
 -----------------------------------------------------------------------------
-use sakai;
 
 CREATE TABLE CM_ACADEMIC_SESSION_T
 (
@@ -58,5 +57,3 @@ insert into cm_academic_session_t values(17, 1, 'admin', '2007-05-09', 'admin', 
 insert into cm_academic_session_t values(18, 1, 'admin', '2007-05-09', 'admin', '2007-05-09', 'SPRING_SUMMER 2007', 'SPRING_SUMMER 2007', 'SpSu07', '2007-05-01', '2007-08-17');
 insert into cm_academic_session_t values(19, 1, 'admin', '2007-05-09', 'admin', '2007-05-09', 'SUMMER 2007', 'SUMMER 2007', 'Su07', '2007-06-27', '2007-08-17');
 insert into cm_academic_session_t values(20, 1, 'admin', '2007-05-09', 'admin', '2007-05-09', 'FALL 2007', 'FALL 2007', 'F07', '2007-09-04', '2007-12-11');
-
-insert into cm_academic_session_t values(21, 1, 'admin', '2007-05-09', 'admin', '2007-05-09', 'WINTER 2008', 'WINTER 2008', 'W08', '2008-01-04', '2008-04-26');
