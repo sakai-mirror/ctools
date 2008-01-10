@@ -109,6 +109,21 @@ sub connectToSakaiWebService {
   return $soap2;
 }
 
+
+# check the response, print fault if it exists and return undefined result,
+# otherwise return the result.
+sub checkWSResponseAndReturnResult {
+  my $response = shift;
+  my $fault = $response->fault;
+  print "fault: [$fault]\n" if ($trace);
+  if (defined($fault)) {
+      print " fault: ",join(",",$response->faultcode,$response->faultstring),"\n";
+      return undef;
+  }
+  print "result: [",$response,"]\n" if ($trace);
+  return $response->result;
+}
+
  ## example of creating a user.
  #		print $soap2->addNewUser($session, $usertoadd,$first,$last,$mail,"registered",$newpass)->result . "\n" ;
 	

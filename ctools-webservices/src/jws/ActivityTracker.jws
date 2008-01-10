@@ -38,7 +38,9 @@ import javax.crypto.interfaces.*;
 public class ActivityTracker {
   private static SecretKey privateKey;
 
-  //establishSession is lifted from SakaiScript
+    // establishSession is lifted from SakaiScript, but has been
+    // changed to decript the session id.
+
   private Session establishSession(String id) throws AxisFault 
   {
     Session s = SessionManager.getSession(decryptSession(id));
@@ -52,6 +54,7 @@ public class ActivityTracker {
     return s;
   }
 
+    // Get status of assignment.
   public String isAssignmentCompleted(String sessionid, String actRef) throws AxisFault {
     try {
       Session s = establishSession(sessionid);

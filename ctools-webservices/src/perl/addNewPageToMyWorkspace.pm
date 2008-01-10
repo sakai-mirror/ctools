@@ -218,15 +218,15 @@ sub addPageAndToolToUserMyWorkspace {
 
 # check the response, print fault if it exists and return undefined result,
 # otherwise return the result.
-sub checkWSResponseAndReturnResult {
-  my $response = shift;
-  my $fault = $response->fault;
-  if (defined($fault)) {
-      print " fault: ",join(",",$response->faultcode,$response->faultstring),"\n";
-      return undef;
-  }
-  return $response->result;
-}
+# sub checkWSResponseAndReturnResult {
+#   my $response = shift;
+#   my $fault = $response->fault;
+#   if (defined($fault)) {
+#       print " fault: ",join(",",$response->faultcode,$response->faultstring),"\n";
+#       return undef;
+#   }
+#   return $response->result;
+# }
 
 1;
 
