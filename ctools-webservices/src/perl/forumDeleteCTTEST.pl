@@ -5,19 +5,9 @@
 # $HeadURL$
 # $Id$
 
-# Take a list of eids from stdin and add the defined page / tool to the user's My Workspace.  
-# The processing can be batched.  After each batch a summary is printed.  Also will login / out 
-# for each batch which will keep the session active.
-
-#### TTD
-# - why is account in a global and toolInfo passed as an argument?
-# - startTime as global?
-# - Why have processfile code and setup in the same file?
-# - Recognize that page already exists?
 
 use strict;
 use Class::Struct;
-#use addNewPageToMyWorkspace;
 use forumDelete;
 
 # hold the host and account information
@@ -101,8 +91,8 @@ my $sitePageToolInfo = new SitePageToolIds(
 					   toolId => "547b6cd9-ba93-4ecb-00ca-68135249327d",
 					   forumIds => join("\n",
 							    "09514626-678e-4206-0083-af627c5dc615",
-							    )
-);
+							   )
+					  );
 # 							    "13bacb46-1008-46c3-806e-f937653548c0",
 # 							    "15bf3b6f-a0d8-4733-802c-826f336fc463",
 # 							    "2306aa8e-01cf-4937-008c-0edab5c298fc",
@@ -141,17 +131,16 @@ my $sitePageToolInfo = new SitePageToolIds(
 # 							    "f1ebbcaa-7fe5-4265-800b-e6d5840efb92",
 # 							    "f7aadcc4-87b2-4c9a-0050-e37523c8d386"
 
-					   #my $toolInfo = new PageToolIdNames(pageName => ".", toolName => "Teaching Questionnaires", toolId =>"sakai.rsf.evaluation");
-					   setSitePageToolIds($sitePageToolInfo);
+setSitePageToolIds($sitePageToolInfo);
 
-					   $accnt = new HostAccount( user => 'admin', pw => 'admin');
-					   setWSURI('http','localhost:8080');
+$accnt = new HostAccount( user => 'admin', pw => 'admin');
+setWSURI('http','localhost:8080');
 
-					   $batchSize = 20;
-					   testCall($accnt);
-					   #processFile();
+$batchSize = 20;
+testCall($accnt);
+#processFile();
 
-					   __END__
+__END__
 
 =head1 NAME
 runAddNewPageToMyWorkspace
@@ -193,4 +182,4 @@ You can use it.
 
 =cut
 
-					   #end
+#end

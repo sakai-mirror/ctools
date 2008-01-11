@@ -5,19 +5,8 @@
 # $HeadURL$
 # $Id$
 
-# Take a list of eids from stdin and add the defined page / tool to the user's My Workspace.  
-# The processing can be batched.  After each batch a summary is printed.  Also will login / out 
-# for each batch which will keep the session active.
-
-#### TTD
-# - why is account in a global and toolInfo passed as an argument?
-# - startTime as global?
-# - Why have processfile code and setup in the same file?
-# - Recognize that page already exists?
-
 use strict;
 use Class::Struct;
-#use addNewPageToMyWorkspace;
 use forumDelete;
 
 # hold the host and account information
