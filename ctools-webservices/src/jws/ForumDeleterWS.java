@@ -2,6 +2,9 @@
 //import java.util.List;
 //import java.util.Iterator;
 
+// $HeadURL:$
+// $Id:$
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -134,63 +137,4 @@ public class ForumDeleterWS {
 			throw new AxisFault(sw.toString());		
 		}
 	}
-//
-//			//Set the "current placement" to the tool from the right page, so getContextId() pulls the right info
-//			ThreadLocalManager.set(CURRENT_PLACEMENT, tool);
-//
-//			String retval = "";
-//			String[] deleteIds = forumIds.split("\n");
-//			for (int i = 0; i < deleteIds.length; i++) {
-//				String forumId = deleteIds[i];
-//
-//				//The cast is here because the UI typically uses the DiscussionForumManager, which does this exact call
-//				//We're just skipping the middle man to get the DiscussionForum object required for the delete method
-//				DiscussionForum forum = (DiscussionForum) forumManager.getForumByUuid(forumId);
-//
-//				//Delete the forum, letting the call stack hit the faked placement context
-//				retval += "Deleting: " + forum.getTitle() + " (" + forum.getUuid() + ")\n";
-//				//forumManager.deleteDiscussionForum(forum);
-//			}
-//			return retval;
-//		} catch (Exception e) {
-//			java.io.StringWriter sw = new java.io.StringWriter();
-//			e.printStackTrace(new java.io.PrintWriter(sw));
-//			throw new AxisFault(sw.toString());		
-//		}
-//	}
-
-	public String deleteForumsOld(String sessionId, String siteId, String pageId, String toolId, 
-			String forumIds) throws AxisFault {
-		try {
-			Session s = establishSession(sessionId);
-
-			//First, get the tool placement to fake the context
-			Site site = SiteService.getSite(siteId);
-			SitePage page = site.getPage(pageId);
-			ToolConfiguration tool = page.getTool(toolId);
-
-			//Set the "current placement" to the tool from the right page, so getContextId() pulls the right info
-			ThreadLocalManager.set(CURRENT_PLACEMENT, tool);
-
-			String retval = "";
-			String[] deleteIds = forumIds.split("\n");
-			for (int i = 0; i < deleteIds.length; i++) {
-				String forumId = deleteIds[i];
-
-				//The cast is here because the UI typically uses the DiscussionForumManager, which does this exact call
-				//We're just skipping the middle man to get the DiscussionForum object required for the delete method
-				DiscussionForum forum = (DiscussionForum) forumManager.getForumByUuid(forumId);
-
-				//Delete the forum, letting the call stack hit the faked placement context
-				retval += "Deleting: " + forum.getTitle() + " (" + forum.getUuid() + ")\n";
-				//forumManager.deleteDiscussionForum(forum);
-			}
-			return retval;
-		} catch (Exception e) {
-			java.io.StringWriter sw = new java.io.StringWriter();
-			e.printStackTrace(new java.io.PrintWriter(sw));
-			throw new AxisFault(sw.toString());		
-		}
-	}
-
 }
