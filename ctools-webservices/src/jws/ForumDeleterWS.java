@@ -33,7 +33,7 @@
    - I added the comments after running the code, so if it doesn't compile that may
    be the problem.
    - The error handling is basically untested, so you should audit the results, or better yet
-   fix the error handling.
+   fix the error handling.  Also test ahead of time on development data.
 
 */
 
