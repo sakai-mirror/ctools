@@ -31,7 +31,8 @@ require Exporter;
 # Don't export setVerbose and setTrace as requiring prefix makes it easier to tell what
 # you are setting verbose and trace for.
 #@EXPORT = qw(setPageAndToolNames setWSURI,WSURI addNewToolPageFromEids addPageAndToolToUserMyWorkspace setWSURI WSURI);
-@EXPORT = qw(setSitePageToolIds setWSURI setVerbose testCall);
+#@EXPORT = qw(setSitePageToolIds setWSURI setVerbose testCall);
+@EXPORT = qw(setSitePageToolIds setWSURI setVerbose deleteListOfForums);
 
 use sakaiSoapUtil;
 use strict;
@@ -40,24 +41,24 @@ use strict;
 my $verbose = 0;
 
 sub setVerbose {
-  # would this work?
-  # my ($oldVerbose,$verbose) = ($verbose,@_);
-  # return $oldVerbose;
-  my ($newVerbose) = @_;
-  my $oldVerbose = $verbose;
-  $verbose = $newVerbose;
-  return($oldVerbose);
+    # would this work?
+    # my ($oldVerbose,$verbose) = ($verbose,@_);
+    # return $oldVerbose;
+    my ($newVerbose) = @_;
+    my $oldVerbose = $verbose;
+    $verbose = $newVerbose;
+    return($oldVerbose);
 }
 
 ## be able to set trace level.
 my $trace = 0;
 
 sub setTrace {
-  # see setVerbose to see if the alternate method would work.
-  my ($newTrace) = @_;
-  my $oldTrace = $trace;
-  $trace = $newTrace;
-  return($oldTrace);
+    # see setVerbose to see if the alternate method would work.
+    my ($newTrace) = @_;
+    my $oldTrace = $trace;
+    $trace = $newTrace;
+    return($oldTrace);
 }
 
 ###################
@@ -81,16 +82,17 @@ my ($suffix) = ".jws?wsdl";
 
 # set the values that are likely to change.
 sub setWSURI {
-  my $host;
-  ($protocol,$host) = @_;
-  $prefix = "$protocol://$host/sakai-axis/";
+    my $host;
+    ($protocol,$host) = @_;
+    $prefix = "$protocol://$host/sakai-axis/";
 }
 
+# return the actual ws services URI.
 sub WSURI{
-  my($service) = @_;
-  my $uri = join("",$prefix,$service,$suffix);
-  print "WSURI: uri: [$uri]\n" if ($trace);
-  return($uri);
+    my($service) = @_;
+    my $uri = join("",$prefix,$service,$suffix);
+    print "WSURI: uri: [$uri]\n" if ($trace);
+    return($uri);
 }
 
 ################
@@ -98,52 +100,59 @@ sub WSURI{
 
 my($sitePageToolIds);
 sub setSitePageToolIds {
-  $sitePageToolIds = shift;
+    $sitePageToolIds = shift;
 }
 
-sub testCall {
+sub deleteListOfForumsDummy {
+    print "remember to reset the dLOF call in forumDelete.pm.\n";
+}
+
+sub deleteListOfForums {
 
 
-  my $account = shift;
-  print("setup site / page / tool id ",
-	$sitePageToolIds->siteId,
-	"/",
-	$sitePageToolIds->pageId,
-	"/",
-	$sitePageToolIds->toolId,
-	"\n");
-
- # login and start sakai session if there isn't one already
-   $sakaiSession = establishSakaiSession( WSURI("SakaiLogin"), $sakaiSession, $account->user, $account->pw );
-
-   die("failed to create sakai session") unless ($sakaiSession);
-   print "established [",$account->user,"] session: [$sakaiSession]\n" if ($verbose);
-#   ##############################
-
-   # connect to the sakai script WS
-   my $forumDeleterConnection = connectToSakaiWebService(WSURI("ForumDeleterWS"));
-   die("no sakai web service forumDeleter $!") unless ($forumDeleterConnection);
-
-   print ("deleting forum: site/page/tool: ",join("/",$sitePageToolIds->siteId,
-						  $sitePageToolIds->pageId,
-						  $sitePageToolIds->toolId),
+    my $account = shift;
+    print("setup site / page / tool id ",
+	  $sitePageToolIds->siteId,
+	  "/",
+	  $sitePageToolIds->pageId,
+	  "/",
+	  $sitePageToolIds->toolId,
 	  "\n");
 
-  my $response = $forumDeleterConnection->deleteForums($sakaiSession,
-						       $sitePageToolIds->siteId,
-						       $sitePageToolIds->pageId,
-						       $sitePageToolIds->toolId,
-						       $sitePageToolIds->forumIds
-						      );
+    # login and start sakai session if there isn't one already
+    $sakaiSession = establishSakaiSession( 
+					   WSURI("SakaiLogin"), 
+					   $sakaiSession, 
+					   $account->user, $account->pw );
 
-  my $forumDeleted = checkWSResponseAndReturnResult($response);
-  print "connection test response: [",$forumDeleted,"]\n";
+    die("failed to create sakai session") unless ($sakaiSession);
+    print "established [",$account->user,"] session: [$sakaiSession]\n" if ($verbose);
+    ##############################
 
-   ############################
-   ## terminate the session.
-   endSakaiSession(WSURI("SakaiLogin"),$sakaiSession);
-   $sakaiSession = undef;
-   ##############################
+    # connect to the sakai script WS
+    my $forumDeleterConnection = connectToSakaiWebService(WSURI("ForumDeleterWS"));
+    die("no sakai web service forumDeleter $!") unless ($forumDeleterConnection);
+
+    print ("deleting forum from: site/page/tool: ",join("/",$sitePageToolIds->siteId,
+							$sitePageToolIds->pageId,
+							$sitePageToolIds->toolId),
+	   "\n");
+
+    my $response = $forumDeleterConnection->deleteForums($sakaiSession,
+							 $sitePageToolIds->siteId,
+							 $sitePageToolIds->pageId,
+							 $sitePageToolIds->toolId,
+							 $sitePageToolIds->forumIds
+							 );
+
+    my $forumDeleted = checkWSResponseAndReturnResult($response);
+    print "connection test response: [",$forumDeleted,"]\n";
+
+    ############################
+    ## terminate the session.
+    endSakaiSession(WSURI("SakaiLogin"),$sakaiSession);
+    $sakaiSession = undef;
+    ##############################
 
 }
 
@@ -154,47 +163,41 @@ __END__
 
 =head1 NAME
 
-addNewPageToMyWorkspace.pm
+forumDelete.pm
 
 =head1 SYNOPSIS
 
-Methods to add a page and a tool to a site.
+Method to delete a forum from message center. See
+forumDeleteGeneric.pl for more details on this specific use.
 
-This module provides two objects for storing HostAccount and
-PageToolIdNames information.  The HostAccount object hold the user
-name and password for the account used for authentication.  The
-PageToolIdNames object binds the desired Page name, Tool name, and
-Sakai Tool Id together.
+These subroutines can be used directly by any code that includes this module.
 
-These can be used directly by any code that includes this module.
+=head2 GENERIC WEB SERVICE METHODS
 
-WEB SERVICE METHODS
+=over
 
 =item setWSURI - set the host and protocol to use for the web services
 connections.  
 
-=item WSURI - return a web services URI for a particular JWS file.
-
-=item setPageAndToolNames - Store the value of the page name, the tool name, and the tool id for later use.
+=item WSURI - return a specific web services URI for a particular JWS file.
 
 =item setVerbose - set module to be verbose.
 
 =item setTrace - set module to trace behavior.
 
-=item addNewToolPageFromEids - Using the specified account add the page and
-tool to the My Workspace for all the Eids in the list of Eids passed
-in.  This will log in and log out for the batch of Eids provided.  It
-will print a summary at the end.
-
-=item addPageAndToolToUserMyWorkspace - Add a single page and tool to a My
-Workspace.  This assumes that a valid Sakai Script connection is
-passed in along with a Sakai Session.  It will document results and
-inform if the user does not have a workspace and if the page and tool
-have been successfully added.
-
 =item checkWSResponseAndReturnResult - Examine the result of a SOAP call.
 If there is a fault it will print the fault and return undef.  If
 there is no fault it will return the result of the invocation.
+
+=back
+
+=head2 Forums specific method
+
+=over
+
+=item deleteListOfForums.  See forumDeleteGeneric.pl.
+
+=back
 
 =head1 DESCRIPTION
 
@@ -202,8 +205,7 @@ See SYNOPSIS and BUGS AND LIMITATIONS
 
 =head1 BUGS AND LIMITATIONS
 
-Currently limited to adding pages to My Workspace sites.  Probably can
-be refactored to good effect.
+TBD
 
 =head1 COPYRIGHT
 
