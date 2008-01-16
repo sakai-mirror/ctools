@@ -85,8 +85,9 @@
  search -r32309 https://source.sakaiproject.org/svn/search/branches/sakai_2-4-x
  sections -r33489 https://source.sakaiproject.org/svn/sections/branches/sakai_2-4-x
  site -r33408 https://source.sakaiproject.org/svn/site/branches/sakai_2-4-x
-# site-manage -r37145 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
- site-manage -r37768 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
+## site-manage -r37145 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
+# site-manage -r37768 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
+ site-manage -r40172 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
  syllabus -r33437 https://source.sakaiproject.org/svn/syllabus/branches/sakai_2-4-x
  test-harness -r28057 https://source.sakaiproject.org/svn/test-harness/branches/sakai_2-4-x
  textarea -r28058 https://source.sakaiproject.org/svn/textarea/branches/sakai_2-4-x
