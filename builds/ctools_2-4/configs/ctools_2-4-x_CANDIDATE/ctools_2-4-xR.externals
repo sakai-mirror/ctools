@@ -29,8 +29,10 @@
  alias -r28277 https://source.sakaiproject.org/svn/alias/branches/sakai_2-4-x
  announcement -r32297 https://source.sakaiproject.org/svn/announcement/branches/sakai_2-4-x
  archive -r28700 https://source.sakaiproject.org/svn/archive/branches/sakai_2-4-x
-# authz -r28692 https://source.sakaiproject.org/svn/authz/branches/sakai_2-4-x
- authz -r37756 https://source.sakaiproject.org/svn/authz/branches/sakai_2-4-x
+## authz -r28692 https://source.sakaiproject.org/svn/authz/branches/sakai_2-4-x
+# authz -r37756 https://source.sakaiproject.org/svn/authz/branches/sakai_2-4-x
+# for roster issue.  See Zhen.
+ authz -r40100 https://source.sakaiproject.org/svn/authz/branches/sakai_2-4-x
  blog -r35738 https://source.sakaiproject.org/svn/blog/branches/sakai_2-4-x
  calendar -r34735 https://source.sakaiproject.org/svn/calendar/branches/sakai_2-4-x
  chat -r36795 https://source.sakaiproject.org/svn/chat/branches/sakai_2-4-x
@@ -126,9 +128,12 @@
 ##### Michigan specific code.
 ########
  ctools-apps -r31824 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
- ctools-providers -r33495 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
+# ctools-providers -r33495 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
+ ctools-providers -r39899 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
 # ctools-reference -r37487 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
- ctools-reference -r38052 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
+# ctools-reference -r38052 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
+# ctools-reference -r40088 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
+ ctools-reference -r40162 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
  ctools-webservices -r36804 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-webservices
  gradtools -r35111 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
  ctools-libhelp -r33513 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
