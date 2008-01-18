@@ -92,7 +92,7 @@ my $sitePageToolInfo = new SitePageToolIds(
 #my $toolInfo = new PageToolIdNames(pageName => ".", toolName => "Teaching Questionnaires", toolId =>"sakai.rsf.evaluation");
 setSitePageToolIds($sitePageToolInfo);
 
-$accnt = new HostAccount( user => 'admin', pw => 'admin');
+$accnt = new HostAccount( user => 'UUUUUUU', pw => 'PPPPPP');
 setWSURI('http','localhost:8080');
 
 $batchSize = 20;

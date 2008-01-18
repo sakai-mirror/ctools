@@ -133,7 +133,7 @@ my $sitePageToolInfo = new SitePageToolIds(
 
 setSitePageToolIds($sitePageToolInfo);
 
-$accnt = new HostAccount( user => 'admin', pw => 'admin');
+$accnt = new HostAccount( user => 'UUUUUU', pw => 'PPPPPP');
 setWSURI('http','localhost:8080');
 
 $batchSize = 20;
