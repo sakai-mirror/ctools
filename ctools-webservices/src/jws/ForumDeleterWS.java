@@ -1,9 +1,9 @@
 /**********************************************************************************
- *$HeadURL$
+ * $URL$
  * $Id$
  ***********************************************************************************
  *
- * Copyright (c) 2007 The Sakai Foundation.
+ * Copyright (c) 2008 The Regents of the University of Michigan.
  * 
  * Licensed under the Educational Community License, Version 1.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
