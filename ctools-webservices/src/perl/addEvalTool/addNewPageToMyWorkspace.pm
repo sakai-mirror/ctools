@@ -39,6 +39,8 @@ require Exporter;
 # you are setting verbose and trace for.
 @EXPORT = qw(setPageAndToolNames setWSURI,WSURI addNewToolPageFromEids addPageAndToolToUserMyWorkspace setWSURI WSURI);
 
+use lib("../util");
+
 use sakaiSoapUtil;
 use strict;
 
