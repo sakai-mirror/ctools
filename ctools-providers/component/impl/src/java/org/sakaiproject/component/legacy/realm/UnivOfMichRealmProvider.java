@@ -167,9 +167,12 @@ public class UnivOfMichRealmProvider implements GroupProvider
 					Map map1 = getUmiac().getUserSections(userId);
 					if (map1 != null)
 					{
-						if (map1.containsKey(eid))
+						for (int j = 0; j< eids.length; j++)
 						{
-							role = (String) map1.get(eid);
+							if (map1.containsKey(eids[j]))
+							{
+								role = (String) map1.get(eids[j]);
+							}
 						}
 					}
 					map.put(userId, role);
