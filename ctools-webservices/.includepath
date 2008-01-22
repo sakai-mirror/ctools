@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <includepath>
   <includepathentry path="/sw/lib/perl5/5.8.6" />
+  <includepathentry path="${resource_loc:/ctools-webservices/src/perl/util}" />
 </includepath>
 
