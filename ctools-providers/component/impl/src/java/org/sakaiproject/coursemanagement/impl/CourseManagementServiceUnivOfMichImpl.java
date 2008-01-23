@@ -58,6 +58,7 @@ import org.sakaiproject.db.api.SqlReader;
 import org.sakaiproject.db.api.SqlService;
 import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
+import org.sakaiproject.user.api.UserPermissionException;
 
 import org.sakaiproject.util.api.umiac.UmiacClient;
 import org.sakaiproject.db.api.SqlReader;
@@ -332,33 +333,47 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		
 		if (as != null)
 		{
-			String[] fields = providerId.split(",");
-			String title = fields[3] + " " + fields[4] + " " + fields[5] + " " + as.getDescription();
-			
-			// CourseOffering object
-			String coEid = getCourseOfferingEidFromProviderId(providerId);
-			CourseOfferingCmImpl co = new CourseOfferingCmImpl(coEid, coEid, "","open", as, 
-					new CanonicalCourseCmImpl(coEid, coEid, coEid), 
-					as.getStartDate(),as.getEndDate());
-	
-			Set<String> instructors = new HashSet<String>();
-			instructors.add("instructorOne");
-	
-			EnrollmentSet eSet = new EnrollmentSetCmImpl(providerId,providerId,providerId, "lct","3", co, instructors);
-	
-			SectionCmImpl section = new SectionCmImpl();
-			section.setCategory(getUmiac().getClassCategory(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]));
-			section.setCourseOffering(co);
-			section.setDescription(co.getDescription());
-			section.setEid(providerId);
-			section.setTitle(title);
-			section.setMaxSize(new Integer(100));
-			section.setEnrollmentSet(eSet);
-			return section;
+			try
+			{
+				String groupName = StringUtil.trimToNull(getUmiac().getGroupName(providerId));
+				
+				if (groupName == null)
+				{
+					throw new IdNotFoundException("Could not find a CM impl with knowledge of course set " + providerId);
+				}
+				
+				String[] fields = providerId.split(",");
+				String title = fields[3] + " " + fields[4] + " " + fields[5] + " " + as.getDescription();
+				
+				// CourseOffering object
+				String coEid = getCourseOfferingEidFromProviderId(providerId);
+				CourseOfferingCmImpl co = new CourseOfferingCmImpl(coEid, coEid, "","open", as, 
+						new CanonicalCourseCmImpl(coEid, coEid, coEid), 
+						as.getStartDate(),as.getEndDate());
+		
+				Set<String> instructors = new HashSet<String>();
+				instructors.add("instructorOne");
+		
+				EnrollmentSet eSet = new EnrollmentSetCmImpl(providerId,providerId,providerId, "lct","3", co, instructors);
+		
+				SectionCmImpl section = new SectionCmImpl();
+				section.setCategory(getUmiac().getClassCategory(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]));
+				section.setCourseOffering(co);
+				section.setDescription(co.getDescription());
+				section.setEid(providerId);
+				section.setTitle(title);
+				section.setMaxSize(new Integer(100));
+				section.setEnrollmentSet(eSet);
+				return section;
+			}
+			catch (IdUnusedException e)
+			{
+				throw new IdNotFoundException("Could not find a CM impl with knowledge of course set " + providerId);
+			}
 		}
 		else
 		{
-			return null;
+			throw new IdNotFoundException("Could not find a CM impl with knowledge of course set " + providerId);
 		}
 	}
 
