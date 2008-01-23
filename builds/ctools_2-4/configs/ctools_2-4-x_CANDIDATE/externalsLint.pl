@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
 # Run some tests on our externals file to see if it makes sense
-# $HeadURL:$
-# $Id:$
+#
+# $HeadURL$
+# $Id$
 #
 #
 # The line below will find duplicate module definitions.
