@@ -100,8 +100,10 @@
   assignment -r39817 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
   ## For content conversion SAK-12239
   # note that metaobj and util were updated to later revisions also for content conversion.  
+ # content -r40464 https://source.sakaiproject.org/svn/content/branches/SAK-12239
  content -r39460 https://source.sakaiproject.org/svn/content/branches/SAK-12239
- db -r39516 https://source.sakaiproject.org/svn/db/branches/SAK-12239
+ # db -r39516 https://source.sakaiproject.org/svn/db/branches/SAK-12239
+ db -r40237 https://source.sakaiproject.org/svn/db/branches/SAK-12239
  entity -r39144 https://source.sakaiproject.org/svn/entity/branches/SAK-12239
 #####
 ##### Michigan specific code.
