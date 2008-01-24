@@ -37,7 +37,7 @@ require Exporter;
 # export common routines.
 # Don't export setVerbose and setTrace as requiring prefix makes it easier to tell what
 # you are setting verbose and trace for.
-@EXPORT = qw(setPageAndToolNames setWSURI,WSURI addNewToolPageFromEids addPageAndToolToUserMyWorkspace setWSURI WSURI);
+@EXPORT = qw(setPageAndToolNames setWSURI,WSURI addNewToolPageFromEids addPageAndToolToUserMyWorkspace setWSURI WSURI setVerbose setTrace);
 
 use lib("../util");
 
@@ -72,7 +72,7 @@ sub setTrace {
 
 ## For accounting
 #my ($startTime,$endTime);
-my ($success,$nologin,$noaccount,$eids);
+my ($success,$nologin,$noaccount,$eids,$other);
 
 # Keep a current session so can reuse it.
 my $sakaiSession;
@@ -142,9 +142,9 @@ sub addNewToolPageFromEids {
       # for every user add the page and tool		
       # If pass toolInfo as an object put the struct into sakaiSoapUtils.pm
       addPageAndToolToUserMyWorkspace($uEid,$toolInfo->pageName,$toolInfo->toolName,$toolInfo->toolId,$sakaiScriptConnection,$sakaiSession);
-    print "\n";
+ #    print "\n";
   }
-
+  print "\n";
   # This batch is over.
   my $endTime = time();
 
@@ -154,7 +154,7 @@ sub addNewToolPageFromEids {
   $sakaiSession = undef;
   ##############################
 
-  print "users: $eids success: $success noaccount: $noaccount nologin: $nologin";
+  print "users: $eids success: $success noaccount: $noaccount nologin: $nologin other: $other";
   print " elapsed time (secs) : ",$endTime-$startTime;
   printf " seconds per user: %3.1f\n",($endTime-$startTime)/$eids;
 
@@ -167,56 +167,111 @@ sub addPageAndToolToUserMyWorkspace {
   my($uEid,$pageTitle,$toolTitle,$toolId,$sakaiScriptConnection,$sakaiSession) = @_;
   print "aPATTUMW: args: |",join("|",@_),"|\n" if ($trace);
 
-  my $response = $sakaiScriptConnection->getUserMyWorkspaceSiteId($sakaiSession,$uEid);
-  my $userWorkspaceId = checkWSResponseAndReturnResult($response);
-
-  print "[$uEid]\t[$userWorkspaceId]";
+  print "\n$uEid";
+#  my $response = $sakaiScriptConnection->getUserMyWorkspaceSiteId($sakaiSession,$uEid);
+#  my $response = $sakaiScriptConnection->addToolToUserMyWorkspaceTest($sakaiSession,
+  my $response = $sakaiScriptConnection->addToolToUserMyWorkspace($sakaiSession,
+								      $uEid,$pageTitle,0,
+								      $toolTitle,$toolId,"");
 
   $eids++;
+  my $return = checkWSResponseAndReturnResult($response);
 
-  ## no workspace id means they are unknown to Sakai.
-  unless($userWorkspaceId) {
-    print("\t-user_workspace");
-    $noaccount++;
-    return;
-  }
+   if ($return =~ /siteError/i) {
+     print("\t-user_workspace");
+     $noaccount++;
+     return;
+   }
 
-  ## add a page.
-  print "using userWorkspaceId: [$userWorkspaceId]\n" if ($trace);
-
-  my $response = $sakaiScriptConnection->addNewPageToSite($sakaiSession,$userWorkspaceId,$pageTitle,0);
-  my $pageAdded = checkWSResponseAndReturnResult($response);
-
-  print "result from adding page: [$pageAdded]\n" if ($trace);
-
-  if ($pageAdded =~ "success") {
-    print "\t+page";
-  } else {
-    # If are known, but don't have a work space then they haven't logged in yet.
-    print ("\t-page. Response: [$pageAdded]");
-    if ($pageAdded =~ /IdUnusedException : null/) {
-      print ("\tnever logged in?");
-      $nologin++;
-    } else {
-      print "*** unexpected response to adding page ***";
+  
+  if ($return =~ /-page/) {
+    if ($return =~ /never logged in/) {
+      print ("\t-nologin");
+      $nologin++; 
+      return;
     }
+    # else unknown response
+    print ("\t-page-other");
+    $other++;
     return;
   }
-      
-  ## add a tool to page
-  my $response = $sakaiScriptConnection->addNewToolToPage($sakaiSession,$userWorkspaceId,$pageTitle,
-							   $toolTitle,$toolId,"");
-  my $toolAdded = checkWSResponseAndReturnResult($response);
+    
+  if ($return =~ /-tool/) {
+    print ("\t-tool-other");
+    $other++;
+    return;
+  }
 
-  print "result from adding tool: [$toolAdded]\n" if ($trace);
-  if ($toolAdded =~ "success") {
-    print "\t+tool";
-    $success++;
-  } else {
-    print("\t-tool not added. Response: [$toolAdded]");
-    return;
-  }
+  $success++;
+#   ## add a tool to page
+#   my $response = $sakaiScriptConnection->addNewToolToPage($sakaiSession,$userWorkspaceId,$pageTitle,
+# 							   $toolTitle,$toolId,"");
+#   my $toolAdded = checkWSResponseAndReturnResult($response);
+
+#   print "result from adding tool: [$toolAdded]\n" if ($trace);
+#   if ($toolAdded =~ "success") {
+#     print "\t+tool";
+#     $success++;
+#   } else {
+#     print("\t-tool not added. Response: [$toolAdded]");
+#     return;
+#   }
 }
+
+# sub addPageAndToolToUserMyWorkspace {
+#   my($uEid,$pageTitle,$toolTitle,$toolId,$sakaiScriptConnection,$sakaiSession) = @_;
+#   print "aPATTUMW: args: |",join("|",@_),"|\n" if ($trace);
+
+#   my $response = $sakaiScriptConnection->getUserMyWorkspaceSiteId($sakaiSession,$uEid);
+#   my $userWorkspaceId = checkWSResponseAndReturnResult($response);
+
+#   print "[\n$uEid]\t[$userWorkspaceId]";
+
+#   $eids++;
+
+#   ## no workspace id means they are unknown to Sakai.
+#   unless($userWorkspaceId) {
+#     print("\t-user_workspace");
+#     $noaccount++;
+#     return;
+#   }
+
+#   ## add a page.
+#   print "using userWorkspaceId: [$userWorkspaceId]\n" if ($trace);
+
+#   my $response = $sakaiScriptConnection->addNewPageToSite($sakaiSession,$userWorkspaceId,$pageTitle,0);
+#   my $pageAdded = checkWSResponseAndReturnResult($response);
+
+#   print "result from adding page: [$pageAdded]\n" if ($trace);
+
+#   if ($pageAdded =~ "success") {
+#     print "\t+page";
+#   } else {
+#     # If are known, but don't have a work space then they haven't logged in yet.
+#     print ("\t-page. Response: [$pageAdded]");
+#     if ($pageAdded =~ /IdUnusedException : null/) {
+#       print ("\tnever logged in?");
+#       $nologin++;
+#     } else {
+#       print "*** unexpected response to adding page ***";
+#     }
+#     return;
+#   }
+      
+#   ## add a tool to page
+#   my $response = $sakaiScriptConnection->addNewToolToPage($sakaiSession,$userWorkspaceId,$pageTitle,
+# 							   $toolTitle,$toolId,"");
+#   my $toolAdded = checkWSResponseAndReturnResult($response);
+
+#   print "result from adding tool: [$toolAdded]\n" if ($trace);
+#   if ($toolAdded =~ "success") {
+#     print "\t+tool";
+#     $success++;
+#   } else {
+#     print("\t-tool not added. Response: [$toolAdded]");
+#     return;
+#   }
+# }
 
 # check the response, print fault if it exists and return undefined result,
 # otherwise return the result.

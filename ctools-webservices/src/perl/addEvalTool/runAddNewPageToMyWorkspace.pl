@@ -79,9 +79,10 @@ sub printSummary {
 
 ############ setup and run #################
 
-$trace=1;
-addNewPageToMyWorkspace::setVerbose(1);
-addNewPageToMyWorkspace::setTrace(1);
+$trace=0;
+#addNewPageToMyWorkspace2::setVerbose(1);
+setVerbose(0);
+setTrace(0);
 
 # specify the tool id and the name to be shown for the page and tool.
 my $toolInfo = new PageToolIdNames(pageName => "Teaching Questionnaires", toolName => "Teaching Questionnaires", toolId =>"sakai.rsf.evaluation");
