@@ -31,9 +31,10 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Collection;
+import java.util.regex.*;
+
 import org.sakaiproject.tool.api.Session;
 import org.sakaiproject.tool.cover.SessionManager;
-import java.util.regex.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -826,16 +827,41 @@ public class SakaiScript {
 						String toolTitle, String toolId, String layoutHints) throws AxisFault
     {
 
-	Pattern exceptionPattern = Pattern.compile("exception",Pattern.CASE_INSENSITIVE);
+	//	static final Pattern exceptionPattern = Pattern.compile("exception",Pattern.CASE_INSENSITIVE);
+	 Pattern exceptionPattern = Pattern.compile("exception",Pattern.CASE_INSENSITIVE);
+	 Pattern successPattern = Pattern.compile("success",Pattern.CASE_INSENSITIVE);
+	 Pattern idUnusedException = Pattern.compile("IdUnusedException",Pattern.CASE_INSENSITIVE);
+	 String errorResult = "eid: "+eid+" ";
 
+	 // get the user myworkspace
 	String siteId = resolveUserMyWorkspaceSiteId(eid);
 	Matcher exceptionMatcher = exceptionPattern.matcher(siteId);
 	if (exceptionMatcher.find()) {
-	    return "Error: "+siteId;
+	    LOG.warn(errorResult+ " siteId failure: ["+siteId+"]");
+	    return errorResult + " siteError: "+siteId; 
 	}
 	
+	// add the page
 	String resultPageAdd = addNewPageToSite(sessionid,siteId,pagetitle,pagelayout);
+	Matcher pageSuccessMatcher = successPattern.matcher(resultPageAdd);
+	Matcher pageIdUnknownMatcher = idUnusedException.matcher(resultPageAdd);
+	if (!pageSuccessMatcher.find()) {
+	    LOG.warn(errorResult+" page add failure: ["+resultPageAdd+"]");
+	    errorResult += "-page. ";
+	    if (pageIdUnknownMatcher.find()) {
+		errorResult += " never logged in?";
+	    }
+	    return errorResult;
+	}
+
 	String resultToolAdd = addNewToolToPage(sessionid,siteId,pagetitle,toolTitle,toolId,layoutHints);
+	Matcher toolAddSuccess = successPattern.matcher(resultToolAdd);
+
+	LOG.warn("resultToolAdd: "+resultToolAdd);
+	if (!toolAddSuccess.find()) {
+	    LOG.warn(errorResult+" did not find: [success] in string: ["+resultToolAdd+"]");
+	    return errorResult += "-tool not added.";
+	}
 
 
 	String returnString = "args: "+sessionid

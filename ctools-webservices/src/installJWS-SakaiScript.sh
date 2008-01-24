@@ -24,7 +24,7 @@ set -x
 #DEST_JWS=/usr/local/sakai/webapps/sakai-axis
 #cp ./jws/SakaiScript.jws $DEST_JWS
 
-REVISION=r40415
+REVISION=r40471
 SRC_JWS=./jws/SakaiScript.jws
 DEST_JWS=$HOME/ws/tomcats/ctools.${REVISION}/installed/webapps/sakai-axis
 cp $SRC_JWS $DEST_JWS
