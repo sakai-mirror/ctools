@@ -86,7 +86,6 @@ setTrace(0);
 
 # specify the tool id and the name to be shown for the page and tool.
 my $toolInfo = new PageToolIdNames(pageName => "Teaching Questionnaires", toolName => "Teaching Questionnaires", toolId =>"sakai.rsf.evaluation");
-#my $toolInfo = new PageToolIdNames(pageName => ".", toolName => "Teaching Questionnaires", toolId =>"sakai.rsf.evaluation");
 setPageAndToolNames($toolInfo);
 
 $accnt = new HostAccount( user => 'admin', pw => 'admin');
