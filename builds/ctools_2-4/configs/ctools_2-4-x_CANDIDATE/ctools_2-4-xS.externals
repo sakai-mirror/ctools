@@ -110,7 +110,8 @@
 ##### Michigan specific code.
 #####
  ctools-apps -r31824 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
- ctools-providers -r40443 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
+ # ctools-providers -r40443 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
+ ctools-providers -r40473 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
  # ctools-reference -r40408 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
  # add CT-431
  ctools-reference -r40501 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference

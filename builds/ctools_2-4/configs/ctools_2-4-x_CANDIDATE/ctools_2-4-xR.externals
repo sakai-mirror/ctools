@@ -129,7 +129,7 @@
  ctools-apps -r31824 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
 ## ctools-providers -r33495 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
 # ctools-providers -r39899 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
- ctools-providers -r40443 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
+ ctools-providers -r40473 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
 # ctools-reference -r37487 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
 # ctools-reference -r38052 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
 # ctools-reference -r40088 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
