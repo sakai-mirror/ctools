@@ -103,7 +103,8 @@ sub connectToSakaiWebService {
   print "sSU: trying web service: [$sakaiWSURI]\n" if ($trace);
   my $soap2 = SOAP::Lite
     -> proxy($sakaiWSURI)
-      -> uri($sakaiWSURI)
+      -> ns($sakaiWSURI)
+#      -> uri($sakaiWSURI)
 	;
   print "sSU: return value from SOAP::Lite: [$soap2] result: [",$soap2->result,"]\n" if ($trace);
   return $soap2;
