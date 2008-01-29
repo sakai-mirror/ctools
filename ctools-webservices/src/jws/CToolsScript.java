@@ -20,7 +20,7 @@
  **********************************************************************************/
 
 /*
- *   SakaiScript.jws - customized to add tool to my workspace with 1 call.
+ *   CToolsScript.jws - customized to add tool to my workspace with 1 call.
  * $HeadURL:https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices/src/jws/CToolsScript.jws $
  * $Id:CToolsScript.jws 40579 2008-01-28 15:04:14Z dlhaines@umich.edu $
  */
@@ -62,9 +62,9 @@ import org.sakaiproject.util.Xml;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-public class SakaiScript {
+public class CToolsScript {
 
-    private static final Log LOG = LogFactory.getLog(SakaiScript.class);
+    private static final Log LOG = LogFactory.getLog(CToolsScript.class);
 
     private Session establishSession(String id) throws AxisFault 
     {
@@ -667,6 +667,7 @@ public class SakaiScript {
 	    return errorResult += "-tool not added.";
 	}
 
+	
 
 	String returnString = "args: "+sessionid
 	    +"|" +eid
@@ -679,9 +680,28 @@ public class SakaiScript {
 	    +"|" +layoutHints
 	    +"[tool: "+resultToolAdd+"]"
 	    ;
-
+	
+	LOG.warn("returnString: "+returnString);
 	return returnString;
     }
+    
+    /* Wrap calls for addToolToUserMyWorkspace to allow operating on lists.
+     * of users.
+     */
+    
+//     public List<String> addToolToUserMyWorkspaceList( String sessionid, List<String> eids, String pagetitle, int pagelayout,
+// 			String toolTitle, String toolId, String layoutHints) throws AxisFault
+// 	{
+//     		String result = "";
+    		
+//     	for (String eid : eids) {
+//     		LOG.warn("add tool for "+eid;
+//     	    result += addToolToUserMyWorkspace(sessionid, eid, pagetitle,pagelayout,toolTitle,toolId,layoutHints)+"\n";
+//     	}
+//     	LOG.warn("add list result: "+result;)
+//     	return result;
+// 	}
+
 
     public String getUserMyWorkspaceSiteId(String sessionid, String eid) throws AxisFault
     {
