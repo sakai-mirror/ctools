@@ -1,7 +1,9 @@
 package org.sakaiproject.util.api.umiac;
 
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.sakaiproject.exception.IdUnusedException;
@@ -171,6 +173,18 @@ public interface UmiacClient {
 	 * Set group url to specified section record
 	 */
 	public void setGroupUrl(String year, String term, String campus, String subject, String course, String section, String url)	;	//setGroupUrl
+	
+	/**
+	 * Get set of course offering eids which are cross-listed with the provided course offering
+	 * If there is no cross-listings, empty list will be returned
+	 * @param year
+	 * @param term
+	 * @param campus
+	 * @param subject
+	 * @param course
+	 * @return
+	 */
+	public Set getCrossListingsByCourseOffering(String year, String term, String campus, String subject, String course);
 	
 	/**
 	 * 

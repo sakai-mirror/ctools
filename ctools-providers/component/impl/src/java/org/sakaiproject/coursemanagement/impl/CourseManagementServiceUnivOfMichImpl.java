@@ -317,7 +317,33 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 	}
 
 	public Set getEquivalentCourseOfferings(String courseOfferingEid) throws IdNotFoundException {
-		return new HashSet(); // see if there are cross listings.
+		// get the cross listed sections
+		String[] fields = courseOfferingEid.split(",");
+		Set clEids = getUmiac().getCrossListingsByCourseOffering(fields[0], fields[1], fields[2], fields[3], fields[4]);
+		Set rv = new HashSet();
+		if (!clEids.isEmpty())
+		{
+			for (Iterator iEids = clEids.iterator();iEids.hasNext();)
+			{
+				String coEid = (String) iEids.next();
+				// construct the CourseOffering object
+				CourseOfferingCmImpl co = new CourseOfferingCmImpl();
+				co.setEid(coEid);
+				// get the AcademicSession object
+				AcademicSession as = getAcademicSessionFromProviderId(coEid);
+				if (as != null)
+				{
+					co.setAcademicSession(as);
+				}
+				else
+				{
+					// make up some dummy old term, which is 20 years from the current date
+					co.setAcademicSession(new AcademicSessionCmImpl("old_terms", "Old Term", "old term", new Date(System.currentTimeMillis() - 1000*60*60*24*365*20), new Date(System.currentTimeMillis()-1000*60*60*24*365*19)));
+				}
+				rv.add(co);
+			}
+		}
+		return rv;
 	}
 
 	public Set getCourseOfferingMemberships(String courseOfferingEid) throws IdNotFoundException {

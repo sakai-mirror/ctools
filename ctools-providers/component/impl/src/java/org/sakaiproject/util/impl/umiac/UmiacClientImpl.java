@@ -33,8 +33,12 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -873,6 +877,110 @@ public class UmiacClientImpl
 		return v;
 
 	}	// makeRawCall
+	
+	/**
+	 * Get set of course offering eids which are cross-listed with the provided course offering
+	 * If there is no cross-listings, empty list will be returned
+	 * @param year
+	 * @param term
+	 * @param campus
+	 * @param subject
+	 * @param course
+	 * @return
+	 */
+	public Set getCrossListingsByCourseOffering(String year, String term, String campus, String subject, String course)
+	{
+		String command = "getCourses,term_year=" + year + ",term_id=" + term + ",source=" + campus + ",subject=" + subject + ",catalog_nbr=" + course + "\n\n";
+		Set rv = new HashSet();
+		List rv1 = new Vector();
+		// check the cache - still use expired entries
+		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
+		{
+			rv1 = (Vector) m_callCache.getExpiredOrNot(command);
+		}
+		else
+		{
+			rv1 = makeRawCall(command);
+		}
+		
+		// if there are no results
+		if (	(rv1 == null)
+			||	(rv1.size() < 1))
+		{
+			return new HashSet();
+		}
+		else
+		{
+			for(Iterator i = rv1.iterator(); i.hasNext();)
+			{
+				//AMCULT|398|001|11168|Hon Writ Wkshp|SEM|https://ctools.umich.edu/portal/site/04002365-5e48-4516-007f-b6ada00d5488|CL
+				String[] classInfos = StringUtil.split((String)i.next(),"|");
+				if (classInfos.length==8 && classInfos[7].equalsIgnoreCase("CL"))
+				{
+					List crossListingSections = getCrossListings(year, term, campus, subject, course, classInfos[2]);
+					String originalId = year + "," + term + "," + campus + "," + subject + "," + course + "," + classInfos[2];
+					for (Iterator j = crossListingSections.iterator(); j.hasNext();)
+					{
+						//2008|3|A|AMCULT|398|001|MT
+						//2008|3|A|WOMENSTD|389|001|MT
+						String sectionId = ((String)j.next()).replace('|', ',');
+						// get the eid for course offering object
+						sectionId = sectionId.substring(0, sectionId.lastIndexOf(","));
+						if (!sectionId.equals(originalId))
+						{
+							// filter out the original id from the returned list
+							sectionId = sectionId.substring(0, sectionId.lastIndexOf(","));
+							rv.add(sectionId);
+						}
+					}
+				}
+			}
+			
+		}
+		return rv;
+	}
+	
+	/**
+	 * Get list of course data which are cross-listed with the provided course 
+	 * Each of format: term_year|term|campus|subject|catalog_nbr|class_section
+	 * If there is no cross-listings, empty list will be returned
+	 * @param year
+	 * @param term
+	 * @param campus
+	 * @param subject
+	 * @param course
+	 * @param section
+	 * @return
+	 */
+	protected List getCrossListings(String year, String term, String campus,String subject, String course, String section)
+	{
+		String command = "getCrossListings," + year + "," + term + "," + campus + "," + subject + "," + course + "," + section + "\n\n";
+		
+		// check the cache - still use expired entries
+		Vector result = null;
+		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
+		{
+			result = (Vector) m_callCache.getExpiredOrNot(command);
+		}
+		else
+		{
+			result = makeRawCall(command);
+		}
+		
+		Vector rv = new Vector();
+		if (result != null && result.size() > 0)
+		{
+			for (int i = 0; i < result.size(); i++)
+			{
+				rv.add((String)result.elementAt(i));
+			}
+		}
+
+		// cache the results for awhile.
+		if (m_callCache != null) m_callCache.put(command, rv, cacheDurationSeconds);
+
+		return rv;
+	}
 	
 	/**
 	 * @inherit
