@@ -36,7 +36,13 @@ my $count;
 my $batchSize = 10;
 my @batch;
 
-sub processFile {
+sub processFile  (@userEids) {
+#      print "uEid: [$uEid]\n" if ($verbose);
+#      # for every user add the page and tool		
+#      # If pass toolInfo as an object put the struct into sakaiSoapUtils.pm
+#      addPageAndToolToUserMyWorkspace($uEid,$toolInfo->pageName,$toolInfo->toolName,$toolInfo->toolId,$sakaiScriptConnection,$sakaiSession);
+#  #    print "\n";
+#  } {
   # expect a file with 1 eid per line.  Empty and commented lines are ignored.
   # will generate summary statistics after every batch and at the end of the run.
   $startTime = time();
@@ -62,11 +68,18 @@ sub processFile {
 }
 ##################################
 
+# sub processBatch {
+#   my(@batch) = @_;
+#   addNewToolPageFromEidList($accnt,@batch);
+#   printSummary($count,$startTime,time());
+# }
+
 sub processBatch {
   my(@batch) = @_;
   addNewToolPageFromEids($accnt,@batch);
   printSummary($count,$startTime,time());
 }
+
 
 sub printSummary {
   my($cnt,$startTime,$endTime) = @_;
