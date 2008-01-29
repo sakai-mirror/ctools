@@ -16,8 +16,8 @@ PACK=addEvalTool
 
 # add the perl files
 cd $WS_SRC
+cp jws/CToolsScript.java jws/CToolsScript.jws
 tar --exclude '.*' -cvf $START_DIR/$PACK.tar jws/CToolsScript.jws perl/util/*.p? perl/addEvalTool/*.p?
 #tar --exclude '.*' -cvf $PACK.tar $JWS_DIR/SakaiScript.jws $PERL_DIR/util $PERL_DIR/addEvalTool/[!.]*.p?
-
-
+rm jws/CToolsScript.jws
 #end
