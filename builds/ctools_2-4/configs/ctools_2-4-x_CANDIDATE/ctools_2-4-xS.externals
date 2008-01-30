@@ -131,7 +131,7 @@
  config-viewer -r10021 https://source.sakaiproject.org/contrib/config-viewer/branches/config-viewer-2.4.x
 #
  ## course evaluation tool
- evaluation -r44851 https://source.sakaiproject.org/contrib/evaluation/branches/umich
+ evaluation -r45117 https://source.sakaiproject.org/contrib/evaluation/branches/umich
  # we really should not pull from trunk to production, but we were not given any choice for these
  # in the evaluation project.
  entitybroker -r12107 https://source.sakaiproject.org/contrib/caret/entitybroker/trunk/
