@@ -134,7 +134,7 @@
 # ctools-reference -r38052 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
 # ctools-reference -r40088 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
 # ctools-reference -r40162 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
- ctools-reference -r40408 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
+ ctools-reference -r40537 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
  ctools-webservices -r36804 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-webservices
  gradtools -r35111 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
  ctools-libhelp -r33513 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
