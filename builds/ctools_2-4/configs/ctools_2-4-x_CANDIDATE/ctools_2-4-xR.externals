@@ -129,7 +129,9 @@
  ctools-apps -r31824 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
 ## ctools-providers -r33495 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
 # ctools-providers -r39899 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
- ctools-providers -r40473 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
+# ctools-providers -r40473 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
+# Back out bad fix in 40473
+ctools-providers -r40443 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
 # ctools-reference -r37487 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
 # ctools-reference -r38052 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
 # ctools-reference -r40088 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
@@ -151,7 +153,8 @@
 # evaluation -r13047 https://source.sakaiproject.org/contrib/evaluation/branches/umich
 # evaluation -r44807 https://source.sakaiproject.org/contrib/evaluation/branches/umich
 # evaluation -r44851 https://source.sakaiproject.org/contrib/evaluation/branches/umich
- evaluation -r45117 https://source.sakaiproject.org/contrib/evaluation/branches/umich
+# evaluation -r45117 https://source.sakaiproject.org/contrib/evaluation/branches/umich
+ evaluation -r45203 https://source.sakaiproject.org/contrib/evaluation/branches/umich
  entitybroker -r12107 https://source.sakaiproject.org/contrib/caret/entitybroker/trunk/
  entity -r38821 https://source.sakaiproject.org/svn/entity/branches/sakai_2-4-x
 ## require later entity for content conversion SAK-12239
