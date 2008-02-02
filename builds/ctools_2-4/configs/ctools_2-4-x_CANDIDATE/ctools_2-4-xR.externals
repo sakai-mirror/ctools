@@ -154,7 +154,7 @@ ctools-providers -r40443 https://source.sakaiproject.org/svn/ctools/branches/cto
 # evaluation -r44807 https://source.sakaiproject.org/contrib/evaluation/branches/umich
 # evaluation -r44851 https://source.sakaiproject.org/contrib/evaluation/branches/umich
 # evaluation -r45117 https://source.sakaiproject.org/contrib/evaluation/branches/umich
- evaluation -r45203 https://source.sakaiproject.org/contrib/evaluation/branches/umich
+ evaluation -r45234 https://source.sakaiproject.org/contrib/evaluation/branches/umich
  entitybroker -r12107 https://source.sakaiproject.org/contrib/caret/entitybroker/trunk/
  entity -r38821 https://source.sakaiproject.org/svn/entity/branches/sakai_2-4-x
 ## require later entity for content conversion SAK-12239
