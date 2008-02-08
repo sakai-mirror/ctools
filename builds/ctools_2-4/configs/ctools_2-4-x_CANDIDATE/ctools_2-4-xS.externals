@@ -102,7 +102,8 @@
   # note that metaobj and util were updated to later revisions also for content conversion.  
  ## content -r40464 https://source.sakaiproject.org/svn/content/branches/SAK-12239
  # content -r39460 https://source.sakaiproject.org/svn/content/branches/SAK-12239
- content -r40569 https://source.sakaiproject.org/svn/content/branches/SAK-12239
+  #content -r40569 https://source.sakaiproject.org/svn/content/branches/SAK-12239
+  content -r41077 https://source.sakaiproject.org/svn/content/branches/SAK-12239
 # # db -r39516 https://source.sakaiproject.org/svn/db/branches/SAK-12239
 # # db -r40237 https://source.sakaiproject.org/svn/db/branches/SAK-12239
 # db -r40469 https://source.sakaiproject.org/svn/db/branches/SAK-12239
