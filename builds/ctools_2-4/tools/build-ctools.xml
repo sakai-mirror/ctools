@@ -175,7 +175,7 @@ $HeadURL$
 
   <!-- tofile="${build.dir}/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/PrepopulatePages.properties" -->
 
-  <target name="editRwikiSrc">
+  <target name="editRwikiSrc" unless="skipPrepopulatePages" >
     <echo> Copy in the UMich rwiki default pages </echo>
     <copy 	  file="${config.dir}/09PrepopulatePages.properties"
 		  tofile="${build.dir}/rwiki/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/PrepopulatePages.properties"
