@@ -4,9 +4,9 @@
 ## Revised to update OCW 2008/02/15
 # Modified old externals property to new format.
 
- .  https://source.sakaiproject.org/svn/sakai/branches/sakai_2-4-x | --ignore-externals
+ . -r34389 https://source.sakaiproject.org/svn/sakai/branches/sakai_2-4-x | --ignore-externals
 
- access  -r33947 https://source.sakaiproject.org/svn/access/branches/sakai_2-4-x
+ access  -r33946 https://source.sakaiproject.org/svn/access/branches/sakai_2-4-x
  alias  -r33946 https://source.sakaiproject.org/svn/alias/branches/sakai_2-4-x
  announcement  -r33946 https://source.sakaiproject.org/svn/announcement/branches/sakai_2-4-x
  archive  -r33946 https://source.sakaiproject.org/svn/archive/branches/sakai_2-4-x
