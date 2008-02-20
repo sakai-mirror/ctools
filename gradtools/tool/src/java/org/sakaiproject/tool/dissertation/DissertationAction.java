@@ -38,6 +38,7 @@ import org.sakaiproject.api.app.dissertation.Dissertation;
 import org.sakaiproject.api.app.dissertation.DissertationEdit;
 //import org.sakaiproject.api.app.dissertation.DissertationService;
 import org.sakaiproject.api.app.dissertation.cover.DissertationService;
+import org.sakaiproject.api.app.dissertation.exception.MultipleObjectsException;
 import org.sakaiproject.api.app.dissertation.DissertationStep;
 import org.sakaiproject.api.app.dissertation.StepStatus;
 import org.sakaiproject.api.app.dissertation.StepStatusEdit;
@@ -56,6 +57,7 @@ import org.sakaiproject.content.api.ContentResource;
 //import org.sakaiproject.content.cover.ContentHostingService;
 import org.sakaiproject.event.api.SessionState;
 import org.sakaiproject.exception.IdUnusedException;
+import org.sakaiproject.exception.InUseException;
 import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.site.api.Site;
 //import org.sakaiproject.site.cover.SiteService;
@@ -279,6 +281,9 @@ public class DissertationAction
 	
 	/** The view to move a dissertation step */
 	private static final String MODE_MOVE_STEP = "Dissertation.mode_move_step";
+	
+	/** Instructions for reporting the issue until this can be eliminated */
+	private static final String MODE_MULTIPLE_CANDIDATE_PATHS = "Dissertation.multiple_candidate_paths";
 
 	/** The view to confirm validate of a dissertation step */
 	private static final String MODE_CONFIRM_VALIDATE_STEP = "Dissertation.mode_confirm_validate_step";
@@ -329,6 +334,10 @@ public class DissertationAction
 	
 	/** The committee view to edit a stepstatus */
 	private static final String TEMPLATE_COMMITTEE_EDIT_STEPSTATUS = "_committee_edit_stepstatus";
+	
+	/** The view of instructions for reporting multiple paths until this can be eliminated */
+	private static final String TEMPLATE_MULTIPLE_CANDIDATE_PATHS = "_multiple_candidate_paths";
+	
 
 	/****************************** consolidated vm files ****************************/
 	
@@ -431,6 +440,11 @@ public class DissertationAction
 		{
 			// build the context for a warning message if no candidate path exists
 			retVal = build_no_candidate_path_context (portlet, context, data, state);
+		}
+		else if (mode.equals (MODE_MULTIPLE_CANDIDATE_PATHS))
+		{
+			// build the context for a warning message if multiple candidate paths exist
+			retVal = build_multiple_candidate_paths_context (portlet, context, data, state);
 		}
 		else if (mode.equals (MODE_CANDIDATE_EDIT_STEPSTATUS))
 		{
@@ -802,8 +816,19 @@ public class DissertationAction
 	{
 		context.put("candidatename", (String)state.getAttribute(STATE_SELECTED_CANDIDATE_ID));
 		return TEMPLATE_NO_CANDIDATE_PATH;
-
-	}//build_no_candidate_path_context
+	}
+	
+	/**
+	* Build the context for a warning message if multiple candidate paths exist.
+	*/
+	protected String build_multiple_candidate_paths_context (	VelocityPortlet portlet, 
+			Context context, 
+			RunData data, 
+			SessionState state)
+	{
+		context.put("candidatename", (String)state.getAttribute(STATE_SELECTED_CANDIDATE_ID));
+		return TEMPLATE_MULTIPLE_CANDIDATE_PATHS;
+	}
 	
 	/**
 	* Build the context for an informative message if candidate path was saved.
@@ -815,7 +840,7 @@ public class DissertationAction
 	{
 		return TEMPLATE_CANDIDATE_PATH_SAVED;
 
-	}//build_candidate_path_saved_context
+	}
 
 	/**
 	* Build the context for if there is no parent dissertation for the candidate at time of initialization.
@@ -2052,12 +2077,13 @@ public class DissertationAction
 					addAlert(state, "You do not have permission to revise this step : " + status.getShortInstructionsText());
 				}
 			}
+			catch(MultipleObjectsException m) {
+				addAlert(state, m.toString());
+			}
 			catch(Exception e)
 			{
-				if(Log.isWarnEnabled())
-					Log.warn("chef", this + "DO EDIT STEPSTATUS : EXCEPTION : " + e);
+				addAlert(state, e.toString());
 			}
-			
 			if(state.getAttribute(STATE_MESSAGE) != null)
 			{
 				state.setAttribute(STATE_MODE, MODE_CANDIDATE_VIEW_PATH);
@@ -2433,59 +2459,66 @@ public class DissertationAction
 		{
 			path = DissertationService.getCandidatePathForCandidate((String)state.getAttribute(STATE_USER_ID));
 		}
-		catch(Exception e)
-		{
-			if(Log.isWarnEnabled())
-				Log.warn("chef", this + ".doUpdate_stepstatus_comm path " + e);
-			state.setAttribute(STATE_MODE, MODE_CANDIDATE_VIEW_PATH);
-			return;
-		}
-		if(path == null)
-		{
-			if(Log.isWarnEnabled())
-				Log.warn("chef", this + ".doUpdate_stepstatus_comm path is null");
-			state.setAttribute(STATE_MODE, MODE_CANDIDATE_VIEW_PATH);
-			return;
-		}
-		
-		//check that step follows its prerequisites, step's location hasn't changed
-		if(!followsPrereqs(statusRef, addprereqs, path, false))
-		{
-			addAlert(state, "The location of the step would have come before its prerequisite(s).");
-			state.setAttribute(STATE_MODE, MODE_CANDIDATE_VIEW_PATH);
-			return;
-		}
-		
-		//the path hasn't changed, only the status
-		try
-		{
-			StepStatusEdit statusEdit = DissertationService.editStepStatus(statusRef);
-			statusEdit.setInstructions(instructionsText);
-			statusEdit.setValidationType(validType);
-			if(removeprereqs != null)
-			{
-				for(int z = 0; z < removeprereqs.length; z++)
-				{
-					 statusEdit.removePrerequisiteStatus(removeprereqs[z]);
-				}
-			}
-			if(addprereqs != null)
-			{
-				for(int z = 0; z < addprereqs.length; z++)
-				{
-					 statusEdit.addPrerequisiteStatus(addprereqs[z]);
-				}
-			}
-			DissertationService.commitEdit(statusEdit);
+		catch(MultipleObjectsException m) {
+			addAlert(state, m.toString());
 		}
 		catch(Exception e)
 		{
-			if(Log.isWarnEnabled())
-				Log.warn("chef", this + "doUpdate_stepstatus : EXCEPTION UPDATING STEP WITH ID : " + e);
+			addAlert(state, e.toString());
 		}
-
-		state.setAttribute(STATE_CANDIDATE_PATH_TEMPLATE_STEPS, getTemplateSteps(path, state, false));
-		state.setAttribute(STATE_MODE, MODE_CANDIDATE_VIEW_PATH);
+		if(state.getAttribute(STATE_MESSAGE) != null)
+		{
+			state.setAttribute(STATE_MODE, MODE_CANDIDATE_VIEW_PATH);
+			return;
+		}
+		else
+		{
+			if(path == null)
+			{
+				addAlert(state, "Student's checklist is null.");
+				state.setAttribute(STATE_MODE, MODE_CANDIDATE_VIEW_PATH);
+				return;
+			}
+			
+			//check that step follows its prerequisites, step's location hasn't changed
+			if(!followsPrereqs(statusRef, addprereqs, path, false))
+			{
+				addAlert(state, "The location of the step would have come before its prerequisite(s).");
+				state.setAttribute(STATE_MODE, MODE_CANDIDATE_VIEW_PATH);
+				return;
+			}
+			
+			//the path hasn't changed, only the status
+			StepStatusEdit statusEdit = null;
+			try
+			{
+				statusEdit = DissertationService.editStepStatus(statusRef);
+				statusEdit.setInstructions(instructionsText);
+				statusEdit.setValidationType(validType);
+				if(removeprereqs != null)
+				{
+					for(int z = 0; z < removeprereqs.length; z++)
+					{
+						 statusEdit.removePrerequisiteStatus(removeprereqs[z]);
+					}
+				}
+				if(addprereqs != null)
+				{
+					for(int z = 0; z < addprereqs.length; z++)
+					{
+						 statusEdit.addPrerequisiteStatus(addprereqs[z]);
+					}
+				}
+				DissertationService.commitEdit(statusEdit);
+			}
+			catch(Exception e)
+			{
+				addAlert(state, "There was a problem updating step '" + statusEdit.getInstructionsText() + "' " + e);
+			}
+	
+			state.setAttribute(STATE_CANDIDATE_PATH_TEMPLATE_STEPS, getTemplateSteps(path, state, false));
+			state.setAttribute(STATE_MODE, MODE_CANDIDATE_VIEW_PATH);
+		}
 		
 	}//doUpdate_stepstatus
 
@@ -3873,10 +3906,14 @@ public class DissertationAction
 						alert = true;
 					}
 				}
+				catch(MultipleObjectsException m) {
+					addAlert(state, m.toString());
+					alert = true;
+				}
 				catch(Exception e)
 				{
-					if(Log.isWarnEnabled())
-						Log.warn("chef", this + "BUILD_CANDIDATE_UPDATE_CANDIDATE_PATH : EXCEPTION : " + e);
+					addAlert(state, e.toString());
+					alert = true;
 				}
 			}
 		}
@@ -4021,10 +4058,14 @@ public class DissertationAction
 						}
 					}
 				}
+				catch(MultipleObjectsException m) {
+					addAlert(state, m.toString());
+					alert = true;
+				}
 				catch(Exception e)
 				{
-					if(Log.isWarnEnabled())
-						Log.warn("chef", this + "doConfirm_admin_update_candidate_path : status id : " + stepStatusRefs[x] + " : EXCEPTION : " + e);
+					addAlert(state, e.toString());
+					alert = true;
 				}
 			}
 		}
@@ -4107,15 +4148,16 @@ public class DissertationAction
 					DissertationService.commitEdit(statusEdit);
 					state.setAttribute(STATE_CANDIDATE_PATH_TEMPLATE_STEPS, getTemplateSteps(candidatePath, state, false));
 				}
+				catch(MultipleObjectsException m) {
+					addAlert(state, m.toString());
+				}
 				catch(Exception e)
 				{
-					if(Log.isWarnEnabled())
-						Log.warn("chef", this + "doUpdate_candidate_path_admin : status id " + stepStatusRefs[x] + " : EXCEPTION : " + e);
+					addAlert(state, e.toString());
 				}
 			}
 		}
 		state.setAttribute(STATE_MODE, MODE_ADMIN_VIEW_CANDIDATE_PATH);
-		
 	}
 	
 	
@@ -4337,8 +4379,7 @@ public class DissertationAction
 			}
 			catch(Exception e)
 			{
-				if(Log.isWarnEnabled())
-					Log.warn("chef", this + "doCandidate_chosen : EXCEPTION : " + e);
+				addAlert(state, "there was a problem getting the selected candidate: " + e.toString());
 			}
 			
 			CandidatePath candidatePath = null;
@@ -4346,14 +4387,18 @@ public class DissertationAction
 			{
 				candidatePath = DissertationService.getCandidatePathForCandidate(selectedCandidate);
 			}
+			catch(MultipleObjectsException m) {
+				addAlert(state, "the selected student has multiple checklists: " + m.toString());
+			}
 			catch(Exception e)
 			{
-				if(Log.isWarnEnabled())
-					Log.warn("chef", this + "doCandidate_chosen : EXCEPTION : " + e);
+				addAlert(state, "there was a problem retrieving the selected student's checklist: " + e.toString());
 			}
-			TemplateStep[] templateSteps = getTemplateSteps(candidatePath, state, false);
+			if(candidatePath != null) {
+				TemplateStep[] templateSteps = getTemplateSteps(candidatePath, state, false);
+				state.setAttribute(STATE_CANDIDATE_PATH_TEMPLATE_STEPS, templateSteps);
+			}
 			state.setAttribute(STATE_SELECTED_CANDIDATE_ID, selectedCandidate);
-			state.setAttribute(STATE_CANDIDATE_PATH_TEMPLATE_STEPS, templateSteps);
 			state.setAttribute(STATE_MODE, MODE_ADMIN_VIEW_CANDIDATE_PATH);
 		}
 		
@@ -4396,11 +4441,6 @@ public class DissertationAction
 		if(userDirectoryService == null)	
 			userDirectoryService =
 				(org.sakaiproject.user.api.UserDirectoryService) ComponentManager.get(org.sakaiproject.user.api.UserDirectoryService.class);
-		/*
-		if(DissertationService == null)	
-			DissertationService =
-				(org.sakaiproject.api.app.dissertation.DissertationService) ComponentManager.get(org.sakaiproject.api.app.dissertation.DissertationService.class);
-		*/
 		
 		//this user
 		User currentUser = null;
@@ -4413,7 +4453,7 @@ public class DissertationAction
 			currentUser = (User)state.getAttribute(STATE_USER);
 		if(currentUser == null)
 		{
-			//if user is not known stop here
+			//stop here if user is not known 
 			if(Log.isWarnEnabled())
 				Log.warn("chef", this + ".initState current User is null");
 			return;
@@ -4436,7 +4476,6 @@ public class DissertationAction
 		Site deptSite = null;
 		if (state.getAttribute(STATE_CURRENT_SITE)==null)
 		{
-			//currentSite = PortalService.getCurrentSiteId();
 			currentSite = toolManager.getCurrentPlacement().getContext();
 			state.setAttribute(STATE_CURRENT_SITE, currentSite);
 			
@@ -4577,7 +4616,7 @@ public class DissertationAction
 		//set initial view
 		state.setAttribute (STATE_MODE, MODE_ADMIN_VIEW_CURRENT_DISSERTATION);
 		
-	}//initAdminState
+	}
 	
 	/*
 	* Initiate state for candidate
@@ -4586,16 +4625,19 @@ public class DissertationAction
 	{
 		CandidatePath path = null;
 		
-		//see if there is a path for this student
+		//see if there is a path, or more than 1, for this student
 		try
 		{
 			path = DissertationService.getCandidatePathForCandidate((String)state.getAttribute(STATE_USER_ID));
 		}
+		catch(MultipleObjectsException m) {
+			addAlert(state, m.getMessage());
+			state.setAttribute(STATE_MODE, MODE_MULTIPLE_CANDIDATE_PATHS);
+			return;
+		}
 		catch(Exception e)
 		{
-			addAlert(state, alertMessage + "initCandidateState() getCandidatePathForCandidate() " + e.toString());
-			if(Log.isWarnEnabled())
-				Log.warn("chef", this + ".initCandidate DissertationService.getCandidatePathForCandidate() " + e);
+			addAlert(state, e.getMessage());
 			state.setAttribute(STATE_MODE, MODE_NO_CANDIDATE_PATH);
 			return;
 		}
@@ -4607,9 +4649,7 @@ public class DissertationAction
 				state.setAttribute(STATE_MODE, MODE_CANDIDATE_PATH_SAVED);
 			else
 			{
-				addAlert(state, alertMessage + "initCandidateState() getCandidatePathForCandidate() path == null");
-				if(Log.isWarnEnabled())
-					Log.warn("chef", this + ".initCandidate DissertationService.getCandidatePathForCandidate() path == null");
+				addAlert(state,"your checklist is null");
 				state.setAttribute(STATE_MODE, MODE_NO_CANDIDATE_PATH);
 			}
 			return;
@@ -4634,7 +4674,7 @@ public class DissertationAction
 		//set initial view
 		state.setAttribute(STATE_MODE, MODE_CANDIDATE_VIEW_PATH);
 		
-	}//initCandidateState
+	}
 	
 	/*
 	* Initiate state for committee member
@@ -4650,19 +4690,28 @@ public class DissertationAction
 		{
 			path = DissertationService.getCandidatePathForSite(site);
 		}
-		catch(PermissionException p)
+		catch(MultipleObjectsException m) {
+			addAlert(state,m.toString());
+			state.setAttribute(STATE_MODE, MODE_MULTIPLE_CANDIDATE_PATHS);
+			return;
+		}
+		catch(Exception e)
 		{
-			if(Log.isWarnEnabled())
-				Log.warn("chef", this + ".initCommittee() DissertationService.getCandidatePathForSite(" + site + ") " + p);
+			addAlert(state,e.toString());
+			state.setAttribute(STATE_MODE, MODE_NO_CANDIDATE_PATH);
+			return;
 		}
 		
 		//if there is no path, has it been saved to Resources and deleted from db?
 		if(path == null)
 		{	
-			if(isSaved())
+			if(isSaved()) {
 				state.setAttribute(STATE_MODE, MODE_CANDIDATE_PATH_SAVED);
-			else
+			}
+			else {
+				addAlert(state,"this student's checklist is null");
 				state.setAttribute(STATE_MODE, MODE_NO_CANDIDATE_PATH);
+			}
 			return;
 		}
 		else
@@ -4690,7 +4739,7 @@ public class DissertationAction
 			state.setAttribute(STATE_MODE, MODE_COMMITTEE_VIEW_CANDIDATE_PATH);
 		}
 		
-	}//initCommitteeState
+	}
 	
 	/*
 	* Initiate state for dean
@@ -4708,7 +4757,7 @@ public class DissertationAction
 		//set initial view
 		state.setAttribute (STATE_MODE, MODE_ADMIN_VIEW_CURRENT_DISSERTATION);
 		
-	}//initDeanState
+	}
 	
 	/*
 	* Initiate state for Rackham administrator
@@ -4726,7 +4775,7 @@ public class DissertationAction
 		//set initial view
 		state.setAttribute (STATE_MODE, MODE_ADMIN_VIEW_CURRENT_DISSERTATION);
 
-	}//initSchoolState
+	}
 
 	/**
 	* Populate the Rackham/Department Site Dissertation Steps
@@ -6054,16 +6103,24 @@ public class DissertationAction
 		retVal.add(aCarrier);
 	}
 	
-	
 	/**
-	* Replace CandidatePath site id set during data load with current site id
-	* @return The updated path.
+	* A CandidatePath created by uploading student data has the student's eid as a placeholder
+	* for site id, because the student's site might not exist at the time of upload, and there is no
+	* way to predict what its id will be once created. Because site id is the basis for site context
+	* permissions and is needed to get the location to store a static copy of the checklist when a 
+	* student is removed, the first time a student uses the Dissertation Checklist tool, a new 
+	* CandidatePath is created with the student's site id in the path and step status references.
+	* 
+	* @return The student's CandidatePath or null if not successful
 	*/
 	public CandidatePath updateCandidatePathSiteId(SessionState state, CandidatePath path)
 	{
+		if(path == null) 
+			throw new IllegalArgumentException("'path' parameter to updateCandidatePathSiteId is null");
+		
 		CandidatePath updatedPath = null;
 		
-		//Unless current site id is same as user's uniqname, set site id to current site id
+		//set site id to current site id
 		if(!(((String)state.getAttribute(STATE_CURRENT_SITE)).equals((String)state.getAttribute(STATE_USER_ID))))
 		{
 			if(DissertationService.allowUpdateCandidatePath(path.getReference()))
@@ -6071,277 +6128,266 @@ public class DissertationAction
 				String keyString = null;
 				String statusRef = null;
 				StepStatusEdit statusEdit = null;
-				boolean hasPrerequisites = false;
-							
-				//This changes references
-				String oldPathRef = (String)path.getReference();
 				Dissertation parentDissertation = null;
 				CandidatePathEdit pathEdit = null;
-				try
-				{
-					String parentSite = path.getParentSite();
-					try
+				boolean hasPrerequisites = false;
+
+				//Note: changing site context changes step status references
+				String oldPathRef = (String)path.getReference();
+				String parentSite = path.getParentSite();
+
+				//use the departmental checklist as the template for the new CandidatePath
+				try {
+					parentDissertation = DissertationService.getDissertationForSite(parentSite);
+					if(parentDissertation == null)
 					{
-						//Get a new path
-						parentDissertation = DissertationService.getDissertationForSite(parentSite);
-						if(parentDissertation == null)
-						{
-							//current user
-							User currentUser = (User)state.getAttribute(STATE_USER);
-							
-							//Rackham site
-							String schoolSite = (String)state.getAttribute(STATE_SCHOOL_SITE);
-							
-							//no dept dissertation, so try to use a Rackham dissertation
-							try
-							{
-								if(DissertationService.isMusicPerformanceCandidate(currentUser.getId()))
-								{
-									//if Candidate is in Music Performance - use Music Performance type dissertation
-									parentDissertation = DissertationService.getDissertationForSite(schoolSite, DissertationService.DISSERTATION_TYPE_MUSIC_PERFORMANCE);
-								}
-								else
-								{
-									//if Candidate is in Music Performance - use Music Performance type dissertation
-									parentDissertation = DissertationService.getDissertationForSite(schoolSite, DissertationService.DISSERTATION_TYPE_DISSERTATION_STEPS);
-								}
-							
-							}
-							catch(Exception e)
-							{
-								addAlert(state, alertMessage + "getDissertationForSite() " + e.toString());
-								if(Log.isWarnEnabled())
-									Log.warn("chef", this + ".updateCandidatePathSiteId() DissertationService.getDissertationForSite(" + schoolSite + ") " + e);
-							}
-							if(parentDissertation == null)
-							{
-								addAlert(state, alertMessage + "parentDissertation is null.");
-								
-								//no dissertation on which to base path, so bail out
-								return null;
-							}
-						}
-						pathEdit = DissertationService.addCandidatePath(parentDissertation, (String)state.getAttribute(STATE_CURRENT_SITE));
-									
-						//set site
-						pathEdit.setSite((String)state.getAttribute(STATE_CURRENT_SITE));
-						
-						//set alphabetical candidate chooser letter
-						pathEdit.setSortLetter(getSortLetter(path.getCandidate()));
-						
-						//set the parent department site id
-						pathEdit.setParentSite(path.getParentSite());
-						
-						//set type
-						pathEdit.setType(path.getType());
-										
-						//set advisor
-						pathEdit.setAdvisor(path.getAdvisor());
-										
-						//set candidate
-						pathEdit.setCandidate(path.getCandidate());
-										
-						//set school prereqs
-						pathEdit.setSchoolPrereqs(path.getSchoolPrereqs());
-										
-						//remove new path's status objects
-						Hashtable removeOrderedStatus = pathEdit.getOrderedStatus();
-						statusEdit = null;
-						for (int i = 1; i < removeOrderedStatus.size()+1; i++)
-						{
-							keyString = "" + i;
-							statusRef = (String)removeOrderedStatus.get(keyString);
-							try
-							{
-								statusEdit = DissertationService.editStepStatus(statusRef);
-								DissertationService.removeStepStatus(statusEdit);
-							}
-							catch(PermissionException p)
-							{
-								addAlert(state, alertMessage + "removeStepStatus() " + i + " " + p.toString());
-								if(Log.isWarnEnabled())
-									Log.warn("chef", this + ".updateCandidatePathSiteId() DissertationService.removeStepStatus(" + statusEdit.getReference() + ") " + p);
-							}
-						}
-										
-						Hashtable orderedStatus = path.getOrderedStatus();
-						Hashtable newOrderedStatus = new Hashtable();
-						String prereqOrder = null;
-						String newStatusRef = null;		
-						List statusPrereqs = null;	
-						Vector prereqs = new Vector();
-										
-						//add new step status objects to new path
-						for (int i = 1; i < orderedStatus.size()+1; i++)
-						{
-							keyString = "" + i;
-							statusRef = (String)orderedStatus.get(keyString);
-											
-							//old status
-							StepStatus status = DissertationService.getStepStatus(statusRef);
-											
-							//see if old status had prerequisites
-							hasPrerequisites = false;
-							prereqs.clear();
-							if(((List)status.getPrereqs()).size() != 0)
-							{
-								//this old status has prerequisites
-								hasPrerequisites = true;
-												
-								//get those prerequisite references
-								statusPrereqs = status.getPrereqs();
-												
-								//match preceding step(s) with prerequisite reference(s)
-								for (int j = i-1; j > 0; j--)
-								{
-									prereqOrder = "" + j;
-									statusRef = (String)orderedStatus.get(prereqOrder);
-									for (int k = 0; k < statusPrereqs.size(); k++)
-									{
-										if(((String)statusPrereqs.get(k)).equals(statusRef))
-										{
-											//store the relative position in the checklist of the prereq for this step
-											prereqs.add(prereqOrder);
-										}
-									}
-								}
-							}
-											
-							//get a new status
-							statusEdit = DissertationService.addStepStatus((String)state.getAttribute(STATE_CURRENT_SITE));
-											
-							//set site, parent step, autovalidation status
-							DissertationStep step = DissertationService.getDissertationStep(status.getParentStepReference());
-							statusEdit.initialize((String)state.getAttribute(STATE_CURRENT_SITE), step, status.getOardValidated());
-											
-							//add prereqs to the new step if the old steps had prereqs
-							if(hasPrerequisites)
-							{
-								//new status prerequisite references
-								List newStatusPrereqs = new Vector(prereqs.size(), 1);
-												
-								//for each of the prereqs for the step
-								for (int j = 0; j < prereqs.size(); j++)
-								{
-									//get the reference of the new step at this position
-									try
-									{
-										newStatusRef = ((String)newOrderedStatus.get((String)prereqs.get(j)));
-									}
-									catch(NumberFormatException e) 
-									{
-										addAlert(state, alertMessage + "newStatusRef for prereq " + j + " " + e.toString());
-										if(Log.isWarnEnabled())
-											Log.warn("chef", this + ".updateCandidatePathSiteId newOrderedStatus.get(Integer.parseInt(prereqs.get(" + j + ") " + e);
-									}
-													
-									//and add it to the List of prereqs for the new step
-									newStatusPrereqs.add(newStatusRef);
-								}
-												
-								//add the prereqs
-								statusEdit.setPrereqs(newStatusPrereqs);
-							}
-											
-							//set site
-							statusEdit.setSite((String)state.getAttribute(STATE_CURRENT_SITE));
-										
-							//set auto validation id
-							statusEdit.setAutoValidationId(status.getAutoValidationId());
-										
-							//set completed
-							statusEdit.setCompleted(status.getCompleted());
-										
-							//set hard deadline
-							statusEdit.setHardDeadline(status.getHardDeadline());
-										
-							//set instructions
-							statusEdit.setInstructionsHtml(status.getInstructions());
-										
-							//set recommended deadline
-							statusEdit.setRecommendedDeadline(status.getRecommendedDeadline());
-										
-							//set time completed
-							statusEdit.setTimeCompleted(status.getTimeCompleted());
-							
-							//set time completed text
-							statusEdit.setTimeCompletedText(status.getTimeCompletedText());
-							
-							//set auxiliary text
-							statusEdit.setAuxiliaryText(status.getAuxiliaryText());
-										
-							//set validation type
-							statusEdit.setValidationType(status.getValidationType());
-										
-							//create ordered status entry
-							newOrderedStatus.put(keyString, statusEdit.getReference());
-											
-							//commit status edit
-							DissertationService.commitEdit(statusEdit);
-						}
-										
-						//set ordered status and commit path edit
-						pathEdit.setOrderedStatus(newOrderedStatus);
-										
-						//commit new path
-						DissertationService.commitEdit(pathEdit);
-										
-						//finally, remove old path
-						CandidatePathEdit oldPathEdit = null;
-						try
-						{
-							oldPathEdit = DissertationService.editCandidatePath(oldPathRef);
-							for (int i = 1; i < orderedStatus.size()+1; i++)
-							{
-								keyString = i + "";
-								statusRef = (String)orderedStatus.get(keyString);
-								StepStatusEdit oldStatusEdit = DissertationService.editStepStatus(statusRef);
-								DissertationService.removeStepStatus(oldStatusEdit);
-							}
-							DissertationService.removeCandidatePath(oldPathEdit);
-						}
-						catch(Exception e)
-						{
-							addAlert(state, alertMessage + "removeStepStatus()/removeCandidatePath() " + e.toString());
-							if(Log.isWarnEnabled())
-								Log.warn("chef", this + ".updateCandidatePathSiteId() DissertationService.edit/removeCandidatePath(" + oldPathRef + ") " + e);
-						}
-					}
-					catch (Exception e)
-					{
-						addAlert(state, alertMessage + "getDissertationForSite(" + parentSite + ") " + e.toString());
-						if(Log.isWarnEnabled())
-							Log.warn("chef", this + ".updateCandidatePathSiteId() DissertationService.getDissertationForSite(" + parentSite + ") " + e);
+						//there is no departmental checklist so use a Rackham checklist
+						User currentUser = (User)state.getAttribute(STATE_USER);
+						String schoolSite = (String)state.getAttribute(STATE_SCHOOL_SITE);
+						parentDissertation = getRackhamChecklist(currentUser, schoolSite);
 					}
 				}
-				catch(Exception e)
-				{
-					addAlert(state, alertMessage + "getParentSiteForUser(" + ((User)state.getAttribute(STATE_USER)).getId() + ") " + e.toString());
-					if(Log.isWarnEnabled())
-						Log.warn("chef", this + ".updateCandidatePathSiteId() DissertationService.getParentSiteForUser(" + ((User)state.getAttribute(STATE_USER)).getId() + ") " + e);
+				catch(Exception e) {
+					addAlert(state, alertMessage + "there was a problem accessing a parent checklist: " + e.toString());
+					return null;
 				}
-			}
+				if(parentDissertation == null)
+				{
+					//bail out because there is no dissertation on which to base path
+					addAlert(state, alertMessage + "parent checklist is null");
+					return null;
+				}
+				//add path
+				try {
+					pathEdit = DissertationService.addCandidatePath(parentDissertation, (String)state.getAttribute(STATE_CURRENT_SITE));
+					setCandidatePathAttributes(state, path, pathEdit);
+				}
+				catch(Exception e) {
+					addAlert(state, alertMessage + "there was a problem adding your checklist to the system: " + e.toString());
+					DissertationService.cancelEdit(pathEdit);
+					return null;
+				}
+				//add step status
+				try {
+					Hashtable orderedStatus = path.getOrderedStatus();
+					Hashtable newOrderedStatus = new Hashtable();
+					String prereqOrder = null;
+					String newStatusRef = null;		
+					List statusPrereqs = null;	
+					Vector prereqs = new Vector();
+					//for each ordered status
+					for (int i = 1; i < orderedStatus.size()+1; i++)
+					{
+						newStatusRef = addStepStatus(state, orderedStatus,
+								newOrderedStatus, newStatusRef, prereqs, i);
+					}
+					pathEdit.setOrderedStatus(newOrderedStatus);
+					DissertationService.commitEdit(pathEdit);
+				}
+				catch(Exception e) {
+					DissertationService.cancelEdit(pathEdit);
+					addAlert(state, alertMessage + "there was a problem adding step statuses: " + e.toString());
+					return null;
+				}
+				//remove path created during upload
+				CandidatePathEdit oldPathEdit = null;
+				try {
+					removeUploadPath(oldPathRef);
+				}
+				catch(Exception e) {
+					addAlert(state, alertMessage + "could not remove checklist created during upload: " + e.toString());
+				}
+			}//allowUpdateCandidatePath
 			else
 			{
-				//no permission to update path site id
-				addAlert(state, alertMessage + "You do not have permission to set the site id of the candidate path.");
-				state.setAttribute(STATE_MODE, MODE_NO_CANDIDATE_PATH);
-				return path;
+				addAlert(state, alertMessage + "you do not have permission to create a student checklist");
+				return null;
 			}
+			//return new path
 			try
 			{
 				updatedPath = (CandidatePath)DissertationService.getCandidatePathForCandidate(((User)state.getAttribute(STATE_USER)).getId());
 			}
+			catch(MultipleObjectsException m) {
+				addAlert(state, alertMessage + m.toString());
+			}
 			catch (Exception e)
 			{
-				addAlert(state, alertMessage + "getCandidatePathForCandidate(" + ((User)state.getAttribute(STATE_USER)).getId() + ") " + e.toString());
-				if(Log.isWarnEnabled())
-					Log.warn("chef", this + ".updateCandidatePathSiteId() DissertationService.getCandidatePathForCandidate(" + ((User)state.getAttribute(STATE_USER)).getId() + ") " + e);
+				addAlert(state, alertMessage + "there was a problem accessing your student checklist: " + e.toString());
 			}
 		}
 		return updatedPath;
 		
 	}//updateCandidatePathSiteId
+
+	private String addStepStatus(SessionState state, Hashtable orderedStatus,
+			Hashtable newOrderedStatus, String newStatusRef, Vector prereqs,
+			int i) throws IdUnusedException, PermissionException {
+		String keyString;
+		String statusRef;
+		StepStatusEdit statusEdit;
+		boolean hasPrerequisites;
+		keyString = "" + i;
+		statusRef = (String)orderedStatus.get(keyString);
+		StepStatus status = DissertationService.getStepStatus(statusRef);
+		hasPrerequisites = getPrereqOrder(orderedStatus, prereqs, i, status);		
+		statusEdit = DissertationService.addStepStatus((String)state.getAttribute(STATE_CURRENT_SITE));
+		DissertationStep step = DissertationService.getDissertationStep(status.getParentStepReference());
+		statusEdit.initialize((String)state.getAttribute(STATE_CURRENT_SITE), step, status.getOardValidated());
+		if(hasPrerequisites)
+		{
+			newStatusRef = addPrerequisites(state, statusEdit, newOrderedStatus, newStatusRef, prereqs);
+		}
+		setStatusAttributes(state, statusEdit, status);
+		newOrderedStatus.put(keyString, statusEdit.getReference());
+		DissertationService.commitEdit(statusEdit);
+		return newStatusRef;
+	}
+
+	/**
+	 * Remove upload-created CandidatePath after 
+	 * creating student CandidatePath based on it.
+	 * 
+	 * @param oldPathRef
+	 * @throws IdUnusedException
+	 * @throws InUseException
+	 * @throws PermissionException
+	 */
+	private void removeUploadPath(String oldPathRef) throws IdUnusedException,
+			InUseException, PermissionException {
+		String keyString;
+		String statusRef;
+		CandidatePathEdit oldPathEdit;
+		oldPathEdit = DissertationService.editCandidatePath(oldPathRef);
+		Hashtable orderedStatus = oldPathEdit.getOrderedStatus();
+		for (int i = 1; i < orderedStatus.size()+1; i++)
+		{
+			keyString = i + "";
+			statusRef = (String)orderedStatus.get(keyString);
+			StepStatusEdit oldStatusEdit = DissertationService.editStepStatus(statusRef);
+			DissertationService.removeStepStatus(oldStatusEdit);
+		}
+		DissertationService.removeCandidatePath(oldPathEdit);
+	}
+
+	private void setStatusAttributes(SessionState state,
+			StepStatusEdit statusEdit, StepStatus status) 
+	{
+		statusEdit.setSite((String)state.getAttribute(STATE_CURRENT_SITE));
+		statusEdit.setAutoValidationId(status.getAutoValidationId());
+		statusEdit.setCompleted(status.getCompleted());
+		statusEdit.setHardDeadline(status.getHardDeadline());
+		statusEdit.setInstructionsHtml(status.getInstructions());
+		statusEdit.setRecommendedDeadline(status.getRecommendedDeadline());
+		statusEdit.setTimeCompleted(status.getTimeCompleted());
+		statusEdit.setTimeCompletedText(status.getTimeCompletedText());
+		statusEdit.setAuxiliaryText(status.getAuxiliaryText());
+		statusEdit.setValidationType(status.getValidationType());
+	}
+
+	private String addPrerequisites(SessionState state,
+			StepStatusEdit statusEdit, Hashtable newOrderedStatus,
+			String newStatusRef, Vector prereqs) {
+		
+		//the new status prerequisite references
+		List newStatusPrereqs = new Vector(prereqs.size(), 1);
+		//for each of the prereqs for the step
+		for (int j = 0; j < prereqs.size(); j++)
+		{
+			//get the reference of the new step at this position
+			try
+			{
+				newStatusRef = ((String)newOrderedStatus.get((String)prereqs.get(j)));
+			}
+			catch(Exception e) {
+				addAlert(state, alertMessage + "new StepStatus reference for prerequisite " + j + ": " + e.toString());
+			}	
+			//add it to the list of prereqs for the new step
+			newStatusPrereqs.add(newStatusRef);
+		}		
+		//add the prereqs
+		statusEdit.setPrereqs(newStatusPrereqs);
+		return newStatusRef;
+	}
+
+	private boolean getPrereqOrder(Hashtable orderedStatus, Vector prereqs,
+			int i, StepStatus status) {
+		String statusRef;
+		boolean hasPrerequisites;
+		String prereqOrder;
+		List statusPrereqs;
+		hasPrerequisites = false;
+		try {
+			prereqs.clear();
+			if(((List)status.getPrereqs()).size() != 0)
+			{
+				//this old status has prerequisites
+				hasPrerequisites = true;
+								
+				//get those prerequisite references
+				statusPrereqs = status.getPrereqs();
+								
+				//match preceding step(s) with prerequisite reference(s)
+				for (int j = i-1; j > 0; j--)
+				{
+					prereqOrder = "" + j;
+					statusRef = (String)orderedStatus.get(prereqOrder);
+					for (int k = 0; k < statusPrereqs.size(); k++)
+					{
+						if(((String)statusPrereqs.get(k)).equals(statusRef))
+						{
+							//store the relative position in the checklist of the prereq for this step
+							prereqs.add(prereqOrder);
+						}
+					}
+				}
+			}
+		}
+		catch(Exception e) {
+			throw new RuntimeException("getPrereqOrder: " + e.toString());
+		}
+		return hasPrerequisites;
+	}
+
+	private Dissertation getRackhamChecklist(User currentUser, String schoolSite)
+			throws IdUnusedException, PermissionException {
+		Dissertation parentDissertation;
+		if(DissertationService.isMusicPerformanceCandidate(currentUser.getId()))
+			parentDissertation = DissertationService.getDissertationForSite(schoolSite, DissertationService.DISSERTATION_TYPE_MUSIC_PERFORMANCE);
+		else
+			parentDissertation = DissertationService.getDissertationForSite(schoolSite, DissertationService.DISSERTATION_TYPE_DISSERTATION_STEPS);
+		return parentDissertation;
+	}
+
+	private void setCandidatePathAttributes(SessionState state,
+			CandidatePath path, CandidatePathEdit pathEdit) {
+		String keyString;
+		String statusRef;
+		StepStatusEdit statusEdit;
+		pathEdit.setSite((String)state.getAttribute(STATE_CURRENT_SITE));
+		pathEdit.setSortLetter(getSortLetter(path.getCandidate()));
+		pathEdit.setParentSite(path.getParentSite());
+		pathEdit.setType(path.getType());
+		pathEdit.setAdvisor(path.getAdvisor());
+		pathEdit.setCandidate(path.getCandidate());
+		pathEdit.setSchoolPrereqs(path.getSchoolPrereqs());
+		Hashtable removeOrderedStatus = pathEdit.getOrderedStatus();
+		statusEdit = null;
+		for (int i = 1; i < removeOrderedStatus.size()+1; i++)
+		{
+			keyString = "" + i;
+			statusRef = (String)removeOrderedStatus.get(keyString);
+			try
+			{
+				statusEdit = DissertationService.editStepStatus(statusRef);
+				DissertationService.removeStepStatus(statusEdit);
+			}
+			catch(Exception e)
+			{
+				addAlert(state, "there was a problem preparing your new checklist: " + e.toString());
+			}
+		}
+	}
 
 } //DissertationAction
 

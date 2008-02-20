@@ -22,9 +22,9 @@
 *
 **********************************************************************************/
 
-// package
 package org.sakaiproject.tool.dissertation;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -45,6 +45,7 @@ import org.sakaiproject.api.app.dissertation.DissertationStep;
 import org.sakaiproject.api.app.dissertation.StepStatus;
 import org.sakaiproject.api.app.dissertation.StepStatusEdit;
 import org.sakaiproject.api.app.dissertation.cover.DissertationService;
+import org.sakaiproject.api.app.dissertation.exception.MultipleObjectsException;
 import org.sakaiproject.cheftool.Context;
 import org.sakaiproject.cheftool.JetspeedRunData;
 import org.sakaiproject.cheftool.RunData;
@@ -106,7 +107,6 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 	private org.sakaiproject.tool.api.SessionManager sessionManager =
 		(org.sakaiproject.tool.api.SessionManager) ComponentManager.get(org.sakaiproject.tool.api.SessionManager.class);
 	
-	/** The state attributes */
 	private final static String  STATE_INITIALIZED = "initialized";
 	private final static String  STATE_ACTION = "DisserationUploadAction";
 	private final static String  STATE_OARDFILE = "oardext";
@@ -121,18 +121,15 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 	private final static String  STATE_FIELD_TO_EDIT = "field_to_edit";
 	private final static String  STATE_FIELDS_TO_REMOVE = "fields_to_remove";
 	private final static String  STATE_CODES_LIST = "codes_list";
-	private final static String  STATE_STUDENT_REMOVAL_MESSAGES = "student_removal_messages";
 	private final static String  STATE_STUDENTS_TO_REMOVE = "students_to_remove";
 	private final static String  STATE_STUDENTS_CANNOT_REMOVE = "students_cannot_remove";
 	
-	/** New or edit code form values */
 	private final static String  STATE_FOS_CODE = "fos_code";
 	private final static String  STATE_FOS_NAME = "fos_name";
 	private final static String  STATE_BGG_CODE = "bgg_code";
 	private final static String  STATE_BGG_NAME = "bgg_name";
 	private final static String  STATE_BGG_GROUP = "bgg_group";
 	
-	/** The tool modes */
 	private final static String  MODE_UPLOAD = "upload";
 	private final static String  MODE_CONFIRM_UPLOAD = "confirm_upload";
 	private final static String  MODE_LOAD_ERRORS = "load_errors";
@@ -148,7 +145,6 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 	private final static String  MODE_CONFIRM_REMOVE_CODES = "confirm_remove_codes";
 	private final static String  MODE_REMOVE_STUDENTS = "remove_students";
 	
-	/** The templates */
 	private final static String  TEMPLATE_UPLOAD = "_upload";
 	private final static String  TEMPLATE_CONFIRM_UPLOAD = "_confirm_upload";
 	private final static String  TEMPLATE_CONFIRM_REMOVE_STUDENTS = "_confirm_remove_students";
@@ -171,7 +167,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 	private static final String SORTED_BY = SORTED_BY_FIELD_CODE;
 	private static final String SORTED_ASC = "sort_asc";
 	
-	/** The configuration parameters */
+	//default number of lines of error messages displayed
 	private final static Integer  MAX_LOAD_MESSAGES_TO_DISPLAY = new Integer(50);
 	
 	/**
@@ -184,8 +180,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		state.setAttribute(STATE_MODE, MODE_UPLOAD);
 		state.setAttribute (STATE_INITIALIZED, Boolean.TRUE.toString());
 		return;
-
-	} // init
+	}
 	
 	/**
 	*
@@ -200,11 +195,10 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 			List codes = DissertationService.getBlockGrantGroups();
 			state.setAttribute(STATE_CODES_LIST, codes);
 		}
-
-	}   // initState
+	}
 
 	/** 
-	* Set the tool mode and build the context
+	* Build context for template based on tool mode
 	*/
 	public String buildMainPanelContext(VelocityPortlet portlet, 
 										Context context,
@@ -222,7 +216,6 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		String mode = (String) state.getAttribute(STATE_MODE);
 
 		//is this the Rackham site?
-		//if(!DissertationService.getSchoolSite().equals(PortalService.getCurrentSiteId()))
 		if(!DissertationService.getSchoolSite().equals(toolManager.getCurrentPlacement().getContext()))
 		{
 			mode = MODE_SITEID_NOT_RACKHAM;
@@ -233,8 +226,6 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		{
 			mode = MODE_NO_UPLOAD_PERMISSION;
 		}
-		
-		// check mode and dispatch
 		if (mode == null || mode.equals(MODE_UPLOAD))
 		{
 			template = buildUploadContext(portlet, rundata, state, context);
@@ -296,19 +287,16 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 			Log.warn("chef", this + ".buildMainPanelContext: unexpected mode: " + mode);
 			template = buildUploadContext(portlet, rundata, state, context);
 		}
-
 		String templateRoot = (String) getContext(rundata).get("template");
 		return templateRoot + template;
-
-	}	// buildMainPanelContext
-	
+	}
 	
 	/**
-	* Build the context for the FOS and BGG codes list form.
+	* Build the context for the Field of Study (FOS) and Block Grant Group (BGG) codes list form.
+	* BGG identifies a department, and FOS identifies a field of study within a department.
 	*/
 	private String buildListCodesContext(VelocityPortlet portlet, RunData rundata, SessionState state, Context context)
 	{
-		// menu bar
 		Menu bar = new MenuImpl(portlet, rundata, (String) state.getAttribute(STATE_ACTION));
 		bar.add( new MenuEntry("Done", "doDone_edit_codes"));
 		bar.add( new MenuEntry("New...", "doNew_code"));
@@ -366,26 +354,20 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		//put the field items in context
 		context.put("listOfFields", sorted);
 		return TEMPLATE_LIST_CODES;
-		
-	}//buildListCodesContext
+	}
 	
 	/**
-	* Build the context for the new matching FOS and BGG codes form.
+	* Build the context for the new matching Field of Study (FOS) and Block Grant Group (BGG) codes form.
 	*/
 	private String buildNewCodeContext(SessionState state, Context context, RunData rundata)
 	{
-		//catch form values in onchange submit from BGG Group select list
+		//Note: we catch form values in an onchange submit from BGG Group select list
 		ParameterParser params = rundata.getParameters();
 		String FOS_code = params.getString ("FOS_code");
 		String FOS_name = params.getString ("FOS_name");
 		String BGG_code = params.getString ("BGG_code");
 		String BGG_name = params.getString ("BGG_name");
 		String BGG_group = params.getString ("BGG_group");
-
-		/*
-		 * if BGG_group is not null, use it to set BGGC and BGGD
-		 */
-		
 		if(BGG_group != null)
 		{
 			BGG_code = BGG_group;
@@ -401,7 +383,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		
 		// sort the group items for display
 		List sorted = (List)sortGroups(state);
-		
+		//TODO make sorting by column
 		context.put("FOS_code", FOS_code);
 		context.put("FOS_name", FOS_name);
 		context.put("BGG_code", BGG_code);
@@ -409,11 +391,10 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		context.put("BGG_group", BGG_group);
 		context.put("groups", sorted);
 		return TEMPLATE_NEW_CODE;
-		
-	}//buildNewCodeContext
+	}
 	
 	/**
-	* Access the BGG name corresponding to the BGG code
+	* Access the Block Grant Group (BGG) name corresponding to the BGG code
 	*/
 	private String groupName(String BGG_code)
 	{
@@ -466,7 +447,6 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 			context.put("field", field);
 		}
 		return TEMPLATE_PREVIEW_CODE;
-		
 	}
 	
 	/**
@@ -523,25 +503,20 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 	{
 		return TEMPLATE_REMOVE_STUDENTS;
 		
-	}//buildRemoveStudentsContext
+	}
 	
 	/**
 	* Build the context for the form to edit new matching FOS and BGG codes.
 	*/
 	private String buildReviseCodeContext(SessionState state, Context context, RunData rundata)
 	{
-		//catch form values in onchange submit from BGG Group select list
+		//Note: we catch form values in onchange submit from BGG Group select list
 		ParameterParser params = rundata.getParameters();
 		String FOS_code = params.getString ("FOS_code");
 		String FOS_name = params.getString ("FOS_name");
 		String BGG_code = params.getString ("BGG_code");
 		String BGG_name = params.getString ("BGG_name");
 		String BGG_group = params.getString ("BGG_group");
-
-		/*
-		 * if BGG_group is not null, use it to set BGGC and BGGD
-		 */
-		
 		if(BGG_group != null)
 		{
 			BGG_code = BGG_group;
@@ -567,8 +542,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		context.put("field", field);
 		context.put("BGG_group", BGG_group);
 		return TEMPLATE_REVISE_CODE;
-		
-	}//buildReviseCodeContext
+	}
 	
 	/**
 	* Sort the Block Grant Groups for display.
@@ -616,8 +590,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		}
 		context.put("fields", listOfFields);
 		return TEMPLATE_REMOVE_CODES;
-		
-	}//buildConfirmRemoveCodesContext
+	}
 	
 	/**
 	* Build the context for the confirm student(s) removal form.
@@ -635,28 +608,26 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		context.put("uniqnames", namesToRemove);
 		context.put("badnames", namesCannotRemove);
 		return TEMPLATE_CONFIRM_REMOVE_STUDENTS;
-		
-	}//buildConfirmRemoveStudentsContext
+	}
 	
 	/**
 	* Build the context for the file upload form.
 	*/
 	private String buildUploadContext(VelocityPortlet portlet, RunData rundata, SessionState state, Context context)
 	{
-		// menu bar
 		Menu bar = new MenuImpl(portlet, rundata, (String) state.getAttribute(STATE_ACTION));
 		bar.add( new MenuEntry("Show...", "doShow_setting"));
 		bar.add( new MenuEntry("Edit Codes", "doList_codes"));
 		bar.add(new MenuEntry("Remove Students", "doRemove_students"));
 		
-		/** a utility **
+		/** a one-time-use utility for correcting multiple step insertion**
 		bar.add(new MenuEntry("Check for duplicate steps", "doCheck_duplicate_steps"));
 		*/
 		
 		context.put("menu", bar);
 		return TEMPLATE_UPLOAD;
 
-	}	// buildUpLoadContext
+	}
 
 
 	/**
@@ -778,7 +749,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 	{
 		return TEMPLATE_SITEID_NOT_RACKHAM;
 		
-	}	// buildSiteidNotRackhamContext
+	}
 	
 	/**
 	* Build the context for the error message, You do not have permission to update Rackham
@@ -787,7 +758,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 	{
 		return TEMPLATE_NO_UPLOAD_PERMISSION;
 		
-	}	// buildNoUploadPermissionContext
+	}
 	
 	/** 
 	* Setup for the options panel.
@@ -799,7 +770,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		context.put("messages", messages);
 		return TEMPLATE_CUSTOMIZE;
 		
-	}//buildCustomizeContext
+	}
 	
 	/**
 	* Make substitutions in template
@@ -1055,81 +1026,139 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 				Log.warn("chef", this + ".getStaticTemplate getSiteCollection " + e);
 		}
 		return body;
-		
-	}//getStaticTemplate
+	}
 	
 	/**
 	* Get the candidates to be removed
 	*/
-	public List getCandidatesToRemove(List paths)
+	public List getCandidatesToRemove(SessionState state, List paths, List collecting)
 	{
 		CandidatePath path = null;
 		String candidate = null;
 		List candidates = new Vector();
-		for (ListIterator i = paths.listIterator(); i.hasNext(); )
-		{
-			path = (CandidatePath)i.next();
-			if(path != null)
+		if(paths != null && !paths.isEmpty()) {
+			for (ListIterator i = paths.listIterator(); i.hasNext(); )
 			{
-				candidate = path.getCandidate();
-				if(candidate != null && !candidate.equals(""))
-					candidates.add(candidate);
+				path = (CandidatePath)i.next();
+				if(path != null)
+				{
+					candidate = path.getCandidate();
+					if(candidate != null && !candidate.equals(""))
+						candidates.add(candidate);
+				}
 			}
 		}
 		return candidates;
-		
-	}//getCandidatesToRemove
+	}
 	
 	/**
-	* Get the student paths that can be removed
+	* Get the student paths that can be removed and inform the user of
+	* any issues with the data that need to be investigated
 	*/
-	public List getPathsToRemove(SessionState state, String template)
+	public List getPathsToRemove(SessionState state, String template, List collecting)
 	{
-		//get the student(s) selected for removal
 		List uniqnames = (Vector)state.getAttribute(STATE_STUDENTS_TO_REMOVE);
 		List paths = new Vector();
 		String uniqname = null;
+		String userId = null;
 		String siteId = null;
 		CandidatePath path = null;
+		String multiplePaths = null;
+		String pathException = null;
+		String pathIsNull = null;
+		String staticCopyError = null;
+		String staticCopyException = null;
+
+		//for each student being removed
 		for (ListIterator i = uniqnames.listIterator(); i.hasNext(); )
 		{
 			uniqname = (String)i.next();
 			try
 			{
-				path = DissertationService.getCandidatePathForCandidate(uniqname);
+				//try to get path using Sakai id, then eid
+				userId = userDirectoryService.getUserId(uniqname);
+				path = DissertationService.getCandidatePathForCandidate(userId);
+				if(path == null)
+					path = DissertationService.getCandidatePathForCandidate(uniqname);
+			}
+			catch(MultipleObjectsException m) {
+				//there should not be more than 1 path for a student
+				if(multiplePaths == null)
+					multiplePaths = uniqname + " has multiple paths";
+				else
+					multiplePaths = multiplePaths + ", " + uniqname + " has multiple paths";
+				//skip to the next student
+				continue;
 			}
 			catch(Exception e)
 			{
-				if(Log.isWarnEnabled())
-					Log.warn("chef", this + ".getPathsToRemove " + e);
+				if(pathException == null)
+					pathException = "problem getting path for " + uniqname;
+				else
+					pathException = pathException + ", " + "problem getting path for " + uniqname;
+				//skip to the next student
+				continue;
 			}
-			if(path != null)
-			{
+			if(path == null) {
+				if(pathIsNull == null)
+					pathIsNull = "path for " + uniqname + " is null";
+				else
+					pathIsNull = pathIsNull + ", " + "path for " + uniqname + " is null";
+				//skip to the next student
+				continue;
+			}
+			else {
+				//before deleting the path make a static copy of it
 				siteId = path.getSite();
 				if(siteId != null && !siteId.equalsIgnoreCase(uniqname))
 				{
-					//if we have a GradToolsStudent site id
 					try
 					{
-						//if a copy was saved, remove path
+						//if a copy was saved add this path to paths to remove
 						if(takeSnapshot(state, path, template))
 							paths.add(path);
+						else {
+							if(staticCopyError == null)
+								staticCopyError = "there was a problem creating a static copy of " + uniqname + "'s checklist";
+							else
+								staticCopyError = staticCopyError + ", " + "there was a problem creating a static copy of " + uniqname + "'s checklist";
+							//skip to the next student
+							continue;
+						}
 					}
 					catch(Exception e)
 					{
+						if(staticCopyException == null)
+							staticCopyException = "there was a problem creating a static copy of " + uniqname + "'s checklist";
+						else
+							staticCopyException = staticCopyException + ", " + "there was a problem creating a static copy of " + uniqname + "'s checklist";
+						//skip to the next student
 						continue;
 					}
 				}
 				else
 				{
-					//if there is no GradToolsStudent site (or tool never used on it), remove path
+					//if there is no GradToolsStudent site (or the tool was never used on it) just remove the unused path
 					paths.add(path);
 				}
 			}
 		}
-		return paths;
+		//collecting results
+		if(multiplePaths != null)
+			collecting.add(multiplePaths);
+		if(pathException != null)
+			collecting.add(pathException);
+		if(pathIsNull != null)
+			collecting.add(pathIsNull);
+		if(staticCopyError != null)
+			collecting.add(staticCopyError);
+		if(staticCopyException != null)
+			collecting.add(staticCopyException);
 		
-	}//getPathsToRemove
+		//if(msg != null)
+			//state.setAttribute(STATE_STUDENT_REMOVAL_MESSAGES, msg);
+		return paths;
+	}
 	
 	/**
 	* Create a static copy of the student's checklist under Resources
@@ -1154,17 +1183,14 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		{
 			retVal = false;
 		}
-		
 		return retVal;
-		
-	}//takeSnapshot
+	}
 	
 	/**
 	* Remove student(s)' path, step status, and info from db
 	*/
-	public void removeStudents(SessionState state, List paths, List candidates)
+	public void removeStudents(SessionState state, List paths, List candidates, List collecting)
 	{
-		//remove path, status and candidate info
 		CandidatePath path = null;
 		CandidatePathEdit pathEdit= null;
 		CandidateInfo info = null;
@@ -1174,40 +1200,36 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		String candidate = null;
 		String statusRef = null;
 		String key = null;
-		String msg = "";
+		String pathRemovalException = null;
+		String statusRemovalException = null;
+		String infoRemovalException = null;
 		
-		//remove path and status
+		//for each path to remove
 		for (ListIterator i = paths.listIterator(); i.hasNext(); )
 		{
 			path = (CandidatePath)i.next();
 			if(path != null)
 			{
-				statuses = path.getOrderedStatus();
 				try
 				{
+					statuses = path.getOrderedStatus();
 					pathEdit = DissertationService.editCandidatePath(path.getReference());
+					DissertationService.removeCandidatePath(pathEdit);
 				}
 				catch(Exception e)
 				{
+			 		if(pathRemovalException == null)
+			 			pathRemovalException = "could not remove path '" + path.getId() + "'";
+					else
+						pathRemovalException = pathRemovalException + ", " + "could not remove path '" + path.getId() + "'";
+
 					if(pathEdit != null && pathEdit.isActiveEdit())
 					{
 						DissertationService.cancelEdit(pathEdit);
-						msg = msg + " " + path.getCandidate();
 					}
-				}
-				try
-				{
-					if(pathEdit != null)
-						DissertationService.removeCandidatePath(pathEdit);
-				}
-				catch(Exception e)
-				{
-					msg = msg + " " + path.getCandidate();
-					
-					//if unable to remove path, leave step statuses
+					//leave step statuses if unable to remove path
 					continue;
 				}
-				
 				//remove status
 				if(statuses != null)
 				{
@@ -1218,20 +1240,25 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 							key = "" + j;
 							statusRef = (String)statuses.get(key);
 							statusEdit = DissertationService.editStepStatus(statusRef);
-							if(statusEdit != null)
-								DissertationService.removeStepStatus(statusEdit);
+							DissertationService.removeStepStatus(statusEdit);
 						}
 						catch(Exception e)
 						{
+					 		if(statusRemovalException == null)
+					 			statusRemovalException = "could not remove step status '" + statusRef + "'";
+							else
+								statusRemovalException = statusRemovalException + ", " + "could not remove step status '" + statusRef + "'";
 							if(statusEdit != null && statusEdit.isActiveEdit())
 								DissertationService.cancelEdit(statusEdit);
+							//skip to the next step status
+							continue;
 						}
-					}
+					}//for each step status
 				}
 			}
-		}
+		}//for each path
 
-		//remove candidate info
+		//for each candidate info to remove
 		for (ListIterator i = candidates.listIterator(); i.hasNext(); )
 		{
 			try
@@ -1245,17 +1272,30 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 			}
 			catch(Exception e)
 			{
+		 		if(infoRemovalException == null)
+		 			infoRemovalException = "could not remove candidate info for candidate '" + candidate + "'";
+				else
+					infoRemovalException = infoRemovalException + ", " + "could not remove candidate info for candidate '" + candidate + "'";
 				if(infoEdit != null && infoEdit.isActiveEdit())
 				{
 					DissertationService.cancelEdit(infoEdit);
-					msg = msg + " " + candidate;
 				}
+				//skip to the next student
 				continue;
 			}
 		}
-		if(!msg.equals(""))
-			state.setAttribute(STATE_STUDENT_REMOVAL_MESSAGES, msg);
-
+		//collecting results
+		if(pathRemovalException != null) {
+			collecting.add(pathRemovalException);
+		}
+		if(statusRemovalException != null) {
+			collecting.add(statusRemovalException);
+		}
+		if(infoRemovalException != null) {
+			collecting.add(infoRemovalException);
+			
+		}
+		
 	}//removeStudents
 	
 	/**
@@ -1265,8 +1305,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 	{
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
 		state.setAttribute(STATE_MODE, MODE_CUSTOMIZE);
-		
-	}//doShow_setting
+	}
 	
 	/**
 	* Handle a request to Save code name changes.
@@ -1323,7 +1362,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 
 		state.setAttribute(STATE_MODE, MODE_LIST_CODES);
 		
-	}//doSave_edited_names
+	}
 	
 	/**
 	* Handle a request to Save tool Options setting change.
@@ -1345,7 +1384,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		
 		state.setAttribute(STATE_MODE, MODE_UPLOAD);
 		
-	} //doOptions
+	}
 	
 	/**
 	* Utility to check for steps with identical instructions.
@@ -1514,7 +1553,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
 		state.setAttribute(STATE_MODE, MODE_UPLOAD);
 		
-	} //doCancel_settings
+	}
 	
 	/**
 	* Handle a request to Cancel new matching code creation or change.
@@ -1534,7 +1573,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		state.removeAttribute(STATE_BGG_NAME);
 		state.removeAttribute(STATE_BGG_GROUP);
 		
-	} //doCancel_code
+	}
 
 
 	/**
@@ -1601,7 +1640,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 			state.setAttribute(STATE_MODE, MODE_UPLOAD);
 		}
 
-	} // doUpload
+	}
 	
 	/**
 	* Handle a request to display Blook Grant Group(BGG) and Field of Study(FOS) codes and names.
@@ -1619,10 +1658,11 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		//state.setAttribute(STATE_CODES_LIST, codes);
 		state.setAttribute(STATE_MODE, MODE_LIST_CODES);
 		
-	}//doList_codes
+	}
 	
 	/*  
 	* Check path for steps with identical instructions (i.e., duplicates).
+	* (a one-time-use utility for correcting multiple insertions of steps)
 	*/
 	public String checkDuplicateSteps(CandidatePath path)
 	{
@@ -1635,18 +1675,12 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		String name = "";
 		try
 		{
-			//path.getCandidate() returns User id
 			name = ((User)userDirectoryService.getUser(path.getCandidate())).getDisplayName();
 		}
 		catch(Exception e){}
 		
-		//Set has no dups
 		Set set = new HashSet();
-
-		//Hashtable might have dups
 		Hashtable steps = path.getOrderedStatus();
-		
-		//add step description to Set
 		for (int i = 1; i <= steps.size(); i++)
 		{
 			ref = (String)steps.get(i + "");
@@ -1668,8 +1702,6 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 					Log.warn("chef", ".checkDuplicateSteps() getStepStatus(" + ref + ") " + path.getCandidate() + " " + e);
 			}
 		}
-		
-		//now see if Set has fewer items than Hashtable and also personal steps
 		try
 		{
 			if((set.size() < steps.size()))
@@ -1692,7 +1724,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		}
 		return msg;
 		
-	}//checkDuplicateSteps
+	}
 	
 	/**
 	* Handle a request to submit changes to Block Grant Group(BGG) and Field of Study(FOS) codes and names.
@@ -1709,7 +1741,6 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 			/* if the block grant group doesn't exist, create it and add the field
 			 * otherwise, get it and add the field
 			*/
-			
 			String groupReference = null;
 			boolean groupExists = false;
 			
@@ -1785,7 +1816,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		state.removeAttribute(STATE_BGG_NAME);
 		state.removeAttribute(STATE_BGG_GROUP);
 		
-	}//doAdd_code 
+	}//doAdd_code
 	
 	/**
 	* Handle a request to revise changes to Block Grant Group(BGG) and Field of Study(FOS) codes and names.
@@ -1795,7 +1826,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState(((JetspeedRunData)data).getJs_peid());
 		state.setAttribute(STATE_MODE, MODE_REVISE_CODE);
 		
-	}//doRevise_new_code 
+	} 
 	
 	/**
 	* Handle a request to confirm removal of FOS code(s).
@@ -1805,7 +1836,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState(((JetspeedRunData)data).getJs_peid());
 		state.setAttribute(STATE_MODE, MODE_CONFIRM_REMOVE_CODES);
 		
-	}//doConfirm_remove_codes
+	}
 	
 	/**
 	* Handle a request to confirm removal of student(s)
@@ -1836,7 +1867,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		//parse it
 		String[] names = uniqnames.replaceAll(",","\r\n").split("\r\n");
 		
-		//check that uniqname fetches path
+		//check that uniqname fetches a path
 		if(names != null && names.length != 0)
 		{
 			for (int i = 0; i < names.length; i++)
@@ -1848,11 +1879,21 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 					//good uniqnames are 3-8 characters long
 					if(name.length() > 2 && name.length() < 9)
 					{
-						path = DissertationService.getCandidatePathForCandidate(name);
-						if(path != null)
-							studentsToRemove.add(name);
-						else
-							studentsCannotRemove.add(name + ": has no or multiple path(s) ");
+						//get User id from eid
+						try {
+							String id = userDirectoryService.getUserId(name);
+							path = DissertationService.getCandidatePathForCandidate(id);
+							if(path != null)
+								//student has 1 path
+								studentsToRemove.add(name);
+							else if (path == null)
+								//student has 0 paths
+								studentsCannotRemove.add(name + ": has no path ");
+						}
+						catch(MultipleObjectsException m) {
+							//student has more than 1 path
+							studentsCannotRemove.add(name + ": has multiple paths ");
+						}
 					}
 					else
 					{
@@ -1861,11 +1902,14 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 				}
 				catch(Exception e)
 				{
-					msg = msg + "," + name;
+					if(msg == null)
+						msg = name;
+					else
+						msg = msg + ", " + name;
 				}
 			}
 			if(msg != null)
-				addAlert(state, "Validation error for name(s): " + msg);
+				addAlert(state, "There was a problem processing " + msg);
 		}
 		
 		//put both lists in state
@@ -1874,8 +1918,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		
 		//get confirmation
 		state.setAttribute(STATE_MODE, MODE_CONFIRM_REMOVE_STUDENTS);
-		
-	}//doConfirm_remove_students
+	}
 	
 	/**
 	* Handle a confirmation to remove student(s).
@@ -1883,50 +1926,47 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 	public void doRemove_students_confirmed (RunData data)
 	{
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState(((JetspeedRunData)data).getJs_peid());
-		
-		// get parameters
 		ParameterParser params = data.getParameters();
 		String option = params.getString("option");
-		
-		//if Cancel
 		if (option.equalsIgnoreCase("cancel"))
 		{
 			doCancel_remove_students(data);
 			return;
 		}
-		
-		String msg = "";
 		List paths = new Vector();
 		List candidates = new Vector();
+		//collecting parameter to collect the results
+		List collecting = new ArrayList();
 		
 		//TODO the template to use for static checklist
 		//String template = getStaticTemplate();
 		String template = "";
 		
-		//paths for which a snapshot was made or no site exists
-		paths = getPathsToRemove(state, template);
+		//get the paths that can be deleted
+		paths = getPathsToRemove(state, template, collecting);
 		
-		//get candidates associates with paths
-		candidates = getCandidatesToRemove(paths);
+		//get the candidates for these paths
+		candidates = getCandidatesToRemove(state, paths, collecting);
 		
-		//remove paths, step status, and candidate info for these students
-		removeStudents(state, paths, candidates);
+		//remove paths, step statuses, and candidate infos
+		removeStudents(state, paths, candidates, collecting);
 		
-		//get messages from state
-		if(state.getAttribute(STATE_STUDENT_REMOVAL_MESSAGES)!=null)
-			msg = (String)state.getAttribute(STATE_STUDENT_REMOVAL_MESSAGES);
-		if(!msg.equals(""))
-			addAlert(state, "There was a problem removing " + msg);
-		else
+		StringBuffer messages = new StringBuffer();
+		for (int i = 0; i < collecting.size(); i++) {
+			String message = (String)collecting.get(i);
+			messages.append(message);
+		}
+		if(messages.length() != 0) {
+			addAlert(state, new String(messages.toString()));
+		}
+		else {
 			addAlert(state, "Selected student(s) have been removed.");
-		
-		state.removeAttribute(STATE_STUDENT_REMOVAL_MESSAGES);
+		}
 		state.setAttribute(STATE_MODE, MODE_UPLOAD);
-		
-	}//doRemove_students_confirmed
+	}
 	
 	/**
-	* Handle a request to remove FOS code(s) and associated data.
+	* Handle a request to remove Field of Study (FOS) code(s) and associated data.
 	*/
 	public void doRemove_codes (RunData data)
 	{
@@ -1948,7 +1988,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 			state.setAttribute(STATE_MODE, MODE_CONFIRM_REMOVE_CODES);
 		}
 	
-	}//doRemove_codes
+	}
 	
 	/**
 	* Handle a Rackham administrator's request to remove student(s)' data
@@ -1958,16 +1998,16 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState(((JetspeedRunData)data).getJs_peid());
 		state.setAttribute(STATE_MODE, MODE_REMOVE_STUDENTS);
 		
-	}//doRemove_students
+	}
 	
 	
 	/**
-	* Handle a request to remove FOS code(s) and associated data.
+	* Handle a request to remove Filed of Study (FOS) code(s) and associated data.
 	*/
 	public void doRemove_codes_confirmed (RunData data)
 	{
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState(((JetspeedRunData)data).getJs_peid());
-		// %%% need to remove any CandidateInfo's and CandidatePath's for students in removed field
+		//TODO remove any CandidateInfo's and CandidatePath's for students in removed field
 		
 		String[] fields = (String[])state.getAttribute(STATE_FIELDS_TO_REMOVE);
 		BlockGrantGroup group = null;
@@ -2015,7 +2055,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		}
 		state.setAttribute(STATE_MODE, MODE_LIST_CODES);
 		
-	}//doRemove_codes_confirmed
+	}
 	
 	/**
 	* Handle a request to return to Upload mode.
@@ -2026,7 +2066,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		state.removeAttribute(STATE_CODES_LIST);
 		state.setAttribute(STATE_MODE, MODE_UPLOAD);
 		
-	}//doDone_edit_codes
+	}
 	
 	/**
 	* Handle a request to edit FOS or BGG name(s).
@@ -2058,7 +2098,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 			state.setAttribute(STATE_MODE, MODE_EDIT_NAMES);
 		}
 
-	}//doEdit_names
+	}
 	
 	/**
 	* Handle a request to add a BGG or FOS code.
@@ -2068,7 +2108,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState(((JetspeedRunData)data).getJs_peid());
 		state.setAttribute(STATE_MODE, MODE_NEW_CODE);
 		
-	}//doNew_code
+	}
 	
 	/**
 	* Handle a request to preview added BGG or FOS code.
@@ -2121,7 +2161,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 			state.setAttribute(STATE_MODE, MODE_NEW_CODE);
 		}
 		
-	}//doPreview_code
+	}
 	
 	
 	/**
@@ -2130,12 +2170,8 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 	public void doContinue_load (RunData data)
 	{
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState(((JetspeedRunData)data).getJs_peid());
-		
-		// get parameters
 		ParameterParser params = data.getParameters();
 		String option = params.getString("option");
-		
-		//if Cancel
 		if (option.equalsIgnoreCase("cancel"))
 		{
 			doCancel_load(data);
@@ -2187,15 +2223,19 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		if(mpFileName == null || mpFileName == "")
 			mpFileName = "none";
 		
-		//upload the data
+		//collecting parameter to collect the results
+		List collecting = new ArrayList();
 		try
 		{
 			if(MP && OARD)
-				msg = DissertationService.executeUploadExtractsJob(currentSite, oardContent.getBytes(), mpContent.getBytes(), oardFileName, mpFileName);
+				DissertationService.executeUploadExtractsJob(currentSite, oardContent.getBytes(), mpContent.getBytes(), 
+						oardFileName, mpFileName, collecting);
 			else if (MP)
-				msg = DissertationService.executeUploadExtractsJob(currentSite, missing, mpContent.getBytes(), oardFileName, mpFileName);
+				DissertationService.executeUploadExtractsJob(currentSite, missing, mpContent.getBytes(), 
+						oardFileName, mpFileName, collecting);
 			else if (OARD)
-				msg = DissertationService.executeUploadExtractsJob(currentSite, oardContent.getBytes(), missing, oardFileName, mpFileName);
+				DissertationService.executeUploadExtractsJob(currentSite, oardContent.getBytes(), missing, 
+						oardFileName, mpFileName, collecting);
 			else
 			{
 				//neither file had content
@@ -2211,9 +2251,14 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		}
 		finally
 		{
-			//instruct user where to look for job execution report
-			if(msg != null)
-				addAlert(state, msg);
+			//instructions where to look for report
+			if(!collecting.isEmpty()) {
+				StringBuffer results = new StringBuffer();
+				for(int i = 0; i < collecting.size(); i++) {
+					results.append((String)collecting.get(i));
+				}
+				addAlert(state, new String(results.toString()));
+			}
 			state.setAttribute(STATE_MODE, MODE_UPLOAD);
 			
 			//remove content from state
@@ -2233,7 +2278,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		state.removeAttribute(STATE_MPFILE);
 		state.setAttribute(STATE_MODE, MODE_UPLOAD);
 		
-	}	// doCancel_load
+	}
 	
 	/**
 	* Handle a request to Cancel removing student(s). Called from Confirm Removal page.
@@ -2243,8 +2288,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState(((JetspeedRunData)data).getJs_peid());
 		state.removeAttribute(STATE_STUDENTS_TO_REMOVE);
 		state.setAttribute(STATE_MODE, MODE_UPLOAD);
-		
-	}	// doCancel_remove_students
+	}
 	
 	/**
 	* Get the collection of Checklist Section Headings for display.
@@ -2261,7 +2305,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		headers.add(DissertationService.CHECKLIST_SECTION_HEADING4);
 		return headers;
 		
-	}//getSectionHeadings
+	}
 	
 	/**
 	* Get the collection of display objects corresponding to a CandidatePath for inserting into a velocity template.
@@ -2546,7 +2590,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		
 	} //FieldComparator
 	
-	/** Class that holds all the information for display in a velocity template. */
+	/** Data Transfer Object that holds all the information for display in a Velocity template. */
 	public class Field
 	{
 		private String m_fieldCode;
@@ -2599,9 +2643,9 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 			m_groupName = groupName;
 		}
 		
-	}//Field
+	}
 	
-	/** Class that holds all the information for display in a velocity template. */
+	/** Data Transfer Object that holds all the information for display in a Velocity template. */
 	public class TemplateStep
 	{
 		private String stepId;
@@ -2859,7 +2903,7 @@ public class DissertationUploadAction extends VelocityPortletPaneledAction
 		
 	}//Snapshot
 
-}	// DissertationUploadAction
+}
 /**********************************************************************************
 *
 * $Header: /cvs/ctools/gradtools/tool/src/java/org/sakaiproject/tool/dissertation/DissertationUploadAction.java,v 1.2 2005/05/12 23:49:05 ggolden.umich.edu Exp $

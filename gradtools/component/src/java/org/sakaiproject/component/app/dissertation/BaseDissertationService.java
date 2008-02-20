@@ -12412,42 +12412,46 @@ public abstract class BaseDissertationService
 	 *  (non-Javadoc)
 	 * @see org.sakaiproject.api.app.dissertation.DissertationService#executeUploadExtractsJob(byte[], byte[])
 	 */
-	public String executeUploadExtractsJob(String currentSite, byte[] o, byte[] m, String oardFileName, String mpFileName)
+	public void executeUploadExtractsJob(String currentSite, byte[] o, byte[] m, 
+			String oardFileName, String mpFileName, List collecting)
 		throws JobExecutionException
 	{
 		/** replaces loadData()
 		 *  two byte arrays are expected, but one might be a dummy
 		 *  of length 1 indicating no corresponding extract file */
+		//TODO make it a null in that case
 		
 		//check that we have at least one file
-		if((o == null || o.length <= 1) && (m == null || m.length <= 1))
-			throw new JobExecutionException("no data");
-		
-		//if set up as a Quartz stateful job we could set concurrent=false
+		if((o == null || o.length <= 1) && (m == null || m.length <= 1)) {
+			collecting.add("Neither MP nor OARD files was provided.");
+			return;
+		}
 		
 		//check that there isn't a batch operation already in progress
-		if(isLoading())
-			return "A data upload is in progress. Please wait for it to complete.";
-		else if(isChangingStep())
-			return "A step change is in progress. Please wait for it to complete.";
-		
-		//TODO replace CandidateInfoEdit as lock object
+		if(isLoading()) {
+			collecting.add("A data upload is in progress. Please wait for it to complete.");
+			return;
+		}
+		else if(isChangingStep()) {
+			collecting.add("A step change is in progress. Please wait for it to complete.");
+			return;
+		}
 		try
 		{
 			/** we are starting a load - add a well-known record to CandidateInfo
-			 * that persists across sessions
+			 * that persists across sessions //TODO replace CandidateInfoEdit as lock object
 			 */
 			CandidateInfoEdit lock = addUploadLock(getSchoolSite());
-			if(lock == null)
-				throw new JobExecutionException("Unable to lock db for batch update. Please contact support.");
+			if(lock == null) {
+				collecting.add("Unable to lock db for batch update. Please contact support.");
+				return;
+			}
 			commitEdit(lock);
 		}
 		catch(Exception e)
 		{
-			//but we should not get here because tool checks earlier
-			if(m_logger.isWarnEnabled())
-				m_logger.warn(this + ".loadData addCandidateInfoLock " + e);
-			throw new JobExecutionException("Exception starting batch upload. " + e);
+			collecting.add("There was a problem locking the database before processing the data: " + e);
+			return;
 		}
 		
 		//pass data as standard Java objects for db job detail serialization
@@ -12456,9 +12460,10 @@ public abstract class BaseDissertationService
 		
 		//a last check that there is data to pass to job
 		if((oardRecords == null || oardRecords.length < 1) && 
-				(mpRecords == null || mpRecords.length < 1))
-			throw new JobExecutionException("no data");
-		
+				(mpRecords == null || mpRecords.length < 1)) {
+			collecting.add("No data records could be created.");
+			return;
+		}
 		Scheduler scheduler = null;
 		
 		//job name + group should be unique
@@ -12497,7 +12502,8 @@ public abstract class BaseDissertationService
 		}
 		
 		//return instructions to check Announcements for job report later
-		return "UploadExtractsJob started. Announcements will have a job report later.";
+		collecting.add("UploadExtractsJob started. Announcements will have a job report later.");
+		return;
 		
 	}//executeUploadExtractsJob
 	
