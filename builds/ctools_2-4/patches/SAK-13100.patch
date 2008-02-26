@@ -1,0 +1,95 @@
+Index: content-tool/tool/src/webapp/tools/sakai.resources.xml
+===================================================================
+--- content-tool/tool/src/webapp/tools/sakai.resources.xml	(revision 41077)
++++ content-tool/tool/src/webapp/tools/sakai.resources.xml	(working copy)
+@@ -15,7 +15,7 @@
+ 		<configuration name="resources_mode" value="resources" type="final" />
+ 
+ 		<category name="course" />
+-		<category name="project" />
++		<category name="project" /> <category name="GradToolsStudent" />  <category name="GradToolsDepartment" />  <category name="GradToolsRackham" />
+ 		<category name="portfolio" />
+ 		<category name="myworkspace" />
+ 
+Index: content-tool/tool/src/webapp/tools/sakai.dropbox.xml
+===================================================================
+--- content-tool/tool/src/webapp/tools/sakai.dropbox.xml	(revision 41077)
++++ content-tool/tool/src/webapp/tools/sakai.dropbox.xml	(working copy)
+@@ -10,7 +10,7 @@
+ 		<configuration name="resources_mode" value="dropbox" type="final" />
+ 
+ 		<category name="course" />
+-		<category name="project" />
++		
+ 
+ 	</tool>
+ 
+Index: content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java
+===================================================================
+--- content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java	(revision 41077)
++++ content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java	(working copy)
+@@ -566,34 +566,36 @@
+ 	
+ 	public boolean readyToUseFilesizeColumn()
+ 	{
+-		if(!filesizeColumnExists)
+-		{
+-			// do nothing
+-		}
+-		else if(filesizeColumnReady)
+-		{
+-			// do nothing
+-		}
+-		else 
+-		{
+-			long now = TimeService.newTime().getTime();
+-			if(now > filesizeColumnCheckExpires)
+-			{
+-				// cached value has expired -- time to renew
+-				int filesizeColumnCheckNullCount = countNullFilesizeValues();
+-				if(filesizeColumnCheckNullCount > 0)
+-				{
+-					filesizeColumnCheckExpires = now + TWENTY_MINUTES;
+-					M_log.debug("Conversion of the ContentHostingService database tables is needed to improve performance");
+-				}
+-				else
+-				{
+-					String highlight = "\n====================================================\n====================================================\n";
+-					M_log.info(highlight + "Conversion of the ContentHostingService database tables is complete.\nUsing new filesize column" + highlight);
+-					filesizeColumnReady = true;
+-				}
+-			}
+-		}
++	    filesizeColumnReady = false;
++
++// 		if(!filesizeColumnExists)
++// 		{
++// 			// do nothing
++// 		}
++// 		else if(filesizeColumnReady)
++// 		{
++// 			// do nothing
++// 		}
++// 		else 
++// 		{
++// 			long now = TimeService.newTime().getTime();
++// 			if(now > filesizeColumnCheckExpires)
++// 			{
++// 				// cached value has expired -- time to renew
++// 				int filesizeColumnCheckNullCount = countNullFilesizeValues();
++// 				if(filesizeColumnCheckNullCount > 0)
++// 				{
++// 					filesizeColumnCheckExpires = now + TWENTY_MINUTES;
++// 					M_log.debug("Conversion of the ContentHostingService database tables is needed to improve performance");
++// 				}
++// 				else
++// 				{
++// 					String highlight = "\n====================================================\n====================================================\n";
++// 					M_log.info(highlight + "Conversion of the ContentHostingService database tables is complete.\nUsing new filesize column" + highlight);
++// 					filesizeColumnReady = true;
++// 				}
++// 			}
++// 		}
+ 		return filesizeColumnReady;
+ 	}
+ 	
