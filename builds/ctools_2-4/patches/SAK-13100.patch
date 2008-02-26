@@ -1,33 +1,7 @@
-Index: content-tool/tool/src/webapp/tools/sakai.resources.xml
+Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java
 ===================================================================
---- content-tool/tool/src/webapp/tools/sakai.resources.xml	(revision 41077)
-+++ content-tool/tool/src/webapp/tools/sakai.resources.xml	(working copy)
-@@ -15,7 +15,7 @@
- 		<configuration name="resources_mode" value="resources" type="final" />
- 
- 		<category name="course" />
--		<category name="project" />
-+		<category name="project" /> <category name="GradToolsStudent" />  <category name="GradToolsDepartment" />  <category name="GradToolsRackham" />
- 		<category name="portfolio" />
- 		<category name="myworkspace" />
- 
-Index: content-tool/tool/src/webapp/tools/sakai.dropbox.xml
-===================================================================
---- content-tool/tool/src/webapp/tools/sakai.dropbox.xml	(revision 41077)
-+++ content-tool/tool/src/webapp/tools/sakai.dropbox.xml	(working copy)
-@@ -10,7 +10,7 @@
- 		<configuration name="resources_mode" value="dropbox" type="final" />
- 
- 		<category name="course" />
--		<category name="project" />
-+		
- 
- 	</tool>
- 
-Index: content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java
-===================================================================
---- content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java	(revision 41077)
-+++ content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java	(working copy)
+--- content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java	(revision 41077)
++++ content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java	(working copy)
 @@ -566,34 +566,36 @@
  	
  	public boolean readyToUseFilesizeColumn()
