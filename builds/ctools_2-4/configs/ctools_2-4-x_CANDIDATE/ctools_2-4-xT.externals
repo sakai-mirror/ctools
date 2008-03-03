@@ -115,10 +115,13 @@
  gradtools -r35111 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
  ctools-libhelp -r33513 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
 ########
-####### Contrib tools
+######## Contrib tools
 ########
- ambrosia -r9369 https://source.sakaiproject.org/contrib/muse/ambrosia/tags/0.5.0
- mneme -r9612 https://source.sakaiproject.org/contrib/muse/mneme/tags/0.5.3
+#### Test Center
+ambrosia -r46196 https://source.sakaiproject.org/contrib/muse/ambrosia/tags/1.1a1
+mneme    -r46196 https://source.sakaiproject.org/contrib/muse/mneme/tags/1.1a1
+# Will also need TinyMCE webapp
+##
  itunes -r10436 https://source.sakaiproject.org/contrib/umctx/tags/sakai_2-4-0
  # itunes -r11218 https://source.sakaiproject.org/contrib/umctx/tags/sakai-post-2-4-WS-Maven1/itunesu-tool
  config-viewer -r10021 https://source.sakaiproject.org/contrib/config-viewer/branches/config-viewer-2.4.x
