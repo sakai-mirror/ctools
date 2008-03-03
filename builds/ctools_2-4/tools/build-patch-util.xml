@@ -1,4 +1,4 @@
-<project name="build-patch-util2" basedir="." default="applyPatchesInfo" >
+<project name="build-patch-util" basedir="." default="applyPatchesInfo" >
   <!--
    $Id$
    $HeadURL$
@@ -13,13 +13,17 @@
       The only target is: testOnePatch.  The file to apply is specified via the command line property patchFileName.  That file
       should be in the same patches directory as any other patches to be applied.
       A sample command invocation would be:
-      "ant -s build.xml testOnePatch -DpatchFileName=testPatch.patch".
+      "ant -s build.xml testOnePatch -DpatchFileNames=testPatch.patch".
     </echo>
   </target>
 
   <!-- Target to apply a single patch.  Used to test patches.  -->
   <target name="testOnePatch" description="target to test single patch application">
-    <applyPatch patchFileName="${patchFileName}" /> 
+     <!-- <applyPatch patchFileName="${patchFileName}" />  --> 
+     <!-- <applyPatches3 patchFileNames="${patchFileNames}" />  -->
+     <antcall target="applyPatches3"> 
+       <param name="patchFileNames" value="${patchFileNames}" />  
+     </antcall>
   </target>
 
   <!--
