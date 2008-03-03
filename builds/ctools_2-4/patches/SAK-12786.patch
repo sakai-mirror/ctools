@@ -1,0 +1,14 @@
+svn diff -r40503:40504 https://source.sakaiproject.org/svn
+Index: msgcntr/messageforums-app/src/webapp/js/forum.js
+===================================================================
+--- msgcntr/messageforums-app/src/webapp/js/forum.js	(revision 40503)
++++ msgcntr/messageforums-app/src/webapp/js/forum.js	(revision 40504)
+@@ -228,7 +228,7 @@
+          $("#" + messageId).parents("tr:first").css("backgroundColor", "#ffD0DC");
+       }
+    });
+-	$.ajax({type: "GET", url: location.href, data: ""});
++	//$.ajax({type: "GET", url: location.href, data: ""});
+ 	return false;
+ }
+ 
