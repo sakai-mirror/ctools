@@ -1,0 +1,29 @@
+Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java
+===================================================================
+--- site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 40172)
++++ site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(working copy)
+@@ -4068,11 +4068,11 @@
+ 				}
+ 				User currentUser = UserDirectoryService.getCurrentUser();
+ 				siteInfo.title = rb.getString("java.grad") + " - "
+-						+ currentUser.getId();
++						+ currentUser.getEid();
+ 				siteInfo.description = rb.getString("java.gradsite") + " "
+ 						+ currentUser.getDisplayName();
+ 				siteInfo.short_description = rb.getString("java.grad") + " - "
+-						+ currentUser.getId();
++						+ currentUser.getEid();
+ 				siteInfo.include = false;
+ 				state.setAttribute(STATE_SITE_INFO, siteInfo);
+ 
+@@ -11469,8 +11469,8 @@
+ 				// now that the site and realm exist, we can set the email alias
+ 				// set the GradToolsStudent site alias as:
+ 				// gradtools-uniqname@servername
+-				String alias = "gradtools-"
+-						+ SessionManager.getCurrentSessionUserId();
++				User user = UserDirectoryService.getCurrentUser();
++				String alias = "gradtools-" + user.getEid();
+ 				String channelReference = mailArchiveChannelReference(id);
+ 				try {
+ 					AliasService.setAlias(alias, channelReference);
