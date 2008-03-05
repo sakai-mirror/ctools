@@ -175,6 +175,7 @@ This should have nothing specific to a particular build type.
 	<property name="instances.dir" value="${instances.dir}" />
 	<property name="version.service" value="${version.service}" />
 	<property name="version.sakai" value="${version.sakai}" />
+	<property name="version.note" value="${version.note}" />
 	<property name="config.dir" value="${config.dir}" />
 	<property name="keystore.dir" value="${keystore.dir}" />
 	<property name="keystore" value="${keystore}" />
@@ -193,6 +194,7 @@ This should have nothing specific to a particular build type.
 	<property name="instances.dir" value="${instances.dir}" />
 	<property name="version.service" value="${version.service}" />
 	<property name="version.sakai" value="${version.sakai}" />
+	<property name="version.note" value="${version.note}" />
 	<property name="config.dir" value="${config.dir}" />
 	<property name="keystore.dir" value="${keystore.dir}" />
 	<property name="keystore" value="${keystore}" />
