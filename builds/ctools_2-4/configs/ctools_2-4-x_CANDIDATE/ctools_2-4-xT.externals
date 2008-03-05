@@ -119,8 +119,8 @@
 ######## Contrib tools
 ########
 #### Test Center
-ambrosia -r46196 https://source.sakaiproject.org/contrib/muse/ambrosia/tags/1.1a1
-mneme    -r46196 https://source.sakaiproject.org/contrib/muse/mneme/tags/1.1a1
+ambrosia -r46345 https://source.sakaiproject.org/contrib/muse/ambrosia/tags/1.1a2
+mneme    -r46345 https://source.sakaiproject.org/contrib/muse/mneme/tags/1.1a2
 # Will also need TinyMCE webapp
 ##
  itunes -r10436 https://source.sakaiproject.org/contrib/umctx/tags/sakai_2-4-0
