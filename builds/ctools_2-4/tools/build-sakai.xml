@@ -182,7 +182,11 @@
     </copy>
   </target>
 
-  <target name="imageSakai" depends="handleFavicon,handleErrorPages,handleTomcatWebXml" >
+  <target name="handleTinyMce" if="tiny_mce.name.dest" >
+    <get src="${tiny_mce.path}/${tiny_mce.name.src}" dest="${image.dir}/webapps/${tiny_mce.name.dest}" />
+  </target>
+
+  <target name="imageSakai" depends="handleFavicon,handleErrorPages,handleTomcatWebXml,handleTinyMce" >
 
     <removeWarFromImage deleteWar="sakai-comp-test-app1.war" />
     <removeWarFromImage deleteWar="sakai-group-test.war" />
