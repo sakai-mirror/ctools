@@ -77,7 +77,8 @@
  search -r32309 https://source.sakaiproject.org/svn/search/branches/sakai_2-4-x
  sections -r33489 https://source.sakaiproject.org/svn/sections/branches/sakai_2-4-x
  site -r33408 https://source.sakaiproject.org/svn/site/branches/sakai_2-4-x
- site-manage -r40172 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
+# site-manage -r40172 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
+ site-manage -r40614 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
  syllabus -r33437 https://source.sakaiproject.org/svn/syllabus/branches/sakai_2-4-x
  test-harness -r28057 https://source.sakaiproject.org/svn/test-harness/branches/sakai_2-4-x
  textarea -r28058 https://source.sakaiproject.org/svn/textarea/branches/sakai_2-4-x
@@ -100,7 +101,8 @@
 
   ## For content conversion SAK-12239
  metaobj -r39144 https://source.sakaiproject.org/svn/metaobj/branches/sakai_2-4-x
- content -r41077 https://source.sakaiproject.org/svn/content/branches/SAK-12239
+# content -r41077 https://source.sakaiproject.org/svn/content/branches/SAK-12239
+ content -r41939 https://source.sakaiproject.org/svn/content/branches/SAK-12239
  db -r40570 https://source.sakaiproject.org/svn/db/branches/SAK-12239
  entity -r39097 https://source.sakaiproject.org/svn/entity/branches/SAK-12239
 
