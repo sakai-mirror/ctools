@@ -1,3 +1,0 @@
-One patch puts in the post 2.2.1 changes from Sakai, the other takes
-out the SAK-3564 change from ctools. Need to use one or the other if
-building before we base things on 2.2.2 or 2.2.x (if we ever do).

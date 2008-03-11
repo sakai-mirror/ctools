@@ -1,5 +1,0 @@
-This is a test to see if these changes will speed up some common slow
-queries. This is not in Sakai proper since these are oracle specific
-queries. 
-
-This patch (and readme) should be renamed.
