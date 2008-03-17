@@ -115,7 +115,7 @@ Index: event/event-impl/impl/src/java/org/sakaiproject/event/impl/UsageSessionSe
 +
 +			String sql = "select count(*) from SAKAI_SESSION SS inner join SAKAI_PRESENCE SP "
 +					+ "on SS.SESSION_ID = SP.SESSION_ID "
-+						+ "where SP.LOCATION_ID = '?'";
++						+ "where SP.LOCATION_ID = ?";
 +			
 +			Object[] fields = new Object[1];
 +			fields[0] = locationId;
