@@ -111,9 +111,8 @@
 #####
  ctools-apps -r31824 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
  ctools-providers -r40443 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
-# ctools-reference -r41294 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
-# ctools-reference -r41802 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
- ctools-reference -r41846 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
+# ctools-reference -r41846 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
+ ctools-reference -r42487 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
  ctools-webservices -r36804 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-webservices
  # gradtools -r35111 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
  gradtools -r41804 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
@@ -123,7 +122,7 @@
 ########
 #### Test Center
 ambrosia -r46798 https://source.sakaiproject.org/contrib/muse/ambrosia/tags/1.1b1
-mneme    -r46798 https://source.sakaiproject.org/contrib/muse/mneme/tags/1.1b1
+mneme    -r46916 https://source.sakaiproject.org/contrib/muse/mneme/tags/1.1b1
 # Will also need TinyMCE webapp
 ##
  itunes -r10436 https://source.sakaiproject.org/contrib/umctx/tags/sakai_2-4-0
