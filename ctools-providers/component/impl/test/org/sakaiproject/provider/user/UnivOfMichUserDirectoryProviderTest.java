@@ -99,17 +99,31 @@ public class UnivOfMichUserDirectoryProviderTest extends MockObjectTestCase {
 		assertEquals("found user",1,c.size());
 	}
 	
-	public void testFindUsersByEmailIgnoringSubdomainUmichMulti() {
+	
+	public void testFindUsersByEmailIgnoringSubdomainUmichMultiGeneral() {
+		// findUsersByEmailIgnoringSubdomainUmichMultiBody("ME", "@umich.edu", "none.of.your.biz.");
+		findUsersByEmailIgnoringSubdomainUmichMultiBody("ME", "umich.edu", "none.of.your.biz.");
+	}
+	
+	public void testFindUsersByEmailIgnoringSubdomainUmichMultiGeneralMixedCase() {
+		findUsersByEmailIgnoringSubdomainUmichMultiBody("ME", "Umich.edu", "none.of.your.biz.");
+	}
+	
+	protected void findUsersByEmailIgnoringSubdomainUmichMultiBody(String uniqname, String topDomain, String subDomain) {
+		// While we can pass in any top domain the findUserByEmail will use "umich.edu", so that is what we need
+		// to use when we setup the test.
+		
+		String umichDomain = "umich.edu";
 		Mock mockUserFactory = mock(UserFactory.class);
 		UserFactory uf = (UserFactory) mockUserFactory.proxy();		
 		
 		Mock mockUserEdit = mock(UserEdit.class);
 		UserEdit ue = (UserEdit) mockUserEdit.proxy();
 		// should pull out the user name
-		mockUserEdit.expects(once()).method("setEid").with(eq("ME"));
-		mockUserEdit.expects(atLeastOnce()).method("getEid").will(returnValue("ME"));
+		mockUserEdit.expects(once()).method("setEid").with(eq(uniqname));
+		mockUserEdit.expects(atLeastOnce()).method("getEid").will(returnValue(uniqname));
 		// should set then email and type in the object.
-		mockUserEdit.expects(atLeastOnce()).method("setEmail").with(eq("ME@umich.edu"));
+		mockUserEdit.expects(atLeastOnce()).method("setEmail").with(eq(uniqname+"@"+umichDomain));
 		mockUserEdit.expects(atLeastOnce()).method("setType").with(eq("uniqname"));
 		
 		mockUserFactory.expects(once()).method("newUser").will(returnValue(ue));
@@ -118,29 +132,9 @@ public class UnivOfMichUserDirectoryProviderTest extends MockObjectTestCase {
 		mockUmiacClient.expects(once()).method("userExists").will(returnValue(true));
 		mockUmiacClient.expects(once()).method("setUserNames");
 		
-		Collection c = uomudp.findUsersByEmail("ME@none.of.your.biz.umich.edu",uf);
+		Collection c = uomudp.findUsersByEmail(uniqname+"@"+subDomain+topDomain,uf);
 		assertEquals("found user",1,c.size());
 	}
 	
-//  	public void testFindUsersByEmailNotAcceptingSubdomain() {
-//  		Mock mockUserFactory = mock(UserFactory.class);
-//  		UserFactory uf = (UserFactory) mockUserFactory.proxy();		
-		
-//  		Mock mockUserEdit = mock(UserEdit.class);
-//  		UserEdit ue = (UserEdit) mockUserEdit.proxy();
-		
-//  		mockUserFactory.expects(once()).method("newUser").will(returnValue(ue));
-		
-//  		// will not recognize when use subdomain.
-//  		Collection c = uomudp.findUsersByEmail("ME@biz.umich.edu",uf);
-//  		assertEquals("found user",0,c.size());
-//  	}
-
-
-	
-	
-//	public void testFindUserByEmail() {
-//		fail("Not yet implemented");
-//	}
 
 }

@@ -276,10 +276,12 @@ public class UnivOfMichUserDirectoryProvider
 
 		// get a UserEdit to populate
 		UserEdit edit = factory.newUser();
+		String emailLC = email.toLowerCase();
 
 		// assume a "@...umich.edu"
 
-		int posUmich = email.indexOf("umich.edu");
+	//	int posUmich = email.indexOf("umich.edu");
+		int posUmich = emailLC.indexOf("umich.edu");
 		int posAt = email.indexOf("@");
 		if (posUmich != -1 && posAt != -1)
 		{
