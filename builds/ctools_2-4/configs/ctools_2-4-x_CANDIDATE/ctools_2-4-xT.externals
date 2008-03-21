@@ -78,7 +78,8 @@
  sections -r33489 https://source.sakaiproject.org/svn/sections/branches/sakai_2-4-x
  site -r33408 https://source.sakaiproject.org/svn/site/branches/sakai_2-4-x
 # site-manage -r40172 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
- site-manage -r40614 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
+# site-manage -r40614 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
+ site-manage -r40884 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-4-x
  syllabus -r33437 https://source.sakaiproject.org/svn/syllabus/branches/sakai_2-4-x
  test-harness -r28057 https://source.sakaiproject.org/svn/test-harness/branches/sakai_2-4-x
  textarea -r28058 https://source.sakaiproject.org/svn/textarea/branches/sakai_2-4-x
@@ -110,7 +111,8 @@
 ##### Michigan specific code.
 #####
  ctools-apps -r31824 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
- ctools-providers -r40443 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
+# ctools-providers -r40443 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
+ ctools-providers -r42974 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
 # ctools-reference -r41846 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
  ctools-reference -r42487 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
  ctools-webservices -r36804 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-webservices
