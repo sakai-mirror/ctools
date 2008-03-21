@@ -50,8 +50,8 @@ import org.sakaiproject.util.api.umiac.UmiacClient;
 * for U of M Kerberos.</p>
 * <p>Note: The server running this code must be known the the UMIAC system to be able to mity of Michigan, CHEF Software Development Team
 * @version $Revision$
-* $HeadURL:$
-* $Id:$
+* $HeadURL$
+* $Id$
 */
 public class UnivOfMichUserDirectoryProvider
 	implements UserDirectoryProvider, UsersShareEmailUDP, DisplayAdvisorUDP
@@ -276,10 +276,12 @@ public class UnivOfMichUserDirectoryProvider
 
 		// get a UserEdit to populate
 		UserEdit edit = factory.newUser();
+		String emailLC = email.toLowerCase();
 
 		// assume a "@...umich.edu"
 
-		int posUmich = email.indexOf("umich.edu");
+	//	int posUmich = email.indexOf("umich.edu");
+		int posUmich = emailLC.indexOf("umich.edu");
 		int posAt = email.indexOf("@");
 		if (posUmich != -1 && posAt != -1)
 		{
