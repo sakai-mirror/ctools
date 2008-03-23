@@ -1,0 +1,17 @@
+svn diff -r39289:39290 https://source.sakaiproject.org/svn
+Index: calendar/calendar-impl/impl/src/java/org/sakaiproject/calendar/impl/BaseCalendarService.java
+===================================================================
+--- calendar/calendar-impl/impl/src/java/org/sakaiproject/calendar/impl/BaseCalendarService.java	(revision 39289)
++++ calendar/calendar-impl/impl/src/java/org/sakaiproject/calendar/impl/BaseCalendarService.java	(revision 39290)
+@@ -2326,7 +2326,10 @@
+ 
+ 			if ((!m_caching) || (m_calendarCache == null) || (m_calendarCache.disabled()))
+ 			{
+-				events = m_storage.getEvents(this, range.firstTime().getTime(), range.lastTime().getTime() );
++            if ( range != null )
++               events = m_storage.getEvents(this, range.firstTime().getTime(), range.lastTime().getTime() );
++            else
++               events = m_storage.getEvents(this);
+ 			}
+ 
+ 			else
