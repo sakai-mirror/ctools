@@ -37,8 +37,6 @@
       <arg value="${svnCmd}" />
       <arg value="${user.dir}/${build.externals.file}" />
     </exec>
-
-
     <antcall target="removeUnneededSakai" />
   </target>
 
