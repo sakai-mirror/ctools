@@ -7,8 +7,8 @@ use File::Find;
 # Tested only on Linux
 # Feb 4 2008
 #
-# $HeadURL:$
-# $Id:$
+# $HeadURL$
+# $Id$
 #
 # Contact Alan Berg: a.m.berg@uva.nl
 
@@ -22,6 +22,8 @@ use File::Find;
 # Set these up with default values, then override from command line if appropriate.
 my ($src,$DEBUG) = (".",0);
 ($src,$DEBUG) = @ARGV;
+
+print "src: [$src] DEBUG: [$DEBUG]\n";
 
 # Internal use only
 my @file_list=();
