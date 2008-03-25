@@ -1,7 +1,7 @@
-Index: matrix/tool/src/webapp/WEB-INF/jsp/matrix/viewCell.jsp
+Index: osp/matrix/tool/src/webapp/WEB-INF/jsp/matrix/viewCell.jsp
 ===================================================================
---- matrix/tool/src/webapp/WEB-INF/jsp/matrix/viewCell.jsp	(revision 35750)
-+++ matrix/tool/src/webapp/WEB-INF/jsp/matrix/viewCell.jsp	(working copy)
+--- osp/matrix/tool/src/webapp/WEB-INF/jsp/matrix/viewCell.jsp	(revision 35750)
++++ osp/matrix/tool/src/webapp/WEB-INF/jsp/matrix/viewCell.jsp	(working copy)
 @@ -229,13 +229,9 @@
                 <td>
  			   	<span class="indnt1">
