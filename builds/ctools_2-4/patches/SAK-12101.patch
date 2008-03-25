@@ -1,0 +1,46 @@
+Index: matrix/tool/src/webapp/WEB-INF/jsp/matrix/viewCell.jsp
+===================================================================
+--- matrix/tool/src/webapp/WEB-INF/jsp/matrix/viewCell.jsp	(revision 35750)
++++ matrix/tool/src/webapp/WEB-INF/jsp/matrix/viewCell.jsp	(working copy)
+@@ -229,13 +229,9 @@
+                <td>
+ 			   	<span class="indnt1">
+ 				  <img border="0" src="/library/image/silk/application_form.gif" alt=""/>
+-                  <c:if test="${not (cell.status == 'READY' and readOnlyMatrix != 'true')}">
+-	                  <a href='<c:out value="${node.externalUri}"/>' target="_blank" >
+-                  </c:if>
++                  <a href='<c:out value="${node.externalUri}"/>' target="_blank" >
+                   <c:out value="${node.name}"/>
+-                  <c:if test="${not (cell.status == 'READY' and readOnlyMatrix != 'true')}">
+                   </a>
+-                  </c:if>
+ 				  </span>
+ 				</td>
+ 				<td>
+@@ -446,14 +442,12 @@
+       <c:if test="${not empty reflections}">
+ 	  	<tr>
+ 			<td>
+-				 <c:set var="canReflect" value="true"/>
++				<c:set var="canReflect" value="true"/>
+ 				 
+-				 <c:if test="${cell.status != 'READY' or readOnlyMatrix == 'true'}">
+-					<img src = '/library/image/silk/application_form.gif' border= '0' hspace='0' alt=""/>
+-					<a href='<c:out value="${reflections[0].reviewContentNode.externalUri}"/>' target="_blank" >
+-					   <c:out value="${reflections[0].reviewContentNode.displayName}"/>
+-					</a>
+-				 </c:if>
++				<img src = '/library/image/silk/application_form.gif' border= '0' hspace='0' alt=""/>
++				<a href='<c:out value="${reflections[0].reviewContentNode.externalUri}"/>' target="_blank" >
++				   <c:out value="${reflections[0].reviewContentNode.displayName}"/>
++				</a>
+ 				 <c:if test="${cell.status == 'READY' and readOnlyMatrix != 'true'}">
+ 				   <img src = '/library/image/silk/application_form.gif' border= '0' hspace='0' alt=""/>
+ 				   <c:out value="${reflections[0].reviewContentNode.displayName}" />
+@@ -659,4 +653,4 @@
+ </c:if>
+ </div>
+ 
+-</form>
+\ No newline at end of file
++</form>
