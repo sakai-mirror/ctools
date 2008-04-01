@@ -1,0 +1,21 @@
+Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java
+===================================================================
+--- chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java	(revision 36795)
++++ chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java	(working copy)
+@@ -315,11 +315,11 @@
+     */
+    public void userLeft(String location, String user)
+    {
+-      if(presenceChannelObserver != null && presenceChannelObserver.getPresentUsers().size() == 0) {
+-         presenceChannelObserver.endObservation();
+-         getChatManager().removeRoomListener(this, currentChannel.getChatChannel().getId());
+-         presenceChannelObserver = null;
+-      } else
++       // if(presenceChannelObserver != null && presenceChannelObserver.getPresentUsers().size() == 0) {
++       // presenceChannelObserver.endObservation();
++       // getChatManager().removeRoomListener(this, currentChannel.getChatChannel().getId());
++       // presenceChannelObserver = null;
++       // } else
+          m_courierService.deliver(new DirectRefreshDelivery(sessionId+location, "Presence"));
+    }
+ 
