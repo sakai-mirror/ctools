@@ -129,7 +129,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 	private static Pattern m_patternMilestone = Pattern.compile("(^\"[A-Za-z]*\"$|^\"\"$)");
 	private static Pattern m_patternAcademicPlan = Pattern.compile("(^\"[0-9]{4}[A-Z0-9]*\"|^\"[0-9]{4}[A-Z0-9]*\"\r?$|^\"\"$|^\"\"\r?$)");
 	private static Pattern m_patternRole = Pattern.compile("(^\".*\"$|^\"\"$|^\"#EMPTY\"$)"); //not restrictive
-	private static Pattern m_patternMember = Pattern.compile("(^\".*\"$|^\"\"$|^\"#EMPTY\"$)"); //not restrictive
+	private static Pattern m_patternMember = Pattern.compile("(^\"[A-Z]([- A-Za-z])+,[A-Z]([- A-Za-z])+\"$|^\"\"$|^\"#EMPTY\"$)");
 	private static Pattern m_patternEvalDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"#EMPTY\"$|^\"\"$|)");
 	private static Pattern m_patternCommitteeApprovedDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"\r$|^\"#EMPTY\"\r$|^\"\"\r$|)");
 		
