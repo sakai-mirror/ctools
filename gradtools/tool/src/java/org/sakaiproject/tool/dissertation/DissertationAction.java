@@ -868,10 +868,13 @@ public class DissertationAction
 		
 		Boolean hasSteps = null;
 		TemplateStep[] steps = (TemplateStep[])state.getAttribute(STATE_CANDIDATE_PATH_TEMPLATE_STEPS);
-		if(steps.length > 0)
+		if(steps != null && steps.length > 0) {
 			hasSteps = new Boolean(true);
-		else
+		}
+		else {
 			hasSteps = new Boolean(false);
+			addAlert(state, "There was a problem: The requested candidate path is missing its steps.");
+		}
 		
 		context.put(CONTEXT_SELECTED_CANDIDATE_DISPLAY_NAME, (String)state.getAttribute(STATE_SELECTED_CANDIDATE_NAME));
 		context.put(CONTEXT_SELECTED_CANDIDATE_EMPLID, (String)state.getAttribute(STATE_SELECTED_CANDIDATE_EMPLID));
