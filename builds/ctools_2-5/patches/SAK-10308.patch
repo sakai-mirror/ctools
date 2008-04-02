@@ -1,0 +1,88 @@
+svn diff -r31991:31992 https://source.sakaiproject.org/svn
+Index: content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesAction.java
+===================================================================
+--- content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesAction.java	(revision 31991)
++++ content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesAction.java	(revision 31992)
+@@ -7172,6 +7172,7 @@
+ 			{
+ 				edit.setContent(content);
+ 			}
++			
+ 			// update properties
+ 			if(action instanceof InteractionAction)
+ 			{
+@@ -7197,9 +7198,17 @@
+ 					}
+ 				}
+ 			}
++			
++			int notification = NotificationService.NOTI_NONE;
++			Object obj = pipe.getRevisedListItem();
++			if(obj instanceof ListItem)
++			{
++				notification = ((ListItem) obj).getNotification();
++			}
++			
+ 			// update mimetype
+ 			edit.setContentType(pipe.getRevisedMimeType());
+-			ContentHostingService.commitResource(edit);
++			ContentHostingService.commitResource(edit, notification);
+ 		}
+ 		catch (PermissionException e)
+ 		{
+Index: content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesHelperAction.java
+===================================================================
+--- content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesHelperAction.java	(revision 31991)
++++ content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesHelperAction.java	(revision 31992)
+@@ -770,6 +770,28 @@
+             }
+             
+ 			ListItem newFile = new ListItem(filename);
++			// notification
++			int noti = NotificationService.NOTI_NONE;
++			// %%STATE_MODE_RESOURCES%%
++			if (newFile.isDropbox())
++			{
++				// set noti to none if in dropbox mode
++				noti = NotificationService.NOTI_NONE;
++			}
++			else
++			{
++				// read the notification options
++				String notification = params.getString("notify");
++				if ("r".equals(notification))
++				{
++					noti = NotificationService.NOTI_REQUIRED;
++				}
++				else if ("o".equals(notification))
++				{
++					noti = NotificationService.NOTI_OPTIONAL;
++				}
++			}
++			newFile.setNotification(noti);
+ 			
+ 			pipe.setRevisedListItem(newFile);
+ 			
+Index: content/content-tool/tool/src/webapp/vm/resources/sakai_replace_file.vm
+===================================================================
+--- content/content-tool/tool/src/webapp/vm/resources/sakai_replace_file.vm	(revision 31991)
++++ content/content-tool/tool/src/webapp/vm/resources/sakai_replace_file.vm	(revision 31992)
+@@ -39,6 +39,18 @@
+ 				</td>
+ 			</tr>
+ 		</table>
++		#if ($item.resourceTypeDef.hasNotificationDialog())
++			<p class="shorttext">
++				<label for="notify">
++					$tlang.getString("gen.email1")
++				</label>	
++				<select name="notify" id="notify">
++					<option value="r">$tlang.getString("gen.email2")</option>
++					<option value="o">$tlang.getString("gen.email3")</option>
++					<option value="n" selected="selected">$tlang.getString("gen.email4")</option>
++				</select>
++			</p>	
++		#end
+ 		
+ 		<p class="act">
+ 			<input type="button" class="active" name="savechanges" id="saveChanges" onclick="javascript:showNotif('submitnotif','saveChanges','addContentForm');document.getElementById('addContentForm').action='#toolLink("ResourcesHelperAction" "doReplace")';submitform('addContentForm');" value="$tlang.getString("label.upl")" accesskey="s" />

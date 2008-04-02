@@ -1,0 +1,100 @@
+<project name="build-config" basedir="." default="configInfo" >
+
+  <!--
+
+   $Id$
+   $HeadURL$
+
+   Customize sakai.properties for each instance.
+
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+
+  <target name="configInfo" >
+    <echo>
+      This customizes the configuration information for a particular build.  Targets in here should
+      not be invoked directly but shoudl be invoked from the master build.xml.
+
+      The configuration properties for this build are below.  They are usually gotten from a properties file for the build.
+
+      build.configuration.svnurl = ${build.configuration.svnurl}
+      build.configuration.configdir = ${build.configuration.configdir}
+      build.configuration.revision = ${build.configuration.revision}
+    </echo>
+  </target>
+
+  <property file="./project.properties" />
+  <property name="instance-type.file" value="instance.${instance-type}.properties" />
+  <property file="${instance-type.file}" />
+
+  <target name="buildPropertiesSimple" depends="copyConfig, buildPropertiesFileConcat,installCitationConfig"
+	  description="TEST: copy and edit the sakai.properties files." />
+
+  <target name="copyConfig">
+    <echo> instance-type: ${instance-type} </echo>
+    <echo> copy from config.dir: ${config.dir} and instance type sub-dir: ${instance-type}</echo>
+    <echo> copy to instances.dir: ${instances.dir}/${instance-type} </echo>
+    <echo> copy keystore: ${keystore.dir}/${keystore} </echo>
+
+    <copy todir="${instances.dir}/${instance-type}">
+      <fileset dir="${config.dir}">
+	<include name="local.properties"/>
+	<!-- <include name="placeholder.properties"/> -->
+	<include name="placeholder.properties*"/> 
+	<!--	<include name="search*.properties"/> -->
+	<include name="toolOrder.xml"/>
+      </fileset>
+    </copy>
+
+    <echo>copy (and overwrite if necessary) from instance type specific directory</echo>
+
+    <copy todir="${instances.dir}/${instance-type}" overwrite="true" >
+	<fileset dir="${config.dir}/${instance-type}">
+	  <exclude name="instance.properties" />
+	  <exclude name="test.properties" />
+	  <!--
+	  <include name="local.properties"/>
+	  <include name="placeholder.properties*"/> 
+	  <include name="toolOrder.xml"/>
+	  -->
+	</fileset>
+    </copy>
+    
+    <!--
+    <copy todir="${instances.dir}/${instance-type}">
+      <fileset dir="${config.dir}">
+	<exclude name="**/sakai.properties"/>
+	<exclude name="**/.project" />
+      </fileset>
+    </copy>
+    -->
+    <copy todir="${instances.dir}/${instance-type}">
+      <fileset dir="${keystore.dir}">
+	<include name="${keystore}" />
+      </fileset>
+    </copy>
+  </target>
+
+ <target name="buildPropertiesFileConcat"> 
+    <concat destfile="${instances.dir}/${instance-type}/sakai.properties">
+      <filelist dir="${config.dir}" files="sakai.properties" />
+      <filelist dir="${config.dir}" files="${propertiesfileslist}" /> 
+      <filelist dir="${config.dir}/${instance-type}" files="${propertiesfileslist}" />
+      <filterchain>
+	<expandproperties/>
+      </filterchain>
+    </concat>
+  </target>
+
+  <target name="installCitationConfig"
+	  description="Copy the citation configuration file to sakai.properties." >
+    <property name="citation.config.dir" value="${instances.dir}/${instance-type}/org.sakaiproject.citation" />
+    <mkdir dir="${citation.config.dir}" />
+    <copy file="${config.dir}/citation-configuration.xml" tofile="${citation.config.dir}/categories.xml" />
+  </target>
+
+</project>

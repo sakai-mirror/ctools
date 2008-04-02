@@ -1,0 +1,5 @@
+For some reason the patches for these changes did not generate
+correctly via svn diff. The Java code patches had duplicate changes,
+so I delete the duplicate.  The vm change did not work, so I created a
+diff between the 2.3.0 tag and the current trunk.  This appears to be
+ok, but should be carefully checked on testctools.

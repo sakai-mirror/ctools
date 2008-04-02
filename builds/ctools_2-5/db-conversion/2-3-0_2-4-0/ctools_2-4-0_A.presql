@@ -1,0 +1,177 @@
+add_to_realm !group.template Affiliate content.hidden
+add_to_realm !group.template Assistant content.hidden
+add_to_realm !group.template Instructor content.hidden
+add_to_realm !group.template Organizer content.hidden
+add_to_realm !group.template Owner content.hidden
+add_to_realm !group.template access mailtool.send
+add_to_realm !group.template access poll.vote
+add_to_realm !group.template access roster.viewsection
+add_to_realm !group.template maintain chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !group.template maintain content.hidden
+add_to_realm !group.template maintain mailtool.admin mailtool.send
+add_to_realm !group.template maintain poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+add_to_realm !group.template maintain roster.export roster.viewall
+add_to_realm !group.template.course Affiliate content.hidden
+add_to_realm !group.template.course Assistant content.hidden
+add_to_realm !group.template.course Instructor chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !group.template.course Instructor content.hidden
+add_to_realm !group.template.course Instructor mailtool.admin mailtool.send
+add_to_realm !group.template.course Instructor poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+add_to_realm !group.template.course Instructor roster.export roster.viewall roster.viewhidden roster.viewofficialid
+add_to_realm !group.template.course Owner content.hidden
+add_to_realm !group.template.course Student mailtool.send
+add_to_realm !group.template.course Student poll.vote
+add_to_realm !group.template.course Student roster.viewsection
+add_to_realm !group.template.course Teaching_Assistant chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !group.template.course Teaching_Assistant mailtool.admin mailtool.send
+add_to_realm !group.template.course Teaching_Assistant poll.vote
+add_to_realm !group.template.course Teaching_Assistant roster.export roster.viewhidden roster.viewofficialid roster.viewsection
+add_to_realm !site.template Affiliate chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !site.template Affiliate content.hidden
+add_to_realm !site.template Affiliate gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template Affiliate osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+add_to_realm !site.template Affiliate poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn
+add_to_realm !site.template Assistant chat.revise.channel
+add_to_realm !site.template Assistant content.hidden
+add_to_realm !site.template Assistant gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template Assistant osp.reports.create osp.reports.edit osp.reports.run osp.reports.view
+add_to_realm !site.template Assistant poll.add poll.deleteOwn poll.editOwn
+add_to_realm !site.template Instructor chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !site.template Instructor content.hidden
+add_to_realm !site.template Instructor gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template Instructor osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+add_to_realm !site.template Instructor poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+add_to_realm !site.template Member gmt.view_own_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template Member osp.reports.view
+add_to_realm !site.template Member poll.vote
+add_to_realm !site.template Observer osp.reports.view
+add_to_realm !site.template Organizer chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !site.template Organizer content.hidden
+add_to_realm !site.template Organizer gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template Organizer osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+add_to_realm !site.template Organizer poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+add_to_realm !site.template Owner chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !site.template Owner content.hidden
+add_to_realm !site.template Owner gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template Owner osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+add_to_realm !site.template Owner poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+add_to_realm !site.template Student gmt.view_own_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template Student poll.vote
+add_to_realm !site.template access mailtool.send
+add_to_realm !site.template access poll.vote
+add_to_realm !site.template access roster.viewsection
+add_to_realm !site.template maintain chat.delete.channel chat.delete.channel chat.new.channel chat.new.channel chat.revise.channel chat.revise.channel
+add_to_realm !site.template maintain mailtool.send
+add_to_realm !site.template maintain poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+add_to_realm !site.template maintain roster.export roster.viewall
+add_to_realm !site.template.course Affiliate chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !site.template.course Affiliate content.hidden
+add_to_realm !site.template.course Affiliate gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template.course Affiliate osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+add_to_realm !site.template.course Affiliate poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn
+add_to_realm !site.template.course Assistant chat.revise.channel
+add_to_realm !site.template.course Assistant content.hidden
+add_to_realm !site.template.course Assistant gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template.course Assistant osp.reports.create osp.reports.edit osp.reports.run osp.reports.view
+add_to_realm !site.template.course Assistant poll.add poll.deleteOwn poll.editOwn
+add_to_realm !site.template.course Instructor chat.delete.channel chat.delete.channel chat.new.channel chat.new.channel chat.revise.channel chat.revise.channel chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !site.template.course Instructor content.hidden
+add_to_realm !site.template.course Instructor gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template.course Instructor mailtool.admin mailtool.send
+add_to_realm !site.template.course Instructor osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+add_to_realm !site.template.course Instructor poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+add_to_realm !site.template.course Instructor roster.export roster.viewall roster.viewhidden roster.viewofficialid
+add_to_realm !site.template.course Member gmt.view_own_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template.course Member osp.reports.view
+add_to_realm !site.template.course Member poll.vote
+add_to_realm !site.template.course Observer osp.reports.view
+add_to_realm !site.template.course Owner chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !site.template.course Owner content.hidden
+add_to_realm !site.template.course Owner gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template.course Owner osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+add_to_realm !site.template.course Owner poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+add_to_realm !site.template.course Student gmt.view_own_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template.course Student mailtool.send
+add_to_realm !site.template.course Student poll.vote poll.vote
+add_to_realm !site.template.course Student roster.viewsection
+add_to_realm !site.template.course Teaching_Assistant chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !site.template.course Teaching_Assistant mailtool.admin mailtool.send
+add_to_realm !site.template.course Teaching_Assistant poll.vote
+add_to_realm !site.template.course Teaching_Assistant roster.export roster.viewhidden roster.viewofficialid roster.viewsection
+add_to_realm !site.template.portfolio CIG_Coordinator chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !site.template.portfolio CIG_Coordinator content.hidden
+add_to_realm !site.template.portfolio CIG_Coordinator gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template.portfolio CIG_Coordinator osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share
+add_to_realm !site.template.portfolio CIG_Coordinator poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+add_to_realm !site.template.portfolio Evaluator gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template.portfolio Evaluator osp.reports.view
+add_to_realm !site.template.portfolio Evaluator poll.vote
+add_to_realm !site.template.portfolio Reviewer gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template.portfolio Reviewer osp.reports.view
+add_to_realm !site.template.portfolio Reviewer poll.vote
+add_to_realm !site.template.project Member gmt.view_own_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template.project Member osp.reports.view
+add_to_realm !site.template.project Member poll.vote
+add_to_realm !site.template.project Observer osp.reports.view
+add_to_realm !site.template.project Organizer chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !site.template.project Organizer content.hidden
+add_to_realm !site.template.project Organizer gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template.project Organizer osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+add_to_realm !site.template.project Organizer poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+add_to_realm !site.template.project Owner chat.delete.channel chat.new.channel chat.revise.channel
+add_to_realm !site.template.project Owner content.hidden
+add_to_realm !site.template.project Owner gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+add_to_realm !site.template.project Owner osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+add_to_realm !site.template.project Owner poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+add_to_realm !site.user maintain chat.delete.channel chat.new.channel chat.revise.channel chat.delete.channel chat.new.channel chat.revise.channel
+backfill Affiliate chat.delete.channel chat.new.channel chat.revise.channel
+backfill Affiliate content.hidden
+backfill Affiliate gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+backfill Affiliate osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+backfill Affiliate poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn
+backfill Assistant chat.revise.channel
+backfill Assistant content.hidden
+backfill Assistant gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+backfill Assistant osp.reports.create osp.reports.edit osp.reports.run osp.reports.view
+backfill Assistant poll.add poll.deleteOwn poll.editOwn
+backfill Instructor chat.delete.channel chat.new.channel chat.revise.channel chat.delete.channel chat.new.channel chat.revise.channel
+backfill Instructor content.hidden
+backfill Instructor gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+backfill Instructor mailtool.admin mailtool.send
+backfill Instructor osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+backfill Instructor poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+backfill Instructor roster.export roster.viewall roster.viewhidden roster.viewofficialid
+backfill Member gmt.view_own_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+backfill Member osp.reports.view
+backfill Member poll.vote
+backfill Observer osp.reports.view
+backfill Organizer chat.delete.channel chat.new.channel chat.revise.channel
+backfill Organizer content.hidden
+backfill Organizer gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+backfill Organizer osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+backfill Organizer poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+backfill Owner chat.delete.channel chat.new.channel chat.revise.channel
+backfill Owner content.hidden
+backfill Owner gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+backfill Owner osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+backfill Owner poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+backfill Student gmt.view_own_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+backfill Student mailtool.send
+backfill Student poll.vote
+backfill Student roster.viewsection
+backfill Teaching_Assistant chat.delete.channel chat.new.channel chat.revise.channel
+backfill Teaching_Assistant mailtool.admin mailtool.send
+backfill Teaching_Assistant poll.vote
+backfill Teaching_Assistant roster.export roster.viewhidden roster.viewofficialid roster.viewsection
+backfill access content.hidden
+backfill access gmt.view_own_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+backfill access mailtool.send
+backfill access poll.vote poll.vote
+backfill access roster.viewsection
+backfill maintain chat.delete.channel chat.new.channel chat.revise.channel chat.delete.channel chat.new.channel chat.revise.channel
+backfill maintain content.hidden
+backfill maintain gmt.modify_associations gmt.modify_goalsets gmt.modify_links_from gmt.modify_links_to gmt.modify_ratings gmt.view_any_links_from gmt.view_any_links_to gmt.view_own_ratings gmt.view_ratings gmt.view_visible_links_from gmt.view_visible_links_to
+backfill maintain mailtool.admin mailtool.send
+backfill maintain osp.reports.create osp.reports.delete osp.reports.edit osp.reports.run osp.reports.share osp.reports.view
+backfill maintain poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote poll.add poll.deleteAny poll.deleteOwn poll.editAny poll.editOwn poll.vote
+backfill maintain roster.export roster.viewall

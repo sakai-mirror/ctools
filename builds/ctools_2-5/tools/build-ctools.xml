@@ -1,0 +1,211 @@
+<project name="ctoolsBuildA" basedir="." default="ctoolsBuildInfo" >
+
+  <!--
+
+$Id$
+$HeadURL$
+
+  -->
+
+  <target name="ctoolsBuildInfo">
+    <echo>
+      Install the CTools specific code.  It may not be called if you want to have a 
+      pure sakai build.  It will extract the ctools code, delete unecessary code,
+      and will edit values in code or configuration files as appropriate.  For example it 
+      will add the grad tool sites to the site type configuration xml file.
+      This should not be invoked on its own.  It will be called by the master build.xml.
+      The default configuration values are given below.  They may be overridden by a build
+      properties file.
+
+      ctools.extract.skip = ${ctools.extract.skip}
+      ctools.svnurl = ${ctools.svnurl}
+      ctools.revision = ${ctools.revision}
+    </echo>
+  </target>
+
+
+  <!-- ================================================== -->
+  <!--           deal with CTools specific source         -->
+  <!-- ================================================== -->
+
+
+  <!-- entry points -->
+  
+  <!-- get the source -->
+
+  <!-- test to see if this is necessary -->
+  <target name="getCtoolsSrc">
+    <antcall target="removeUnneededCtools" />
+  </target>
+
+
+  <!-- change source as required -->
+  <target name="editCtools" 
+	  depends="editSrcGlobal,editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editRwikiSrc" >
+    <!-- edit the files that need to be modified for ctools -->
+  </target>
+
+
+  <target name="removeUnneededCtools" >
+
+    <!-- these don't work well -->
+    <removeFromBuild deleteDir="osp/migration" />
+    <removeFromBuild deleteDir="osp/warehouse" />
+    <removeFromBuild deleteDir="osp/reports/api-impl" />
+    <removeFromBuild deleteDir="osp/reports/components" />
+    <removeFromBuild deleteDir="osp/reports/tool" />
+
+    <!-- CTools has its own SectionFields impl, so can delete the default one -->
+    <removeFromBuild deleteDir="site-manage/site-manage-impl" />
+
+  </target>
+
+  <!-- add hook to make global changes, e.g. make change allocation of new boolean values to use valueOf -->
+  <!-- define any value for src.global.edit.skip to avoid doing this step. -->
+  <target name="editSrcGlobal" if="src.global.edit.perform" 
+	  description="make any global changes to the source desired.">
+    <echo> Run global edit script </echo>
+    <exec dir="." executable="perl" failonerror="true">
+      <arg value="${patches.dir}/easy_wins_find_java.pl" />
+      <arg value="${work.dir}/build" />
+      <arg value="0" />
+    </exec>
+  </target>
+
+  <!-- example of using exec
+    <echo> Get source via perl script </echo>
+    <exec dir="." executable="perl" failonerror="true">
+      <arg value="${scripts.dir}/svnCheckoutExternalsFormat.pl" />
+      <arg value="${work.dir}/build" />
+      <arg value="${logs.dir}/source.log" />
+      <arg value="${svnCmd}" />
+      <arg value="${user.dir}/${build.externals.file}" />
+    </exec>
+  -->
+
+
+  <!-- add the gradtools configuration changes to the sakai code. -->
+  <target name="editGradTools">
+    <echo> edit file: ${build.dir}/site-manage/**/tools/sakai.sitesetup.xml for gradtools.</echo>
+
+    <!-- add the gradtools student site type. -->
+
+    <replaceregexp >
+      <fileset dir="${build.dir}/site-manage" >
+	<include name="**/webapp/tools/sakai.sitesetup.xml" />
+	<include name="**/webapp/tools/sakai.siteinfo.xml" />
+      </fileset>
+      <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
+      <substitution 
+	  expression="configuration name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
+    </replaceregexp>
+
+    <replaceregexp >
+      <fileset dir="${build.dir}/site-manage" >
+	<include name="**/webapp/tools/sakai.sitesetup.xml" />
+	<include name="**/webapp/tools/sakai.siteinfo.xml" />
+      </fileset>
+
+      <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
+      <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
+    </replaceregexp>
+
+
+    <!-- update the tool references to add gradtools tools as appropriate.
+	 This adds student, department, and rackham. -->
+
+    <replaceregexp>
+
+      <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
+      <substitution expression="\1 &lt;category name=&quot;GradToolsStudent&quot; /&gt;  &lt;category name=&quot;GradToolsDepartment&quot; /&gt;  &lt;category name=&quot;GradToolsRackham&quot; /&gt;" />
+      
+      <fileset dir="${build.dir}"  >
+	<include name="**/webapp/tools/sakai.announcements.xml" />
+	<include name="**/webapp/tools/sakai.chat.xml" />
+	<include name="**/webapp/tools/sakai.discussion.xml" />
+	<include name="**/webapp/tools/sakai.iframe.xml" />
+	<include name="**/webapp/tools/sakai.resources.xml" />
+	<include name="**/webapp/tools/sakai.rwiki.xml" />
+	<include name="**/webapp/tools/sakai.schedule.xml" />
+	<include name="**/webapp/tools/sakai.siteinfo.xml" />
+      </fileset>
+
+    </replaceregexp>
+
+
+    <!-- update the tool references to add gradtools tools as appropriate.
+	 This adds just student. -->
+
+    <replaceregexp>
+
+      <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
+      <substitution expression="\1 &lt;category name=&quot;GradToolsStudent&quot; /&gt;" />
+      
+      <fileset dir="${build.dir}">
+	<include name="**/webapp/tools/sakai.dropbox.xml" />
+	<include name="**/webapp/tools/sakai.mailbox.xml" />
+	<include name="**/webapp/tools/sakai.news.xml" />
+      </fileset>
+
+    </replaceregexp>
+
+    
+  </target>
+
+  <!-- Be sure these tools don't appear in the project category -->
+  <target name="editDefaultTools" >
+
+    <echo> edit registrations under ${build.dir} to make sure the tool categories are as desired.</echo>
+
+    <!-- make the project category disappear for these. -->
+    <replaceregexp >
+      <fileset dir="${build.dir}" includes="**/sakai.gradebook.tool.xml,**/sakai.samigo.tool.xml,**/sakai.dropbox.xml,**/sakai.melete.xml" />
+      <!-- this works, but not on sakai.samigo.tool.xml ?? -->
+      <regexp pattern="&lt;category.*name=&quot;project&quot;.*"/>
+      <!-- -->
+      
+      <substitution  expression="" />
+    </replaceregexp>
+
+  </target>
+
+  <target name="editGrades">
+    <copy file="${reference.dir}/${gradebook.grades.config.sourcefile}"
+	  tofile="${build.dir}/${gradebook.grades.config.tofile}"
+	  overwrite="true"/>
+  </target>
+
+  <!-- copy the linktool jws file to the web-services directory -->
+  <target name="editLinktool" unless="linktool.install.skip" >
+    <echo> Copy the linktool jws files to sakai webservices. </echo>
+    <copy todir="${build.dir}/webservices/axis/src/webapp"
+	  overwrite="true">
+      <fileset dir="${build.dir}/linktool" includes="*.jws" />
+      <fileset dir="${build.dir}/ctools-webservices" includes="ActivityTracker.jws" />
+    </copy>
+  </target>
+
+  <!-- copy in the CTools web services -->
+  <target name="editCToolsJWS" unless="ctools.install.skip" >
+    <echo> Copy the ctools jws files to sakai webservices webapp. </echo>
+    <copy todir="${build.dir}/webservices/axis/src/webapp"
+	  overwrite="true"
+	  flatten="true">
+      <fileset dir="${build.dir}/ctools-webservices" includes="**/ActivityTracker.jws" />
+    </copy>
+  </target>
+
+  <!-- copy in the rwiki default pages properties file. -->
+
+  <!-- tofile="${build.dir}/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/PrepopulatePages.properties" -->
+
+  <target name="editRwikiSrc" unless="skipPrepopulatePages" >
+    <echo> Copy in the UMich rwiki default pages </echo>
+    <copy 	  file="${config.dir}/09PrepopulatePages.properties"
+		  tofile="${build.dir}/rwiki/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/PrepopulatePages.properties"
+		  overwrite="true"
+		  flatten="true"
+		  />
+  </target>
+
+</project>

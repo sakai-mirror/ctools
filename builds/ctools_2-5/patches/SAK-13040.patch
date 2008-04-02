@@ -1,0 +1,139 @@
+svn diff -r41526:41527 https://source.sakaiproject.org/svn
+Index: metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java
+===================================================================
+--- metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java	(revision 41526)
++++ metaobj/metaobj-impl/api-impl/src/java/org/sakaiproject/metaobj/shared/mgt/impl/StructuredArtifactDefinitionManagerImpl.java	(revision 41527)
+@@ -222,9 +222,6 @@
+ 
+    public List findBySchema(ContentResource resource) {
+       try {
+-         //String id = getContentHosting().resolveUuid(fileId.getValue());
+-         //ContentResource resource = getContentHosting().getResource(id);
+-         
+          Object[] params = new Object[]{resource.getContent()};
+          return getHibernateTemplate().findByNamedQuery("findBySchema", params);
+       } catch (ServerOverloadException e) {
+@@ -335,7 +332,6 @@
+          bean.setExternalType(sad.getExternalType());
+          bean.setSchemaHash(calculateSchemaHash(bean));
+          getHibernateTemplate().saveOrUpdate(bean);
+-         //         getHibernateTemplate().saveOrUpdateCopy(bean);
+       }
+       else {
+          throw new PersistenceException("Form name {0} exists", new Object[]{bean.getDescription()}, "description");
+@@ -538,7 +534,6 @@
+ 
+       boolean finished = false;
+       String type = sad.getType().getId().getValue();
+-      //ArtifactFinder artifactFinder = getArtifactFinderManager().getArtifactFinderByType(type);
+       Collection artifacts = getArtifactFinder().findByType(type);
+       Collection<StructuredArtifact> modifiedArtifacts = new ArrayList<StructuredArtifact>();
+ 
+@@ -646,8 +641,6 @@
+             if (findBean(bean) == null) {
+                getHibernateTemplate().save(bean);
+             }
+-
+-            //            getHibernateTemplate().saveOrUpdateCopy(bean);
+          }
+       }
+    }
+@@ -705,8 +698,6 @@
+          StructuredArtifactDefinitionBean bean = (StructuredArtifactDefinitionBean) i.next();
+          bean.setSchemaHash(calculateSchemaHash(bean));
+          getHibernateTemplate().saveOrUpdate(bean);
+-
+-         //         getHibernateTemplate().saveOrUpdateCopy(bean);
+       }
+    }
+ 
+@@ -1271,13 +1262,17 @@
+             sadb = (StructuredArtifactDefinitionBean)toolSession.getAttribute(SAD_SESSION_TAG);
+          }
+          if (sadb != null && sadb.getAlternateCreateXslt() != null) {
+-            viewLocation = getContentHosting().resolveUuid(sadb.getAlternateCreateXslt().getValue());
++            String id = getContentHosting().resolveUuid(sadb.getAlternateCreateXslt().getValue());
++            if ( id != null )
++               viewLocation = id;
+          }
+          
+          if (readOnly) {
+             viewLocation = "/group/PortfolioAdmin/system/formView.xslt";
+             if (sadb != null && sadb.getAlternateViewXslt() != null) {
+-               viewLocation = getContentHosting().resolveUuid(sadb.getAlternateViewXslt().getValue());
++               String id = getContentHosting().resolveUuid(sadb.getAlternateViewXslt().getValue());
++               if ( id != null )
++                  viewLocation = id;
+             }
+          }
+          List refs = new ArrayList();
+Index: metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/AddStructuredArtifactDefinitionController.java
+===================================================================
+--- metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/AddStructuredArtifactDefinitionController.java	(revision 41526)
++++ metaobj/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/AddStructuredArtifactDefinitionController.java	(revision 41527)
+@@ -54,8 +54,6 @@
+ public class AddStructuredArtifactDefinitionController extends AbstractStructuredArtifactDefinitionController
+       implements CustomCommandController, FormController, LoadObjectController {
+ 
+-   //protected static final String SAD_SESSION_TAG =
+-   //      "org.sakaiproject.metaobj.shared.control.AddStructuredArtifactDefinitionController.sad";
+    private SessionManager sessionManager;
+    private ContentHostingService contentHosting;
+ 
+@@ -215,12 +213,10 @@
+             sad.setSchemaFileName(nodeName);
+          }
+          else if (StructuredArtifactDefinitionValidator.PICK_ALTCREATEXSLT_ACTION.equals(sad.getFilePickerAction())) {
+-            //Id id = getIdManager().getId(getContentHosting().getUuid(ref.getId()));
+             sad.setAlternateCreateXslt(nodeUuid);
+             sad.setAlternateCreateXsltName(nodeName);
+          }
+          else if (StructuredArtifactDefinitionValidator.PICK_ALTVIEWXSLT_ACTION.equals(sad.getFilePickerAction())) {
+-            //Id id = getIdManager().getId(getContentHosting().getUuid(ref.getId()));
+             sad.setAlternateViewXslt(nodeUuid);
+             sad.setAlternateViewXsltName(nodeName);
+          }
+@@ -246,24 +242,36 @@
+       }
+       if (sad.getAlternateCreateXslt() != null){
+          ContentResource resource = getContentResource(sad.getAlternateCreateXslt());
+-         String name = resource.getProperties().getProperty(
++         if ( resource != null ) {
++            String name = resource.getProperties().getProperty(
+                resource.getProperties().getNamePropDisplayName());
+-         sad.setAlternateCreateXsltName(name);
++            sad.setAlternateCreateXsltName(name);
++         }
++         else {
++            logger.warn( this+".referenceData: invalid alternateCreateXslt "+sad.getAlternateCreateXslt() );
++            sad.setAlternateCreateXslt(null); 
++         }
+       }
+       if (sad.getAlternateViewXslt() != null){
+          ContentResource resource = getContentResource(sad.getAlternateViewXslt());
+-         String name = resource.getProperties().getProperty(
++         if ( resource != null ) {
++            String name = resource.getProperties().getProperty(
+                resource.getProperties().getNamePropDisplayName());
+-         sad.setAlternateViewXsltName(name);
++            sad.setAlternateViewXsltName(name);
++         }
++         else {
++            logger.warn( this+".referenceData: invalid alternateViewXslt "+sad.getAlternateViewXslt() );
++            sad.setAlternateViewXslt(null); 
++         }
+       }      
+       return base;
+    }
+    
+    protected ContentResource getContentResource(Id fileId) {
+       String id = getContentHosting().resolveUuid(fileId.getValue());
+-      //String ref = getContentHosting().getReference(id);
+-      //getSecurityService().pushAdvisor(
+-      //      new AllowMapSecurityAdvisor(ContentHostingService.EVENT_RESOURCE_READ, ref));
++      if ( id == null )
++         return null;
++		
+       ContentResource resource = null;
+       try {
+          resource = getContentHosting().getResource(id);

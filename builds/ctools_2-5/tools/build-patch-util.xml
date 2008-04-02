@@ -1,0 +1,57 @@
+<project name="build-patch-util" basedir="." default="applyPatchesInfo" >
+  <!--
+   $Id$
+   $HeadURL$
+   
+   Apply patches to the code.  Note that the code has been exported, so that need to apply patch files.
+  -->
+
+  <target name="applyPatchesInfo">
+    <echo>
+      Ant utility targets for applying patches to source code.  To use include this in the master build file.  Override the 
+      applyPatches target to specify which files to patch.
+      The only target is: testOnePatch.  The file to apply is specified via the command line property patchFileName.  That file
+      should be in the same patches directory as any other patches to be applied.
+      A sample command invocation would be:
+      "ant -s build.xml testOnePatch -DpatchFileNames=testPatch.patch".
+    </echo>
+  </target>
+
+  <!-- Target to apply a single patch.  Used to test patches.  -->
+  <target name="testOnePatch" description="target to test single patch application">
+     <!-- <applyPatch patchFileName="${patchFileName}" />  --> 
+     <!-- <applyPatches3 patchFileNames="${patchFileNames}" />  -->
+     <antcall target="applyPatches3"> 
+       <param name="patchFileNames" value="${patchFileNames}" />  
+     </antcall>
+  </target>
+
+  <!--
+  <target name="testOnePatch" description="target to test single patch application" depends="applyPatches3">
+  </target>
+  -->
+
+ <target name="applyPatches3" >
+    <echo> applying patches aP3 [${patchFileNames}]</echo>
+    <echo file="${logs.dir}/${ant.project.name}.patches.log" append="true" >
+     ********************************************************** 
+     applying patches [${patchFileNames}]
+     ********************************************************** 
+    </echo>
+    <exec executable="perl"
+	  dir="${build.dir}"
+	  failonerror="true"
+	  output="${logs.dir}/${ant.project.name}.patches.log"
+	  append="true">
+      <arg value="${scripts.dir}/applyPatches.pl" />
+      <arg value="${logs.dir}/${ant.project.name}.patches.log" />
+      <!-- with multiple files, need to pass the patch and the names separately -->
+      <!-- <arg value="${patches.dir}/${patchFileNames}" /> -->
+      <arg value="${patches.dir}" /> 
+      <arg value="${build.dir}" />
+      <arg value="${patchFileNames}" /> 
+    </exec>
+
+  </target>
+
+</project>

@@ -1,0 +1,110 @@
+svn diff -r14522:14523 https://source.sakaiproject.org/svn
+Index: announcement/announcement-tool/tool/src/java/org/sakaiproject/announcement/tool/AnnouncementAction.java
+===================================================================
+--- announcement/announcement-tool/tool/src/java/org/sakaiproject/announcement/tool/AnnouncementAction.java	(revision 14522)
++++ announcement/announcement-tool/tool/src/java/org/sakaiproject/announcement/tool/AnnouncementAction.java	(revision 14523)
+@@ -28,7 +28,9 @@
+ import java.util.Comparator;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Map;
+ import java.util.NoSuchElementException;
++import java.util.Properties;
+ import java.util.Stack;
+ import java.util.Vector;
+ 
+@@ -39,6 +41,7 @@
+ import org.sakaiproject.announcement.api.AnnouncementMessageHeader;
+ import org.sakaiproject.announcement.api.AnnouncementMessageHeaderEdit;
+ import org.sakaiproject.announcement.cover.AnnouncementService;
++import org.sakaiproject.announcement.tool.AnnouncementActionState.DisplayOptions;
+ import org.sakaiproject.authz.api.PermissionsHelper;
+ import org.sakaiproject.authz.cover.SecurityService;
+ import org.sakaiproject.cheftool.Context;
+@@ -760,8 +763,11 @@
+ 		Placement placement = ToolManager.getCurrentPlacement();
+ 		if (placement != null)
+ 		{
++			Properties props = placement.getPlacementConfig();
++			if(props.isEmpty())
++				props = placement.getConfig();
+ 			AnnouncementActionState.DisplayOptions disOptions = state.getDisplayOptions();
+-			disOptions.loadProperties(placement.getPlacementConfig());
++			disOptions.loadProperties(props);
+ 			context.put(VELOCITY_DISPLAY_OPTIONS, disOptions);
+ 		}
+ 		else
+@@ -3400,10 +3406,12 @@
+ 		AnnouncementActionState.DisplayOptions displayOptions = new AnnouncementActionState.DisplayOptions();
+ 		annState.setDisplayOptions(displayOptions);
+ 
+-		PortletConfig portletConfig = portlet.getPortletConfig();
++		//PortletConfig portletConfig = portlet.getPortletConfig();
++		//displayOptions.loadProperties(portletConfig.getInitParameters());
++		Properties registeredProperties = ToolManager.getCurrentTool().getRegisteredConfig();
++		displayOptions.loadProperties((Map)registeredProperties);
++		
+ 
+-		displayOptions.loadProperties(portletConfig.getInitParameters());
+-
+ 	} // initState
+ 
+ 	/**
+Index: announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml
+===================================================================
+--- announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml	(revision 14522)
++++ announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml	(revision 14523)
+@@ -9,11 +9,16 @@
+ 
+ 		<configuration name="channel" value="" />
+ 		<configuration name="pagesize" value="10" />
+-
++		<configuration name="days" value="10" />
++		<configuration name="items" value="3" />
++		<configuration name="length" value="50" />
++		
+ 		<category name="course" />
+-      <category name="project" />
+-      <category name="portfolio" />
++		<category name="project" />
+ 		<category name="myworkspace" />
++		<category name="GradToolsStudent" />
++		<category name="GradToolsDepartment" />
++		<category name="GradToolsRackham" />
+ 
+ 	</tool>
+ 
+Index: announcement/announcement-tool/tool/src/webapp/tools/sakai.synoptic.announcement.xml
+===================================================================
+--- announcement/announcement-tool/tool/src/webapp/tools/sakai.synoptic.announcement.xml	(revision 14522)
++++ announcement/announcement-tool/tool/src/webapp/tools/sakai.synoptic.announcement.xml	(revision 14523)
+@@ -12,7 +12,7 @@
+ 		<configuration name="length" value="50" />
+ 		<configuration name="showAllColumns" value="false" />
+ 		<configuration name="showOnlyOptionsButton" value="true" />
+-		<configuration name="showAnnouncementBody" value="true" />
++		<configuration name="showAnnouncementBody" value="false" />
+ 		<configuration name="channel" value="" />
+ 
+ 		<configuration name="reset.button" value="false" type="final" />
+
+svn diff -r15059:15060 https://source.sakaiproject.org/svn
+Index: announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml
+===================================================================
+--- announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml	(revision 15059)
++++ announcement/announcement-tool/tool/src/webapp/tools/sakai.announcements.xml	(revision 15060)
+@@ -9,12 +9,10 @@
+ 
+ 		<configuration name="channel" value="" />
+ 		<configuration name="pagesize" value="10" />
+-		<configuration name="days" value="10" />
+-		<configuration name="items" value="3" />
+-		<configuration name="length" value="50" />
+-		
++
+ 		<category name="course" />
+ 		<category name="project" />
++		<category name="portfolio" />
+ 		<category name="myworkspace" />
+ 		<category name="GradToolsStudent" />
+ 		<category name="GradToolsDepartment" />

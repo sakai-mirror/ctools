@@ -1,0 +1,142 @@
+Index: chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMigration.java
+===================================================================
+--- chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMigration.java	(revision 31885)
++++ chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMigration.java	(working copy)
+@@ -151,12 +151,20 @@
+       
+       String sql = getMessageFromBundle("select.oldchannels");
+       
++      int oldChannelsFound = 0;
++      int newChannelsWritten = 0;
++      
+       try {
+             stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(sql);
+             
+             try {
+                while (rs.next()) {
++            	   	oldChannelsFound++;
++            	   	
++            	   	if ((oldChannelsFound % 5000) == 0) {
++            	   			logger.info("Processed channels: "+oldChannelsFound);
++            	   	}
+                   /* 
+                    * CHANNEL_ID
+                    * XML
+@@ -175,6 +183,11 @@
+                      Clob xmlClob = (Clob) xml;
+                      doc = Xml.readDocumentFromStream(xmlClob.getAsciiStream());
+                   }
++                  
++                  if (doc == null) {
++                	  logger.error("error converting chat channel. skipping CHANNEL_ID: ["+oldId+"] XML: ["+xml+"]");
++                	  continue;
++                  }
+ 
+                   // verify the root element
+                   Element root = doc.getDocumentElement();
+@@ -183,7 +196,8 @@
+                   String newChannelId = escapeSpecialCharsForId(oldId);
+                   
+                   //TODO Chat lookup the config params?
+-                  
++
++                  newChannelsWritten++;
+                   String runSql = getMessageFromBundle("insert.channel");
+                   Object[] fields = new Object[] {newChannelId, context, null, title, "", "SelectMessagesByTime", 3, 0, 1, oldId, oldId};
+                   
+@@ -215,9 +229,12 @@
+             try {
+                 stmt.close();
+             } catch (Exception e) {
++            	logger.error("Unexpected error in chat channel conversion:"+e);
+             }
+         }
+         logger.debug("Migration task fininshed: runChannelMigration()");
++        logger.info("chat channel conversion done.  Old channels found: "
++        			+oldChannelsFound+" New channels written: "+newChannelsWritten);
+    }
+    
+    protected void runMessageMigration(Connection con) {
+@@ -226,12 +243,20 @@
+       
+       String sql = getMessageFromBundle("select.oldmessages");
+       
++      int oldMessagesFound = 0;
++      int newMessagesWritten = 0;
++      
+       try {
+             stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(sql);
+             
+             try {
+                while (rs.next()) {
++            	   oldMessagesFound++;
++            	   
++              	   	if ((oldMessagesFound % 5000) == 0) {
++        	   			logger.info("Processed messages: "+oldMessagesFound);
++        	   	}
+                   /*
+                    * MESSAGE_ID
+                    * CHANNEL_ID                            
+@@ -257,6 +282,13 @@
+                      doc = Xml.readDocumentFromStream(xmlClob.getAsciiStream());
+                   }
+ 
++                  if (doc == null) {
++                	  logger.error("error converting chat message. "
++                			  +"skipping CHANNEL_ID: ["+oldChannelId+"] MESSAGE_ID: ["+oldMessageId+"]"
++                			  + " xml: "+xml);
++                	  continue;
++                  }
++                  
+                   // verify the root element
+                   Element root = doc.getDocumentElement();
+                   String body = Xml.decodeAttribute(root, "body");
+@@ -264,6 +296,8 @@
+                   String newMessageId = oldMessageId;
+                   String runSql = getMessageFromBundle("insert.message");
+                   
++                  newMessagesWritten++;
++                  
+                   Object[] fields = new Object[] {
+                         escapeSpecialCharsForId(newMessageId), escapeSpecialCharsForId(oldChannelId), owner, messageDate, body, oldMessageId};
+                   
+@@ -287,10 +321,12 @@
+             try {
+                 stmt.close();
+             } catch (Exception e) {
++              	logger.error("Unexpected error in chat message conversion:"+e);
+             }
+         }
+         logger.debug("Migration task fininshed: runMessageMigration()");
+-      
++        logger.info("chat message conversion done.  Old messages found: "
++    			+oldMessagesFound+" New messages written: "+newMessagesWritten);
+    }
+ 
+    /**
+Index: chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java
+===================================================================
+--- chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java	(revision 31885)
++++ chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java	(working copy)
+@@ -334,10 +334,18 @@
+ 		  String migratedId= (String) values[5];
+ 		  
+ 		  logger.debug("migrate message: "+messageId+", "+channelId);
++
+ 		  
+ 	      ChatMessage message = getMigratedMessage(messageId);
+ 	      
+-	      if(message == null && body != null && !body.equals("")) {
++		  
++		  if (owner == null) {
++			  logger.warn("can't migrate message, owner is null. messageId: ["+messageId
++					  +"] channelId: ["+channelId+"]");
++			  return;
++		  }
++	      
++	      if(message == null && owner != null && body != null && !body.equals("")) {
+ 	    	  
+ 	    	  ChatChannel channel = getChatChannel(channelId);
+ 	    	  

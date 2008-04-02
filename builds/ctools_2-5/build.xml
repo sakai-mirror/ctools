@@ -1,0 +1,42 @@
+<project name="ctoolsBuild2" basedir="." default="buildCToolsImage" >
+
+  <!--
+  $Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
+  $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+  <property name="configs.dir" value="${basedir}/configs" />
+
+  <!-- Somethings are shared by every build -->
+  <property file="${configs.dir}/shared.properties" /> 
+
+  <!-- hold name of the files defining the build. -->
+  <!-- put default file name in a property so it can be overridden on the command line. -->
+  <property name="buildfilename" value="defaultbuild.properties" />
+  <property file="${user.dir}/${buildfilename}" /> 
+  <!-- <property file="${user.dir}/ctoolsbuild.properties" /> -->
+  <!-- <property file="${user.dir}/project.properties" /> -->
+  <!-- <property file="${user.dir}/{$ctoolsBuildFileName}" />  -->
+  <property file="${user.dir}/${ctoolsBuildFileName}" />  
+
+  <property name="scripts.dir" value="${basedir}/tools" />
+  <!--  <property name="work.dir" value="${basedir}/tools-work/${sakai.tag}/work.${type}" />  -->
+  <!-- <property name="work.dir" value="${basedir}/${sakai.tag}/work.${type}" />  -->
+  <!-- group the build directories. -->
+  <property name="work.dir" value="${basedir}/work/${sakai.tag}/work.${type}" /> 
+  <property name="patches.dir" value="${basedir}/patches" />
+  <property name="artifacts.dir" value="${basedir}/artifacts/${sakai.tag}.${type}" />
+
+  <import file="${scripts.dir}/build-type-${type}.xml" />  
+  <import file="${scripts.dir}/build-type-util.xml" /> 
+  <import file="${scripts.dir}/build-patch-util.xml" />
+
+  <target name="info" >
+    <echo> Base ant script to build CTools releases.</echo>
+  </target>
+
+</project>

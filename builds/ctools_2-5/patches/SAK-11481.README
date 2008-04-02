@@ -1,0 +1,3 @@
+This patch checked in a fix, then put in an alternative fix and backed
+out the first one.  Splitting the patch in two make it easy.  Some
+other alternatives did not patch cleanly.

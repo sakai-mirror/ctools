@@ -1,0 +1,314 @@
+Index: user/user-impl/impl/project.xml
+===================================================================
+--- user/user-impl/impl/project.xml	(revision 33946)
++++ user/user-impl/impl/project.xml	(working copy)
+@@ -122,6 +122,13 @@
+ 			<version>1.0.2</version>
+ 		</dependency>
+ 
++		<dependency>
++		  <groupId>${sakai.ehcache.groupId}</groupId>
++		  <artifactId>${sakai.ehcache.artifactId}</artifactId>
++		  <version>${sakai.ehcache.version}</version>
++		</dependency>
++
++
+ 	</dependencies>
+ 
+ 	<build>
+Index: user/user-impl/impl/src/java/org/sakaiproject/user/impl/DbUserService.java
+===================================================================
+--- user/user-impl/impl/src/java/org/sakaiproject/user/impl/DbUserService.java	(revision 33946)
++++ user/user-impl/impl/src/java/org/sakaiproject/user/impl/DbUserService.java	(working copy)
+@@ -27,6 +27,9 @@
+ import java.util.List;
+ import java.util.Vector;
+ 
++import net.sf.ehcache.Cache;
++import net.sf.ehcache.Element;
++
+ import org.apache.commons.logging.Log;
+ import org.apache.commons.logging.LogFactory;
+ import org.sakaiproject.db.api.SqlReader;
+@@ -38,6 +41,7 @@
+ import org.sakaiproject.util.StorageUser;
+ import org.sakaiproject.util.StringUtil;
+ 
++
+ /**
+  * <p>
+  * DbCachedUserService is an extension of the BaseUserService with a database storage backed up by an in-memory cache.
+@@ -119,6 +123,10 @@
+ 		m_autoDdl = new Boolean(value).booleanValue();
+ 	}
+ 
++
++    // add for eid<->id ehcache 
++    protected Cache cache = null;
++
+ 	/**********************************************************************************************************************************************************************************************************************************************************
+ 	 * Init and Destroy
+ 	 *********************************************************************************************************************************************************************************************************************************************************/
+@@ -179,6 +187,10 @@
+ 	 */
+ 	protected class DbStorage extends BaseDbFlatStorage implements Storage, SqlReader
+ 	{
++		private static final String EIDCACHE = "eid:";
++		private static final String IDCACHE = "id:";
++		private static final String CACHE_NAME = "DbUserService.DbStorage";
++		
+ 		/** A prior version's storage model. */
+ 		protected Storage m_oldStorage = null;
+ 
+@@ -476,7 +488,12 @@
+ 			fields[0] = id;
+ 			fields[1] = eid;
+ 
+-			return m_sql.dbWrite(statement, fields);
++			if ( m_sql.dbWrite(statement, fields) ) {
++				cache.put(new Element(IDCACHE+eid,id));
++				cache.put(new Element(EIDCACHE+id,eid));
++				return true;
++			}
++			return false;
+ 		}
+ 
+ 		/**
+@@ -505,6 +522,7 @@
+ 			// we have a mapping, is it what we want?
+ 			if (eidAlready.equals(eid)) return true;
+ 
++			// update the cache
+ 			// we have a mapping that needs to be updated
+ 			String statement = "update SAKAI_USER_ID_MAP set EID=? where USER_ID=?";
+ 
+@@ -512,7 +530,13 @@
+ 			fields[0] = eid;
+ 			fields[1] = id;
+ 
+-			return m_sql.dbWrite(statement, fields);
++			if ( m_sql.dbWrite(statement, fields) ) {
++			    cache.put(new Element(IDCACHE+eid,id));
++			    cache.put(new Element(EIDCACHE+id,eid));
++			    return true;
++			}
++			return false;
++			//return m_sql.dbWrite(statement, fields);
+ 		}
+ 
+ 		/**
+@@ -526,6 +550,13 @@
+ 			// if we are not doing separate id/eid, do nothing
+ 			if (!m_separateIdEid) return;
+ 
++			// clear both sides of the cache
++			String eid = checkMapForEid(id);
++			if ( eid != null ) {
++			    cache.remove(IDCACHE+eid);
++			}
++			cache.remove(EIDCACHE+id);
++
+ 			String statement = "delete from SAKAI_USER_ID_MAP where USER_ID=?";
+ 
+ 			Object fields[] = new Object[1];
+@@ -546,6 +577,14 @@
+ 			// if we are not doing separate id/eid, return the id
+ 			if (!m_separateIdEid) return id;
+ 
++
++			{
++			    Element e = cache.get(EIDCACHE+id);
++			    if ( e != null ) {
++				return (String) e.getObjectValue();
++			    }
++			}
++
+ 			String statement = "select EID from SAKAI_USER_ID_MAP where USER_ID=?";
+ 			Object fields[] = new Object[1];
+ 			fields[0] = id;
+@@ -554,12 +593,15 @@
+ 			if (rv.size() > 0)
+ 			{
+ 				String eid = (String) rv.get(0);
++				cache.put(new Element(EIDCACHE+id,eid));
+ 				return eid;
+ 			}
++			cache.put(new Element(EIDCACHE+id,null));
+ 
+ 			return null;
+ 		}
+ 
++
+ 		/**
+ 		 * Check the id -> eid mapping: lookup this eid and return the id if found
+ 		 * 
+@@ -572,6 +614,14 @@
+ 			// if we are not doing separate id/eid, do nothing
+ 			if (!m_separateIdEid) return eid;
+ 
++
++			{
++			    Element e = cache.get(IDCACHE+eid);
++			    if ( e != null ) {
++				return (String) e.getObjectValue();
++			    }
++			}
++
+ 			String statement = "select USER_ID from SAKAI_USER_ID_MAP where EID=?";
+ 			Object fields[] = new Object[1];
+ 			fields[0] = eid;
+@@ -580,10 +630,30 @@
+ 			if (rv.size() > 0)
+ 			{
+ 				String id = (String) rv.get(0);
++				cache.put(new Element(IDCACHE+eid,id));
+ 				return id;
+ 			}
+ 
++			cache.put(new Element(IDCACHE+eid,null));
+ 			return null;
+ 		}
++		
++
+ 	}
++
++	/**
++	 * @return the cache
++	 */
++	public Cache getCache()
++	{
++		return cache;
++	}
++
++	/**
++	 * @param cache the cache to set
++	 */
++	public void setCache(Cache cache)
++	{
++		this.cache = cache;
++	}
+ }
+Index: user/user-impl/pack/src/webapp/WEB-INF/components.xml
+===================================================================
+--- user/user-impl/pack/src/webapp/WEB-INF/components.xml	(revision 33946)
++++ user/user-impl/pack/src/webapp/WEB-INF/components.xml	(working copy)
+@@ -27,6 +27,9 @@
+  		<property name="cacheCleanerMinutes"><value>15</value></property>
+  		<property name="caseSensitiveId"><value>false</value></property>
+  		<property name="separateIdEid"><value>true</value></property>
++ 		
++ 		<!-- This is s LRU cache managed by the memory service currently using ehcache -->
++ 		<property name="cache" ><ref bean="org.sakaiproject.user.api.UserDirectoryService.cache" /></property>
+  
+ 	</bean>
+ 
+@@ -62,3 +65,13 @@
+ 	</bean>
+ 
+ </beans>
++	
++	<bean id="org.sakaiproject.user.api.UserDirectoryService.cache" 
++	     class="org.springframework.cache.ehcache.EhCacheFactoryBean">
++ 		<property name="cacheManager">
++    		<ref bean="org.sakaiproject.memory.api.MemoryService.cacheManager"/>
++  		</property>
++  		<property name="cacheName">
++    		<value>org.sakaiproject.user.api.UserDirectoryService</value>
++  		</property>
++	</bean>
+Index: memory/memory-impl/impl/project.xml
+===================================================================
+--- memory/memory-impl/impl/project.xml	(revision 33946)
++++ memory/memory-impl/impl/project.xml	(working copy)
+@@ -62,6 +62,15 @@
+ 
+ 		<!-- java source -->
+ 		<sourceDirectory>src/java</sourceDirectory>
++		
++		<resources>
++		  <resource>
++		    <directory>${basedir}/src/java</directory>
++		    <includes>
++		      <include>**/*.xml</include>
++		    </includes>
++		  </resource>
++		</resources><!-- java source -->
+ 
+ 	</build>
+ 
+Index: memory/memory-impl/impl/src/java/org/sakaiproject/memory/impl/MemCache.java
+===================================================================
+--- memory/memory-impl/impl/src/java/org/sakaiproject/memory/impl/MemCache.java	(revision 33946)
++++ memory/memory-impl/impl/src/java/org/sakaiproject/memory/impl/MemCache.java	(working copy)
+@@ -30,6 +30,7 @@
+ import java.util.Observer;
+ import java.util.Set;
+ import java.util.Vector;
++import java.util.concurrent.ConcurrentHashMap;
+ 
+ import org.apache.commons.logging.Log;
+ import org.apache.commons.logging.LogFactory;
+@@ -40,8 +41,6 @@
+ import org.sakaiproject.memory.api.CacheRefresher;
+ import org.sakaiproject.memory.api.DerivedCache;
+ 
+-import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
+-
+ /**
+  * <p>
+  * A Cache of objects with keys with a limited lifespan.
+@@ -250,7 +249,7 @@
+ 		m_memoryService = memoryService;
+ 		m_eventTrackingService = eventTrackingService;
+ 
+-		m_map = new ConcurrentReaderHashMap();
++		m_map = new ConcurrentHashMap();
+ 
+ 		// register as a cacher
+ 		m_memoryService.registerCacher(this);
+Index: memory/memory-impl/impl/src/java/org/sakaiproject/memory/impl/MultiRefCacheImpl.java
+===================================================================
+--- memory/memory-impl/impl/src/java/org/sakaiproject/memory/impl/MultiRefCacheImpl.java	(revision 33946)
++++ memory/memory-impl/impl/src/java/org/sakaiproject/memory/impl/MultiRefCacheImpl.java	(working copy)
+@@ -26,6 +26,7 @@
+ import java.util.Map;
+ import java.util.Observable;
+ import java.util.Vector;
++import java.util.concurrent.ConcurrentHashMap;
+ 
+ import org.apache.commons.logging.Log;
+ import org.apache.commons.logging.LogFactory;
+@@ -34,8 +35,6 @@
+ import org.sakaiproject.event.api.EventTrackingService;
+ import org.sakaiproject.memory.api.MultiRefCache;
+ 
+-import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
+-
+ /**
+  * <p>
+  * MultiRefCacheImpl implements the MultiRefCache.
+@@ -97,7 +96,7 @@
+ 	{
+ 		super(memoryService, eventTrackingService, sleep, "");
+ 		m_softRefs = false;
+-		m_refs = new ConcurrentReaderHashMap();
++		m_refs = new ConcurrentHashMap();
+ 	}
+ 
+ 	/**
+Index: memory/memory-impl/pack/src/webapp/WEB-INF/components.xml
+===================================================================
+--- memory/memory-impl/pack/src/webapp/WEB-INF/components.xml	(revision 33946)
++++ memory/memory-impl/pack/src/webapp/WEB-INF/components.xml	(working copy)
+@@ -16,4 +16,11 @@
+  		<property name="cacheLogging"><value>false</value></property>
+ 	</bean>
+ 
++
++	<bean id="org.sakaiproject.memory.api.MemoryService.cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
++  		<property name="configLocation">
++    	<value>classpath:org/sakaiproject/memory/api/ehcache.xml</value>
++  		</property>
++	</bean>
++
+ </beans>

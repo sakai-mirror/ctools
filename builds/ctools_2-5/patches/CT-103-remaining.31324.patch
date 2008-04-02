@@ -1,0 +1,77 @@
+--- SiteAction.java	2007-06-07 15:07:16.000000000 -0400
++++ SiteAction.java	2007-06-07 15:06:04.000000000 -0400
+@@ -7914,6 +7914,74 @@
+ 
+ 	} // getParticipantList
+ 
++	private Vector prepareParticipants(String realmId, List providerCourseList) {
++		Vector participants = new Vector();
++		try {
++			AuthzGroup realm = AuthzGroupService.getAuthzGroup(realmId);
++			realm.getProviderGroupId();
++			
++			// iterate through the provider list first
++			for (Iterator i=providerCourseList.iterator(); i.hasNext();)
++			{
++				String providerCourseEid = (String) i.next();
++				Set enrollmentSet = cms.getEnrollments(providerCourseEid);
++				for (Iterator eIterator = enrollmentSet.iterator();eIterator.hasNext();)
++				{
++					Enrollment e = (Enrollment) eIterator.next();
++					try 
++					{
++						User user = UserDirectoryService.getUserByEid(e.getUserId());
++						Member member = realm.getMember(user.getId());
++						if (member != null && member.isProvided())
++						{
++							// add provided participant
++							Participant participant = new Participant();
++							participant.course = cms.getSection(providerCourseEid).getTitle();
++							participant.credits = e.getCredits();
++							participant.name = user.getSortName();
++							participant.providerRole = member.getRole()!=null?member.getRole().getId():"";
++							participant.regId = "";
++							participant.removeable = false;
++							participant.role = member.getRole()!=null?member.getRole().getId():"";
++							participant.section = providerCourseEid;
++							participant.uniqname = user.getEid();
++							participants.add(participant);
++						}
++					} catch (UserNotDefinedException exception) {
++						// deal with missing user quietly without throwing a
++						// warning message
++						M_log.warn(exception.getMessage());
++					}
++				}
++			}
++			
++			// now for those not provided users
++			Set grants = realm.getMembers();
++			for (Iterator i = grants.iterator(); i.hasNext();) {
++				Member g = (Member) i.next();
++				if (!g.isProvided())
++				{
++					try {
++						User user = UserDirectoryService.getUserByEid(g.getUserEid());
++						Participant participant = new Participant();
++						participant.name = user.getSortName();
++						participant.uniqname = user.getId();
++						participant.role = g.getRole()!=null?g.getRole().getId():"";
++						participant.removeable = true;
++						participants.add(participant);
++					} catch (UserNotDefinedException e) {
++						// deal with missing user quietly without throwing a
++						// warning message
++						M_log.warn(e.getMessage());
++					}
++				}
++			}
++
++		} catch (GroupNotDefinedException ee) {
++			M_log.warn(this + "  IdUnusedException " + realmId);
++		}
++		return participants;
++	}
+ 
+ 	/**
+ 	 * getRoles

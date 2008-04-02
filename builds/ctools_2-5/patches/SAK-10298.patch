@@ -1,0 +1,15 @@
+svn diff -r31328:31329 https://source.sakaiproject.org/svn
+Index: site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-newSiteCourseManual.vm
+===================================================================
+--- site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-newSiteCourseManual.vm	(revision 31328)
++++ site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-newSiteCourseManual.vm	(revision 31329)
+@@ -110,8 +110,7 @@
+ 								#set($field = $!form_requiredFields.get($fieldCount))
+ 								#set($fieldLabel = $!form_requiredFields.get($fieldCount).labelKey)
+ 								#set($fieldSize = 8)
+-								#set($fieldSize = $!form_requiredFieldsSizes.get($fieldCount).getMaxSize())
+-								
++								#set($fieldSize = $!form_requiredFields.get($fieldCount).getMaxSize())
+ 								<td headers="$fieldLabel" class="shorttext">
+ 									<label  for="id-$fieldLabel$rowcount" class="skip">$fieldLabel</label>
+ 									<input type="text" name="$fieldLabel$k"  tabindex="$count" size="$!fieldSize" maxlength="$!fieldSize" value="$!courseFieldValues.get($fieldCount).getValue()"  id="id-$fieldLabel$rowcount" /> 

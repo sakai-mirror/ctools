@@ -1,0 +1,116 @@
+Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java
+===================================================================
+--- site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 38022)
++++ site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 38024)
+@@ -3234,7 +3234,7 @@
+ 				try
+ 				{
+ 					Section s = cms.getSection(sectionId);
+-					sectionTitleString = (i>1)?sectionTitleString + "<br />" + s.getTitle():s.getTitle(); 
++					sectionTitleString = (i>0)?sectionTitleString + "<br />" + s.getTitle():s.getTitle(); 
+ 				}
+ 				catch (Exception e)
+ 				{
+@@ -7963,49 +7963,52 @@
+ 		if (enrollmentSet != null)
+ 		{
+ 			Set enrollments = cms.getEnrollments(enrollmentSet.getEid());
+-			for (Iterator eIterator = enrollments.iterator();eIterator.hasNext();)
++			if (enrollments != null)
+ 			{
+-				Enrollment e = (Enrollment) eIterator.next();
+-				try 
++				for (Iterator eIterator = enrollments.iterator();eIterator.hasNext();)
+ 				{
+-					User user = UserDirectoryService.getUserByEid(e.getUserId());
+-					String userId = user.getId();
+-					Member member = realm.getMember(userId);
+-					if (member != null && member.isProvided())
++					Enrollment e = (Enrollment) eIterator.next();
++					try 
+ 					{
+-						try
++						User user = UserDirectoryService.getUserByEid(e.getUserId());
++						String userId = user.getId();
++						Member member = realm.getMember(userId);
++						if (member != null && member.isProvided())
+ 						{
+-						// get or add provided participant
+-						Participant participant;
+-						if (participantsMap.containsKey(userId))
+-						{
+-							participant = (Participant) participantsMap.get(userId);
+-							participant.section = participant.section.concat(", <br />" + sectionTitle);
+-							participant.credits = participant.credits.concat(", <br />" + e.getCredits());
++							try
++							{
++							// get or add provided participant
++							Participant participant;
++							if (participantsMap.containsKey(userId))
++							{
++								participant = (Participant) participantsMap.get(userId);
++								participant.section = participant.section.concat(", <br />" + sectionTitle);
++								participant.credits = participant.credits.concat(", <br />" + e.getCredits());
++							}
++							else
++							{
++								participant = new Participant();
++								participant.credits = e.getCredits();
++								participant.name = user.getSortName();
++								participant.providerRole = member.getRole()!=null?member.getRole().getId():"";
++								participant.regId = "";
++								participant.removeable = false;
++								participant.role = member.getRole()!=null?member.getRole().getId():"";
++								participant.section = sectionTitle;
++								participant.uniqname = userId;
++							}
++							participantsMap.put(userId, participant);
++							}
++							catch (Exception ee)
++							{
++								M_log.warn(ee.getMessage());
++							}
+ 						}
+-						else
+-						{
+-							participant = new Participant();
+-							participant.credits = e.getCredits();
+-							participant.name = user.getSortName();
+-							participant.providerRole = member.getRole()!=null?member.getRole().getId():"";
+-							participant.regId = "";
+-							participant.removeable = false;
+-							participant.role = member.getRole()!=null?member.getRole().getId():"";
+-							participant.section = sectionTitle;
+-							participant.uniqname = userId;
+-						}
+-						participantsMap.put(userId, participant);
+-						}
+-						catch (Exception ee)
+-						{
+-							M_log.warn(ee.getMessage());
+-						}
++					} catch (UserNotDefinedException exception) {
++						// deal with missing user quietly without throwing a
++						// warning message
++						M_log.warn(exception.getMessage());
+ 					}
+-				} catch (UserNotDefinedException exception) {
+-					// deal with missing user quietly without throwing a
+-					// warning message
+-					M_log.warn(exception.getMessage());
+ 				}
+ 			}
+ 		}
+Index: ctools-providers/component/impl/src/java/org/sakaiproject/coursemanagement/impl/CourseManagementServiceUnivOfMichImpl.java
+===================================================================
+--- ctools-providers/component/impl/src/java/org/sakaiproject/coursemanagement/impl/CourseManagementServiceUnivOfMichImpl.java	(revision 38022)
++++ ctools-providers/component/impl/src/java/org/sakaiproject/coursemanagement/impl/CourseManagementServiceUnivOfMichImpl.java	(revision 38024)
+@@ -344,7 +344,7 @@
+ 			Set<String> instructors = new HashSet<String>();
+ 			instructors.add("instructorOne");
+ 	
+-			EnrollmentSet eSet = new EnrollmentSetCmImpl(coEid,coEid,coEid, "lct","3", co, instructors);
++			EnrollmentSet eSet = new EnrollmentSetCmImpl(providerId,providerId,providerId, "lct","3", co, instructors);
+ 	
+ 			SectionCmImpl section = new SectionCmImpl();
+ 			section.setCategory(getUmiac().getClassCategory(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]));

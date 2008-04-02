@@ -1,0 +1,13 @@
+Index: podcasts/podcasts-app/src/webapp/tools/sakai.podcasts.xml
+===================================================================
+--- podcasts/podcasts-app/src/webapp/tools/sakai.podcasts.xml	(revision 33195)
++++ podcasts/podcasts-app/src/webapp/tools/sakai.podcasts.xml	(working copy)
+@@ -6,7 +6,7 @@
+ 			title="Podcasts"
+ 			description="For managing individual podcast and podcast feed information.">
+ 			
+-		<category name="course" />
++		 
+ 		<category name="project" />
+ 
+ 		<configuration name="functions.require" value="content.read" /> 

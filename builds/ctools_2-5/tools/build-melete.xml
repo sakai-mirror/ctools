@@ -1,0 +1,91 @@
+<project name="build-melete" basedir="." default="meleteInfo" >
+
+  <!--
+
+   $Id$
+   $HeadURL$
+   
+   Get the melete tar from svn, untar it, update the configuration files, and then
+   preconfigure the conf directory for tomcat.
+
+  -->
+
+  <!-- 
+       TTD:
+       
+  -->
+
+  <target name="meleteInfo" unless="melete.install.skip" >
+    <echo>
+      This will include the melete tool into Sakai for a ctools environment.  It should be called
+      from the master build file, not on its own.
+
+      The current configuration values are below.  They may be overridden by a properties file for
+      a particular build.
+
+      melete.install.skip=[${melete.install.skip}]
+      melete.svnurl=${melete.svnurl} 
+      melete.revision=${melete.revision} 
+      melete.archivename=${melete.archivename} 
+
+    </echo>
+  </target>
+
+  <!-- ================================================== -->
+  <!--           deal with Melete specific source         -->
+  <!-- ================================================== -->
+
+  <target name="extractMelete" unless="melete.install.skip" >
+    <echo> extracting melete:</echo>
+    <!-- It doesn't make sense to checkout the melete archive since it is just a tar of the 
+    source packaged here for our use.  We don't have the source seperately in svn so 
+    export add value. -->
+    <execSvnCmd cmd="export" url="${melete.svnurl}" revision="${melete.revision}" 
+		destination="${melete.archivename}"/> 
+    <untar src="${build.dir}/${melete.archivename}" dest="${build.dir}" compression="gzip" />
+    <delete file="${build.dir}/${melete.archivename}" />
+  </target>
+
+  <target name="editMelete" unless="melete.install.skip">
+    
+    <!-- Paths are now inconsistant, so treat each one separately. -->
+    <replaceregexp match="c:" replace="/melete" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<!-- <include name="meleteDocs.xml" /> -->
+	<include name="**/web.xml" />
+      </fileset>
+    </replaceregexp>
+
+    <replaceregexp match="/melete\\meleteDocs" replace="/melete/meleteDocs" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<!-- <include name="meleteDocs.xml" /> -->
+	<include name="**/web.xml" />
+      </fileset>
+    </replaceregexp>
+
+    <replaceregexp match="/var/melete/packagefiles" replace="/melete/packagefiles" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<!-- <include name="meleteDocs.xml" /> -->
+	<include name="**/web.xml" />
+      </fileset>
+    </replaceregexp>
+
+    <replaceregexp match="/var/meleteDocs" replace="/melete/meleteDocs" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<include name="meleteDocs.xml" /> 
+	<!-- <include name="**/web.xml" /> -->
+      </fileset>
+    </replaceregexp>
+
+  </target>
+
+  <target name="imageMelete" unless="melete.install.skip">
+    <echo>update image for melete</echo>
+    <copy todir="${image.dir}/conf/Catalina/localhost">
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<include name="meleteDocs.xml" />
+      </fileset>
+    </copy>
+  </target>
+
+</project>

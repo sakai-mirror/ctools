@@ -1,0 +1,15 @@
+
+Index: search/search-impl/impl/src/java/org/sakaiproject/search/component/service/impl/SearchResultImpl.java
+===================================================================
+--- search/search-impl/impl/src/java/org/sakaiproject/search/component/service/impl/SearchResultImpl.java	(revision 21914)
++++ search/search-impl/impl/src/java/org/sakaiproject/search/component/service/impl/SearchResultImpl.java	(working copy)
+@@ -150,7 +150,8 @@
+ 
+ 	public String getUrl()
+ 	{
+-		return doc.get(SearchService.FIELD_URL);
++		return StringUtils.
++			escapeHtml(doc.get(SearchService.FIELD_URL),false);
+ 	}
+ 
+ 	public String getTitle()

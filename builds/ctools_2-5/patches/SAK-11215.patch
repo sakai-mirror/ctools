@@ -1,0 +1,129 @@
+svn diff -r34224:34225 https://source.sakaiproject.org/svn
+Index: assignment/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java
+===================================================================
+--- assignment/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java	(revision 34224)
++++ assignment/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java	(revision 34225)
+@@ -9316,6 +9328,29 @@
+ 		}
+ 	}
+ 
++	private String getBodyTextFromZipHtml(ZipInputStream zin)
++	{
++		String rv = "";
++		try
++		{
++			rv = StringUtil.trimToNull(readIntoString(zin));
++		}
++		catch (IOException e)
++		{
++			Log.debug("chef", this + " " + e.toString());
++		}
++		if (rv != null)
++		{
++			int start = rv.indexOf("<body>");
++			int end = rv.indexOf("</body>");
++			if (start != -1 && end != -1)
++			{
++				// get the text in between
++				rv = rv.substring(start+6, end);
++			}
++		}
++		return rv;
++	}
+ 		private byte[] readIntoBytes(ZipInputStream zin, String fName, long length) throws IOException {
+ 		
+ 			StringBuffer b = new StringBuffer();
+@@ -9346,14 +9381,31 @@
+ 			return data;
+ 	}
+ 	
+-	private String readIntoString(ZipInputStream zin) throws IOException {
+-		byte[] buf = new byte[1024];
+-		int len;
+-		StringBuffer b = new StringBuffer();
+-		while ((len = zin.read(buf)) > 0) {
+-		    b.append(new String(buf));
+-		}
+-		return b.toString();
++	private String readIntoString(ZipInputStream zin) throws IOException 
++	{
++		StringBuffer buffer = new StringBuffer();
++		int size = 2048;
++		byte[] data = new byte[2048];
++		while (true)
++		{
++			try
++			{
++				size = zin.read(data, 0, data.length);
++				if (size > 0)
++				{
++					buffer.append(new String(data, 0, size));
++	             }
++	             else
++	             {
++	                 break;
++	             }
++			}
++			catch (IOException e)
++			{
++				Log.debug("chef", "readIntoString " + e.toString());
++			}
++         }
++		return buffer.toString();
+ 	}
+ 	/**
+ 	 * 
+Index: assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java
+===================================================================
+--- assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java	(revision 34224)
++++ assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java	(revision 34225)
+@@ -3493,14 +3493,18 @@
+ 											// create the text file only when a text submission is allowed
+ 											ZipEntry textEntry = new ZipEntry(submittersName + submittersString + "_submissionText.html");
+ 											out.putNextEntry(textEntry);
+-											out.write(submittedText.getBytes());
++											byte[] text = submittedText.getBytes();
++											out.write(text);
++											textEntry.setSize(text.length);
+ 											out.closeEntry();
+ 										}
+ 										
+ 										// the comments.txt file to show instructor's comments
+ 										ZipEntry textEntry = new ZipEntry(submittersName + "comments.html");
+ 										out.putNextEntry(textEntry);
+-										out.write(FormattedText.encodeUnicode(s.getFeedbackComment()).getBytes());
++										byte[] b = FormattedText.encodeUnicode(s.getFeedbackComment()).getBytes();
++										out.write(b);
++										textEntry.setSize(b.length);
+ 										out.closeEntry();
+ 		
+ 										// create the attachment file(s)
+@@ -3592,7 +3596,9 @@
+ 			// create a grades.csv file into zip
+ 			ZipEntry gradesCSVEntry = new ZipEntry(root + "grades.csv");
+ 			out.putNextEntry(gradesCSVEntry);
+-			out.write(gradesBuffer.toString().getBytes());
++			byte[] grades = gradesBuffer.toString().getBytes();
++			out.write(grades);
++			gradesCSVEntry.setSize(grades.length);
+ 			out.closeEntry();
+ 			
+ 			// Complete the ZIP file
+@@ -7848,7 +7854,7 @@
+ 				{
+ 					if (getReturned())
+ 					{
+-						if (returnTime.before(submitTime))
++						if (returnTime != null && returnTime.before(submitTime))
+ 						{
+ 							if (!getGraded())
+ 							{
+@@ -7919,7 +7925,7 @@
+ 				{
+ 					if (getReturned())
+ 					{
+-						if (lastModTime.after(returnTime) && !allowGrade)
++						if (lastModTime != null && returnTime != null && lastModTime.after(returnTime) && !allowGrade)
+ 						{
+ 							// working on a returned submission now
+ 							retVal = rb.getString("gen.dra2") + " " + rb.getString("gen.inpro");

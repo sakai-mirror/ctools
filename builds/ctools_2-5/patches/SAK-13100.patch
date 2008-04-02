@@ -1,0 +1,69 @@
+Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java
+===================================================================
+--- content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java	(revision 41077)
++++ content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java	(working copy)
+@@ -566,34 +566,36 @@
+ 	
+ 	public boolean readyToUseFilesizeColumn()
+ 	{
+-		if(!filesizeColumnExists)
+-		{
+-			// do nothing
+-		}
+-		else if(filesizeColumnReady)
+-		{
+-			// do nothing
+-		}
+-		else 
+-		{
+-			long now = TimeService.newTime().getTime();
+-			if(now > filesizeColumnCheckExpires)
+-			{
+-				// cached value has expired -- time to renew
+-				int filesizeColumnCheckNullCount = countNullFilesizeValues();
+-				if(filesizeColumnCheckNullCount > 0)
+-				{
+-					filesizeColumnCheckExpires = now + TWENTY_MINUTES;
+-					M_log.debug("Conversion of the ContentHostingService database tables is needed to improve performance");
+-				}
+-				else
+-				{
+-					String highlight = "\n====================================================\n====================================================\n";
+-					M_log.info(highlight + "Conversion of the ContentHostingService database tables is complete.\nUsing new filesize column" + highlight);
+-					filesizeColumnReady = true;
+-				}
+-			}
+-		}
++	    filesizeColumnReady = false;
++
++// 		if(!filesizeColumnExists)
++// 		{
++// 			// do nothing
++// 		}
++// 		else if(filesizeColumnReady)
++// 		{
++// 			// do nothing
++// 		}
++// 		else 
++// 		{
++// 			long now = TimeService.newTime().getTime();
++// 			if(now > filesizeColumnCheckExpires)
++// 			{
++// 				// cached value has expired -- time to renew
++// 				int filesizeColumnCheckNullCount = countNullFilesizeValues();
++// 				if(filesizeColumnCheckNullCount > 0)
++// 				{
++// 					filesizeColumnCheckExpires = now + TWENTY_MINUTES;
++// 					M_log.debug("Conversion of the ContentHostingService database tables is needed to improve performance");
++// 				}
++// 				else
++// 				{
++// 					String highlight = "\n====================================================\n====================================================\n";
++// 					M_log.info(highlight + "Conversion of the ContentHostingService database tables is complete.\nUsing new filesize column" + highlight);
++// 					filesizeColumnReady = true;
++// 				}
++// 			}
++// 		}
+ 		return filesizeColumnReady;
+ 	}
+ 	

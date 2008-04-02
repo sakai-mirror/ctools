@@ -1,0 +1,84 @@
+svn diff -r32172:32173 https://source.sakaiproject.org/svn
+Index: content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesHelperAction.java
+===================================================================
+--- content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesHelperAction.java	(revision 32172)
++++ content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesHelperAction.java	(revision 32173)
+@@ -27,6 +27,7 @@
+ import java.net.MalformedURLException;
+ import java.util.ArrayList;
+ import java.util.Arrays;
++import java.util.Collection;
+ import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.List;
+@@ -219,6 +220,30 @@
+ 
+ 		ToolSession toolSession = SessionManager.getCurrentToolSession();
+ 		ResourceToolActionPipe pipe = (ResourceToolActionPipe) toolSession.getAttribute(ResourceToolAction.ACTION_PIPE);
++		if(pipe == null)
++		{
++			String attributes = "ResourcesHelperAction.buildMainPanelContext() SAK-8449 dump of state.attributes:\n";
++			List<String> attrNames = state.getAttributeNames();
++			for(String attrName : attrNames)
++			{
++				Object val = state.getAttribute(attrName);
++				if(val instanceof Collection)
++				{
++					int i = 0;
++					for(Object obj : (Collection) val)
++					{
++						attributes += "\t" + attrName + "[" + i + "] ==> " + obj + "\n";
++						i++;
++					}
++				}
++				else
++				{
++					attributes += "\t" + attrName + " ==> " + val + "\n";
++				}
++			}
++			logger.debug(attributes, new Throwable());
++			return null;
++		}
+ 		if(pipe.isActionCompleted())
+ 		{
+ 			return null;
+svn diff -r32173:32174 https://source.sakaiproject.org/svn
+Index: content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesHelperAction.java
+===================================================================
+--- content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesHelperAction.java	(revision 32173)
++++ content/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesHelperAction.java	(revision 32174)
+@@ -28,6 +28,7 @@
+ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.Collection;
++import java.util.Enumeration;
+ import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.List;
+@@ -241,6 +242,26 @@
+ 					attributes += "\t" + attrName + " ==> " + val + "\n";
+ 				}
+ 			}
++			attributes += "ResourcesHelperAction.buildMainPanelContext() SAK-8449 dump of toolSession.attributes:\n";
++			Enumeration toolNames = toolSession.getAttributeNames();
++			while(toolNames.hasMoreElements())
++			{
++				String name = (String) toolNames.nextElement();
++				Object val = toolSession.getAttribute(name);
++				if(val instanceof Collection)
++				{
++					int i = 0;
++					for(Object obj : (Collection) val)
++					{
++						attributes += "\t" + name + "[" + i + "] ==> " + obj + "\n";
++						i++;
++					}
++				}
++				else
++				{
++					attributes += "\t" + name + " ==> " + val + "\n";
++				}
++			}
+ 			logger.debug(attributes, new Throwable());
+ 			return null;
+ 		}

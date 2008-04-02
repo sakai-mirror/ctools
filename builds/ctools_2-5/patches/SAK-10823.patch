@@ -1,0 +1,17 @@
+svn diff -r32926:32927 https://source.sakaiproject.org/svn
+Index: assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java
+===================================================================
+--- assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java	(revision 32926)
++++ assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java	(revision 32927)
+@@ -1922,6 +1922,11 @@
+ 				// releasing a submitted assignment or releasing grade to an unsubmitted assignment
+ 				EventTrackingService.post(EventTrackingService.newEvent(EVENT_GRADE_ASSIGNMENT_SUBMISSION, submissionRef, true));
+ 			}
++			else if (submittedTime == null) /*grading non-submission*/
++			{
++				// releasing a submitted assignment or releasing grade to an unsubmitted assignment
++				EventTrackingService.post(EventTrackingService.newEvent(EVENT_GRADE_ASSIGNMENT_SUBMISSION, submissionRef, true));
++			}
+ 			else
+ 			{
+ 				// submitting a submission

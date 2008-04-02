@@ -1,0 +1,246 @@
+Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/PresenceObserverHelper.java
+===================================================================
+--- chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/PresenceObserverHelper.java	(revision 36795)
++++ chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/PresenceObserverHelper.java	(working copy)
+@@ -96,6 +96,16 @@
+       return PresenceService.getPresentUsers(location);
+    }
+    
++   /**
++    * This method is called to find out if there are other users in this location.
++    * @return count
++    * 	       The number of sessions present in this location.
++    */
++   public int getPresentSessionsCount() 
++   {
++      return PresenceService.getPresentSessionsCount(location);
++   }
++
+    public String getLocation()
+    {
+       return location;
+Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java
+===================================================================
+--- chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java	(revision 36795)
++++ chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java	(working copy)
+@@ -313,9 +313,11 @@
+     * this tool isn't updating the presence any longer thus isn't in the location
+     * thus doesn't need to observe the presence of the room.
+     */
++   
++   // new impl that counts the number of system in the location
+    public void userLeft(String location, String user)
+    {
+-      if(presenceChannelObserver != null && presenceChannelObserver.getPresentUsers().size() == 0) {
++      if(presenceChannelObserver != null && presenceChannelObserver.getPresentSessionsCount() == 0) {
+          presenceChannelObserver.endObservation();
+          getChatManager().removeRoomListener(this, currentChannel.getChatChannel().getId());
+          presenceChannelObserver = null;
+@@ -324,6 +326,17 @@
+    }
+ 
+ 
++   // old impl that looked at list of users present in the location.
++//   public void userLeft(String location, String user)
++//   {
++//      if(presenceChannelObserver != null && presenceChannelObserver.getPresentUsers().size() == 0) {
++//         presenceChannelObserver.endObservation();
++//         getChatManager().removeRoomListener(this, currentChannel.getChatChannel().getId());
++//         presenceChannelObserver = null;
++//      } else
++//         m_courierService.deliver(new DirectRefreshDelivery(sessionId+location, "Presence"));
++//   }
++
+    
+    //********************************************************************
+    // Tool Process Actions
+Index: event/event-impl/impl/src/java/org/sakaiproject/event/impl/UsageSessionServiceAdaptor.java
+===================================================================
+--- event/event-impl/impl/src/java/org/sakaiproject/event/impl/UsageSessionServiceAdaptor.java	(revision 28023)
++++ event/event-impl/impl/src/java/org/sakaiproject/event/impl/UsageSessionServiceAdaptor.java	(working copy)
+@@ -363,6 +363,16 @@
+ 	/**
+ 	 * @inheritDoc
+ 	 */
++	public int getPresentSessionsCount(String locationId)
++	{
++		int rv = m_storage.getPresentSessionsCount(locationId);
++
++		return rv;
++	}
++	
++	/**
++	 * @inheritDoc
++	 */
+ 	public int getSessionInactiveTimeout()
+ 	{
+ 		throw new UnsupportedOperationException();
+@@ -531,6 +541,15 @@
+ 		List getSessions(String joinTable, String joinAlias, String joinColumn, String joinCriteria, Object[] values);
+ 
+ 		/**
++		 * Return a count of the number of sessions associated with a particular locaiton.
++		 * 
++		 * @param locationId 
++		 * 			the id string for the loation
++		 * @return The count of sessions present in this site.
++		 */
++		 int getPresentSessionsCount(String locationId);
++		
++		/**
+ 		 * This session is now closed.
+ 		 * 
+ 		 * @param session
+@@ -1194,7 +1213,64 @@
+ 			return rv;
+ 		}
+ 
++		
+ 		/**
++		 * Return a count of the number of sessions associated with a particular locaiton.
++		 * 
++		 * @param locationId 
++		 * 			the id string for the loation
++		 * @return The count of sessions present in this site.
++		 */
++		public int getPresentSessionsCount(String locationId)
++		{
++			
++//			select AX.SESSION_ID,AX.SESSION_SERVER,
++//			AX.SESSION_USER,AX.SESSION_IP,AX.SESSION_USER_AGENT,
++//			AX.SESSION_START,AX.SESSION_END from SAKAI_SESSION AX
++//			inner join SAKAI_PRESENCE A ON AX.SESSION_ID = A.SESSION_ID
++//			where A.LOCATION_ID ='f076fe19-9df6-4f09-00ed-8de5b2d2cf05-presence';
++//
++
++			String sql = "select count(*) from SAKAI_SESSION SS inner join SAKAI_PRESENCE SP "
++					+ "on SS.SESSION_ID = SP.SESSION_ID "
++						+ "where SP.LOCATION_ID = ?";
++			
++			Object[] fields = new Object[1];
++			fields[0] = locationId;
++			
++			M_log.info("gPSC: ["+sql+"] location: ["+fields[0]+"]");
++			
++			List results = sqlService().dbRead(sql ,fields, new SqlReader()
++			{
++				public Object readSqlResultRecord(ResultSet result)
++				{
++					try
++					{
++						int count = result.getInt(1);
++						return new Integer(count);
++					}
++					catch (SQLException ignore)
++					{
++						return null;
++					}
++				}
++			});
++
++			int count = 0;
++			
++			if (!results.isEmpty())  {
++				count = ((Integer) results.get(0)).intValue();
++			}
++			
++			
++			M_log.info("gPSC: count: "+count);
++			return count;
++
++		}
++
++
++		
++		/**
+ 		 * Access a List of usage sessions by *arbitrary criteria* for te session ids.
+ 		 * 
+ 		 * @param joinTable
+Index: event/event-api/api/src/java/org/sakaiproject/event/api/UsageSessionService.java
+===================================================================
+--- event/event-api/api/src/java/org/sakaiproject/event/api/UsageSessionService.java	(revision 28023)
++++ event/event-api/api/src/java/org/sakaiproject/event/api/UsageSessionService.java	(working copy)
+@@ -174,4 +174,12 @@
+ 	 *
+ 	 */
+ 	void logout();
++	
++	/**
++	 * Get the count of the sessions (proxy for users) present in this location.
++	 * @param locationId
++	 * @return count of sessions with presence in this location.
++	 */
++
++	int getPresentSessionsCount(String locationId);
+ }
+Index: presence/presence-impl/impl/src/java/org/sakaiproject/presence/impl/BasePresenceService.java
+===================================================================
+--- presence/presence-impl/impl/src/java/org/sakaiproject/presence/impl/BasePresenceService.java	(revision 31907)
++++ presence/presence-impl/impl/src/java/org/sakaiproject/presence/impl/BasePresenceService.java	(working copy)
+@@ -21,6 +21,8 @@
+ 
+ package org.sakaiproject.presence.impl;
+ 
++import java.sql.ResultSet;
++import java.sql.SQLException;
+ import java.util.Collections;
+ import java.util.Enumeration;
+ import java.util.HashSet;
+@@ -32,6 +34,7 @@
+ import org.apache.commons.logging.Log;
+ import org.apache.commons.logging.LogFactory;
+ import org.sakaiproject.api.privacy.PrivacyManager;
++import org.sakaiproject.db.api.SqlReader;
+ import org.sakaiproject.entity.api.Entity;
+ import org.sakaiproject.event.api.Event;
+ import org.sakaiproject.event.api.EventTrackingService;
+@@ -360,6 +363,13 @@
+ 		return users;
+ 	}
+ 
++	public int getPresentSessionsCount(String locationId)
++	{
++
++			return m_usageSessionService.getPresentSessionsCount(locationId);
++
++	}
++	
+ 	/**
+ 	 * {@inheritDoc}
+ 	 */
+Index: presence/presence-api/api/src/java/org/sakaiproject/presence/api/PresenceService.java
+===================================================================
+--- presence/presence-api/api/src/java/org/sakaiproject/presence/api/PresenceService.java	(revision 31907)
++++ presence/presence-api/api/src/java/org/sakaiproject/presence/api/PresenceService.java	(working copy)
+@@ -136,4 +136,14 @@
+ 	 * @return The time (seconds) after which a presence will timeout.
+ 	 */
+ 	int getTimeout();
++	
++	/**
++	 * Return the number of users in the location
++	 * 
++	 * @param locationId
++	 *        A presence location id.
++	 * 
++	 * @return A count of the number of sessions (proxy for users) present in a location.
++	 */
++	int getPresentSessionsCount(String locationId);
+ }
+Index: presence/presence-api/api/src/java/org/sakaiproject/presence/cover/PresenceService.java
+===================================================================
+--- presence/presence-api/api/src/java/org/sakaiproject/presence/cover/PresenceService.java	(revision 31907)
++++ presence/presence-api/api/src/java/org/sakaiproject/presence/cover/PresenceService.java	(working copy)
+@@ -138,4 +138,12 @@
+ 
+ 		return service.getTimeout();
+ 	}
++
++	public static int getPresentSessionsCount(java.lang.String param0) 
++	{
++		org.sakaiproject.presence.api.PresenceService service = getInstance();
++		if (service == null) return 0;
++		
++		return service.getPresentSessionsCount(param0);
++	}
+ }

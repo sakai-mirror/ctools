@@ -1,0 +1,14 @@
+svn diff -r20086:20087 https://source.sakaiproject.org/svn
+Index: user/user-tool-prefs/tool/src/webapp/WEB-INF/faces-config.xml
+===================================================================
+--- user/user-tool-prefs/tool/src/webapp/WEB-INF/faces-config.xml	(revision 20086)
++++ user/user-tool-prefs/tool/src/webapp/WEB-INF/faces-config.xml	(revision 20087)
+@@ -6,7 +6,7 @@
+ 
+ <faces-config>
+ 	<application>
+-      <message-bundle>org.sakaiproject.tool.preferences.bundle.Messages</message-bundle>
++      <message-bundle>user-tool-prefs</message-bundle>
+         <locale-config>
+             <default-locale>en</default-locale>
+             <supported-locale>de</supported-locale>

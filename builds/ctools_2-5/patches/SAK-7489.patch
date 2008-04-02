@@ -1,0 +1,14 @@
+svn diff -r20748:20749 https://source.sakaiproject.org/svn
+Index: portal/portal-impl/impl/src/bundle/sitenav.properties
+===================================================================
+--- portal/portal-impl/impl/src/bundle/sitenav.properties	(revision 20748)
++++ portal/portal-impl/impl/src/bundle/sitenav.properties	(revision 20749)
+@@ -8,7 +8,7 @@
+ log.userid = user id:
+ 
+ sit_log   = Logout
+-sit_more  = - more -
++sit_more  = - more sites -
+ sit_selectmessage  = Press alt + up and down arrows to scroll through menu 
+ sit_mywor = My Workspace
+ sit_worksite = worksite

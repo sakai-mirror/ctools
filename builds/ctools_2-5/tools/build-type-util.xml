@@ -1,0 +1,206 @@
+<project name="build-type-util" basedir="." default="info" >
+
+  <!--
+
+$Id$
+$HeadURL$
+This should have nothing specific to a particular build type.
+
+  -->
+
+  <!-- 
+       TTD:
+  -->
+
+  <property file="./project.properties" />
+  <property file="${user.home}/build.properties" />
+
+
+  <!--  <property name="config-file" value="ctools-pilot-200602.properties" /> -->
+  <!-- set a default value -->
+  <property name="config-file" value="project.properties" /> 
+  <property file="${config-file}" />
+
+  <property name="build.dir" value="${work.dir}/build" />
+  <property name="logs.dir" value="${work.dir}/logs" />
+  <property name="image.dir" value="${work.dir}/image" />
+  <property name="instances.dir" value="${work.dir}/instances" />
+  <property name="image.dest.dir" value="${artifacts.dir}" /> 
+  <property name="reference.dir" value="${build.dir}/ctools-reference" />
+  <property name="config.dir" value="${reference.dir}/config" />
+  <property name="svnCmd" value="export" />
+  <property name="defaultRevision" value="HEAD" />
+  <property name="install.test.dir" value="tomcat" />
+
+  <property name="sakai.properties" value="${config.dir}/sakai.properties" />
+
+
+  <!-- include extra functional targets -->
+  <import file="./build-util.xml" />
+
+  <import file="./build-config.xml" />
+
+  <target name="info">
+    <echo>
+      fill me in.
+    </echo>
+  </target>
+
+
+  <!-- ========================= -->
+  <!-- primary targets.  These shouldn't have to change.  -->
+  <!-- There may be multiple targets to support multiple different build types. -->
+  <!-- ========================= -->
+
+  <target name="buildCToolsImage" depends="prepare,getSource,applyPatches3,editSource,compileSakai,buildImage,buildConfig,printBuildInfo"
+	  description="Build a ctools image based on the properties files specified.">
+    <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
+  </target>
+
+
+  <!--
+  <target name="applyPatches3" >
+    <echo> applying patches aP3 [${patchFileNames}]</echo>
+    <echo file="${logs.dir}/${ant.project.name}.patches.log" append="true" >
+     ********************************************************** 
+     applying patches [${patchFileNames}]
+     ********************************************************** 
+    </echo>
+    <exec executable="perl"
+	  dir="${build.dir}"
+	  failonerror="true"
+	  output="${logs.dir}/${ant.project.name}.patches.log"
+	  append="true">
+      <arg value="${scripts.dir}/applyPatches.pl" />
+      <arg value="${logs.dir}/${ant.project.name}.patches.log" />
+      <!/-/- with multiple files, need to pass the patch and the names separately /-/->
+      <!/-/- <arg value="${patches.dir}/${patchFileNames}" /> /-/->
+      <arg value="${patches.dir}" /> 
+      <arg value="${build.dir}" />
+      <arg value="${patchFileNames}" /> 
+    </exec>
+
+  </target>
+
+-->
+  <!-- ========================= -->
+  <!-- secondary targets   These are customized based on the needs of the particular build.  -->
+  <!-- ========================= -->
+
+
+  <target name="updateSupportFiles"
+	  description="update the files that support the build process, not the source files themselves." >
+    <execSvnCmd url="${ctools.svnurl.apps}/ctools-apps" revision="${ctools.revision}"  destination="ctools-apps"/> 
+  </target>
+
+
+  <!-- Update the configuration files -->
+  <target name="updateConfigurationSource" depends="updateConfigMsg,getConfigurationSrc"
+	  description="Update the files for configuration so can rebuild that information separately from the source"/>
+
+  <target name="updateConfigMsg">
+  </target>
+
+
+  <!-- =============================== -->
+  <!--         image targets           -->
+  <!-- =============================== -->
+
+  <target name="buildImage" depends="assembleImage,modifyImage,bundleImage,summarizeBuild" />
+
+
+
+  <!-- Whice files are available? -->
+  <available property="image.exists.zip" file="${image.dest.dir}/image.${sakai.tag}.zip" />
+  <available property="image.exists.tar.gz" file="${image.dest.dir}/image.${sakai.tag}.tar.gz" />
+
+  <!-- use zip not tar since the ant tar won't untar the files with long path names -->
+
+  <target name="installImageLocal" depends="assureTargetDir,installTomcatImageZip,installTomcatImageTgz,installZipImage,installTgzImage"
+    description="install the image to a local test directory" />
+
+  <target name="installConfigLocal"
+	  description="install the chosen Sakai / CTools configuration.  Configurations are from the build-install-config.xml file." >
+    <!-- install an appropriate configuration for the desired installation.
+	 This needs to be specified in the build-install-config.xml file
+    -->
+    <!-- Run appropriate target from the build-install-config.xml file -->
+  </target>
+
+  <target name="assureTargetDir" >
+    <mkdir dir="${install.test.dir}"/>
+  </target>
+
+  <target name="installTomcatImageZip" if="tomcat.base.zip" >
+    <echo> tomcat.base.gz: ${tomcat.base.gz} </echo>
+    <unzip src="${tomcat.base.zip}"
+	   dest="${install.test.dir}/">
+    </unzip>
+  </target>
+
+  <target name="installTomcatImageTgz" if="tomcat.base.gz" >
+	<echo>tomcat.base.gz: ${tomcat.base.gz}</echo>
+    <untar src="${tomcat.base.gz}"
+		compression="gzip"
+	   dest="${install.test.dir}/">
+    </untar>
+  </target>
+
+
+  <target name="installZipImage" if="image.exists.zip" >
+    <unzip src="${image.dest.dir}/image.${sakai.tag}.zip"
+	   dest="${install.test.dir}/">
+    </unzip>
+
+  </target>
+
+  <target name="installTgzImage" if="image.exists.tar.gz" >
+    <untar src="${image.dest.dir}/image.${sakai.tag}.tar.gz"
+	   dest="${install.test.dir}/"
+	   compression="gzip" />
+  </target>
+
+  <!--
+      to uncompress a tar file into an existing tomcat directory you can use something like:
+      tar \-\-gunzip -f sakai_2-1_4840.tar.gz -C ~/tomcats/image-test -x
+      where the value following the -C is the destination directory.
+  -->
+
+  <macrodef name="buildPropertiesFile">
+    <attribute name="instanceName" />
+    <sequential>
+      <ant antfile="${scripts.dir}/build-config.xml" target="buildProperties" inheritAll="false" >
+	<property name="sakai.properties" value="${sakai.properties}" />
+	<property name="instance-type" value="@{instanceName}" />
+	<property name="instances.dir" value="${instances.dir}" />
+	<property name="version.service" value="${version.service}" />
+	<property name="version.sakai" value="${version.sakai}" />
+	<property name="version.note" value="${version.note}" />
+	<property name="config.dir" value="${config.dir}" />
+	<property name="keystore.dir" value="${keystore.dir}" />
+	<property name="keystore" value="${keystore}" />
+      </ant>
+    </sequential>
+
+  </macrodef>
+
+
+  <macrodef name="buildPropertiesFileSimple">
+    <attribute name="instanceName" />
+    <sequential>
+      <ant antfile="${scripts.dir}/build-config.xml" target="buildPropertiesSimple" inheritAll="false" >
+	<property name="sakai.properties" value="${sakai.properties}" />
+	<property name="instance-type" value="@{instanceName}" />
+	<property name="instances.dir" value="${instances.dir}" />
+	<property name="version.service" value="${version.service}" />
+	<property name="version.sakai" value="${version.sakai}" />
+	<property name="version.note" value="${version.note}" />
+	<property name="config.dir" value="${config.dir}" />
+	<property name="keystore.dir" value="${keystore.dir}" />
+	<property name="keystore" value="${keystore}" />
+	<property name="propertiesfileslist" value="${propertiesfileslist}" />
+      </ant>
+    </sequential>
+  </macrodef>
+
+</project>

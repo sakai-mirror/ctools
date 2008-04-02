@@ -1,0 +1,393 @@
+Index: chat/chat-api/api/src/java/org/sakaiproject/chat2/model/impl/ChatImpl.hbm.xml
+===================================================================
+--- chat/chat-api/api/src/java/org/sakaiproject/chat2/model/impl/ChatImpl.hbm.xml	(revision 33979)
++++ chat/chat-api/api/src/java/org/sakaiproject/chat2/model/impl/ChatImpl.hbm.xml	(revision 33984)
+@@ -11,6 +11,8 @@
+ 		<id name="id" length="99" column="CHANNEL_ID">
+ 			<generator class="org.sakaiproject.id.hbm.IdGenerator"/>
+ 		</id>
++		<property name="placement" column="PLACEMENT_ID" type="string"
++			length="99" not-null="false"/>
+ 		<property name="context" column="CONTEXT" type="string"
+ 			length="99" not-null="true" index="CHAT_CHANNEL_CONTEXT_I"/>
+ 		<property name="creationDate" column="CREATION_DATE"
+@@ -20,7 +22,7 @@
+ 		<property name="description" type="string" length="255" />
+ 		<property name="filterType" type="string" length="25" />
+ 		<property name="filterParam" type="int" />
+-		<property name="contextDefaultChannel" type="boolean" index="CHAT_CHANNEL_DEFAULT_I"/>
++		<property name="placementDefaultChannel" type="boolean" index="CHAT_CHANNEL_DEFAULT_I"/>
+ 		<property name="enableUserOverride" type="boolean" column="ENABLE_USER_OVERRIDE" not-null="false"/>
+ 		<property name="migratedChannelId" type="string" length="99" />
+ 
+@@ -54,7 +56,7 @@
+ 	</query>
+ 
+ 	<query name="findDefaultChannelsInContext">
+-		from ChatChannel c WHERE c.context=? and c.contextDefaultChannel=true order by c.title
++		from ChatChannel c WHERE c.context=? and c.placement=? and c.placementDefaultChannel=true order by c.title
+ 	</query>
+ 	
+ 	<query name="findMigratedMessage">
+Index: chat/chat-api/api/src/java/org/sakaiproject/chat2/model/ChatChannel.java
+===================================================================
+--- chat/chat-api/api/src/java/org/sakaiproject/chat2/model/ChatChannel.java	(revision 33979)
++++ chat/chat-api/api/src/java/org/sakaiproject/chat2/model/ChatChannel.java	(revision 33984)
+@@ -43,13 +43,14 @@
+    public static final int MAX_MESSAGES = -999;
+    
+    private String id;
++   private String placement;
+    private String context;
+    private Date creationDate;
+    private String title;
+    private String description;
+    private String filterType = FILTER_BY_TIME;
+    private int filterParam = 3;
+-   private boolean contextDefaultChannel = false;
++   private boolean placementDefaultChannel = false;
+    private boolean enableUserOverride = true;
+    private Set messages = new HashSet();
+    private String migratedChannelId;
+@@ -116,11 +117,11 @@
+    public void setFilterParam(int filterParam) {
+       this.filterParam = filterParam;
+    }
+-   public boolean isContextDefaultChannel() {
+-      return contextDefaultChannel;
++   public boolean isPlacementDefaultChannel() {
++      return placementDefaultChannel;
+    }
+-   public void setContextDefaultChannel(boolean contextDefaultChannel) {
+-      this.contextDefaultChannel = contextDefaultChannel;
++   public void setPlacementDefaultChannel(boolean placementDefaultChannel) {
++      this.placementDefaultChannel = placementDefaultChannel;
+    }   
+    public boolean isEnableUserOverride() {
+       return enableUserOverride;
+@@ -163,7 +164,7 @@
+       channel.setAttribute("creationDate", Long.toString(getCreationDate().getTime()));
+       channel.setAttribute("filterType", getFilterType());
+       channel.setAttribute("filterParam", Integer.toString(getFilterParam()));
+-      channel.setAttribute("contextDefaultChannel", Boolean.toString(isContextDefaultChannel()));
++      channel.setAttribute("placementDefaultChannel", Boolean.toString(isPlacementDefaultChannel()));
+       
+       stack.pop();
+ 
+@@ -190,7 +191,7 @@
+       tmpChannel.setCreationDate(new Date(Long.parseLong(channelElement.getAttribute("creationDate"))));
+       tmpChannel.setFilterType(channelElement.getAttribute("filterType"));
+       tmpChannel.setFilterParam(Integer.parseInt(channelElement.getAttribute("filterParam")));
+-      tmpChannel.setContextDefaultChannel(Boolean.parseBoolean(channelElement.getAttribute("contextDefaultChannel")));
++      tmpChannel.setPlacementDefaultChannel(Boolean.parseBoolean(channelElement.getAttribute("placementDefaultChannel")));
+       
+       return tmpChannel;
+    }
+@@ -239,4 +240,18 @@
+    public void setMigratedChannelId(String migratedChannelId) {
+       this.migratedChannelId = migratedChannelId;
+    }
++
++/**
++ * @return the placement
++ */
++public String getPlacement() {
++	return placement;
+ }
++
++/**
++ * @param placement the placement to set
++ */
++public void setPlacement(String placement) {
++	this.placement = placement;
++}
++}
+Index: chat/chat-api/api/src/java/org/sakaiproject/chat2/model/ChatManager.java
+===================================================================
+--- chat/chat-api/api/src/java/org/sakaiproject/chat2/model/ChatManager.java	(revision 33979)
++++ chat/chat-api/api/src/java/org/sakaiproject/chat2/model/ChatManager.java	(revision 33984)
+@@ -55,11 +55,12 @@
+     * Creates a new ChatChannel but doesn't put it in the database.
+     * @param context Id of what the channel is linked to
+     * @param title String the title of the channel
+-    * @param contextDefaultChannel boolean to set this as the default channel in the context
++    * @param placementDefaultChannel boolean to set this as the default channel in the context
+     * @param checkAuthz boolean indicating if we should check for authorization before creating the channel
++    * @param placement String id of the tool placement
+     * @return ChatChannel the new un-saved channel
+     */
+-   public ChatChannel createNewChannel(String context, String title, boolean contextDefaultChannel, boolean checkAuthz) throws PermissionException;
++   public ChatChannel createNewChannel(String context, String title, boolean placementDefaultChannel, boolean checkAuthz, String placement) throws PermissionException;
+    
+    /**
+     * updates the channel back into the database
+@@ -159,16 +160,18 @@
+     * If no rooms are found, one is created with the passed title
+     * @param contextId Id
+     * @param defaultNewTitle String the default name of a new ChatChannel
++    * @param placement
+     * @return List of ChatChannel
+     */
+-   public List getContextChannels(String contextId, String defaultNewTitle);
++   public List getContextChannels(String contextId, String defaultNewTitle, String placement);
+    
+    /**
+     * Returns the context's default channel, or null if none.
+     * @param contextId
++    * @param placement
+     * @return
+     */
+-   public ChatChannel getDefaultChannel(String contextId);
++   public ChatChannel getDefaultChannel(String contextId, String placement);
+ 
+ 
+    public boolean getCanDelete(ChatMessage chatMessage);
+@@ -192,8 +195,9 @@
+    /**
+     * Makes the passed channel the dfault in the channel's context
+     * @param channel
++    * @param placement
+     */
+-   public void makeDefaultContextChannel(ChatChannel channel);
++   public void makeDefaultContextChannel(ChatChannel channel, String placement);
+    
+    /**
+     * Returns a Date object that is the offset number of days before the current date
+Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java
+===================================================================
+--- chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java	(revision 33979)
++++ chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java	(revision 33984)
+@@ -209,7 +209,7 @@
+       //Really onl calling this just to make sure a room gets created
+       List rooms = getSiteChannels();
+       
+-      ChatChannel defaultChannel = getChatManager().getDefaultChannel(placement.getContext());
++      ChatChannel defaultChannel = getChatManager().getDefaultChannel(placement.getContext(), placement.getId());
+       setCurrentChannel(new DecoratedChatChannel(this, defaultChannel));
+          
+       // if there is no room selected to enter then go to select a room
+@@ -259,7 +259,8 @@
+    protected boolean refreshPresence() {
+       if (getCurrentChannel() == null) {
+          ChatChannel defaultChannel = getChatManager().getDefaultChannel(
+-               getToolManager().getCurrentPlacement().getContext());
++               getToolManager().getCurrentPlacement().getContext(),
++               getToolManager().getCurrentPlacement().getId());
+          setCurrentChannel(new DecoratedChatChannel(this, defaultChannel));
+       }
+       if(getCurrentChannel() != null) {
+@@ -381,15 +382,15 @@
+    
+    public String processActionSetAsDefaultRoom(DecoratedChatChannel decoChannel) {
+       ChatChannel channel = decoChannel.getChatChannel();
+-      channel.setContextDefaultChannel(true);
+-      getChatManager().makeDefaultContextChannel(channel);
++      channel.setPlacementDefaultChannel(true);
++      getChatManager().makeDefaultContextChannel(channel, getToolManager().getCurrentPlacement().getId());
+       return PAGE_LIST_ROOMS;
+    }
+    
+    public String processActionAddRoom()
+    {
+       try {
+-         ChatChannel newChannel = getChatManager().createNewChannel(getContext(), "", false, true);
++         ChatChannel newChannel = getChatManager().createNewChannel(getContext(), "", false, true, getToolManager().getCurrentPlacement().getId());
+          currentChannelEdit = new DecoratedChatChannel(this, newChannel, true);
+          
+          //init the filter param
+@@ -580,7 +581,7 @@
+          try {
+             getChatManager().updateChannel(channel, true);
+             
+-            if (getCurrentChannel().getChatChannel().getId().equals(channel.getId())) {
++            if (getCurrentChannel() != null && getCurrentChannel().getChatChannel().getId().equals(channel.getId())) {
+                setCurrentChannel(new DecoratedChatChannel(this, channel));
+             }
+             //setCurrentChannel(channel);
+@@ -1283,7 +1284,7 @@
+     * @return List of ChatChannel
+     */
+    protected List getSiteChannels() {
+-      return getChatManager().getContextChannels(getContext(), getMessageFromBundle("default_new_channel_title"));
++      return getChatManager().getContextChannels(getContext(), getMessageFromBundle("default_new_channel_title"), getToolManager().getCurrentPlacement().getId());
+    }
+    
+    
+@@ -1292,7 +1293,7 @@
+     * @return int
+     */
+    public int getSiteChannelCount() {
+-      return getChatManager().getContextChannels(getContext(), getMessageFromBundle("default_new_channel_title")).size();
++      return getChatManager().getContextChannels(getContext(), getMessageFromBundle("default_new_channel_title"), getToolManager().getCurrentPlacement().getId()).size();
+    }
+    
+    
+Index: chat/chat-tool/tool/src/webapp/jsp/listRooms.jsp
+===================================================================
+--- chat/chat-tool/tool/src/webapp/jsp/listRooms.jsp	(revision 33979)
++++ chat/chat-tool/tool/src/webapp/jsp/listRooms.jsp	(revision 33984)
+@@ -49,7 +49,7 @@
+ 							<h:outputText value="#{msgs.delete_room_messages}" />
+ 						</h:commandLink>
+ 					</f:subview>
+-					<f:subview id="defaultLink" rendered="#{!channel.chatChannel.contextDefaultChannel && ChatTool.maintainer}">
++					<f:subview id="defaultLink" rendered="#{(!channel.chatChannel.placementDefaultChannel || ChatTool.toolString != channel.chatChannel.placement) && ChatTool.maintainer}">
+ 						<h:commandLink action="#{channel.processActionSetAsDefaultRoom}" 
+ 							title="#{channel.setAsDefaultText}">
+ 							<h:outputText value="#{msgs.set_default}" />
+Index: chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatEntityProducer.java
+===================================================================
+--- chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatEntityProducer.java	(revision 33979)
++++ chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatEntityProducer.java	(revision 33984)
+@@ -663,6 +663,9 @@
+    
+    /**
+     * {@inheritDoc}
++    * 
++    * TODO: link the old placement id to the new placement id instead of passing null in line:
++    * ChatChannel newChannel = getChatManager().createNewChannel(toContext, oldChannel.getTitle(), false, false, null);
+     */
+    public void transferCopyEntities(String fromContext, String toContext, List ids) 
+    {
+@@ -676,11 +679,11 @@
+             while (channelIterator.hasNext()) 
+             {
+                ChatChannel oldChannel = (ChatChannel)channelIterator.next();
+-               ChatChannel newChannel = getChatManager().createNewChannel(toContext, oldChannel.getTitle(), false, false);
++               ChatChannel newChannel = getChatManager().createNewChannel(toContext, oldChannel.getTitle(), false, false, null);
+                newChannel.setDescription(oldChannel.getDescription());
+                newChannel.setFilterType(oldChannel.getFilterType());
+                newChannel.setFilterParam(oldChannel.getFilterParam());
+-               newChannel.setContextDefaultChannel(oldChannel.isContextDefaultChannel());
++               newChannel.setPlacementDefaultChannel(oldChannel.isPlacementDefaultChannel());
+                try {
+                   getChatManager().updateChannel(newChannel, false);
+                } 
+Index: chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMigration.java
+===================================================================
+--- chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMigration.java	(revision 33979)
++++ chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatDataMigration.java	(revision 33984)
+@@ -196,7 +196,7 @@
+                    * description, 
+                    * filterType, 
+                    * filterParam, 
+-                   * contextDefaultChannel, 
++                   * placementDefaultChannel, 
+                    * migratedChannelId,
+                    * ENABLE_USER_OVERRIDE
+                    */
+Index: chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java
+===================================================================
+--- chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java	(revision 33979)
++++ chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManagerImpl.java	(revision 33984)
+@@ -154,7 +154,7 @@
+    /**
+     * {@inheritDoc}
+     */
+-   public ChatChannel createNewChannel(String context, String title, boolean contextDefaultChannel, boolean checkAuthz) throws PermissionException {
++   public ChatChannel createNewChannel(String context, String title, boolean placementDefaultChannel, boolean checkAuthz, String placement) throws PermissionException {
+       if (checkAuthz)
+          checkPermission(ChatFunctions.CHAT_FUNCTION_NEW_CHANNEL);
+       
+@@ -163,8 +163,12 @@
+       channel.setCreationDate(new Date());
+       channel.setContext(context);
+       channel.setTitle(title);
+-      channel.setContextDefaultChannel(contextDefaultChannel);
++      channel.setPlacementDefaultChannel(placementDefaultChannel);
++      if(placementDefaultChannel){
++    	  channel.setPlacement(placement);  
++      }
+       
++      
+       return channel;
+    }
+ 
+@@ -529,12 +533,12 @@
+    /**
+     * {@inheritDoc}
+     */
+-   public List getContextChannels(String context, String defaultNewTitle) {
++   public List getContextChannels(String context, String defaultNewTitle, String placement) {
+       List channels = getHibernateTemplate().findByNamedQuery("findChannelsInContext", context);
+       
+       if(channels.size() == 0) {
+          try {
+-            ChatChannel channel = createNewChannel(context, defaultNewTitle, true, false);
++            ChatChannel channel = createNewChannel(context, defaultNewTitle, true, false, placement);
+             getHibernateTemplate().save(channel);
+             channels.add(channel);
+          }
+@@ -550,10 +554,10 @@
+    /**
+     * {@inheritDoc}
+     */
+-   public ChatChannel getDefaultChannel(String contextId) {
+-      List channels = getHibernateTemplate().findByNamedQuery("findDefaultChannelsInContext", contextId);
++   public ChatChannel getDefaultChannel(String contextId, String placement) {
++      List channels = getHibernateTemplate().findByNamedQuery("findDefaultChannelsInContext", new Object[] {contextId, placement});
+       if (channels.size() == 0) {
+-         channels = getContextChannels(contextId, "");
++         channels = getContextChannels(contextId, "", placement);
+       }
+       if (channels.size() >= 1)
+          return (ChatChannel)channels.get(0);
+@@ -815,12 +819,14 @@
+     * Resets the passed context's default channel
+     *
+     */
+-   protected void resetContextDefaultChannel(String context) {
++   protected void resetPlacementDefaultChannel(String context, String placement) {
+       Session session = null;
+       Connection conn = null;
+       PreparedStatement statement = null;
+       
+-      String query="update CHAT2_CHANNEL c set c.contextDefaultChannel=? WHERE c.context=?";
++     
++      String query="update CHAT2_CHANNEL c set c.placementDefaultChannel=?, c.PLACEMENT_ID=? " +
++      		"WHERE c.context=? and c.PLACEMENT_ID=?";
+       
+       try{
+         session = getSession();
+@@ -828,7 +834,9 @@
+         
+         statement = conn.prepareStatement(query);
+         statement.setBoolean(1, false);
+-        statement.setString(2, context);
++        statement.setString(2, null);
++        statement.setString(3, context);
++        statement.setString(4, placement);
+         statement.executeUpdate();
+       }
+       catch(Exception e){
+@@ -855,14 +863,15 @@
+       }
+    }
+    
+-   public void makeDefaultContextChannel(ChatChannel channel) {
++   public void makeDefaultContextChannel(ChatChannel channel, String placement) {
+       //reset context's defaults
+       if (isMaintainer()) {
+          try {
+-            resetContextDefaultChannel(channel.getContext());
++            resetPlacementDefaultChannel(channel.getContext(), placement);
+          
+             //set new one as default
+-            channel.setContextDefaultChannel(true);
++            channel.setPlacementDefaultChannel(true);
++            channel.setPlacement(placement);
+             updateChannel(channel, false);
+          }
+          catch (PermissionException e) {
+Index: chat/chat-impl/impl/src/bundle/chat-sql.properties
+===================================================================
+--- chat/chat-impl/impl/src/bundle/chat-sql.properties	(revision 33979)
++++ chat/chat-impl/impl/src/bundle/chat-sql.properties	(revision 33984)
+@@ -1,6 +1,6 @@
+ select.oldchannels=select c.CHANNEL_ID, c.XML from CHAT_CHANNEL c order by c.CHANNEL_ID
+ 
+-insert.channel=insert into CHAT2_CHANNEL (CHANNEL_ID, CONTEXT, CREATION_DATE, title, description, filterType, filterParam, contextDefaultChannel, ENABLE_USER_OVERRIDE, migratedChannelId) \
++insert.channel=insert into CHAT2_CHANNEL (CHANNEL_ID, CONTEXT, CREATION_DATE, title, description, filterType, filterParam, placementDefaultChannel, ENABLE_USER_OVERRIDE, migratedChannelId) \
+ select ?, ?, ?, ?, ?, ?, ?, ?, ?, ? from dual where not exists \
+ (select * from CHAT2_CHANNEL c2 where c2.migratedChannelId=?)
+ 

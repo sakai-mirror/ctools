@@ -1,0 +1,459 @@
+Index: search/search-tool/.classpath
+===================================================================
+--- search/search-tool/.classpath	(revision 21914)
++++ search/search-tool/.classpath	(working copy)
+@@ -18,5 +18,8 @@
+ 	<classpathentry combineaccessrules="false" kind="src" path="/util-api"/>
+ 	<classpathentry combineaccessrules="false" kind="src" path="/util-util"/>
+ 	<classpathentry combineaccessrules="false" kind="src" path="/user-api"/>
++	<classpathentry kind="var" path="MAVEN_REPO/jmock/jars/jmock-1.1.0.jar"/>
++	<classpathentry kind="var" path="MAVEN_REPO/jmock/jars/jmock-cglib-1.1.0.jar"/>
++	<classpathentry kind="var" path="MAVEN_REPO/cglib/jars/cglib-full-2.0.2.jar"/>
+ 	<classpathentry kind="output" path="bin"/>
+ </classpath>
+Index: search/search-tool/tool/project.xml
+===================================================================
+--- search/search-tool/tool/project.xml	(revision 21914)
++++ search/search-tool/tool/project.xml	(working copy)
+@@ -16,18 +16,11 @@
+   <build>
+     <!-- java source -->
+     <sourceDirectory>src/java</sourceDirectory>
+-    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
++    <unitTestSourceDirectory>src/java</unitTestSourceDirectory>
+     <unitTest>
+-      <includes>**/*Test</includes>
+-      <resources>
+-	<resource>
+-	  <directory>${basedir}/src/testBundle</directory>
+-	  <includes>
+-	    <include>**/*.*</include>
+-	  </includes>
+-	  <filtering>false</filtering>
+-	</resource>
+-      </resources>
++      <includes>
++	<include>**/*Test.java</include>
++      </includes>
+     </unitTest>
+     <defaultGoal>war:install</defaultGoal>
+     <!-- other resources for the jar - the message bundles -->
+@@ -127,6 +120,32 @@
+       <version>1.0.4</version>
+       <type>jar</type>
+     </dependency>
++
++    <dependency>
++      <groupId>junit</groupId>
++      <artifactId>junit</artifactId>
++      <version>3.8.1</version>
++      <type>jar</type>
++    </dependency>
++    <dependency>
++      <groupId>jmock</groupId>
++      <artifactId>jmock</artifactId>
++      <version>1.1.0</version>
++      <type>jar</type>
++    </dependency>
++   <dependency>
++      <groupId>jmock</groupId>
++      <artifactId>jmock-cglib</artifactId>
++      <version>1.1.0</version>
++      <type>jar</type>
++    </dependency>
++   <dependency>
++      <groupId>cglib</groupId>
++      <artifactId>cglib-full</artifactId>
++      <version>2.0.2</version>
++      <type>jar</type>
++    </dependency>
++
+   </dependencies>
+ </project>
+ 
+Index: search/search-tool/tool/src/java/org/sakaiproject/search/tool/SearchBeanImpl.java
+===================================================================
+--- search/search-tool/tool/src/java/org/sakaiproject/search/tool/SearchBeanImpl.java	(revision 21914)
++++ search/search-tool/tool/src/java/org/sakaiproject/search/tool/SearchBeanImpl.java	(working copy)
+@@ -32,6 +32,7 @@
+ import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Properties;
+ 
+ import javax.servlet.http.HttpServletRequest;
+ 
+@@ -46,7 +47,9 @@
+ import org.sakaiproject.search.api.TermFrequency;
+ import org.sakaiproject.site.api.Site;
+ import org.sakaiproject.site.api.SiteService;
++import org.sakaiproject.tool.api.Placement;
+ import org.sakaiproject.tool.api.ToolManager;
++import org.sakaiproject.util.StringUtil;
+ 
+ /**
+  * Implementation of the search bean backing bean
+@@ -108,6 +111,8 @@
+ 	private String placementId;
+ 
+ 	private String toolId;
++	
++	private ToolManager toolManager;
+ 
+ 	private String siteId;
+ 
+@@ -123,6 +128,16 @@
+ 
+ 	private Site currentSite;
+ 
++	// Empty constructor to aid in testing.
++	 
++	public SearchBeanImpl(String siteId, SearchService ss, String search,ToolManager tm) {
++		super();
++		this.siteId = siteId;
++		this.searchService = ss;
++		this.search = search;
++		this.toolManager = tm;
++	}
++	
+ 	/**
+ 	 * Creates a searchBean
+ 	 * 
+@@ -144,9 +159,10 @@
+ 		this.search = request.getParameter(SEARCH_PARAM);
+ 		this.searchService = searchService;
+ 		this.siteService = siteService;
+-		this.placementId = toolManager.getCurrentPlacement().getId();
+-		this.toolId = toolManager.getCurrentTool().getId();
+-		this.siteId = toolManager.getCurrentPlacement().getContext();
++		this.toolManager = toolManager;
++		this.placementId = this.toolManager.getCurrentPlacement().getId();
++		this.toolId = this.toolManager.getCurrentTool().getId();
++		this.siteId = this.toolManager.getCurrentPlacement().getContext();
+ 		try
+ 		{
+ 			this.requestPage = Integer.parseInt(request
+@@ -171,9 +187,10 @@
+ 		this.siteService = siteService;
+ 		this.sortName = sortName;
+ 		this.filterName = filterName;
+-		this.placementId = toolManager.getCurrentPlacement().getId();
+-		this.toolId = toolManager.getCurrentTool().getId();
+-		this.siteId = toolManager.getCurrentPlacement().getContext();
++		this.toolManager = toolManager;
++		this.placementId = this.toolManager.getCurrentPlacement().getId();
++		this.toolId = this.toolManager.getCurrentTool().getId();
++		this.siteId = this.toolManager.getCurrentPlacement().getContext();
+ 		try
+ 		{
+ 			this.requestPage = Integer.parseInt(request
+@@ -430,6 +447,56 @@
+ 		return String.valueOf(tt);
+ 	}
+ 
++	
++	/* assemble the list of search sites */
++	
++	protected List getSearchSites (String[] toolPropertySiteIds) {
++		List<String> l = new ArrayList();
++		
++		l.add(this.siteId);
++		
++		if (toolPropertySiteIds == null) return l;
++		
++		//String[] searchSiteIds = extractSiteIdsFromToolProperty(extractPropertiesFromTool());
++		String[] searchSiteIds = toolPropertySiteIds;
++
++		// add searchSiteIds to l
++		for(int i = 0;i<searchSiteIds.length;i++){
++			String ss = searchSiteIds[i];
++			if (searchSiteIds[i].length() > 0) l.add(searchSiteIds[i]);
++		}
++
++		return l;
++	}
++
++	protected String[] getToolPropertySiteIds() {
++		Properties props = extractPropertiesFromTool();
++		String[] searchSiteIds = extractSiteIdsFromProperties(props);
++		return searchSiteIds;
++	}
++	
++	/* get any site ids that are in the tool property and normalize the string.
++	 * 
++	 */
++	protected String[] extractSiteIdsFromProperties(Properties props) {
++	//	Properties props = extractPropertiesFromTool();
++		
++		String targetSiteId = StringUtil.trimToNull(props.getProperty("search_site_ids"));
++		if (targetSiteId == null) return new String[] {""};
++		String[] searchSiteIds = StringUtil.split(targetSiteId, ",");
++		for(int i = 0;i<searchSiteIds.length;i++){
++			searchSiteIds[i] = StringUtil.trimToZero(searchSiteIds[i]);
++		}
++		return searchSiteIds;
++	}
++
++	protected Properties extractPropertiesFromTool() {
++		Placement placement = toolManager.getCurrentPlacement();
++		Properties props = placement.getPlacementConfig();
++		if(props.isEmpty())
++			props = placement.getConfig();
++		return props;
++	}
+ 	/**
+ 	 * Perform the search
+ 	 * 
+@@ -442,8 +509,11 @@
+ 		{
+ 			if (search != null && search.trim().length() > 0)
+ 			{
+-				List l = new ArrayList();
++
++				/*				List l = new ArrayList();
+ 				l.add(this.siteId);
++				*/
++				List l = getSearchSites(getToolPropertySiteIds());
+ 				long start = System.currentTimeMillis();
+ 				int searchStart = requestPage * pagesize;
+ 				int searchEnd = searchStart + pagesize;
+Index: search/search-tool/tool/src/java/org/sakaiproject/search/tool/SearchBeanImplTest.java
+===================================================================
+--- search/search-tool/tool/src/java/org/sakaiproject/search/tool/SearchBeanImplTest.java	(revision 0)
++++ search/search-tool/tool/src/java/org/sakaiproject/search/tool/SearchBeanImplTest.java	(revision 0)
+@@ -0,0 +1,147 @@
++package org.sakaiproject.search.tool;
++
++//import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.List;
++import java.util.Properties;
++
++import org.sakaiproject.search.api.SearchService;
++import org.sakaiproject.search.tool.*;
++import org.sakaiproject.tool.api.Placement;
++import org.sakaiproject.tool.api.ToolManager;
++
++import org.jmock.*;
++import org.jmock.builder.NameMatchBuilder;
++import org.jmock.cglib.MockObjectTestCase;
++
++//import junit.framework.TestCase;
++
++public class SearchBeanImplTest extends MockObjectTestCase {
++
++	SearchBeanImpl sbi = null; 
++	Mock mockSearchService = null;
++	Mock mockToolManager = null;
++	Mock mockPlacement = null;
++	Mock mockProperties = null;
++	String defaultSiteId = "defaultSiteId";
++	
++	protected void setUp() throws Exception {
++		super.setUp();
++//		sbi = new SearchBeanImpl("defaultSiteId");
++		mockSearchService = mock(SearchService.class,"searchService");
++		mockToolManager = mock(ToolManager.class,"toolManager");
++		mockPlacement = mock(Placement.class,"placement");
++		mockProperties = mock(Properties.class,"properties");
++
++		sbi = new SearchBeanImpl(defaultSiteId,(SearchService) mockSearchService.proxy(),
++				"defaultSearch", (ToolManager) mockToolManager.proxy());
++	}
++
++
++	// extractPropertiesFromTool
++	
++	public void testExtractPropertiesFromToolPlacement() {
++		mockToolManager.expects(once()).method("getCurrentPlacement").will(returnValue(mockPlacement.proxy()));
++		mockPlacement.expects(once()).method("getPlacementConfig").will(returnValue(mockProperties.proxy()));
++		mockProperties.expects(once()).method("isEmpty").will(returnValue(true));
++		mockPlacement.expects(once()).method("getConfig").will(returnValue(mockProperties.proxy()));				
++		assertNotNull(sbi.extractPropertiesFromTool());
++	}
++	
++	public void testExtractPropertiesFromToolCurrentPlacement() {
++		mockToolManager.expects(once()).method("getCurrentPlacement").will(returnValue(mockPlacement.proxy()));
++		mockPlacement.expects(once()).method("getPlacementConfig").will(returnValue(mockProperties.proxy()));
++		mockProperties.expects(once()).method("isEmpty").will(returnValue(false));
++						
++		assertNotNull(sbi.extractPropertiesFromTool());
++	}
++	
++	// extractSiteIdsFromToolProperty
++	
++	public void testExtractSiteIdsFromPropertiesNoProperties() {
++		mockProperties.expects(once()).method("getProperty").with(eq("search_site_ids")).will(returnValue(null));
++		String [] s = sbi.extractSiteIdsFromProperties((Properties) mockProperties.proxy()); 
++		assertTrue("array of one empty siteIds",s.length==1);
++		assertTrue("siteId is empty","".equals(s[0]));
++	}
++	
++	public void testExtractSiteIdsFromPropertiesEmptyProperties() {
++		mockProperties.expects(once()).method("getProperty").with(eq("search_site_ids")).will(returnValue(""));
++		String [] s = sbi.extractSiteIdsFromProperties((Properties) mockProperties.proxy()); 
++		assertTrue("array of one empty siteIds",s.length==1);
++		assertTrue("siteId is empty","".equals(s[0]));
++	}
++	
++	public void testExtractSiteIdsFromProperties1SiteId() {
++		mockProperties.expects(once()).method("getProperty").with(eq("search_site_ids")).will(returnValue("SiteIdOne"));
++		String [] s = sbi.extractSiteIdsFromProperties((Properties) mockProperties.proxy()); 
++		assertTrue("array of one siteid",s.length==1);
++		assertTrue("siteId is default","SiteIdOne".equals(s[0]));
++	}
++	
++	public void testExtractSiteIdsFromProperties2SiteId() {
++		mockProperties.expects(once()).method("getProperty").with(eq("search_site_ids")).will(returnValue("SiteIdOne,SiteIdTwo"));
++		String [] s = sbi.extractSiteIdsFromProperties((Properties) mockProperties.proxy()); 
++		assertTrue("array of two siteIds",s.length==2);
++		assertTrue("siteId has two entries","SiteIdOne".equals(s[0]));
++		assertTrue("siteId has two entries","SiteIdTwo".equals(s[1]));
++	}
++	
++	public void testExtractSiteIdsFromProperties2SiteIdBlanks() {
++		mockProperties.expects(once()).method("getProperty").with(eq("search_site_ids")).will(returnValue(" SiteIdOne , SiteIdTwo "));
++		String [] s = sbi.extractSiteIdsFromProperties((Properties) mockProperties.proxy()); 
++		assertTrue("array of siteIds with blanks",s.length==2);
++		assertTrue("siteId has two entries","SiteIdOne".equals(s[0]));
++		assertTrue("siteId has two entries","SiteIdTwo".equals(s[1]));
++	}
++
++	public void testExtractSiteIdsFromPropertiesJustBlank() {
++		mockProperties.expects(once()).method("getProperty").with(eq("search_site_ids")).will(returnValue(" "));
++		String [] s = sbi.extractSiteIdsFromProperties((Properties) mockProperties.proxy()); 
++		assertTrue("single blank siteid",s.length==1);
++		assertTrue("siteId is empty","".equals(s[0]));
++	}
++	// Not tested explicitly as very simple and just calls other tested methods.
++//	public void GetToolPropertySiteIds() {
++	// fail("not yet tested");
++//	}
++	
++	// If no ids from tool properties, will get only current site id
++	public void testGetSearchSitesNullSiteIdsArray() {
++		List l = sbi.getSearchSites(null);
++		assertTrue("no property site ids",l.size()==1);
++		assertEquals("default site id",defaultSiteId,l.get(0));
++	}
++
++	public void testGetSearchSitesEmptySiteIdsArray() {
++		List l = sbi.getSearchSites(new String[] {});
++		assertTrue("no property site ids",l.size()==1);
++		assertEquals("default site id",defaultSiteId,l.get(0));
++	}
++	
++	public void testGetSearchSitesEmptyValueSiteIdsArray() {
++		List l = sbi.getSearchSites(new String[] {""});
++		assertTrue("no property site ids",l.size()==1);
++		assertEquals("default site id",defaultSiteId,l.get(0));
++	}
++	
++	public void testGetSearchSitesOneValueSiteIdsArray() {
++		List l = sbi.getSearchSites(new String[] {"toolProp1"});
++		assertTrue("no property site ids",l.size()==2);
++		assertEquals("default site id",defaultSiteId,l.get(0));
++		assertEquals("toolProp1","toolProp1",l.get(1));
++	}
++	
++	public void testGetSearchSitesTwoValueSiteIdsArray() {
++		List l = sbi.getSearchSites(new String[] {"toolSiteId1","toolSiteId2"});
++		assertTrue("no property site ids",l.size()==3);
++		assertEquals("default site id",defaultSiteId,l.get(0));
++		assertEquals("toolSiteId1","toolSiteId1",l.get(1));
++		assertEquals("toolSiteId2","toolSiteId2",l.get(2));
++	}
++	
++}
++
++//Mock mockSubscriber = mock(Subscriber.class);
++//Publisher publisher = new Publisher();
++//publisher.add( (Subscriber)mockSubscriber.proxy() );
+
+Property changes on: search/search-tool/tool/src/java/org/sakaiproject/search/tool/SearchBeanImplTest.java
+___________________________________________________________________
+Name: svn:keywords
+   + Date Revision Author HeadURL Id
+Name: svn:eol-style
+   + native
+
+Index: search/search-tool/tool/src/webapp/tools/sakai.search.xml
+===================================================================
+--- search/search-tool/tool/src/webapp/tools/sakai.search.xml	(revision 21914)
++++ search/search-tool/tool/src/webapp/tools/sakai.search.xml	(working copy)
+@@ -18,7 +18,9 @@
+ 		<category name="course" />
+          <category name="project" />
+          <category name="myworkspace" />
+-		
++         
++         <!--  placeholder to allow specifing additional sites to search. -->
++		<configuration name="search_site_ids" value="" />
+ 
+ 	</tool>
+ 
+Index: search/search-impl/impl/project.xml
+===================================================================
+--- search/search-impl/impl/project.xml	(revision 21914)
++++ search/search-impl/impl/project.xml	(working copy)
+@@ -222,18 +222,24 @@
+       <version>0.7.1</version>
+       <type>jar</type>
+     </dependency>
+-           <dependency>
++    <dependency>
+       <groupId>commons-codec</groupId>
+       <artifactId>commons-codec</artifactId>
+       <version>1.3</version>
+       <type>jar</type>
+     </dependency>
+-           <dependency>
++    <dependency>
+       <groupId>commons-httpclient</groupId>
+       <artifactId>commons-httpclient</artifactId>
+       <version>3.0</version>
+       <type>jar</type>
+     </dependency>
++   <dependency>
++      <groupId>jmock</groupId>
++      <artifactId>jmock-cglib</artifactId>
++      <version>1.1.0</version>
++      <type>jar</type>
++    </dependency>
+   </dependencies>
+ </project>
+ 
+Index: search/search-impl/impl/src/java/org/sakaiproject/search/component/service/impl/SearchServiceImpl.java
+===================================================================
+--- search/search-impl/impl/src/java/org/sakaiproject/search/component/service/impl/SearchServiceImpl.java	(revision 21914)
++++ search/search-impl/impl/src/java/org/sakaiproject/search/component/service/impl/SearchServiceImpl.java	(working copy)
+@@ -339,9 +339,15 @@
+ 			BooleanQuery contextQuery = new BooleanQuery();
+ 			for (Iterator i = contexts.iterator(); i.hasNext();)
+ 			{
++				// Setup query so that it will allow results from any
++				// included site, not all included sites.
+ 				contextQuery.add(new TermQuery(new Term(
+-						SearchService.FIELD_SITEID, (String) i.next())),
+-						BooleanClause.Occur.MUST);
++				SearchService.FIELD_SITEID, (String) i.next())),
++				BooleanClause.Occur.SHOULD);
++				// This would require term to be in all sites :-(
++//				contextQuery.add(new TermQuery(new Term(
++//						SearchService.FIELD_SITEID, (String) i.next())),
++//						BooleanClause.Occur.MUST);
+ 			}
+ 
+ 			QueryParser qp = new QueryParser(SearchService.FIELD_CONTENTS,
+Index: search/search-impl/pack/src/webapp/WEB-INF/coreSearchComponents.xml
+===================================================================
+--- search/search-impl/pack/src/webapp/WEB-INF/coreSearchComponents.xml	(revision 21914)
++++ search/search-impl/pack/src/webapp/WEB-INF/coreSearchComponents.xml	(working copy)
+@@ -140,6 +140,7 @@
+     class="org.sakaiproject.search.index.impl.FSIndexStorage" 
+     init-method="init" >
+     <property name="location"><value>${sakai.home}searchindex</value></property>
++    <property name="recoverCorruptedIndex"><value>true</value></property>
+     <property name="analyzerFactory" ><ref bean="org.sakaiproject.search.index.AnalyzerFactory" /></property>    
+   </bean>
+ 

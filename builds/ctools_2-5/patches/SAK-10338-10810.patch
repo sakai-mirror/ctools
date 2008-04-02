@@ -1,0 +1,36 @@
+Index: util/util-util/util/src/java/org/sakaiproject/util/FormattedText.java
+===================================================================
+--- util/util-util/util/src/java/org/sakaiproject/util/FormattedText.java	(revision 34389)
++++ util/util-util/util/src/java/org/sakaiproject/util/FormattedText.java	(working copy)
+@@ -197,9 +197,8 @@
+ 			Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+ 
+ 	/** Matches href attribute */
+-	private static Pattern M_patternHref = Pattern.compile("href\\s*=\\s*\"?\\s*[\\S ]+(\\s|>)", Pattern.CASE_INSENSITIVE
+-			| Pattern.DOTALL);
+-
++	private static Pattern M_patternHref = Pattern.compile("href\\s*=\\s*\"?\\s*[^ \">]*[ \">]",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
++	
+ 	/**
+ 	 * Processes and validates user-entered HTML received from the web browser (from the WYSIWYG editor). Validates that the user input follows the Sakai formatted text specification; disallows dangerous stuff such as &lt;SCRIPT&gt; JavaScript tags.
+ 	 * Encodes the text according to the formatted text specification, for the rest of the system to use.
+@@ -567,10 +566,12 @@
+ 		// open in a new window
+ 		if (href != null)
+ 		{
++			href = href.replaceAll(">", "");
+ 			href = href.replaceAll("\"", "");
+-			href = href.replaceAll(">", "");
++			href = href.replaceAll("'", "");
+ 			href = href.replaceAll("http", "\"http");
+-			href = href.replaceAll("https", "\"https");
++			// href = href.replaceAll("https", "\"https");
++			href = href.replaceAll(" ", "");
+ 			newAnchor = "<a " + href + "\" target=\"_blank\">";
+ 		}
+ 		else
+@@ -1099,3 +1100,4 @@
+ 			8206, 8207, 8211, 8212, 8216, 8217, 8218, 8220, 8221, 8222, 8224, 8225, 8240, 8249, 8250, 8364 };
+ 
+ }
++
