@@ -62,17 +62,17 @@ public class SubjectAffiliates
 	} // setCampus
 
 	// affiliates uniqnames
-	Collection m_uniqnames = new Vector();
+	Collection<String> m_uniqnames = new Vector<String>();
 
-	/** get affiliates uniqnames */
-	public Collection getUniqnames()
+	/** get affiliates unique names */
+	public Collection<String> getUniqnames()
 	{
 		return m_uniqnames;
 
 	} // getUniqnames
 
-	/** set affiliates uniqnames */
-	public void setUniqnames(Collection uniqnames)
+	/** set affiliates unique names */
+	public void setUniqnames(Collection<String> uniqnames)
 	{
 		m_uniqnames = uniqnames;
 

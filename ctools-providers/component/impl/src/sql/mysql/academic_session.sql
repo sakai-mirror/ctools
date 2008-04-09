@@ -2,6 +2,7 @@
 -- CM_ACADEMIC_SESSION_T
 -----------------------------------------------------------------------------
 
+use sakai;
 CREATE TABLE CM_ACADEMIC_SESSION_T
 (
     ACADEMIC_SESSION_ID 	INT 	NOT NULL,

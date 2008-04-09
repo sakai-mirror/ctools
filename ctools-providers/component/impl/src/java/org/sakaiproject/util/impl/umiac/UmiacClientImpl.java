@@ -110,7 +110,7 @@ public class UmiacClientImpl
 			log.warn(this + " - no 'umiac.port' in configuration (or invalid integer)");
 		}
 
-		// build a synchronized map for the call cache, automatiaclly checking for expiration every 15 mins.
+		// build a synchronized map for the call cache, automatically checking for expiration every 15 mins.
 		m_callCache = MemoryService.newHardCache(this, 15 * 60);
 
 		if (M_instance == null)
@@ -234,7 +234,7 @@ public class UmiacClientImpl
 			return (String[]) m_callCache.getExpiredOrNot(command);
 		}
 
-		Vector result = makeRawCall(command);
+		Vector<String> result = makeRawCall(command);
 
 		// if there are no results, then we don't know the user
 		// If the entries are all null that is the same as a null result.
@@ -317,7 +317,7 @@ public class UmiacClientImpl
 			return rv;
 		}
 
-		Vector result = makeRawCall(command);
+		Vector<String> result = makeRawCall(command);
 		
 		// if there are no results, or the one has no "|", then we don't know the user
 		if (	(result == null)
@@ -360,7 +360,7 @@ public class UmiacClientImpl
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getGroupRoles(java.lang.String)
 	 */
-	public Map getGroupRoles(String id)
+	public Map<String, String> getGroupRoles(String id)
 		throws IdUnusedException
 	{
 		String command = "getClasslist," + id;
@@ -368,7 +368,7 @@ public class UmiacClientImpl
 		// check the cache - still use expired entries
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
-			Map rv = (Map) m_callCache.getExpiredOrNot(command);
+			Map<String, String> rv = (Map<String, String>) m_callCache.getExpiredOrNot(command);
 			if (rv == null)
 			{
 				throw new IdUnusedException(id);
@@ -376,7 +376,7 @@ public class UmiacClientImpl
 			return rv;
 		}
 
-		Vector result = makeRawCall(command);
+		Vector<String> result = makeRawCall(command);
 		
 		// if there are no results, or the one has no "|", then we don't know the user
 		if (	(result == null)
@@ -390,7 +390,7 @@ public class UmiacClientImpl
 		}
 
 		// store user id key to role value in return table
-		HashMap map = new HashMap();
+		HashMap<String, String> map = new HashMap<String, String>();
 
 		// parse each line of the result
 		// 1: Burger,Ham F|HBURGER|11234541|-||Instructor|E
@@ -412,21 +412,21 @@ public class UmiacClientImpl
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getUserSections(java.lang.String)
 	 */
-	public Map getUserSections(String eid)
+	public Map<String, String> getUserSections(String eid)
 	{
 		String command = "getUserSections," + eid;
 
 		// check the cache - still use expired entries
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
-			return (Map) m_callCache.getExpiredOrNot(command);
+			return (Map<String, String>) m_callCache.getExpiredOrNot(command);
 		}
 
 		// make the call		
-		Vector result = makeRawCall(command);
+		Vector<String> result = makeRawCall(command);
 
 		// parse the results
-		Map map = new HashMap();
+		Map<String, String> map = new HashMap<String, String>();
 	
 		// if there are no results, or the one has no "|", then we have no class roles for the user
 		if (	!(	(result == null)
@@ -478,7 +478,7 @@ public class UmiacClientImpl
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getGroupRoles(java.lang.String[])
 	 */
-	public Map getGroupRoles(String[] id)
+	public Map<String, String> getGroupRoles(String[] id)
 		throws IdUnusedException
 	{
 		StringBuffer commandBuf = new StringBuffer();
@@ -501,7 +501,7 @@ public class UmiacClientImpl
 		// check the cache - still use expired entries
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
-			Map rv = (Map) m_callCache.getExpiredOrNot(command);
+			Map<String, String> rv = (Map<String, String>) m_callCache.getExpiredOrNot(command);
 			if (rv == null)
 			{
 				throw new IdUnusedException(id[0]);
@@ -509,7 +509,7 @@ public class UmiacClientImpl
 			return rv;
 		}
 
-		Vector result = makeRawCall(command);
+		Vector<String> result = makeRawCall(command);
 
 		// if there are no results, or the one has no "|", then we don't know the user
 		if (	(result == null)
@@ -523,7 +523,7 @@ public class UmiacClientImpl
 		}
 
 		// store user id key to role value in return table
-		HashMap map = new HashMap();
+		HashMap<String, String> map = new HashMap<String, String>();
 
 		// parse each line of the result
 		// 2002,2,A,EDUC,547,003|Arrdvark Axis Betterman|Betterman,Arrdvark Axis|BOBOBOBOB|12345678|3|Student|E
@@ -558,17 +558,17 @@ public class UmiacClientImpl
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getClassList(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public Vector getClassList (String year, String term, String campus, String subject, String course, String section)
+	public Vector<String[]> getClassList (String year, String term, String campus, String subject, String course, String section)
 	{
 		String command = "getClasslist," + year + "," + term + "," + campus + "," + subject + "," + course + "," + section + "\n\n";
 
 		// check the cache - still use expired entries
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
-			return (Vector) m_callCache.getExpiredOrNot(command);
+			return (Vector<String[]>) m_callCache.getExpiredOrNot(command);
 		}
 
-		Vector result = makeRawCall(command);
+		Vector<String> result = makeRawCall(command);
 		
 		// if there are no results
 		if (	(result == null)
@@ -580,7 +580,7 @@ public class UmiacClientImpl
 			return null;
 		}
 
-		Vector rv = new Vector();
+		Vector<String[]> rv = new Vector<String[]>();
 		for (int i = 0; i < result.size(); i++)
 		{
 			String[] res = StringUtil.split((String)result.elementAt(i),"|");
@@ -601,11 +601,11 @@ public class UmiacClientImpl
 	{
 		String command = "getClassInfo," + year + "," + term + "," + campus + "," + subject + "," + course + "," + section + "\n\n";
 
-		Vector results;
+		Vector<String> results;
 		// check the cache - still use expired entries
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
-			results = (Vector) m_callCache.getExpiredOrNot(command);
+			results = (Vector<String>) m_callCache.getExpiredOrNot(command);
 		}
 		else
 		{
@@ -622,7 +622,7 @@ public class UmiacClientImpl
 		{
 			String[] classInfos = StringUtil.split((String)results.get(0),"|");
 			// look up the category definition
-			Hashtable categoryTable = getClassCategoryTable();
+			Hashtable<String, String> categoryTable = getClassCategoryTable();
 			String rv = (classInfos.length>=5 && categoryTable.get(classInfos[4]) != null)?(String) categoryTable.get(classInfos[4]):null;
 			return rv;
 		}
@@ -631,7 +631,7 @@ public class UmiacClientImpl
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getUserInformation(java.lang.String)
 	 */
-	public Vector getUserInformation (String eids)
+	public Vector<String[]> getUserInformation (String eids)
 		throws Exception
 	{
 		String command = "getUserInfo," + eids + "\n\n";
@@ -639,10 +639,10 @@ public class UmiacClientImpl
 		// check the cache - still use expired entries
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
-			return (Vector) m_callCache.getExpiredOrNot(command);
+			return (Vector<String[]>) m_callCache.getExpiredOrNot(command);
 		}
 
-		Vector result = makeRawCall(command);
+		Vector<String> result = makeRawCall(command);
 		
 		// if there are no results
 		if (	(result == null)
@@ -652,7 +652,7 @@ public class UmiacClientImpl
 			throw new Exception("UMIAC: no results: " + command);
 		}
 
-		Vector rv = new Vector();
+		Vector<String[]> rv = new Vector<String[]>();
 		for (int i = 0; i < result.size(); i++)
 		{
 			// 0: |Fred Farley Fish|70728384|FFISH|08-25-2000 01:46:30 PM
@@ -671,7 +671,7 @@ public class UmiacClientImpl
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getInstructorSections(java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public Vector getInstructorSections (String eid, String term_year, String term)
+	public Vector<String[]> getInstructorSections (String eid, String term_year, String term)
 		throws IdUnusedException
 	{
 		String command = "getInstructorSections," + eid + "," + term_year + "," + term + "\n\n";
@@ -687,7 +687,7 @@ public class UmiacClientImpl
 			return (Vector) m_callCache.getExpiredOrNot(command);
 		}*/
 
-		Vector result = makeRawCall(command);
+		Vector<String> result = makeRawCall(command);
 		
 		// if there are no results
 		if (	(result == null)
@@ -699,7 +699,7 @@ public class UmiacClientImpl
 			throw new IdUnusedException(eid);
 		}
 
-		Vector rv = new Vector();
+		Vector<String[]> rv = new Vector<String[]>();
 		for (int i = 0; i < result.size(); i++)
 		{
 			String[] res = StringUtil.split((String)result.elementAt(i),"|");
@@ -716,23 +716,23 @@ public class UmiacClientImpl
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getInstructorClasses(java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public Vector getInstructorClasses (String eid, String term_year, String term)
+	public Vector<String[]> getInstructorClasses (String eid, String term_year, String term)
 		throws IdUnusedException
 	{
 		String command = "getInstructorClasses," + eid + "," + term_year + "," + term + "\n\n";
 
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
-			Vector rv = (Vector) m_callCache.getExpiredOrNot(command);
+			Vector<String[]> rv = (Vector<String[]>) m_callCache.getExpiredOrNot(command);
 			if (rv == null)
 			{
 				throw new IdUnusedException(eid);
 			}
 
-			return (Vector) m_callCache.getExpiredOrNot(command);
+			return (Vector<String[]>) m_callCache.getExpiredOrNot(command);
 		}
 
-		Vector result = makeRawCall(command);
+		Vector<String> result = makeRawCall(command);
 		
 		// if there are no results
 		if (	(result == null)
@@ -744,7 +744,7 @@ public class UmiacClientImpl
 			throw new IdUnusedException(eid);
 		}
 
-		Vector rv = new Vector();
+		Vector<String[]> rv = new Vector<String[]>();
 		for (int i = 0; i < result.size(); i++)
 		{
 			String[] res = StringUtil.split((String)result.elementAt(i),"|");
@@ -772,11 +772,11 @@ public class UmiacClientImpl
 	/**
 	* Get sections based on given url
 	*/
-	public Vector getUrlSections(String url)
+	public Vector<String> getUrlSections(String url)
 	{
 		String command = "getUrlSections," + url + "\n\n";
 
-		Vector result = makeRawCall(command);
+		Vector<String> result = makeRawCall(command);
 		
 		// if there are no results
 		if (	(result == null)
@@ -785,14 +785,14 @@ public class UmiacClientImpl
 			return null;
 		}
 
-		Vector rv = new Vector();
+		Vector<String> rv = new Vector<String>();
 		for (int i = 0; i < result.size(); i++)
 		{
 			String[] res = StringUtil.split((String)result.elementAt(i),"|");
 			String resString = "";
 			for(int j = 0; j < res.length; j++)
 			{
-				// concat section info separated with ","
+				// combine section info separated with ","
 				resString = resString.concat(res[j]).concat(",");
 			}
 			// remove the last ","
@@ -811,7 +811,7 @@ public class UmiacClientImpl
 	* @param umiacCommand The UMIAC command string.
 	* @return A Vector of Strings, one per response line.
 	*/
-	public Vector makeRawCall(String umiacCommand)
+	public Vector<String> makeRawCall(String umiacCommand)
 	{
 		if (log.isDebugEnabled())
 		{
@@ -821,7 +821,7 @@ public class UmiacClientImpl
 		BufferedReader in = null;
 		Socket socket = null;
 		
-		Vector v = new Vector();
+		Vector<String> v = new Vector<String>();
 
 		// Open up a m_socket and write out the command to UMIAC.
 		try
@@ -888,15 +888,15 @@ public class UmiacClientImpl
 	 * @param course
 	 * @return
 	 */
-	public Set getCrossListingsByCourseOffering(String year, String term, String campus, String subject, String course)
+	public Set<String> getCrossListingsByCourseOffering(String year, String term, String campus, String subject, String course)
 	{
 		String command = "getCourses,term_year=" + year + ",term_id=" + term + ",source=" + campus + ",subject=" + subject + ",catalog_nbr=" + course + "\n\n";
-		Set rv = new HashSet();
-		List rv1 = new Vector();
+		Set<String> rv = new HashSet<String>();
+		List<String> rv1 = new Vector<String>();
 		// check the cache - still use expired entries
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
-			rv1 = (Vector) m_callCache.getExpiredOrNot(command);
+			rv1 = (Vector<String>) m_callCache.getExpiredOrNot(command);
 		}
 		else
 		{
@@ -907,19 +907,19 @@ public class UmiacClientImpl
 		if (	(rv1 == null)
 			||	(rv1.size() < 1))
 		{
-			return new HashSet();
+			return new HashSet<String>();
 		}
 		else
 		{
-			for(Iterator i = rv1.iterator(); i.hasNext();)
+			for(Iterator<String> i = rv1.iterator(); i.hasNext();)
 			{
 				//AMCULT|398|001|11168|Hon Writ Wkshp|SEM|https://ctools.umich.edu/portal/site/04002365-5e48-4516-007f-b6ada00d5488|CL
 				String[] classInfos = StringUtil.split((String)i.next(),"|");
 				if (classInfos.length==8 && classInfos[7].equalsIgnoreCase("CL"))
 				{
-					List crossListingSections = getCrossListings(year, term, campus, subject, course, classInfos[2]);
+					List<String> crossListingSections = getCrossListings(year, term, campus, subject, course, classInfos[2]);
 					String originalId = year + "," + term + "," + campus + "," + subject + "," + course + "," + classInfos[2];
-					for (Iterator j = crossListingSections.iterator(); j.hasNext();)
+					for (Iterator<String> j = crossListingSections.iterator(); j.hasNext();)
 					{
 						//2008|3|A|AMCULT|398|001|MT
 						//2008|3|A|WOMENSTD|389|001|MT
@@ -952,22 +952,22 @@ public class UmiacClientImpl
 	 * @param section
 	 * @return
 	 */
-	protected List getCrossListings(String year, String term, String campus,String subject, String course, String section)
+	protected List<String> getCrossListings(String year, String term, String campus,String subject, String course, String section)
 	{
 		String command = "getCrossListings," + year + "," + term + "," + campus + "," + subject + "," + course + "," + section + "\n\n";
 		
 		// check the cache - still use expired entries
-		Vector result = null;
+		Vector<String> result = null;
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
-			result = (Vector) m_callCache.getExpiredOrNot(command);
+			result = (Vector<String>) m_callCache.getExpiredOrNot(command);
 		}
 		else
 		{
 			result = makeRawCall(command);
 		}
 		
-		Vector rv = new Vector();
+		Vector<String> rv = new Vector<String>();
 		if (result != null && result.size() > 0)
 		{
 			for (int i = 0; i < result.size(); i++)
@@ -1019,7 +1019,7 @@ public class UmiacClientImpl
 	{
 		if (id == null) return null;
 
-		Vector returnVector = new Vector();
+		Vector<String> returnVector = new Vector<String>();
 
 		// first unpack the full ids
 		String[] first = unpackIdFull(id);
@@ -1119,10 +1119,10 @@ public class UmiacClientImpl
 	/**
 	 * @inheritDoc
 	 */
-	public Hashtable getTermIndexTable()
+	public Hashtable<String, String> getTermIndexTable()
 	{
 		//term names are stored as digits in UMIAC
-		Hashtable termIndex = new Hashtable();
+		Hashtable<String, String> termIndex = new Hashtable<String, String>();
 		termIndex.put("SUMMER", "1");
 		termIndex.put("FALL","2");
 		termIndex.put("WINTER", "3");
@@ -1136,7 +1136,7 @@ public class UmiacClientImpl
 	 */
 	private Hashtable<String, String> getClassCategoryTable()
 	{
-		Hashtable rv = new Hashtable();
+		Hashtable<String, String> rv = new Hashtable<String, String>();
 		rv.put("ACL", "Ambulatory Clinical");
 		rv.put("CAS","Case Studies/Presentations");
 		rv.put("CLL", "Clinical Lab");
