@@ -27,7 +27,7 @@ Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java
 +       //       System.out.println("refreshPresence " + this + " " +
 +       //		  SessionManager.getCurrentSessionUserId());
 +
-+       Log.debug("refreshPresence " + this + " " +
++       logger.debug("refreshPresence " + this + " " +
 +		 SessionManager.getCurrentSessionUserId());
 +
        if (getCurrentChannel() == null) {
@@ -77,7 +77,7 @@ Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java
 +       if (currentChannel != null && 
 +	   SessionManager.getSession(sessionId) == null) {
 +	   //	   System.out.println("user left expired session " + sessionId + " " + currentChannel);
-+	   log.debug("user left expired session " + sessionId + " " + currentChannel);
++	   logger.debug("user left expired session " + sessionId + " " + currentChannel);
 +	   resetCurrentChannel(currentChannel, true);
 +       }
 +       else
@@ -142,7 +142,7 @@ Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java
 +
 +	 if (oldTool != null) {
 +	     // System.out.println("setcurrent removing " + channel);
-+	     log.debug("setcurrent removing " + channel);
++	     logger.debug("setcurrent removing " + channel);
 +	     oldTool.resetCurrentChannel(channel, false);
 +	 }
 +	 
@@ -153,7 +153,7 @@ Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java
           
 -         getChatManager().addRoomListener(this, channel.getChatChannel().getId());
 +	 //	 System.out.println("addroom " + channelId + " " + sessionId + " " + this);
-+	 log.debug("addroom " + channelId + " " + sessionId + " " + this);
++	 logger.debug("addroom " + channelId + " " + sessionId + " " + this);
 +         getChatManager().addRoomListener(this, channelId);
           
           presenceChannelObserver.updatePresence();
@@ -176,7 +176,7 @@ Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java
 -      this.currentChannel = null;
 +      if (removeFromHash) {
 +	  //	  System.out.println("reset current removing " + channelId);
-+	  log.debug("reset current removing " + channelId);
++	  logger.debug("reset current removing " + channelId);
 +	  synchronized(toolsBySessionId) {
 +	      Map tools = (Map)toolsBySessionId.get(channelId);
 +	      if (tools != null) {
