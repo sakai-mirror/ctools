@@ -1,7 +1,7 @@
-Index: ChatTool.java
+Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java
 ===================================================================
---- ChatTool.java	(revision 36795)
-+++ ChatTool.java	(working copy)
+--- chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java	(revision 36795)
++++ chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java	(working copy)
 @@ -27,6 +27,8 @@
  import java.util.Date;
  import java.util.Iterator;
