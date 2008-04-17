@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!-- $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps/pom.xml $ -->
+<!-- $Id: pom.xml 45502 2008-04-17 18:45:14Z dlhaines@umich.edu $ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>base</artifactId>
+    <groupId>org.sakaiproject</groupId>
+    <version>M2</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <name>CTools Lib Help</name>
+  <groupId>org.sakaiproject</groupId>
+  <artifactId>ctools-libhelp-base</artifactId>
+  <packaging>pom</packaging>
+  <modules>
+    <module>tool</module>
+  </modules>
+</project>

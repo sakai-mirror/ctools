@@ -20,14 +20,14 @@
 
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>base</artifactId>
+    <artifactId>ctools-libhelp-base</artifactId>
     <groupId>org.sakaiproject</groupId>
     <version>M2</version>
-    <relativePath>../../pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <name>CTools libhelp</name>
   <groupId>org.sakaiproject</groupId>
-  <artifactId>ctools-libhelp-base</artifactId>
+  <artifactId>ctools-libhelp</artifactId>
   <packaging>war</packaging>
 
   <dependencies>
