@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!-- $HeadURL:$ -->
+<!-- $Id:$ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>base</artifactId>
+    <groupId>org.sakaiproject</groupId>
+    <version>M2</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <name>CTools Appliation Tools</name>
+  <groupId>org.sakaiproject</groupId>
+  <artifactId>ctools-apps-base</artifactId>
+  <packaging>pom</packaging>
+  <modules>
+    <module>tool</module>
+  </modules>
+</project>
