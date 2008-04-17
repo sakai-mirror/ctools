@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>ctools-reference-base</artifactId>
+    <groupId>org.sakaiproject</groupId>
+    <version>M2</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+  <name>Sakai CTools Reference Library Project</name>
+  <groupId>org.sakaiproject</groupId>
+  <artifactId>ctlib</artifactId>
+  <packaging>war</packaging>
+
+<!--
+<project>
+	<pomVersion>3</pomVersion>
+	<extend>../../master/project.xml</extend>
+	<name>CTools Library</name>
+	<groupId>sakaiproject</groupId>
+	<id>ctlib</id>
+	<currentVersion>${sakai.version}</currentVersion>
+	<organization>
+		<name>University of Michigan</name>
+		<url>http://sakaiproject.org/</url>
+	</organization>
+	<inceptionYear>2003</inceptionYear>
+
+	<properties>
+		<deploy.type>war</deploy.type>
+	</properties>
+-->
+	<dependencies>
+
+	</dependencies>
+
+	<build>
+
+		<!-- java source -->
+		<sourceDirectory>src/java</sourceDirectory>
+
+		<resources>
+
+		</resources>
+
+	</build>
+
+</project>
