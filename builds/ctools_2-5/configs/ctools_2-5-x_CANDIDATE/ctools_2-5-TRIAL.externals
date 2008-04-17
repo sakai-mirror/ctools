@@ -20,6 +20,7 @@
  access -r45411 https://source.sakaiproject.org/svn/access/branches/sakai_2-5-x
  alias -r45411 https://source.sakaiproject.org/svn/alias/branches/sakai_2-5-x
  announcement -r45411 https://source.sakaiproject.org/svn/announcement/branches/sakai_2-5-x
+ assignment -r45411 https://source.sakaiproject.org/svn/assignment/branches/sakai_2-5-x
  archive -r45411 https://source.sakaiproject.org/svn/archive/branches/sakai_2-5-x
  authz -r45411 https://source.sakaiproject.org/svn/authz/branches/sakai_2-5-x
  blog -r45411 https://source.sakaiproject.org/svn/blog/branches/sakai_2-5-x
@@ -28,7 +29,7 @@
  cluster -r45411 https://source.sakaiproject.org/svn/cluster/branches/sakai_2-5-x
  citations -r45411 https://source.sakaiproject.org/svn/citations/branches/sakai_2-5-x
  component -r45411 https://source.sakaiproject.org/svn/component/branches/sakai_2-5-x
- content -r45411 https://source.sakaiproject.org/svn/content/branches/SAK-12239
+ content -r45411 https://source.sakaiproject.org/svn/content/branches/sakai_2-5-x
  content-review -r45411 https://source.sakaiproject.org/svn/content-review/branches/sakai_2-5-x
  courier -r45411 https://source.sakaiproject.org/svn/courier/branches/sakai_2-5-x
  course-management -r45411 https://source.sakaiproject.org/svn/course-management/branches/sakai_2-5-x
@@ -41,6 +42,7 @@
  event -r45411 https://source.sakaiproject.org/svn/event/branches/sakai_2-5-x
  gradebook -r45411 https://source.sakaiproject.org/svn/gradebook/branches/sakai_2-5-x
  help -r45411 https://source.sakaiproject.org/svn/help/branches/sakai_2-5-x
+ jcr -r45411 https://source.sakaiproject.org/svn/jcr/branches/sakai_2-5-x
  jobscheduler -r45411 https://source.sakaiproject.org/svn/jobscheduler/branches/sakai_2-5-x
  jsf -r45411 https://source.sakaiproject.org/svn/jsf/branches/sakai_2-5-x
  linktool -r45411 https://source.sakaiproject.org/svn/linktool/branches/sakai_2-5-x
@@ -52,7 +54,7 @@
  message -r45411 https://source.sakaiproject.org/svn/message/branches/sakai_2-5-x
  metaobj -r45411 https://source.sakaiproject.org/svn/metaobj/branches/sakai_2-5-x
  msgcntr -r45411 https://source.sakaiproject.org/svn/msgcntr/branches/sakai_2-5-x
- osid -r45411 https://source.sakaiproject.org/svn/osid/branches/sakai_2-5-x
+# osid -r45411 https://source.sakaiproject.org/svn/osid/branches/sakai_2-5-x
  osp -r45411 https://source.sakaiproject.org/svn/osp/branches/sakai_2-5-x
  podcasts -r45411 https://source.sakaiproject.org/svn/podcasts/branches/sakai_2-5-x
  polls -r45411 https://source.sakaiproject.org/svn/polls/branches/sakai_2-5-x
@@ -88,19 +90,26 @@
 ######## DEVIANT BRANCHES
 ########
 
- gmt/gmt -r45411 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/post-2.4.x/gmt
- assignment -r45411 https://source.sakaiproject.org/svn/assignment/branches/post-2-4
+ gmt/gmt -r45411 https://source.sakaiproject.org/contrib/syracuse/gmt/branches/2.5.x
+
 
 
 #####
 ##### Michigan specific code.
 #####
- ctools-apps -r45411 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
- ctools-providers -r45411 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
- ctools-reference -r45411 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
- ctools-webservices -r45411 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-webservices
- gradtools -r45411 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
- ctools-libhelp -r45411 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
+#  ctools-apps -r45411 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-apps
+#  ctools-providers -r45411 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-providers
+#  ctools-reference -r45411 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-reference
+#  ctools-webservices -r45411 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-webservices
+#  gradtools -r45411 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
+#  ctools-libhelp -r45411 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
+
+ ctools-apps -r45411 https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
+ ctools-providers -r45411 https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
+ ctools-reference -r45411 https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
+ ctools-webservices -r45411 https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
+ gradtools -r45411 https://source.sakaiproject.org/svn/ctools/trunk/gradtools
+ ctools-libhelp -r45411 https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
 
 ########
 ######## Contrib tools
