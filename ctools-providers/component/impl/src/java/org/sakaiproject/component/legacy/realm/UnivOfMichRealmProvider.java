@@ -24,8 +24,10 @@
 
 package org.sakaiproject.component.legacy.realm;
 
+import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -153,6 +155,29 @@ public class UnivOfMichRealmProvider implements GroupProvider
 		try
 		{
 			Map map = getUmiac().getGroupRoles(eids);
+			if (map != null)
+			{
+				Set keys = map.keySet();
+				String role = null;
+				for (Iterator s = keys.iterator(); s.hasNext();)
+				{
+					String userId = (String) s.next();
+					
+					// only the getUserSections returns secondary roles. Use it to watch out possible secondary roles and update the userid-role map
+					Map map1 = getUmiac().getUserSections(userId);
+					if (map1 != null)
+					{
+						for (int j = 0; j< eids.length; j++)
+						{
+							if (map1.containsKey(eids[j]))
+							{
+								role = (String) map1.get(eids[j]);
+							}
+						}
+					}
+					map.put(userId, role);
+				}
+			}
 
 			return map;
 		}

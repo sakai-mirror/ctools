@@ -1,7 +1,9 @@
 package org.sakaiproject.util.api.umiac;
 
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.sakaiproject.exception.IdUnusedException;
@@ -42,14 +44,14 @@ public interface UmiacClient {
 
 	/**
 	 * See if a user by this id exists.
-	 * @param id The user uniqname.
+	 * @param id The user unique name.
 	 * @return true if a user by this id exists, false if not.
 	 */
 	public abstract boolean userExists(String id);
 
 	/**
 	 * Get the names for this user.
-	 * @param id The user uniqname.
+	 * @param id The user unique name.
 	 * @return String[]: [0] sort name, [1] display name, [2] last name, and [3] first name,
 	 * or null if the user does not exist.
 	 */
@@ -69,7 +71,7 @@ public interface UmiacClient {
 	 * @return The group's full display name.
 	 * @exception IdUnusedException If there is no group by this id.
 	 */
-	public abstract Map getGroupRoles(String id) throws IdUnusedException; // getGroupRoles
+	public abstract Map<String, String> getGroupRoles(String id) throws IdUnusedException; // getGroupRoles
 
 	/**
 	 * Get all the external realm ids the user has a role in, and the role.  
@@ -78,7 +80,7 @@ public interface UmiacClient {
 	 * @param id The user id.
 	 * @return A map of he realm id to the role for this user.
 	 */
-	public abstract Map getUserSections(String id); // getUserSections
+	public abstract Map<String, String> getUserSections(String id); // getUserSections
 
 	/**
 	 * Get all the members of a group, by their group role.
@@ -87,7 +89,7 @@ public interface UmiacClient {
 	 * @return The group's full display name.
 	 * @exception IdUnusedException If there is no group by this id.
 	 */
-	public abstract Map getGroupRoles(String[] id) throws IdUnusedException; // getGroupRoles
+	public abstract Map<String, String> getGroupRoles(String[] id) throws IdUnusedException; // getGroupRoles
 
 	/**
 	 * Send a getClasslist command to UMIAC and return the resulting
@@ -95,7 +97,7 @@ public interface UmiacClient {
 	 * sort_name|uniqname|umid|level (always "-")|credits|role|enrl_status
 	 *
 	 */
-	public abstract Vector getClassList(String year, String term,
+	public abstract Vector<String[]> getClassList(String year, String term,
 			String campus, String subject, String course, String section); // getClassList
 	
 	/**
@@ -111,7 +113,7 @@ public interface UmiacClient {
 	 * // 0: |Fred Farley Fish|70728384|FFISH|08-25-2000 01:46:30 PM
 	 *
 	 */
-	public abstract Vector getUserInformation(String ids) throws Exception; // getUserInformation
+	public abstract Vector<String[]> getUserInformation(String ids) throws Exception; // getUserInformation
 
 	/**
 	 * getInstructorSections
@@ -135,7 +137,7 @@ public interface UmiacClient {
 	 * 4 - SPRING
 	 * 5 - SPRING/SUMMER
 	 */
-	public abstract Vector getInstructorSections(String id, String term_year,
+	public abstract Vector<String[]> getInstructorSections(String id, String term_year,
 			String term) throws IdUnusedException; // getInstructorSections
 
 	/**
@@ -159,18 +161,30 @@ public interface UmiacClient {
 	 * 4 - SPRING
 	 * 5 - SPRING/SUMMER
 	 */
-	public abstract Vector getInstructorClasses(String id, String term_year,
+	public abstract Vector<String[]> getInstructorClasses(String id, String term_year,
 			String term) throws IdUnusedException; // getInstructorClasses
 	
 	/**
 	 * Get sections based on given url
 	 */
-	public Vector getUrlSections(String url);	// getUrlSections
+	public Vector<String> getUrlSections(String url);	// getUrlSections
 	
 	/**
 	 * Set group url to specified section record
 	 */
 	public void setGroupUrl(String year, String term, String campus, String subject, String course, String section, String url)	;	//setGroupUrl
+	
+	/**
+	 * Get set of course offering eids which are cross-listed with the provided course offering
+	 * If there is no cross-listings, empty list will be returned
+	 * @param year
+	 * @param term
+	 * @param campus
+	 * @param subject
+	 * @param course
+	 * @return
+	 */
+	public Set<String> getCrossListingsByCourseOffering(String year, String term, String campus, String subject, String course);
 	
 	/**
 	 * 
@@ -190,6 +204,6 @@ public interface UmiacClient {
 	/**
 	 * get the term index table
 	 */
-	public Hashtable getTermIndexTable();
+	public Hashtable<String, String> getTermIndexTable();
 	
 }

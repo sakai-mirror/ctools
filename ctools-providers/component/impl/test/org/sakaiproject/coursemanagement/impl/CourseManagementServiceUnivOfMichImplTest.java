@@ -242,35 +242,51 @@ public class CourseManagementServiceUnivOfMichImplTest extends MockObjectTestCas
 		Mock mockUseDb = mock(ExternalAcademicSessionInformation.class);
 		ExternalAcademicSessionInformation easi = (ExternalAcademicSessionInformation) mockUseDb.proxy();
 		
-		// The external source will return an Academic session object.  Mock that up and
-		// set appropriate values for that object.
-		
-		//mock UmiacClient
+		// getSection will look up section from external source,
+		// so mock one up.
 		Mock mockUmiac = mock(UmiacClient.class);
-		UmiacClient uc = (UmiacClient) mockUmiac.proxy();		
+		UmiacClient uc = (UmiacClient) mockUmiac.proxy();
+				
 		Hashtable termIndexTable = getTermIndexTable();
-		mockUmiac.expects(once()).method("getTermIndexTable").will(returnValue(termIndexTable));
-		mockUmiac.expects(once()).method("getClassCategory").will(returnValue("LAB"));
+		mockUmiac.expects(atLeastOnce()).method("getTermIndexTable").will(returnValue(termIndexTable));
+		mockUmiac.expects(atLeastOnce()).method("getClassCategory").will(returnValue("LAB"));
+		
 		cmsuofi.setUmiac(uc);
 		
 		Mock mockAcademicSession = mock(AcademicSession.class);
-		mockUseDb.expects(once()).method("getAcademicSession").with(eq("WINTER 2007")).will(returnValue(mockAcademicSession.proxy()));
-		mockAcademicSession.expects(once()).method("getDescription").will(returnValue("W07"));
+		mockUseDb.expects(atLeastOnce()).method("getAcademicSession").with(eq("FALL 2006")).will(returnValue(mockAcademicSession.proxy()));
+		mockAcademicSession.expects(once()).method("getDescription").will(returnValue("F06"));
 		mockAcademicSession.expects(once()).method("getStartDate").will(returnValue(new Date()));
 		mockAcademicSession.expects(once()).method("getEndDate").will(returnValue(new Date()));
 		
 		// setup to use the mock
 		cmsuofi.setExternalAcademicSessionInformationSource(easi);
 		
-		String id = "2007,3,A,SUBJECT,CATALOG_NBR,CLASS_SECTION";
-		Section s = cmsuofi.getSection(id);
+		// first an invalid provider id
+		String providerId = "2006,2,A,SUBJECT,CATALOG_NBR,CLASS_SECTION";
+		String rv = "";
+		mockUmiac.expects(once()).method("getGroupName").with(eq(providerId)).will(returnValue(rv));
+		
+		try
+		{
+			Section s = cmsuofi.getSection(providerId);
+		} catch (IdNotFoundException e)
+		{
+			// expected exception
+		}
+		
+		// now for a valid provider id
+		providerId = "2006,2,A,PROJECTS,600,001";
+		rv = "Vancouver History LEC 513100";
+		mockUmiac.expects(once()).method("getGroupName").with(eq(providerId)).will(returnValue(rv));
+		
+		Section s = cmsuofi.getSection(providerId);
 		// make sure that got back a section and a course offering
 		assertTrue("section returned from GS",s instanceof Section);
-		
 		// course offering id should not contain the section information from the full id.
-		String coEid = "2007,3,A,SUBJECT,CATALOG_NBR";
+		String coEid = "2006,2,A,PROJECTS,600";
 		assertEquals("section contains course offering",coEid,s.getCourseOfferingEid());
-		assertEquals("title contains description","SUBJECT CATALOG_NBR CLASS_SECTION W07",s.getTitle());
+		assertEquals("title contains description","PROJECTS 600 001 F06",s.getTitle());
 		
 		// check contents of enrollment set.
 		EnrollmentSet es = s.getEnrollmentSet();
