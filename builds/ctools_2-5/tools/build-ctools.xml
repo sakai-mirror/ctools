@@ -41,7 +41,7 @@ $HeadURL$
 
   <!-- change source as required -->
   <target name="editCtools" 
-	  depends="editSrcGlobal,editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editRwikiSrc" >
+	  depends="editSrcGlobal,editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editRwikiSrc,updatePomWithCToolsPom" >
     <!-- edit the files that need to be modified for ctools -->
   </target>
 
@@ -49,14 +49,20 @@ $HeadURL$
   <target name="removeUnneededCtools" >
 
     <!-- these don't work well -->
+    <echo> review if can delete these OSP items from build </echo>
+    <!--
     <removeFromBuild deleteDir="osp/migration" />
-    <removeFromBuild deleteDir="osp/warehouse" />
+    <removeFromBuild deleteDir="osp/warehouse" /> 
     <removeFromBuild deleteDir="osp/reports/api-impl" />
     <removeFromBuild deleteDir="osp/reports/components" />
     <removeFromBuild deleteDir="osp/reports/tool" />
+    -->
 
     <!-- CTools has its own SectionFields impl, so can delete the default one -->
+    <echo>verify site-manage impl</echo>
+    <!-- 
     <removeFromBuild deleteDir="site-manage/site-manage-impl" />
+    -->
 
   </target>
 
@@ -193,6 +199,18 @@ $HeadURL$
 	  flatten="true">
       <fileset dir="${build.dir}/ctools-webservices" includes="**/ActivityTracker.jws" />
     </copy>
+  </target>
+
+  <target name="updatePomWithCToolsPom"
+	  description="Replace default Sakai pom with one customized for CTools." >
+    <echo>Insert a top level pom suitable for CTools.</echo>
+    <!-- backup the sakai pom -->
+    <move file="${build.dir}/pom.xml" tofile="${build.dir}/pom.xml.dist" />
+    <!-- insert the ctools pom -->
+    <copy file="${reference.dir}/ctools.pom.xml"
+	  tofile="${build.dir}/pom.xml"
+	  overwrite="true"
+	  />
   </target>
 
   <!-- copy in the rwiki default pages properties file. -->

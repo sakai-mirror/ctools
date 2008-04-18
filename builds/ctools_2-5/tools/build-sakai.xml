@@ -1,23 +1,23 @@
 <project name="build-sakai" basedir="." default="sakaiBuildInfo" >
 
 
-<!--
-# $Id$
-# $HeadURL$
--->
+  <!--
+      # $Id$
+      # $HeadURL$
+  -->
 
-<target name="sakaiBuildInfo" >
-  <echo>
-    This installs and compiles the sakai code.  Targets in this file should not be invoked directly
-    but should be called by the master build.xml.
+  <target name="sakaiBuildInfo" >
+    <echo>
+      This installs and compiles the sakai code.  Targets in this file should not be invoked directly
+      but should be called by the master build.xml.
 
-    The default values for the sakai build are given below.  They are usually overridden by a properties file.
+      The default values for the sakai build are given below.  They are usually overridden by a properties file.
 
-    sakai.svndir = ${sakai.svndir}
-    sakai.svnurl = ${sakai.svnurl}
-    sakai.revision = ${sakai.revision}
-  </echo>
-</target>
+      sakai.svndir = ${sakai.svndir}
+      sakai.svnurl = ${sakai.svnurl}
+      sakai.revision = ${sakai.revision}
+    </echo>
+  </target>
 
 
   <!-- ================================================== -->
@@ -54,33 +54,32 @@
   </target>
 
   <!-- remove things that should not be there.  
-          For entire tools that should be included for some builds but not others 
-	  use a separate target so that can have a property as a flag to include the tool or not.
-	  That allows setting the state of that tools from the properties file and doesn't require 
-	  seperate build scripts for the different versions.
--->
+       For entire tools that should be included for some builds but not others 
+       use a separate target so that can have a property as a flag to include the tool or not.
+       That allows setting the state of that tools from the properties file and doesn't require 
+       seperate build scripts for the different versions.
+  -->
 
   <!-- -->
   <target name="deleteLinktool" if="linktool.install.skip">
-        <removeFromBuild deleteDir="linktool" />
+    <removeFromBuild deleteDir="linktool" />
   </target>
   <!-- -->
 
   <target name="deleteBlog" if="blog.install.skip">
-        <removeFromBuild deleteDir="blog" />
+    <removeFromBuild deleteDir="blog" />
   </target>
 
   <target name="deleteWebservices" if="webservices.install.skip">
     <removeFromBuild deleteDir="webservices" />
   </target>
 
-	<!--	  <target name="removeUnneededSakai" depends="deleteSamigo,deleteLinktool,deleteBlog,deleteWebservices" > -->
-	<target name="removeUnneededSakai" depends="deleteSamigo,deleteLinktool,deleteBlog,deleteWebservices" >
+  <target name="removeUnneededSakai" depends="deleteSamigo,deleteLinktool,deleteBlog,deleteWebservices" >
 
+    <!--
     <removeFromBuild deleteDir="portal/mercury" />
     <removeFromBuild deleteDir="common/common-composite-component/src/test" />
     <removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
-    <!--    <removeFromBuild deleteDir="gradebook/testservice" /> -->
     <removeFromBuild deleteDir="gradebook/sample-course-grade-converter" />
     <removeFromBuild deleteDir="gradebook/testservice-tool" />
     <removeFromBuild deleteDir="metaobj/api-impl/src/test" />
@@ -94,61 +93,50 @@
     <removeFromBuild deleteDir="sam/tests" />
     <removeFromBuild deleteDir="sam/tool/src/java/test" />
 
-    <!-- currently looks like only need to have CTools providers so get 
-    rid of course-management and provided providers. -->
+    <!\-\- currently looks like only need to have CTools providers so get 
+	 rid of course-management and provided providers. \-\->
     <removeFromBuild deleteDir="providers" /> 
     <removeFromBuild deleteDir="course-management/cm-impl" />
- <!--    <removeFromBuild deleteDir="course-management" /> -->
-    <!-- 
+    <!\-\- 
 	 many now have multiple providers, so need to pick and choose, not just
 	 replace with ctools ones.
-    -->
-    <!-- <removeFromBuild deleteDir="providers" />  -->
-    <!--
-    <removeFromBuild deleteDir="providers/allhands" /> 
-    <removeFromBuild deleteDir="providers/federating" /> 
-    <removeFromBuild deleteDir="providers/imsent" /> 
-    <removeFromBuild deleteDir="providers/jldap" /> 
-    <removeFromBuild deleteDir="providers/kerberos" /> 
-    <removeFromBuild deleteDir="providers/openldap" /> 
-    -->
-    <!-- <removeFromBuild deleteDir="providers/sample" />  -->
+    \-\->
 
     <removeFromBuild deleteDir="wsrp" />
     <removeFromBuild deleteDir="warehouse" />
     <removeFromBuild deleteDir="reports/api-impl" />
     <removeFromBuild deleteDir="reports/components" />
     <removeFromBuild deleteDir="reports/tool" />
-
+    -->
   </target>
 
-<!--
-  <target name="removeUnneededSakai" >
+  <!--
+      <target name="removeUnneededSakai" >
 
-    <removeFromBuild deleteDir="portal/mercury" />
-    <removeFromBuild deleteDir="common/common-composite-component/src/test" />
-    <removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
-    <removeFromBuild deleteDir="gradebook/testservice" />
-    <removeFromBuild deleteDir="metaobj/api-impl/src/test" />
-    <removeFromBuild deleteDir="osid/osid-unit-test" />
-    <removeFromBuild deleteDir="rwiki/jrcs/src/completetest" />
-    <removeFromBuild deleteDir="rwiki/jrcs/src/test" />
-    <removeFromBuild deleteDir="rwiki/radeox/src/test" />
-    <removeFromBuild deleteDir="rwiki/rwiki/src/test" />
-    <removeFromBuild deleteDir="rwiki/rwiki/src/testBundle" />
-    <removeFromBuild deleteDir="sam/testdata" />
-    <removeFromBuild deleteDir="sam/tests" />
-    <removeFromBuild deleteDir="sam/tool/src/java/test" />
-    <removeFromBuild deleteDir="providers" />
-    <removeFromBuild deleteDir="wsrp" />
-    <removeFromBuild deleteDir="warehouse" />
-    <removeFromBuild deleteDir="reports/api-impl" />
-    <removeFromBuild deleteDir="reports/components" />
-    <removeFromBuild deleteDir="reports/tool" />
-    <removeFromBuild deleteDir="webservices" />
+<removeFromBuild deleteDir="portal/mercury" />
+<removeFromBuild deleteDir="common/common-composite-component/src/test" />
+<removeFromBuild deleteDir="edu/coursemanagement-tool/src/test" />
+<removeFromBuild deleteDir="gradebook/testservice" />
+<removeFromBuild deleteDir="metaobj/api-impl/src/test" />
+<removeFromBuild deleteDir="osid/osid-unit-test" />
+<removeFromBuild deleteDir="rwiki/jrcs/src/completetest" />
+<removeFromBuild deleteDir="rwiki/jrcs/src/test" />
+<removeFromBuild deleteDir="rwiki/radeox/src/test" />
+<removeFromBuild deleteDir="rwiki/rwiki/src/test" />
+<removeFromBuild deleteDir="rwiki/rwiki/src/testBundle" />
+<removeFromBuild deleteDir="sam/testdata" />
+<removeFromBuild deleteDir="sam/tests" />
+<removeFromBuild deleteDir="sam/tool/src/java/test" />
+<removeFromBuild deleteDir="providers" />
+<removeFromBuild deleteDir="wsrp" />
+<removeFromBuild deleteDir="warehouse" />
+<removeFromBuild deleteDir="reports/api-impl" />
+<removeFromBuild deleteDir="reports/components" />
+<removeFromBuild deleteDir="reports/tool" />
+<removeFromBuild deleteDir="webservices" />
 
-  </target>
--->
+</target>
+  -->
 
   <target name="editSakai" >
   </target>
@@ -198,52 +186,77 @@
 
   </target>
 
+  <!-- changes to use maven2 -->
+  <!-- 
+       change name of maven executible 
+       take out -b
+       add -e to get error dump
+       default to online build.
+  -->
+  
+  <property name="maven_name" value="mvn" />
+
+  <!--
+      <exec executable="maven"
+      dir="${build.dir}"
+      failonerror="true"
+      searchpath="true"
+      >
+  -->
+
+
   <target name="compileSakai" depends="editMaster">
-    <exec executable="maven"
+    <exec executable="${maven_name}"
 	  dir="${build.dir}"
 	  failonerror="true"
 	  searchpath="true"
 	  >
-	  <env key="MAVEN_OPTS" value="-Djava.net.preferIPv4Stack=true -Xmx768m" />
+      <env key="MAVEN_OPTS" value="-Djava.net.preferIPv4Stack=true -Xmx768m" />
 
-      <arg value="-b" />
+      <!-- use this profile -->
+      <arg value="-P ctools" />
+      <arg value="-e" /> 
       <arg value="-Dmaven.junit.fork=true" />
       <!-- <arg value="-X" /> -->
       <!--  sometimes need to avoid this with a new build, but usually speeds things up. -->
-      <arg value="-o" />  
+      <!-- <arg value="-o" />   -->
 
+      <arg value="clean" />
+      <arg value="install" />
+      <!--
       <arg value="sakai:clean" />
       <arg value="sakai:build" />
       <arg value="sakai:deploy-zip" />
       <arg value="pack-src" /> 
+      -->
     </exec>
   </target>
 
   <!--
-	<goal name="pack-src"  description="package the sakai source">
+      <goal name="pack-src"  description="package the sakai source">
 
-		<zip destfile="sakai-src.zip" compress="yes" >
-			<zipfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" />
-		</zip>
-		<ant:echo>* * * sakai-src.zip</ant:echo>
+<zip destfile="sakai-src.zip" compress="yes" >
+<zipfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" />
+</zip>
+<ant:echo>* * * sakai-src.zip</ant:echo>
 
-		<tar destfile="sakai-src.tar" longfile="gnu" >
-			<tarfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" />
-		</tar>
-		<gzip zipfile="sakai-src.tar.gz" src="sakai-src.tar"/>
-		<delete file="sakai-src.tar" />
-		<ant:echo>* * * sakai-src.tar.gz</ant:echo>
+<tar destfile="sakai-src.tar" longfile="gnu" >
+<tarfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" />
+</tar>
+<gzip zipfile="sakai-src.tar.gz" src="sakai-src.tar"/>
+<delete file="sakai-src.tar" />
+<ant:echo>* * * sakai-src.tar.gz</ant:echo>
 
-	</goal>
-	-->
+</goal>
+  -->
 
   <!--
-  <defaultexcludes remove="**/*~"/>
+      <defaultexcludes remove="**/*~"/>
 
-  (do several fileset based tasks here)
+(do several fileset based tasks here)
 
-  <defaultexcludes default="true"/>
--->
+<defaultexcludes default="true"/>
+  -->
   <target name="packSource">
     <defaultexcludes remove="**/.svn"/>
     <defaultexcludes remove="**/.svn/**"/>
@@ -252,8 +265,8 @@
 		  compression="gzip" />
     </tar>
     <!--
-    <gzip zipfile="sakai-src-svn.tar.gz" src="sakai-src-svn.tar"/>
-    <delete file="sakai-src-svn.tar" />
+	<gzip zipfile="sakai-src-svn.tar.gz" src="sakai-src-svn.tar"/>
+	<delete file="sakai-src-svn.tar" />
     -->
     <defaultexcludes default="true"/>
   </target>
