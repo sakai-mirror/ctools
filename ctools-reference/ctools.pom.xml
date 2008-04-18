@@ -124,7 +124,7 @@ to include a profile for ctools 2.5 -->
     <profile>
       <id>full</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <activeByDefault>false</activeByDefault>
       </activation>
       <modules>
         <module>master</module>
@@ -202,7 +202,7 @@ to include a profile for ctools 2.5 -->
     <profile>
       <id>ctools</id>
       <activation>
-        <activeByDefault>false</activeByDefault>
+        <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
         <module>master</module>
