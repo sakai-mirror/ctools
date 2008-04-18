@@ -2,8 +2,8 @@
 
 <!-- This version of the base Sakai pom has been modified
 to include a profile for ctools 2.5 -->
-<!-- $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/configs/ctools_2-5-x_CANDIDATE/ctools.pom.xml $ -->
-<!-- $Id: ctools.pom.xml 45509 2008-04-17 19:09:39Z dlhaines@umich.edu $ -->
+<!-- $HeadURL$ -->
+<!-- $Id$ -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
