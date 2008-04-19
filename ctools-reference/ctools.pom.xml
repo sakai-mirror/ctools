@@ -218,7 +218,7 @@ to include a profile for ctools 2.5 -->
         <module>citations</module>
         <module>cluster</module>
         <module>component</module>
-	<!-- <module>content</module> -->
+	<module>content</module>
 	<module>content-review</module> 
         <module>courier</module>
         <module>course-management</module>
@@ -269,7 +269,7 @@ to include a profile for ctools 2.5 -->
         <module>web</module>
         <module>webservices</module>
         <module>mailtool</module>
-        <!-- <module>polls</module> -->
+        <module>polls</module> 
         <module>usermembership</module>
 	<!-- <module>sakai-mock</module> -->
 	<!-- <module>warehouse</module>  -->
