@@ -4,7 +4,7 @@
  <parent>
     <artifactId>base</artifactId>
     <groupId>org.sakaiproject</groupId>
-    <version>Snapshot</version>
+    <version>M2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -12,7 +12,7 @@
   <artifactId>ctools-assembly</artifactId>
   <packaging>pom</packaging>
   <name>CTools Build Assembly</name>
-  <version>SNAPSHOT</version>
+  <version>M2</version>
   <organization>
     <name>University of Michigan</name>
     <url>http://sakaiproject.org/</url>
