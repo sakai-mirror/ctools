@@ -89,7 +89,9 @@
 
                 <!-- Replace the favorite icon from tomcat -->
                 <copy file="${basedir}/../reference/library/src/webapp/icon/favicon.ico" tofile="${basedir}/target/pack/webapps/ROOT/favicon.ico" overwrite="true" />
+		<!--
                 <copy file="${basedir}/../reference/library/src/webapp/icon/apple-touch-icon.png" tofile="${basedir}/target/pack/webapps/ROOT/apple-touch-icon.png" overwrite="true" />
+		0-->
 
                 <copy file="${basedir}/../ECLv1.txt" tofile="${basedir}/target/pack/ECLv1.txt" overwrite="true" />
 
@@ -117,6 +119,16 @@
 
                 <!-- zip it -->
 		
+		<echo>what about melete? </echo>
+		<echo>what about section fields?</echo>
+		<echo>gradtools edit</echo>
+		<echo>Berg modification script</echo>
+		<echo> default tools</echo>
+		<echo>gradebook grades</echo>
+		<echo>linktool</echo>
+		<echo>ctools jws</echo>
+		<echo>wiki properties</echo>
+
                 <delete file="${ctools.archive.name}-${sakai.version}.zip" />
                 <zip destfile="${ctools.archive.name}-${sakai.version}.zip" compress="yes" >
                         <zipfileset dir="${basedir}/target/pack/" prefix="${ctools.archive.name}-${sakai.version}" />
