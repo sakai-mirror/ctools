@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
  <parent>
@@ -21,6 +20,12 @@
     <sakai.plugin.version>2.2</sakai.plugin.version>
     <sakai.tomcat.version>5.5.23</sakai.tomcat.version>
     <ctools.archive.name>ctools-assembly</ctools.archive.name>
+
+    <!-- these are values that used to live in shared.properties -->
+    <favicon.name>favicon.ico</favicon.name>
+    <errorpages.dir>error-pages</errorpages.dir>
+    <tomcatWebXml.name>web.xml.5.5.23</tomcatWebXml.name>
+
   </properties>
   <dependencies>
     <dependency>
@@ -92,6 +97,11 @@
 		<!--
                 <copy file="${basedir}/../reference/library/src/webapp/icon/apple-touch-icon.png" tofile="${basedir}/target/pack/webapps/ROOT/apple-touch-icon.png" overwrite="true" />
 		0-->
+                <!-- Insert the ctools favorite icon -->
+		<mkdir dir="${basedir}/target/pack/webapps/ROOT" />
+		<copy file="${basedir}/../ctools-reference/${favicon.name}"
+		      todir="${basedir}/target/pack/webapps/ROOT"
+		      overwrite="true" />
 
                 <copy file="${basedir}/../ECLv1.txt" tofile="${basedir}/target/pack/ECLv1.txt" overwrite="true" />
 
@@ -128,6 +138,7 @@
 		<echo>linktool</echo>
 		<echo>ctools jws</echo>
 		<echo>wiki properties</echo>
+
 
                 <delete file="${ctools.archive.name}-${sakai.version}.zip" />
                 <zip destfile="${ctools.archive.name}-${sakai.version}.zip" compress="yes" >
