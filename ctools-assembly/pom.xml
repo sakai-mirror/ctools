@@ -26,7 +26,12 @@
     <errorpages.dir>error-pages</errorpages.dir>
     <tomcatWebXml.name>web.xml.5.5.23</tomcatWebXml.name>
 
+    <!-- gradebook customization -->
+    <gradebook.grades.config.sourcefile>UMichGrades.xml</gradebook.grades.config.sourcefile>
+    <gradebook.grades.config.tofile>gradebook/service/sakai-pack/src/webapp/WEB-INF/components.xml</gradebook.grades.config.tofile>
+
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>tomcat.tomcat</groupId>
@@ -51,11 +56,48 @@
 
 		<!-- ===================== pre compile changes ============== -->
 		<echo> Copy in the UMich rwiki default pages </echo>
+
+		<property name="src.dir" value="${basedir}/.." />		
+		<property name="reference.dir" value="${src.dir}/ctools-reference" />
+
+		<echo> src.dir=${src.dir}</echo>
+		<echo> reference.dir=${reference.dir}</echo>
+
+		<copy file="${reference.dir}/config/09PrepopulatePages.properties"
+		      tofile="${src.dir}/rwiki/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/PrepopulatePages.properties"
+		      overwrite="true"
+		      flatten="true"
+		      />
+
+		  <!--
 		<copy file="${basedir}/../ctools-reference/config/09PrepopulatePages.properties"
-			  tofile="${basedir}/../rwiki/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/PrepopulatePages.properties"
-			  overwrite="true"
-			  flatten="true"
-			  />
+		      tofile="${basedir}/../rwiki/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/PrepopulatePages.properties"
+		      overwrite="true"
+		      flatten="true"
+		      />
+		-->
+
+		  <echo>update grade file for UMich</echo>
+		  <copy file="${reference.dir}/${gradebook.grades.config.sourcefile}"
+			tofile="${src.dir}/${gradebook.grades.config.tofile}"
+			overwrite="true"/>
+
+		  <echo> copy the linktool to web services</echo>
+		  <echo> Copy the linktool jws files to sakai webservices. </echo>
+		  <copy todir="${src.dir}/webservices/axis/src/webapp"
+			overwrite="true">
+		    <fileset dir="${src.dir}/linktool" includes="*.jws" />
+		    <fileset dir="${src.dir}/ctools-webservices" includes="ActivityTracker.jws" />
+		  </copy>
+
+		<!-- copy in the CTools web services -->
+		<echo>copy in ActivityTracker</echo>
+		  <echo> Copy the ctools jws files to sakai webservices webapp. </echo>
+		  <copy todir="${src.dir}/webservices/axis/src/webapp"
+			overwrite="true"
+			flatten="true">
+		    <fileset dir="${src.dir}/ctools-webservices" includes="**/ActivityTracker.jws" />
+		  </copy>
 
 
 		<!-- ===================== compile Sakai/CTools ============== -->
@@ -75,6 +117,7 @@
 		<copy file="${basedir}/../ctools-reference/${favicon.name}"
 		      todir="${basedir}/target/pack/webapps/ROOT"
 		      overwrite="true" />
+
 
 
 		<!-- insert the licence -->
