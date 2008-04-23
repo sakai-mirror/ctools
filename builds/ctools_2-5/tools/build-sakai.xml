@@ -214,15 +214,20 @@
       <env key="MAVEN_OPTS" value="-Djava.net.preferIPv4Stack=true -Xmx768m" />
 
       <!-- use this profile -->
-      <arg value="-P ctools" />
+      <!-- <arg value="-P ctools" /> --> <!-- does a build with new ctools profile -->
+      <!-- <arg value="-P pack-demo" /> --> <!-- creates an install artifact -->
+      <arg value="-P ctools-assembly" />
       <arg value="-e" /> 
       <arg value="-Dmaven.junit.fork=true" />
       <!-- <arg value="-X" /> -->
       <!--  sometimes need to avoid this with a new build, but usually speeds things up. -->
       <!-- <arg value="-o" />   -->
 
+      <!-- <arg value="pack-demo" /> -->
+
       <arg value="clean" />
       <arg value="install" />
+
       <!--
       <arg value="sakai:clean" />
       <arg value="sakai:build" />

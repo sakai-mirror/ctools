@@ -104,6 +104,8 @@
 #  gradtools -r45545 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
 #  ctools-libhelp -r45545 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
 
+ ctools-assembly -r45602 https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
+
  ctools-apps -r45545 https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
  ctools-providers -r45545 https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
  ctools-reference -r45545 https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
