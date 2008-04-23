@@ -330,7 +330,14 @@ span.abc a,span.abc a:link{
 	background-color: #CCC;
 	padding: .3em;
 }
-
+/*used as background class for recent items in dropbox, anywhere*/
+ .recentItem{
+      padding:1px;
+      background: url(images/new_item_back.gif) top right no-repeat
+ }
+  .recentItem a:link{
+     text-decoration:none !important;
+ } 
 /*block to act on items it is listed under*/
 /*see list of links under an assignment in assignment list*/
 .itemAction{
@@ -812,3 +819,62 @@ font-weight: bold;
 	border: 1px solid #000000;
 	padding: 0.5em;
 }
+
+/* Make a list based css menu */
+
+
+ul.makeMenu, ul.makeMenu ul {
+  width: auto;
+  border: 1px solid #ddd  !important;
+  background:#fff; 
+  padding: 3px;
+  padding-left: 6px;
+  margin-right: 3px;
+  cursor: default;
+  margin-left: 0px;
+	display:inline;
+	position: relative;
+	text-align: left;
+	white-space: nowrap;
+}
+ul.makeMenu:hover{
+	border:1px solid #666  !important;
+}	
+.listHier ul.makeMenu img{
+	margin-right: 0;
+	vertical-align: middle;
+}
+
+ul.makeMenu li {
+  list-style-type: none;
+  margin: 0px;
+  position: relative;
+  color: #000000  !important;
+ display:inline;
+}
+ul.makeMenu li > ul {
+  display: none;
+  position: absolute;
+  top: 4px;
+  left: 0;
+}
+ul.makeMenu li:hover, ul.makeMenu li.CSStoHighlight {
+  color: #000  !important;
+}
+ul.makeMenu ul.CSStoShow {
+  display: block;
+}
+ul.makeMenu li:hover > ul {
+	display: block;
+  	width: 14em;
+	background-color:#ffffff;
+	background-image:none;
+	position:absolute;
+	border:1px solid #666  !important;
+	margin-top:9px;
+ 	z-index:3
+}
+ul.makeMenu li a { display: block; width: 100%; text-decoration: underline;   padding:6px; color:#35B !importan}
+ul.makeMenu li a:hover, ul.makeMenu li a.CSStoHighLink { color: #000  !important; ; }
+ul.makeMenu li:hover > a { color: #000; }
+

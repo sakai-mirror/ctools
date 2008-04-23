@@ -694,6 +694,7 @@ you loose the native buttonishness affordance of the os/browser */
 
 .chatListMonitor {
 	height: 300px;
+	overflow: auto;
 	overflow-y: auto;
 	overflow-x: visible;
 }
