@@ -1,4 +1,4 @@
-@import url("../ctools/portal.css") all;
+@import url("../ctools/portal.css");
 
 /*unused block in standard skin is used to render a string based on instance (test, load, localhost)*/
 #mastLogo{
