@@ -96,23 +96,21 @@
 		<echo> edit registrations under ${build.dir} to make sure the tool categories are as desired.</echo>
 
 		<!-- make the project category disappear for these. -->
+
+
 		<replaceregexp >
-		  <!--		      <fileset dir="${build.dir}" includes="**/sakai.gradebook.tool.xml,**/sakai.samigo.tool.xml,**/sakai.dropbox.xml,**/sakai.melete.xml" /> -->
 		  <fileset dir="${build.dir}" >
 		    <include>**/sakai.gradebook.tool.xml</include>
 		    <include>**/sakai.samigo.tool.xml</include>
 		    <include>**/sakai.dropbox.xml</include>
 		    <include>**/sakai.melete.xml</include>
 		  </fileset>
-		  <!-- this works, but not on sakai.samigo.tool.xml ?? -->
 		  <regexp pattern="&lt;category.*name=&quot;project&quot;.*"/>
 		  <substitution  expression="" />
 		</replaceregexp>
-
-		<!-- add the gradtools configuration changes to the sakai code. -->
+<!--
 		<echo> edit file: ${build.dir}/site-manage/**/tools/sakai.sitesetup.xml for gradtools.</echo>
 
-		<!-- add the gradtools student site type. -->
 
 		<replaceregexp >
 		  <fileset dir="${src.dir}/site-manage" >
@@ -133,10 +131,6 @@
 		  <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
 		</replaceregexp>
 
-
-		<!-- update the tool references to add gradtools tools as appropriate.
-		     This adds student, department, and rackham. -->
-
 		<replaceregexp>
 
 		  <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
@@ -155,10 +149,6 @@
 
 		</replaceregexp>
 
-
-		<!-- update the tool references to add gradtools tools as appropriate.
-		     This adds just student. -->
-
 		<replaceregexp>
 
 		  <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
@@ -171,7 +161,7 @@
 		  </fileset>
 
 		</replaceregexp>
-
+-->
 		<!-- ===================== compile Sakai/CTools ============== -->
 		<!-- build Sakai and assemble an image into ctools-assembly.  Should the profile be a variable? -->
 		<echo>Executing cd ../;mvn  -P ctools -Dmaven.tomcat.home=${basedir}/target/pack -Dmaven.test.skip=true clean install sakai:deploy</echo> 
@@ -230,6 +220,23 @@
 	    </goals>
 	  </execution>
 	</executions>
+	<dependencies>
+	  <dependency>
+	    <groupId>ant</groupId>
+	    <artifactId>ant-nodeps</artifactId>
+	    <version>1.6.5</version>
+	  </dependency>
+	  <dependency>
+	    <groupId>ant</groupId>
+	    <artifactId>ant-apache-regexp</artifactId>
+	    <version>1.6.5</version>
+	  </dependency>
+	  <dependency>
+	    <artifactId>jakarta-regexp</artifactId>
+	    <groupId>jakarta-regexp</groupId>
+	    <version>1.4</version>
+	  </dependency>
+	</dependencies>
       </plugin>
     </plugins>
   </build>
