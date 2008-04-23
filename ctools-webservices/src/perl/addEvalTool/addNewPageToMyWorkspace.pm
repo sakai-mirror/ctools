@@ -57,6 +57,7 @@ sub setVerbose {
   return($oldVerbose);
 }
 
+
 ## be able to set trace level.
 my $trace = 0;
 
@@ -68,6 +69,18 @@ sub setTrace {
   return($oldTrace);
 }
 
+## Get rid of old copy of tool?
+my $deleteOldTool = 1;
+
+sub setDeleteOldTool {
+  # see setVerbose to see if the alternate method would work.
+  my ($newDeleteOldTool) = @_;
+  my $oldDeleteOldTool = $deleteOldTool;
+  $deleteOldTool = $newDeleteOldTool;
+  return($oldDeleteOldTool);
+}
+
+###################
 ###################
 
 ## For accounting
@@ -162,63 +175,63 @@ sub addNewToolPageFromEids {
 
 }
 
-# Add a page and tool to the my workspace sites of these users.
-sub addNewToolPageFromEidList {
-  my ($account,@userEids) = @_;
+# # Add a page and tool to the my workspace sites of these users.
+# sub addNewToolPageFromEidList {
+#   my ($account,@userEids) = @_;
 
-  my $startTime = time();
+#   my $startTime = time();
 
-  # reset the stats for this batch.
-  ($eids,$noaccount,$nologin,$other) = (0,0,0,0);
-  my ($addSummary) = "";
-  ###############################
-  # login and start sakai session if there isn't one already
-  $sakaiSession = establishSakaiSession( WSURI("SakaiLogin"), $sakaiSession, $account->user, $account->pw );
+#   # reset the stats for this batch.
+#   ($eids,$noaccount,$nologin,$other) = (0,0,0,0);
+#   my ($addSummary) = "";
+#   ###############################
+#   # login and start sakai session if there isn't one already
+#   $sakaiSession = establishSakaiSession( WSURI("SakaiLogin"), $sakaiSession, $account->user, $account->pw );
 
-  die("failed to create sakai session") unless ($sakaiSession);
-  print "established [",$account->user,"] session: [$sakaiSession]\n" if ($verbose);
-  ##############################
+#   die("failed to create sakai session") unless ($sakaiSession);
+#   print "established [",$account->user,"] session: [$sakaiSession]\n" if ($verbose);
+#   ##############################
 
-  # connect to the sakai script WS
-  my $CToolsScriptConnection = connectToSakaiWebService(WSURI("CToolsScript"));
-  die("no sakai web service CToolsScriptConnection $!") unless ($CToolsScriptConnection);
+#   # connect to the sakai script WS
+#   my $CToolsScriptConnection = connectToSakaiWebService(WSURI("CToolsScript"));
+#   die("no sakai web service CToolsScriptConnection $!") unless ($CToolsScriptConnection);
 
-  print ("Adding new page and tool to users. page: [",$toolInfo->pageName,
-	 "] tool: [",$toolInfo->toolName,
-	 "] toolId: [",$toolInfo->toolId,
-	 "]\n");
+#   print ("Adding new page and tool to users. page: [",$toolInfo->pageName,
+# 	 "] tool: [",$toolInfo->toolName,
+# 	 "] toolId: [",$toolInfo->toolId,
+# 	 "]\n");
 
-  print "@userEids: [",join("][",@userEids),"]\n" if ($verbose);
-  print ("user\tworkspaceid\tresult\n");
+#   print "@userEids: [",join("][",@userEids),"]\n" if ($verbose);
+#   print ("user\tworkspaceid\tresult\n");
 
-	my $response = $CToolsScriptConnection->addPageAndToolToUserMyWorkspaceList(@userEids,$toolInfo->pageName,$toolInfo->toolName,$toolInfo->toolId,$CToolsScriptConnection,$sakaiSession);
+# 	my $response = $CToolsScriptConnection->addPageAndToolToUserMyWorkspaceList(@userEids,$toolInfo->pageName,$toolInfo->toolName,$toolInfo->toolId,$CToolsScriptConnection,$sakaiSession);
 
-	  my $addSummary = checkWSResponseAndReturnResult($response);
+# 	  my $addSummary = checkWSResponseAndReturnResult($response);
 
-	print "addSummary: [$addSummary]\n";
+# 	print "addSummary: [$addSummary]\n";
 
-#  foreach my $uEid (@userEids) {
-#      print "uEid: [$uEid]\n" if ($verbose);
-#      # for every user add the page and tool		
-#      # If pass toolInfo as an object put the struct into sakaiSoapUtils.pm
-#      addPageAndToolToUserMyWorkspace($uEid,$toolInfo->pageName,$toolInfo->toolName,$toolInfo->toolId,$CToolsScriptConnection,$sakaiSession);
-#  #    print "\n";
-#  }
-  print "\n";
-  # This batch is over.
-  my $endTime = time();
+# #  foreach my $uEid (@userEids) {
+# #      print "uEid: [$uEid]\n" if ($verbose);
+# #      # for every user add the page and tool		
+# #      # If pass toolInfo as an object put the struct into sakaiSoapUtils.pm
+# #      addPageAndToolToUserMyWorkspace($uEid,$toolInfo->pageName,$toolInfo->toolName,$toolInfo->toolId,$CToolsScriptConnection,$sakaiSession);
+# #  #    print "\n";
+# #  }
+#   print "\n";
+#   # This batch is over.
+#   my $endTime = time();
 
-  ############################
-  ## terminate the session.
-  endSakaiSession(WSURI("SakaiLogin"),$sakaiSession);
-  $sakaiSession = undef;
-  ##############################
+#   ############################
+#   ## terminate the session.
+#   endSakaiSession(WSURI("SakaiLogin"),$sakaiSession);
+#   $sakaiSession = undef;
+#   ##############################
 
-  print "users: $eids success: $success noaccount: $noaccount nologin: $nologin other: $other";
-  print " elapsed time (secs) : ",$endTime-$startTime;
-  printf " seconds per user: %3.1f\n",($endTime-$startTime)/$eids;
+#   print "users: $eids success: $success noaccount: $noaccount nologin: $nologin other: $other";
+#   print " elapsed time (secs) : ",$endTime-$startTime;
+#   printf " seconds per user: %3.1f\n",($endTime-$startTime)/$eids;
 
-}
+# }
 
 
 
@@ -234,7 +247,7 @@ sub addPageAndToolToUserMyWorkspace {
 #  my $response = $CToolsScriptConnection->addToolToUserMyWorkspaceTest($sakaiSession,
   my $response = $CToolsScriptConnection->addToolToUserMyWorkspace($sakaiSession,
 								      $uEid,$pageTitle,0,
-								      $toolTitle,$toolId,"");
+								      $toolTitle,$toolId,"",$deleteOldTool);
 
   $eids++;
   my $return = checkWSResponseAndReturnResult($response);
