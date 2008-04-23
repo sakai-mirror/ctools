@@ -69,14 +69,6 @@
 		      flatten="true"
 		      />
 
-		<!--
-		    <copy file="${basedir}/../ctools-reference/config/09PrepopulatePages.properties"
-		    tofile="${basedir}/../rwiki/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/PrepopulatePages.properties"
-		    overwrite="true"
-		    flatten="true"
-		    />
-		-->
-
 		<echo>update grade file for UMich</echo>
 		<copy file="${reference.dir}/${gradebook.grades.config.sourcefile}"
 		      tofile="${src.dir}/${gradebook.grades.config.tofile}"
@@ -117,6 +109,68 @@
 		  <substitution  expression="" />
 		</replaceregexp>
 
+		<!-- add the gradtools configuration changes to the sakai code. -->
+		<echo> edit file: ${build.dir}/site-manage/**/tools/sakai.sitesetup.xml for gradtools.</echo>
+
+		<!-- add the gradtools student site type. -->
+
+		<replaceregexp >
+		  <fileset dir="${src.dir}/site-manage" >
+		    <include name="**/webapp/tools/sakai.sitesetup.xml" />
+		    <include name="**/webapp/tools/sakai.siteinfo.xml" />
+		  </fileset>
+		  <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
+		  <substitution 
+		      expression="configuration name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
+		</replaceregexp>
+
+		<replaceregexp >
+		  <fileset dir="${src.dir}/site-manage" >
+		    <include name="**/webapp/tools/sakai.sitesetup.xml" />
+		    <include name="**/webapp/tools/sakai.siteinfo.xml" />
+		  </fileset>
+		  <regexp pattern="configuration name=&quot;privateSiteTypes&quot; value=&quot;&quot;" />
+		  <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
+		</replaceregexp>
+
+
+		<!-- update the tool references to add gradtools tools as appropriate.
+		     This adds student, department, and rackham. -->
+
+		<replaceregexp>
+
+		  <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
+		  <substitution expression="\1 &lt;category name=&quot;GradToolsStudent&quot; /&gt;  &lt;category name=&quot;GradToolsDepartment&quot; /&gt;  &lt;category name=&quot;GradToolsRackham&quot; /&gt;" />
+		  
+		  <fileset dir="${src.dir}"  >
+		    <include name="**/webapp/tools/sakai.announcements.xml" />
+		    <include name="**/webapp/tools/sakai.chat.xml" />
+		    <include name="**/webapp/tools/sakai.discussion.xml" />
+		    <include name="**/webapp/tools/sakai.iframe.xml" />
+		    <include name="**/webapp/tools/sakai.resources.xml" />
+		    <include name="**/webapp/tools/sakai.rwiki.xml" />
+		    <include name="**/webapp/tools/sakai.schedule.xml" />
+		    <include name="**/webapp/tools/sakai.siteinfo.xml" />
+		  </fileset>
+
+		</replaceregexp>
+
+
+		<!-- update the tool references to add gradtools tools as appropriate.
+		     This adds just student. -->
+
+		<replaceregexp>
+
+		  <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
+		  <substitution expression="\1 &lt;category name=&quot;GradToolsStudent&quot; /&gt;" />
+		  
+		  <fileset dir="${src.dir}">
+		    <include name="**/webapp/tools/sakai.dropbox.xml" />
+		    <include name="**/webapp/tools/sakai.mailbox.xml" />
+		    <include name="**/webapp/tools/sakai.news.xml" />
+		  </fileset>
+
+		</replaceregexp>
 
 		<!-- ===================== compile Sakai/CTools ============== -->
 		<!-- build Sakai and assemble an image into ctools-assembly.  Should the profile be a variable? -->
@@ -135,9 +189,7 @@
 		<copy file="${basedir}/../ctools-reference/${favicon.name}"
 		      todir="${basedir}/target/pack/webapps/ROOT"
 		      overwrite="true" />
-
-
-
+		
 		<!-- insert the licence -->
 		<copy file="${basedir}/../ECLv1.txt" tofile="${basedir}/target/pack/ECLv1.txt" overwrite="true" />
 
