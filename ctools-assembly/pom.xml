@@ -69,35 +69,53 @@
 		      flatten="true"
 		      />
 
-		  <!--
-		<copy file="${basedir}/../ctools-reference/config/09PrepopulatePages.properties"
-		      tofile="${basedir}/../rwiki/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/PrepopulatePages.properties"
-		      overwrite="true"
-		      flatten="true"
-		      />
+		<!--
+		    <copy file="${basedir}/../ctools-reference/config/09PrepopulatePages.properties"
+		    tofile="${basedir}/../rwiki/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/PrepopulatePages.properties"
+		    overwrite="true"
+		    flatten="true"
+		    />
 		-->
 
-		  <echo>update grade file for UMich</echo>
-		  <copy file="${reference.dir}/${gradebook.grades.config.sourcefile}"
-			tofile="${src.dir}/${gradebook.grades.config.tofile}"
-			overwrite="true"/>
+		<echo>update grade file for UMich</echo>
+		<copy file="${reference.dir}/${gradebook.grades.config.sourcefile}"
+		      tofile="${src.dir}/${gradebook.grades.config.tofile}"
+		      overwrite="true"/>
 
-		  <echo> copy the linktool to web services</echo>
-		  <echo> Copy the linktool jws files to sakai webservices. </echo>
-		  <copy todir="${src.dir}/webservices/axis/src/webapp"
-			overwrite="true">
-		    <fileset dir="${src.dir}/linktool" includes="*.jws" />
-		    <fileset dir="${src.dir}/ctools-webservices" includes="ActivityTracker.jws" />
-		  </copy>
+		<echo> copy the linktool to web services</echo>
+		<echo> Copy the linktool jws files to sakai webservices. </echo>
+		<copy todir="${src.dir}/webservices/axis/src/webapp"
+		      overwrite="true">
+		  <fileset dir="${src.dir}/linktool" includes="*.jws" />
+		  <fileset dir="${src.dir}/ctools-webservices" includes="ActivityTracker.jws" />
+		</copy>
 
 		<!-- copy in the CTools web services -->
 		<echo>copy in ActivityTracker</echo>
-		  <echo> Copy the ctools jws files to sakai webservices webapp. </echo>
-		  <copy todir="${src.dir}/webservices/axis/src/webapp"
-			overwrite="true"
-			flatten="true">
-		    <fileset dir="${src.dir}/ctools-webservices" includes="**/ActivityTracker.jws" />
-		  </copy>
+		<echo> Copy the ctools jws files to sakai webservices webapp. </echo>
+		<copy todir="${src.dir}/webservices/axis/src/webapp"
+		      overwrite="true"
+		      flatten="true">
+		  <fileset dir="${src.dir}/ctools-webservices" includes="**/ActivityTracker.jws" />
+		</copy>
+
+		<!-- Be sure these tools don't appear in the project category -->
+
+		<echo> edit registrations under ${build.dir} to make sure the tool categories are as desired.</echo>
+
+		<!-- make the project category disappear for these. -->
+		<replaceregexp >
+		  <!--		      <fileset dir="${build.dir}" includes="**/sakai.gradebook.tool.xml,**/sakai.samigo.tool.xml,**/sakai.dropbox.xml,**/sakai.melete.xml" /> -->
+		  <fileset dir="${build.dir}" >
+		    <include>**/sakai.gradebook.tool.xml</include>
+		    <include>**/sakai.samigo.tool.xml</include>
+		    <include>**/sakai.dropbox.xml</include>
+		    <include>**/sakai.melete.xml</include>
+		  </fileset>
+		  <!-- this works, but not on sakai.samigo.tool.xml ?? -->
+		  <regexp pattern="&lt;category.*name=&quot;project&quot;.*"/>
+		  <substitution  expression="" />
+		</replaceregexp>
 
 
 		<!-- ===================== compile Sakai/CTools ============== -->
@@ -128,9 +146,11 @@
 		<echo>gradtools edit</echo>
 		<echo>Berg modification script</echo>
 		<echo>default tools</echo>
-		<echo>gradebook grades</echo>
-		<echo>linktool</echo>
-		<echo>ctools jws</echo>
+		<!-- need verification, but appear to be in.
+		     <echo>gradebook grades</echo>
+		     <echo>linktool</echo>
+		     <echo>ctools jws</echo>
+		-->
 
 		<!-- make an image -->
 		<delete file="${ctools.archive.name}-${sakai.version}.zip" />
