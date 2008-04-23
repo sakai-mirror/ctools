@@ -535,9 +535,7 @@ below they are contextually defined depending on the column as an example,as you
 }
 
 .portletTitle{
-/*	background:*/
 	width: 80%;
-/*	border-top: 1px solid #00338b;*/
 	background: #00338b url(images/blue_tabcap_r.gif) bottom right no-repeat;
 }
 
@@ -549,13 +547,10 @@ below they are contextually defined depending on the column as an example,as you
 }
 
 .portletTitle .title{
-	padding:2px 4px 6px 4px;
-	height:1em;
+	padding: 2px 8px 4px 2px;
+	height:.9em;
 	float: left;
 	color: #000;
-}
-* html .portletTitle .title{
-	padding: 0 2px 2px 2px;
 }
 .portletTitle .title h2{
 	display: inline;
@@ -570,7 +565,10 @@ below they are contextually defined depending on the column as an example,as you
 
 .portletTitle .title a{
 	background: url(images/reload.gif) center left no-repeat;
-	text-decoration: none
+	text-decoration: none;
+	height:16px;
+	display:block;
+	float:left;
 }
 
 .portletTitle .title a:hover{
