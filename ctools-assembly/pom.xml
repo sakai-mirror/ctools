@@ -1,4 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0">
+  <!-- $HeadURL$ -->
+  <!-- $Id$ -->
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>base</artifactId>
@@ -93,25 +95,24 @@
 
 		<!-- Be sure these tools don't appear in the project category -->
 
-		<echo> edit registrations under ${build.dir} to make sure the tool categories are as desired.</echo>
+		<echo> edit registrations under ${src.dir} to make sure the tool categories are as desired.</echo>
 
 		<!-- make the project category disappear for these. -->
 
-
 		<replaceregexp >
-		  <fileset dir="${build.dir}" >
-		    <include>**/sakai.gradebook.tool.xml</include>
-		    <include>**/sakai.samigo.tool.xml</include>
-		    <include>**/sakai.dropbox.xml</include>
-		    <include>**/sakai.melete.xml</include>
+		  <fileset dir="${src.dir}" >
+		    <include name="**/sakai.gradebook.tool.xml" />
+		    <include name="**/sakai.samigo.tool.xml"/>
+		    <include name="**/sakai.dropbox.xml" />
+		    <include name="**/sakai.melete.xml" />
 		  </fileset>
 		  <regexp pattern="&lt;category.*name=&quot;project&quot;.*"/>
 		  <substitution  expression="" />
 		</replaceregexp>
-<!--
-		<echo> edit file: ${build.dir}/site-manage/**/tools/sakai.sitesetup.xml for gradtools.</echo>
 
+		<echo> edit file: ${src.dir}/site-manage/**/tools/sakai.sitesetup.xml for gradtools.</echo>
 
+		<echo> edit file: deal with siteType</echo>
 		<replaceregexp >
 		  <fileset dir="${src.dir}/site-manage" >
 		    <include name="**/webapp/tools/sakai.sitesetup.xml" />
@@ -122,6 +123,7 @@
 		      expression="configuration name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
 		</replaceregexp>
 
+		<echo> edit file: deal with privateSiteType </echo>
 		<replaceregexp >
 		  <fileset dir="${src.dir}/site-manage" >
 		    <include name="**/webapp/tools/sakai.sitesetup.xml" />
@@ -131,8 +133,8 @@
 		  <substitution  expression="configuration name=&quot;privateSiteTypes&quot; value=&quot;GradToolsStudent&quot;" />
 		</replaceregexp>
 
+		<echo>edit file: add gradtools categories</echo>
 		<replaceregexp>
-
 		  <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
 		  <substitution expression="\1 &lt;category name=&quot;GradToolsStudent&quot; /&gt;  &lt;category name=&quot;GradToolsDepartment&quot; /&gt;  &lt;category name=&quot;GradToolsRackham&quot; /&gt;" />
 		  
@@ -149,6 +151,7 @@
 
 		</replaceregexp>
 
+		<echo>edit file: add GradToolStudent category to dropbox, mailbox, and news</echo>
 		<replaceregexp>
 
 		  <regexp pattern="(&lt;category name=&quot;project&quot; /&gt;)" />
@@ -161,7 +164,7 @@
 		  </fileset>
 
 		</replaceregexp>
--->
+
 		<!-- ===================== compile Sakai/CTools ============== -->
 		<!-- build Sakai and assemble an image into ctools-assembly.  Should the profile be a variable? -->
 		<echo>Executing cd ../;mvn  -P ctools -Dmaven.tomcat.home=${basedir}/target/pack -Dmaven.test.skip=true clean install sakai:deploy</echo> 
