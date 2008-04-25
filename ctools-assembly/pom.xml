@@ -47,6 +47,7 @@
       <plugin>
 	<artifactId>maven-antrun-plugin</artifactId>
 	<executions>
+
 	  <execution>
 	    <id>ctools-assembly-clean</id>
 	    <phase>install</phase>
@@ -93,6 +94,21 @@
 		  <fileset dir="${src.dir}/ctools-webservices" includes="**/ActivityTracker.jws" />
 		</copy>
 
+		<!-- add hook to make global changes, e.g. make change allocation of new boolean values to use valueOf -->
+		<!-- define any value for src.global.edit.skip to avoid doing this step. -->
+		<!-- example from build-ctools.xml.  will NOT work as is. 
+		     maybe this should be in external script like source extraction
+		     <target name="editSrcGlobal" if="src.global.edit.perform" 
+		     description="make any global changes to the source desired.">
+		     <echo> Run global edit script </echo>
+		     <exec dir="." executable="perl" failonerror="true">
+		     <arg value="${patches.dir}/easy_wins_find_java.pl" />
+		     <arg value="${work.dir}/build" />
+		     <arg value="0" />
+		     </exec>
+		     </target>
+		-->
+
 		<!-- Be sure these tools don't appear in the project category -->
 
 		<echo> edit registrations under ${src.dir} to make sure the tool categories are as desired.</echo>
@@ -110,6 +126,7 @@
 		  <substitution  expression="" />
 		</replaceregexp>
 
+		<!-- gradtools modifications -->
 		<echo> edit file: ${src.dir}/site-manage/**/tools/sakai.sitesetup.xml for gradtools.</echo>
 
 		<echo> edit file: deal with siteType</echo>
@@ -186,11 +203,11 @@
 		<!-- insert the licence -->
 		<copy file="${basedir}/../ECLv1.txt" tofile="${basedir}/target/pack/ECLv1.txt" overwrite="true" />
 
-		<echo>what about melete? </echo>
-		<echo>what about section fields?</echo>
-		<echo>gradtools edit</echo>
-		<echo>Berg modification script</echo>
-		<echo>default tools</echo>
+		<echo>* what about melete? </echo>
+		<echo>* what about section fields?</echo>
+		<!-- <echo>gradtools edit</echo> -->
+		<echo>* Berg modification script (some day maybe)</echo>
+		<echo>* default tools</echo>
 		<!-- need verification, but appear to be in.
 		     <echo>gradebook grades</echo>
 		     <echo>linktool</echo>
@@ -198,12 +215,13 @@
 		-->
 
 		<!-- make an image -->
-		<delete file="${ctools.archive.name}-${sakai.version}.zip" />
-		<zip destfile="${ctools.archive.name}-${sakai.version}.zip" compress="yes" >
-		  <zipfileset dir="${basedir}/target/pack/" prefix="${ctools.archive.name}-${sakai.version}" />
-		</zip>
-		<echo>* * * ${ctools.archive.name}-${sakai.version}.zip</echo>
-
+		<!--
+		    <delete file="${ctools.archive.name}-${sakai.version}.zip" />
+		    <zip destfile="${ctools.archive.name}-${sakai.version}.zip" compress="yes" >
+		    <zipfileset dir="${basedir}/target/pack/" prefix="${ctools.archive.name}-${sakai.version}" />
+		    </zip>
+		    <echo>* * * ${ctools.archive.name}-${sakai.version}.zip</echo>
+		-->
 		<!-- tar it -->
 		<delete file="${ctools.archive.name}-${sakai.version}.tar.gz" />
 		<tar destfile="${ctools.archive.name}-${sakai.version}.tar.gz" longfile="gnu" compression="gzip">
@@ -215,13 +233,47 @@
 		  </tarfileset>
 		</tar>
 		<echo>* * * ${ctools.archive.name}-${sakai.version}.tar.gz</echo>
+
+		<!--
+		    <goal name="pack-src"  description="package the sakai source">
+		    <zip destfile="sakai-src.zip" compress="yes" >
+		    <zipfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" />
+		    </zip>
+		    <ant:echo>* * * sakai-src.zip</ant:echo>
+		    <tar destfile="sakai-src.tar" longfile="gnu" >
+		    <tarfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" />
+		    </tar>
+		    <gzip zipfile="sakai-src.tar.gz" src="sakai-src.tar"/>
+		    <delete file="sakai-src.tar" />
+		    <ant:echo>* * * sakai-src.tar.gz</ant:echo>
+		    </goal>
+		-->
+
+		<!-- make a src tar (and include the svn directories) -->
+		<delete file="${ctools.archive.name}-${sakai.version}-src.tar.gz" />
+		<echo>make ctools src tar</echo>
+		<!-- make sure to INCLUDE the .svn files and EXCLUDE the binary files. -->
+		<defaultexcludes remove="**/.svn" />
+		<defaultexcludes remove="**/.svn/**" />
+		<defaultexcludes add="**/target/**" />
+		<defaultexcludes add="**/m2-target/**" />
+		<defaultexcludes add="**/bin/**" />
+		<defaultexcludes add="**/${ctools.archive.name}-${sakai.version}.tar.gz" />
+
+		<tar destfile="${ctools.archive.name}-${sakai.version}-src.tar.gz" longfile="gnu" compression="gzip">
+		  <tarfileset dir="${basedir}/.." mode="755" prefix="${ctools.archive.name}-${sakai.version}-src">
+		  </tarfileset>
+		</tar>
+		<echo>* * * ${ctools.archive.name}-${sakai.version}-src.tar.gz</echo>
 		<delete dir="${basedir}/target/pack/"/>
 	      </tasks>
+
 	    </configuration>
 	    <goals>
 	      <goal>run</goal>
 	    </goals>
-	  </execution>
+	  </execution>	  
+
 	</executions>
 	<dependencies>
 	  <dependency>
