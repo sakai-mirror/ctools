@@ -73,16 +73,23 @@
     </replaceregexp>
   </target>
 
+
+  <property name="src.dir" value="${build.dir}/ctools-assembly" />
+  <property name="ctools-prefix" value="ctools-assembly-M2" />
   <!-- create the image -->
   <target name="assembleImage">
-    <untar src="${build.dir}/sakai.tar.gz" dest="${image.dir}" compression="gzip" />
+    <!-- to assemble image need to add dbdriver and take out licences -->
+    <!-- <untar src="${build.dir}/sakai.tar.gz" dest="${image.dir}" compression="gzip" />-->
+    <!--
+    <untar src="${src.dir}/ctools-assembly-M2.tar.gz" dest="${image.dir}" compression="gzip" />
     <copy file="${dbdriver}" todir="${image.dir}/common/lib" />
     <delete dir="${image.dir}/licenses" />
+    -->
   </target>
 
   <target name="moveSrcTar" >
-<!--    <move todir="${image.dest.dir}" file="${build.dir}/sakai-src.tar.gz" /> -->
-    <move tofile="${image.dest.dir}/sakai-src.${sakai.tag}.tar.gz" file="${build.dir}/sakai-src.tar.gz" /> 
+    <!--    <move todir="${image.dest.dir}" file="${build.dir}/sakai-src.tar.gz" /> -->
+    <move tofile="${image.dest.dir}/sakai-src.${sakai.tag}.tar.gz" file="${src.dir}/${ctools-prefix}.tar.gz" /> 
   </target>
 
   <target name="bundleImage" depends="moveSrcTar">
@@ -166,25 +173,36 @@
 
   <!-- remove files from build directory -->
   <macrodef name="removeFromBuild">
+
+
     <attribute name="dir" default="${build.dir}" />
     <attribute name="deleteDir" />
     <sequential>
+    <echo> important but dummied at the moment </echo>
+    <!--
       <echo> remove ${build.dir}/@{deleteDir} from build </echo>
       <delete dir="${build.dir}/@{deleteDir}"  verbose="false" quiet="true" />
+    -->
     </sequential>
+
   </macrodef>
 
   
 
   <!-- remove war files from image directory -->
   <macrodef name="removeWarFromImage">
+
+
     <attribute name="dir" default="${image.dir}/webapps" />
     <attribute name="deleteWar" />
     <sequential>
+    <echo> important but dummied at the moment </echo>
+    <!--
     <echo> removeWarFromImage: delete war: @{dir}/@{deleteWar} </echo>
       <delete file="@{dir}/@{deleteWar}"  />
-<!--      <delete dir="${dir}/@{deleteWar}"  verbose="false" quiet="true" /> -->
+    -->
     </sequential>
+
   </macrodef>
 
 

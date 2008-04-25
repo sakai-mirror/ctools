@@ -59,6 +59,7 @@ sub getSrcViaExternalsFile {
     next if (/^\s*#/);
     next if (/^\s*$/);
 
+    # Can this capture HEAD too?
     ($module,$revision,$path,$dummy,$svnOptions) = m/\s*(\S+)\s+-r(\d+)\s+([^|]*)\s*(\|\s*(.+))*$/;
     next unless ($module);
   

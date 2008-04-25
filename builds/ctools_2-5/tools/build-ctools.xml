@@ -92,9 +92,10 @@ $HeadURL$
 
   <!-- add the gradtools configuration changes to the sakai code. -->
   <target name="editGradTools">
+    <!--
     <echo> edit file: ${build.dir}/site-manage/**/tools/sakai.sitesetup.xml for gradtools.</echo>
 
-    <!-- add the gradtools student site type. -->
+    <!\-\- add the gradtools student site type. \-\->
 
     <replaceregexp >
       <fileset dir="${build.dir}/site-manage" >
@@ -117,8 +118,8 @@ $HeadURL$
     </replaceregexp>
 
 
-    <!-- update the tool references to add gradtools tools as appropriate.
-	 This adds student, department, and rackham. -->
+    <!\-\- update the tool references to add gradtools tools as appropriate.
+	 This adds student, department, and rackham. \-\->
 
     <replaceregexp>
 
@@ -139,8 +140,8 @@ $HeadURL$
     </replaceregexp>
 
 
-    <!-- update the tool references to add gradtools tools as appropriate.
-	 This adds just student. -->
+    <!\-\- update the tool references to add gradtools tools as appropriate.
+	 This adds just student. \-\->
 
     <replaceregexp>
 
@@ -154,52 +155,57 @@ $HeadURL$
       </fileset>
 
     </replaceregexp>
-
+-->
     
   </target>
 
   <!-- Be sure these tools don't appear in the project category -->
   <target name="editDefaultTools" >
-
+    <!--
     <echo> edit registrations under ${build.dir} to make sure the tool categories are as desired.</echo>
 
-    <!-- make the project category disappear for these. -->
     <replaceregexp >
       <fileset dir="${build.dir}" includes="**/sakai.gradebook.tool.xml,**/sakai.samigo.tool.xml,**/sakai.dropbox.xml,**/sakai.melete.xml" />
-      <!-- this works, but not on sakai.samigo.tool.xml ?? -->
       <regexp pattern="&lt;category.*name=&quot;project&quot;.*"/>
-      <!-- -->
-      
+         
       <substitution  expression="" />
     </replaceregexp>
-
+-->
   </target>
 
   <target name="editGrades">
+    <!--
     <copy file="${reference.dir}/${gradebook.grades.config.sourcefile}"
 	  tofile="${build.dir}/${gradebook.grades.config.tofile}"
 	  overwrite="true"/>
+    -->
   </target>
 
   <!-- copy the linktool jws file to the web-services directory -->
   <target name="editLinktool" unless="linktool.install.skip" >
+    <!--
     <echo> Copy the linktool jws files to sakai webservices. </echo>
     <copy todir="${build.dir}/webservices/axis/src/webapp"
 	  overwrite="true">
       <fileset dir="${build.dir}/linktool" includes="*.jws" />
       <fileset dir="${build.dir}/ctools-webservices" includes="ActivityTracker.jws" />
     </copy>
+    -->
   </target>
 
   <!-- copy in the CTools web services -->
+
   <target name="editCToolsJWS" unless="ctools.install.skip" >
+  <!--
     <echo> Copy the ctools jws files to sakai webservices webapp. </echo>
     <copy todir="${build.dir}/webservices/axis/src/webapp"
 	  overwrite="true"
 	  flatten="true">
       <fileset dir="${build.dir}/ctools-webservices" includes="**/ActivityTracker.jws" />
     </copy>
+  -->
   </target>
+
 
   <target name="updatePomWithCToolsPom"
 	  description="Replace default Sakai pom with one customized for CTools." >
@@ -217,13 +223,17 @@ $HeadURL$
 
   <!-- tofile="${build.dir}/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/PrepopulatePages.properties" -->
 
+
   <target name="editRwikiSrc" unless="skipPrepopulatePages" >
+    <!--
     <echo> Copy in the UMich rwiki default pages </echo>
     <copy 	  file="${config.dir}/09PrepopulatePages.properties"
 		  tofile="${build.dir}/rwiki/rwiki-tool/tool/src/bundle/uk/ac/cam/caret/sakai/rwiki/tool/bundle/PrepopulatePages.properties"
 		  overwrite="true"
 		  flatten="true"
 		  />
+    -->
   </target>
+
 
 </project>

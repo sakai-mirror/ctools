@@ -16,7 +16,7 @@ getSource
 editSource
 modifyImage
 buildConfig.
-
+7
 The targets that can be overridden for a specific build type are:
 getBuildTypeSrc - add dependencies for source specific to this build.
 editBuildType - add dependencies to change source for tools in this build.
