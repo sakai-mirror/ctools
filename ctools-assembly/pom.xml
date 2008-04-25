@@ -266,6 +266,9 @@
 		</tar>
 		<echo>* * * ${ctools.archive.name}-${sakai.version}-src.tar.gz</echo>
 		<delete dir="${basedir}/target/pack/"/>
+
+		<echo> * remove unneeded parts of build</echo>
+		<echo> * verify image modifications</echo>
 	      </tasks>
 
 	    </configuration>
