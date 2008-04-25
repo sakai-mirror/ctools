@@ -332,37 +332,6 @@ Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java
     }
     
     /**
-@@ -1400,6 +1550,9 @@
-       this.toolContext = toolContext;
-    }
-    
-+   public String getSessionId() {
-+      return sessionId;
-+   }
- 
-    public void validatePositiveNumber(FacesContext context, UIComponent component, Object value){
- 	    if (value != null)
-Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/PresenceObserverHelper.java
-===================================================================
---- chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/PresenceObserverHelper.java	(revision 785)
-+++ chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/PresenceObserverHelper.java	(working copy)
-@@ -96,6 +96,16 @@
-       return PresenceService.getPresentUsers(location);
-    }
-    
-+   /**
-+    * This method is called to find out if there are other users in this location.
-+    * @return count
-+    * 	       The number of sessions present in this location.
-+    */
-+   public int getPresentSessionsCount() 
-+   {
-+      return PresenceService.getPresentSessionsCount(location);
-+   }
-+
-    public String getLocation()
-    {
-       return location;
 Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatDelivery.java
 ===================================================================
 --- chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatDelivery.java	(revision 885)
