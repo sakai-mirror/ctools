@@ -32,6 +32,10 @@
     <gradebook.grades.config.sourcefile>UMichGrades.xml</gradebook.grades.config.sourcefile>
     <gradebook.grades.config.tofile>gradebook/service/sakai-pack/src/webapp/WEB-INF/components.xml</gradebook.grades.config.tofile>
 
+    <tiny_mce.path>http://source.sakaiproject.org/maven/tiny_mce/wars</tiny_mce.path>
+    <tiny_mce.name.src>tiny_mce-3.0.3.war</tiny_mce.name.src>
+    <tiny_mce.name.dest>tiny_mce.war</tiny_mce.name.dest>
+
   </properties>
 
   <dependencies>
@@ -199,10 +203,21 @@
 		<copy file="${basedir}/../ctools-reference/${favicon.name}"
 		      todir="${basedir}/target/pack/webapps/ROOT"
 		      overwrite="true" />
-		
+
+		<mkdir dir="${basedir}/target/pack/webapps/ROOT" />
+		<copy todir="${basedir}/target/pack/webapps/ROOT/${errorpages.dir}"
+		      overwrite="true" >
+		  <fileset dir="${reference.dir}/${errorpages.dir}" />
+		</copy>
+
 		<!-- insert the licence -->
 		<copy file="${basedir}/../ECLv1.txt" tofile="${basedir}/target/pack/ECLv1.txt" overwrite="true" />
 
+		<!-- tiny mce -->
+		<get src="${tiny_mce.path}/${tiny_mce.name.src}" dest="${basedir}/target/pack/webapps/${tiny_mce.name.dest}" />
+
+
+		<!-- ================== notes about what is left to do =================== -->
 		<echo>* what about melete? </echo>
 		<echo>* what about section fields?</echo>
 		<!-- <echo>gradtools edit</echo> -->
@@ -222,6 +237,16 @@
 		    </zip>
 		    <echo>* * * ${ctools.archive.name}-${sakai.version}.zip</echo>
 		-->
+		<!--
+		<target name="handleErrorPages" if="errorpages.dir" >
+		  <mkdir dir="${image.dir}/webapps/ROOT" />
+		  <copy todir="${image.dir}/webapps/ROOT/${errorpages.dir}"
+			overwrite="true" >
+		    <fileset dir="${reference.dir}/${errorpages.dir}" />
+		  </copy>
+		</target>
+		-->
+
 		<!-- tar it -->
 		<delete file="${ctools.archive.name}-${sakai.version}.tar.gz" />
 		<tar destfile="${ctools.archive.name}-${sakai.version}.tar.gz" longfile="gnu" compression="gzip">
