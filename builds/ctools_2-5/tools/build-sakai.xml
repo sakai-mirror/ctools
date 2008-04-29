@@ -40,11 +40,13 @@
     <antcall target="removeUnneededSakai" />
   </target>
 
+  <!--
   <target name="getSakaiSrcOld" depends="prepareBuildDirs">
     <execSvnCmd url="${sakai.svnurl}" revision="${sakai.revision}"/>
     <antcall target="removeUnneededSakai" />
   </target>
 
+  -->
   <target name="getConfigurationSrc"
 	  description="update the configuration information (not the executable files)." >
     <echo> update configuration from ${build.configuration.svnurl}/${build.configuration.configdir} revision: ${build.configuration.revision}</echo>
@@ -142,23 +144,6 @@
   </target>
 
   <target name="removeSamigo" if="remove.samigo">
-    <removeWarFromImage deleteWar="sakai-samigo.war" />
-  </target>
-
-
-  <target name="handleFavicon" if="favicon.name" >
-    <mkdir dir="${image.dir}/webapps/ROOT" />
-    <copy file="${reference.dir}/${favicon.name}"
-	  todir="${image.dir}/webapps/ROOT"
-	  overwrite="true" />
-  </target>
-
-  <target name="handleErrorPages" if="errorpages.dir" >
-    <mkdir dir="${image.dir}/webapps/ROOT" />
-    <copy todir="${image.dir}/webapps/ROOT/${errorpages.dir}"
-	  overwrite="true" >
-      <fileset dir="${reference.dir}/${errorpages.dir}" />
-    </copy>
   </target>
 
   <target name="handleTomcatWebXml" if="tomcatWebXml.name" >
@@ -168,11 +153,13 @@
     </copy>
   </target>
 
+  <!--
   <target name="handleTinyMce" if="tiny_mce.name.dest" >
     <get src="${tiny_mce.path}/${tiny_mce.name.src}" dest="${image.dir}/webapps/${tiny_mce.name.dest}" />
   </target>
+  -->
 
-  <target name="imageSakai" depends="handleFavicon,handleErrorPages,handleTomcatWebXml,handleTinyMce" >
+  <target name="imageSakai" depends="handleTomcatWebXml" > 
 
     <removeWarFromImage deleteWar="sakai-comp-test-app1.war" />
     <removeWarFromImage deleteWar="sakai-group-test.war" />
@@ -195,15 +182,6 @@
   -->
   
   <property name="maven_name" value="mvn" />
-
-  <!--
-      <exec executable="maven"
-      dir="${build.dir}"
-      failonerror="true"
-      searchpath="true"
-      >
-  -->
-
 
   <target name="compileSakai" depends="editMaster">
     <exec executable="${maven_name}"
@@ -237,31 +215,6 @@
     </exec>
   </target>
 
-  <!--
-      <goal name="pack-src"  description="package the sakai source">
-
-<zip destfile="sakai-src.zip" compress="yes" >
-<zipfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" />
-</zip>
-<ant:echo>* * * sakai-src.zip</ant:echo>
-
-<tar destfile="sakai-src.tar" longfile="gnu" >
-<tarfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" />
-</tar>
-<gzip zipfile="sakai-src.tar.gz" src="sakai-src.tar"/>
-<delete file="sakai-src.tar" />
-<ant:echo>* * * sakai-src.tar.gz</ant:echo>
-
-</goal>
-  -->
-
-  <!--
-      <defaultexcludes remove="**/*~"/>
-
-(do several fileset based tasks here)
-
-<defaultexcludes default="true"/>
-  -->
   <target name="packSource">
     <defaultexcludes remove="**/.svn"/>
     <defaultexcludes remove="**/.svn/**"/>
@@ -269,12 +222,7 @@
       <tarfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" 
 		  compression="gzip" />
     </tar>
-    <!--
-	<gzip zipfile="sakai-src-svn.tar.gz" src="sakai-src-svn.tar"/>
-	<delete file="sakai-src-svn.tar" />
-    -->
     <defaultexcludes default="true"/>
   </target>
-
 
 </project>

@@ -56,22 +56,7 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <import file="./build-type-generic.xml" />
 
-  <!-- register pieces to build -->
-
-  <!-- 
-  <import file="./build-itunesu.xml" />
-  -->
   <import file="./build-melete.xml" />
-  <!--
-  <import file="./build-sitestats.xml" />
-  <import file="./build-search.xml" />
-  <import file="./build-rwiki.xml" />
-  <import file="./build-muse.xml" />
-  <import file="./build-assignment.xml" />
-  <import file="./build-config-viewer.xml" />
-  <import file="./build-gmt.xml" /> 
-  <import file="./build-chat.xml" /> 
-  -->
 
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
@@ -79,50 +64,18 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <!-- Assemble the desired source files. -->
 
-
-  <!--
-      <target name="getSource" 
-      depends="getSakaiSrc,getCtoolsSrc,extractMelete,getItunesuSrc"
-      description="get the source for sakai and required tools."/>
-  -->
-
   <!-- customization targets -->
 
-  <!--
-  <target name="getBuildTypeSrc"
-	  depends="extractMelete,getItunesuSrc,getSitestatsSrc,getSearchSrc,getRwikiSrc,getMuseSrc,getAssignmentSrc,getConfig-ViewerSrc,getGmtSrc,getChatSrc"
-	  description="get the source specific to the prod build" >
-    -->
 
   <target name="getBuildTypeSrc"
 	  depends="extractMelete"
 	  description="get the source specific to the prod build" >
-    <!--
-    <echo> melete.extract.skip = [${melete.extract.skip}]</echo>
-    <echo> itunesu.install.skip = [${itunesu.install.skip}]</echo>
-    <echo> sitestats.install.skip = [${sitestats.install.skip}] </echo>
-    <echo> search.install.skip = [${search.install.skip}] </echo>
-    <echo> rwiki.install.skip = [${rwiki.install.skip}] </echo>
-    <echo> muse.install.skip = [${muse.install.skip}] </echo>
-    <echo> assignment.install.skip = [${assignment.install.skip}] </echo>
-    <echo> config-viewer.install.skip = [${config-viewer.install.skip}] </echo>
-    <echo> gmt.install.skip = [${gmt.install.skip}] </echo>
-    <echo> chat.install.skip = [${chat}.install.skip}] </echo>
-    -->
   </target>
 
 
   <target name="printBuildInfo"
 	  description="print information on the project versions." >
   </target>
-
-  <!--
-  <target name="printBuildInfo"
-	  depends="meleteInfo,itunesuInfo,sitestatsInfo,searchInfo,rwikiInfo,museInfo,assignmentInfo,config-ViewerInfo,gmtInfo,chatInfo"
-	  description="print information on the project versions." >
-
-  </target>
-  -->
 
   <!-- Make changes in the source that may be required for this installation. -->
   <target name="editBuildTypeSrc" depends="editMelete" 

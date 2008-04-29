@@ -59,8 +59,10 @@
     <mkdir dir="${image.dir}" />
     <delete dir="${instances.dir}" />
     <mkdir dir="${instances.dir}" />
+    <!--
     <delete dir="${install.test.dir}" />
     <mkdir dir="${install.test.dir}" />
+    -->
     
   </target>
 

@@ -30,7 +30,7 @@ This should have nothing specific to a particular build type.
   <property name="config.dir" value="${reference.dir}/config" />
   <property name="svnCmd" value="export" />
   <property name="defaultRevision" value="HEAD" />
-  <property name="install.test.dir" value="tomcat" />
+  <!--  <property name="install.test.dir" value="tomcat" /> -->
 
   <property name="sakai.properties" value="${config.dir}/sakai.properties" />
 
@@ -58,31 +58,6 @@ This should have nothing specific to a particular build type.
   </target>
 
 
-  <!--
-  <target name="applyPatches3" >
-    <echo> applying patches aP3 [${patchFileNames}]</echo>
-    <echo file="${logs.dir}/${ant.project.name}.patches.log" append="true" >
-     ********************************************************** 
-     applying patches [${patchFileNames}]
-     ********************************************************** 
-    </echo>
-    <exec executable="perl"
-	  dir="${build.dir}"
-	  failonerror="true"
-	  output="${logs.dir}/${ant.project.name}.patches.log"
-	  append="true">
-      <arg value="${scripts.dir}/applyPatches.pl" />
-      <arg value="${logs.dir}/${ant.project.name}.patches.log" />
-      <!/-/- with multiple files, need to pass the patch and the names separately /-/->
-      <!/-/- <arg value="${patches.dir}/${patchFileNames}" /> /-/->
-      <arg value="${patches.dir}" /> 
-      <arg value="${build.dir}" />
-      <arg value="${patchFileNames}" /> 
-    </exec>
-
-  </target>
-
--->
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
   <!-- ========================= -->
@@ -128,7 +103,7 @@ This should have nothing specific to a particular build type.
   </target>
 
   <target name="assureTargetDir" >
-    <mkdir dir="${install.test.dir}"/>
+    <!-- <mkdir dir="${install.test.dir}"/> -->
   </target>
 
   <target name="installTomcatImageZip" if="tomcat.base.zip" >
