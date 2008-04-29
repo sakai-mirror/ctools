@@ -7,9 +7,9 @@
     <version>M2</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
-  <name>sakai-news-api</name>
+  <name>test-news-api</name>
   <groupId>org.sakaiproject</groupId>
-  <artifactId>sakai-news-api</artifactId>
+  <artifactId>test-news-api</artifactId>
   <organization>
     <name>The Sakai Foundation</name>
     <url>http://sakaiproject.org/</url>

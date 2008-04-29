@@ -7,9 +7,9 @@
     <version>M2</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
-  <name>sakai-web-tool</name>
+  <name>test-web-tool</name>
   <groupId>org.sakaiproject</groupId>
-  <artifactId>sakai-web-tool</artifactId>
+  <artifactId>test-web-tool</artifactId>
   <organization>
     <name>The Sakai Foundation</name>
     <url>http://sakaiproject.org/</url>

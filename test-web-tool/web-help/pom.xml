@@ -8,7 +8,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <name>Sakai Web Help</name>
-  <artifactId>sakai-web-help</artifactId>
+  <artifactId>test-web-help</artifactId>
   <packaging>jar</packaging>
   <properties>
     <deploy.target>shared</deploy.target>

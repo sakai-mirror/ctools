@@ -7,9 +7,9 @@
     <version>M2</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
-  <name>sakai-web-pack</name>
+  <name>test-web-pack</name>
   <groupId>org.sakaiproject</groupId>
-  <artifactId>sakai-web-pack</artifactId>
+  <artifactId>test-web-pack</artifactId>
   <organization>
     <name>Sakai Project</name>
     <url>http://sakaiproject.org/</url>
@@ -22,7 +22,7 @@
   <dependencies>
     <dependency>
       <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-web-impl</artifactId>
+      <artifactId>test-web-impl</artifactId>
       <version>${sakai.version}</version>
     </dependency>
   </dependencies>

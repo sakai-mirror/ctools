@@ -7,9 +7,9 @@
     <version>M2</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
-  <name>sakai-news-pack</name>
+  <name>test-news-pack</name>
   <groupId>org.sakaiproject</groupId>
-  <artifactId>sakai-news-pack</artifactId>
+  <artifactId>test-news-pack</artifactId>
   <organization>
     <name>University of Michigan</name>
     <url>http://sakaiproject.org/</url>
@@ -22,7 +22,7 @@
   <dependencies>
     <dependency>
       <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-news-impl</artifactId>
+      <artifactId>test-news-impl</artifactId>
       <version>${sakai.version}</version>
     </dependency>
   </dependencies>
