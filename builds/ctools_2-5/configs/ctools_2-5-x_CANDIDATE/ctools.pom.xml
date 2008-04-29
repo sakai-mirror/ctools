@@ -1,9 +1,16 @@
 <?xml version="1.0"?>
 
-<!-- This version of the base Sakai pom has been modified
-to include a profile for ctools 2.5 -->
-<!-- $HeadURL$ -->
-<!-- $Id$ -->
+<!-- 
+This version of the base Sakai pom has been modified
+to include a profile for CTools 2.5.
+
+ Need to compare this to the Sakai pom periodically to see 
+if changes are needed. 
+
+ $HeadURL$ 
+
+ $Id$ 
+-->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
@@ -266,7 +273,7 @@ to include a profile for ctools 2.5 -->
         <module>site</module>
 	<module>site-manage</module> 
         <module>syllabus</module>
-        <module>test-harness</module>
+	<!-- <module>test-harness</module> -->
         <module>textarea</module>
         <module>tool</module>
         <module>user</module>

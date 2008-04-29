@@ -23,7 +23,7 @@
  assignment -r45545 https://source.sakaiproject.org/svn/assignment/branches/sakai_2-5-x
  archive -r45545 https://source.sakaiproject.org/svn/archive/branches/sakai_2-5-x
  authz -r45545 https://source.sakaiproject.org/svn/authz/branches/sakai_2-5-x
- blog -r45545 https://source.sakaiproject.org/svn/blog/branches/sakai_2-5-x
+# blog -r45545 https://source.sakaiproject.org/svn/blog/branches/sakai_2-5-x
  calendar -r45545 https://source.sakaiproject.org/svn/calendar/branches/sakai_2-5-x
  chat -r45545 https://source.sakaiproject.org/svn/chat/branches/sakai_2-5-x
  cluster -r45545 https://source.sakaiproject.org/svn/cluster/branches/sakai_2-5-x
@@ -69,14 +69,14 @@
  rights -r45545 https://source.sakaiproject.org/svn/rights/branches/sakai_2-5-x
  roster -r45545 https://source.sakaiproject.org/svn/roster/branches/sakai_2-5-x
  rwiki -r45545 https://source.sakaiproject.org/svn/rwiki/branches/sakai_2-5-x
- sam -r45545 https://source.sakaiproject.org/svn/sam/branches/sakai_2-5-x
+# sam -r45545 https://source.sakaiproject.org/svn/sam/branches/sakai_2-5-x
  samples -r45545 https://source.sakaiproject.org/svn/samples/branches/sakai_2-5-x
  search -r45545 https://source.sakaiproject.org/svn/search/branches/sakai_2-5-x
  sections -r45545 https://source.sakaiproject.org/svn/sections/branches/sakai_2-5-x
  site -r45545 https://source.sakaiproject.org/svn/site/branches/sakai_2-5-x
  site-manage -r45545 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-5-x
  syllabus -r45545 https://source.sakaiproject.org/svn/syllabus/branches/sakai_2-5-x
- test-harness -r45545 https://source.sakaiproject.org/svn/test-harness/branches/sakai_2-5-x
+# test-harness -r45545 https://source.sakaiproject.org/svn/test-harness/branches/sakai_2-5-x
  textarea -r45545 https://source.sakaiproject.org/svn/textarea/branches/sakai_2-5-x
  tool -r45545 https://source.sakaiproject.org/svn/tool/branches/sakai_2-5-x
  user -r45545 https://source.sakaiproject.org/svn/user/branches/sakai_2-5-x
@@ -104,11 +104,13 @@
 #  gradtools -r45545 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/gradtools
 #  ctools-libhelp -r45545 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
 
- ctools-assembly -r45602 https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
+# ctools-assembly -r45716 https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
+ ctools-assembly -r45791 https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
 
  ctools-apps -r45545 https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
  ctools-providers -r45545 https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
- ctools-reference -r45545 https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
+# ctools-reference -r45718 https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
+ ctools-reference -r45791 https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
  ctools-webservices -r45545 https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
  gradtools -r45545 https://source.sakaiproject.org/svn/ctools/trunk/gradtools
  ctools-libhelp -r45545 https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
