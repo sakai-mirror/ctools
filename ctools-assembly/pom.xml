@@ -268,21 +268,6 @@
 		</tar>
 		<echo>* * * ${ctools.archive.name}-${sakai.version}.tar.gz</echo>
 
-		<!--
-		    <goal name="pack-src"  description="package the sakai source">
-		    <zip destfile="sakai-src.zip" compress="yes" >
-		    <zipfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" />
-		    </zip>
-		    <ant:echo>* * * sakai-src.zip</ant:echo>
-		    <tar destfile="sakai-src.tar" longfile="gnu" >
-		    <tarfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" />
-		    </tar>
-		    <gzip zipfile="sakai-src.tar.gz" src="sakai-src.tar"/>
-		    <delete file="sakai-src.tar" />
-		    <ant:echo>* * * sakai-src.tar.gz</ant:echo>
-		    </goal>
-		-->
-
 		<!-- make a src tar (and include the svn directories) -->
 		<delete file="${ctools.archive.name}-${sakai.version}-src.tar.gz" />
 		<echo>make ctools src tar</echo>
