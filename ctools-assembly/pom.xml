@@ -199,11 +199,13 @@
 		</exec>                       
 		
 		<!-- Insert the ctools favorite icon -->
+		<echo>add favicon</echo>
 		<mkdir dir="${basedir}/target/pack/webapps/ROOT" />
 		<copy file="${basedir}/../ctools-reference/${favicon.name}"
 		      todir="${basedir}/target/pack/webapps/ROOT"
 		      overwrite="true" />
 
+		<echo>add error pages</echo>
 		<mkdir dir="${basedir}/target/pack/webapps/ROOT" />
 		<copy todir="${basedir}/target/pack/webapps/ROOT/${errorpages.dir}"
 		      overwrite="true" >
@@ -211,7 +213,7 @@
 		</copy>
 
 		<!-- insert the licence -->
-		<copy file="${basedir}/../ECLv1.txt" tofile="${basedir}/target/pack/ECLv1.txt" overwrite="true" />
+		<!-- <copy file="${basedir}/../ECLv1.txt" tofile="${basedir}/target/pack/ECLv1.txt" overwrite="true" /> -->
 
 		<!-- tiny mce -->
 		<get src="${tiny_mce.path}/${tiny_mce.name.src}" dest="${basedir}/target/pack/webapps/${tiny_mce.name.dest}" />
