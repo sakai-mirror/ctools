@@ -91,17 +91,21 @@
 
   <target name="moveSrcTar" >
     <!--    <move todir="${image.dest.dir}" file="${build.dir}/sakai-src.tar.gz" /> -->
-    <move tofile="${image.dest.dir}/sakai-src.${sakai.tag}.tar.gz" file="${src.dir}/${ctools-prefix}.tar.gz" /> 
+    <move  file="${src.dir}/${ctools-prefix}-src.tar.gz" tofile="${image.dest.dir}/sakai-src.${sakai.tag}.tar.gz" /> 
   </target>
 
   <target name="bundleImage" depends="moveSrcTar">
+    <move  file="${src.dir}/${ctools-prefix}.tar.gz" tofile="${image.dest.dir}/image.${sakai.tag}.tar.gz" /> 
   <!--
   do not create zip by default
     <zip basedir="${image.dir}" destfile="${image.dest.dir}/image.${sakai.tag}.zip" />
     -->
+  <!--
     <tar basedir="${image.dir}" destfile="${image.dest.dir}/image.${sakai.tag}.tar.gz" 
 	 longfile="gnu" compression="gzip" />
+    -->
   </target>
+
 
   <target name="summarizeBuild">
     <echo>
