@@ -60,7 +60,9 @@ sub getSrcViaExternalsFile {
     next if (/^\s*$/);
 
     # Can this capture HEAD too?
-    ($module,$revision,$path,$dummy,$svnOptions) = m/\s*(\S+)\s+-r(\d+)\s+([^|]*)\s*(\|\s*(.+))*$/;
+#    ($module,$revision,$path,$dummy,$svnOptions) = m/\s*(\S+)\s+-r(\d+)\s+([^|]*)\s*(\|\s*(.+))*$/;
+    # modify so can use the HEAD revision also
+    ($module,$revision,$path,$dummy,$svnOptions) = m/\s*(\S+)\s+-r(HEAD|\d+)\s+([^|]*)\s*(\|\s*(.+))*$/;
     next unless ($module);
   
     # Count the types of modules being checked out.
