@@ -3,8 +3,8 @@
 <registration>
 
 	<tool
-			id="sakai.iframe"
-			title="Web Content"
+			id="ctools.test.iframe"
+			title="CTools Test Web Content"
 			description="For accessing an external website within the site.">
 
 		<configuration name="source" value="" />
