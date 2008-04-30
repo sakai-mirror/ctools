@@ -212,6 +212,13 @@
 		  <fileset dir="${reference.dir}/${errorpages.dir}" />
 		</copy>
 
+		<echo>add ctools web.xml</echo>
+		<mkdir dir="${basedir}/target/pack/conf" />
+		<copy todir="${basedir}/target/pack/conf/web.xml"
+		      overwrite="true" >
+		  <fileset dir="${reference.dir}/${tomcatWebXml.name}" />
+		</copy>
+
 		<!-- insert the licence -->
 		<!-- <copy file="${basedir}/../ECLv1.txt" tofile="${basedir}/target/pack/ECLv1.txt" overwrite="true" /> -->
 
