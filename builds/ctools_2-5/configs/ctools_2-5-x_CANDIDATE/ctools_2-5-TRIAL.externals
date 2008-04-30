@@ -105,7 +105,7 @@
 #  ctools-libhelp -r45545 https://source.sakaiproject.org/svn/ctools/branches/ctools_2-4/ctools-libhelp
 
 # ctools-assembly -r45716 https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
- ctools-assembly -r45791 https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
+ ctools-assembly -r45961 https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
 
  ctools-apps -r45545 https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
  ctools-providers -r45545 https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
