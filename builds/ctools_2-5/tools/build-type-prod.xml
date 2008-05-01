@@ -66,11 +66,18 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <!-- customization targets -->
 
+  <target name="getBuildTypeSrc"
+	  description="get the source specific to the prod build" >
+    <echo>done with getBuiltTypeSrc</echo>
+  </target>
 
+
+<!--
   <target name="getBuildTypeSrc"
 	  depends="extractMelete"
 	  description="get the source specific to the prod build" >
   </target>
+-->
 
 
   <target name="printBuildInfo"
@@ -78,10 +85,15 @@ This doesn't supply the sakai.properties files you want to customize.
   </target>
 
   <!-- Make changes in the source that may be required for this installation. -->
-  <target name="editBuildTypeSrc" depends="editMelete" 
-	  description="Modify/customize source as necessary."/>
+  <target name="editBuildTypeSrc" 
+	  description="Modify/customize source as necessary.">
+    <echo>** take out dependency on editMelete for now</echo>
+  </target>
 
-  <target name="imageBuildType"  depends="imageMelete" />
+  <!-- <target name="imageBuildType"  depends="imageMelete" /> -->
+ <target name="imageBuildType">
+   <echo>remove melete dependency for now</echo>
+ </target>
 
   <target name="deleteSamigo" if="remove.samigo">
     <removeFromBuild deleteDir="sam" />
