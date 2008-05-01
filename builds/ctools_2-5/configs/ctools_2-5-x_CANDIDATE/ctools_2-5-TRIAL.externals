@@ -76,7 +76,7 @@
  site -r45545 https://source.sakaiproject.org/svn/site/branches/sakai_2-5-x
  site-manage -r45545 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-5-x
  syllabus -r45545 https://source.sakaiproject.org/svn/syllabus/branches/sakai_2-5-x
-# test-harness -r45545 https://source.sakaiproject.org/svn/test-harness/branches/sakai_2-5-x
+ test-harness -r45545 https://source.sakaiproject.org/svn/test-harness/branches/sakai_2-5-x
  textarea -r45545 https://source.sakaiproject.org/svn/textarea/branches/sakai_2-5-x
  tool -r45545 https://source.sakaiproject.org/svn/tool/branches/sakai_2-5-x
  user -r45545 https://source.sakaiproject.org/svn/user/branches/sakai_2-5-x
