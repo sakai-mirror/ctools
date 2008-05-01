@@ -214,7 +214,7 @@
 
 		<echo>add ctools web.xml</echo>
 		<mkdir dir="${basedir}/target/pack/conf" />
-		<copy todir="${basedir}/target/pack/conf/web.xml"
+		<copy tofile="${basedir}/target/pack/conf/web.xml"
 		      overwrite="true" >
 		  <fileset dir="${reference.dir}/${tomcatWebXml.name}" />
 		</copy>
