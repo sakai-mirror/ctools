@@ -215,9 +215,9 @@
 		<echo>add ctools web.xml</echo>
 		<mkdir dir="${basedir}/target/pack/conf" />
 		<copy tofile="${basedir}/target/pack/conf/web.xml"
-		      overwrite="true" >
-		  <fileset dir="${reference.dir}/${tomcatWebXml.name}" />
-		</copy>
+		      file="${reference.dir}/${tomcatWebXml.name}" 
+		      overwrite="true" 
+		      />
 
 		<!-- insert the licence -->
 		<!-- <copy file="${basedir}/../ECLv1.txt" tofile="${basedir}/target/pack/ECLv1.txt" overwrite="true" /> -->
@@ -284,8 +284,10 @@
 		  </tarfileset>
 		</tar>
 		<echo>* * * ${ctools.archive.name}-${sakai.version}-src.tar.gz</echo>
+		<echo> do not remove build yet</echo>
+		<!--
 		<delete dir="${basedir}/target/pack/"/>
-
+		-->
 		<echo> * remove unneeded parts of build</echo>
 		<echo> * verify image modifications</echo>
 	      </tasks>
