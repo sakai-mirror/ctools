@@ -119,12 +119,15 @@
 
 		<!-- make the project category disappear for these. -->
 
+		<echo> make sure that edit the melete tool xml when necessary. </echo>
+
 		<replaceregexp >
 		  <fileset dir="${src.dir}" >
-		    <include name="**/sakai.gradebook.tool.xml" />
-		    <include name="**/sakai.samigo.tool.xml"/>
-		    <include name="**/sakai.dropbox.xml" />
-		    <include name="**/sakai.melete.xml" />
+		    <include name="gradebook/**/sakai.gradebook.tool.xml" />
+		    <!-- <include name="**/sakai.samigo.tool.xml"/> -->
+		    <include name="content/**/sakai.dropbox.xml" />
+		    
+		    <!-- <include name="melete/**/sakai.melete.xml" /> -->
 		  </fileset>
 		  <regexp pattern="&lt;category.*name=&quot;project&quot;.*"/>
 		  <substitution  expression="" />
