@@ -87,6 +87,7 @@
  webservices -rHEAD https://source.sakaiproject.org/svn/webservices/branches/sakai_2-5-x
 
  warehouse -rHEAD https://source.sakaiproject.org/svn/warehouse/branches/sakai_2-5-x
+ reports -rHEAD https://source.sakaiproject.org/svn/reports/branches/sakai_2-5-x
 
 ########
 ######## DEVIANT BRANCHES
