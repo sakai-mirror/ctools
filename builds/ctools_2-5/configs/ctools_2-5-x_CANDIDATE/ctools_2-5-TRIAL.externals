@@ -93,7 +93,7 @@
 ######## DEVIANT BRANCHES
 ########
 
- gmt/gmt -rHEAD https://source.sakaiproject.org/contrib/syracuse/gmt/branches/2.5.x
+# gmt/gmt -rHEAD https://source.sakaiproject.org/contrib/syracuse/gmt/branches/2.5.x
 
 
 
