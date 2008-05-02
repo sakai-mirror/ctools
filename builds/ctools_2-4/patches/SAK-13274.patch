@@ -332,16 +332,6 @@ Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java
     }
     
     /**
-@@ -1400,6 +1550,9 @@
-       this.toolContext = toolContext;
-    }
-    
-+   public String getSessionId() {
-+      return sessionId;
-+   }
- 
-    public void validatePositiveNumber(FacesContext context, UIComponent component, Object value){
- 	    if (value != null)
 Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatDelivery.java
 ===================================================================
 --- chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatDelivery.java	(revision 885)
