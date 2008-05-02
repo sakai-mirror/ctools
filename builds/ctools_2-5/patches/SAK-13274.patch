@@ -140,7 +140,7 @@ Index: chat/chat-tool/tool/src/java/org/sakaiproject/chat2/tool/ChatTool.java
 +	  if (SessionManager.getSession(sessionId) == null ||
 +	      (timeout != null && 
 +	       (timeout + (60*1000)) < System.currentTimeMillis())) {
-+	      System.out.println("received msg expired session " + sessionId + " " + currentChannel);
++	     // System.out.println("received msg expired session " + sessionId + " " + currentChannel);
 +	      resetCurrentChannel(currentChannel, true);
 +	      m_courierService.clear(address);
 +	      setTimeout(address, null);
@@ -362,7 +362,7 @@ Index: chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManage
        synchronized(roomObservers) {
           roomObservers.add(observer);
        }
-+      System.out.println("after add roomObservers " + roomObservers);
++      // System.out.println("after add roomObservers " + roomObservers);
 +     
     }
     
@@ -373,7 +373,7 @@ Index: chat/chat-impl/impl/src/java/org/sakaiproject/chat2/model/impl/ChatManage
              }
 -            
           } // end if(roomObservers != null)
-+	 System.out.println("after remove roomObservers " + roomObservers);
++	 // System.out.println("after remove roomObservers " + roomObservers);
        }
     }
     
