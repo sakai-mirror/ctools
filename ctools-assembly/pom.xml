@@ -262,10 +262,12 @@
 		<!-- tar it -->
 		<delete file="${ctools.archive.name}-${sakai.version}.tar.gz" />
 		<tar destfile="${ctools.archive.name}-${sakai.version}.tar.gz" longfile="gnu" compression="gzip">
-		  <tarfileset dir="${basedir}/target/pack/" mode="755" prefix="${ctools.archive.name}-${sakai.version}">
+		  <!-- <tarfileset dir="${basedir}/target/pack/" mode="755" prefix="${ctools.archive.name}-${sakai.version}"> -->
+		  <tarfileset dir="${basedir}/target/pack/" mode="755" >
 		    <include name="**/*.sh"/>
 		  </tarfileset>
-		  <tarfileset dir="${basedir}/target/pack/" prefix="${ctools.archive.name}-${sakai.version}">
+		  <!-- <tarfileset dir="${basedir}/target/pack/" prefix="${ctools.archive.name}-${sakai.version}"> -->
+		  <tarfileset dir="${basedir}/target/pack/" >
 		    <exclude name="**/*.sh"/>
 		  </tarfileset>
 		</tar>
