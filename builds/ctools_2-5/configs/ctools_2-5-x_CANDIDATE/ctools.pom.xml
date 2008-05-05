@@ -295,8 +295,8 @@ if changes are needed.
 	<module>ctools-libhelp</module>
 	<module>ctools-providers</module>
 	<!-- eliminate for the moment, since nothing is required in build itself. -->
-	<!-- <module>ctools-reference</module> -->
-	<!-- <module>ctools-webservices</module> -->
+	<module>ctools-reference</module>
+	<module>ctools-webservices</module>
       </modules>
     </profile>
   </profiles>
