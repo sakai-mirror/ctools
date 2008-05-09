@@ -54,7 +54,7 @@ import org.sakaiproject.util.StringUtil;
 
 /**
  * <p>
- * NewsAction is the Sakai RSS news tool.
+ * NewsAction is the Sakai RSS news tool.this is the modified version
  * </p>
  */
 public class NewsAction extends VelocityPortletPaneledAction
