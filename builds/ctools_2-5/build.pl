@@ -2,9 +2,11 @@
 
 #http://www.perl.com/doc/FAQs/FAQ/oldfaq-html/Q5.15.html
 #http://www.unix.org.ua/orelly/perl/prog3/ch09_04.htm
+#Script to test manual builds of ctools
 
 use File::Basename;
 use Term::ANSIColor qw(:constants);
+use POSIX qw(strftime);
 
 $ENV{'JAVA_OPTS'} = "-server -Xms512m -Xmx1024m -XX:PermSize=128m -XX:MaxPermSize=196m -XX:NewSize=192m -XX:MaxNewSize=384m";
 $ENV{'MAVEN_OPTS'} = "-Xms256m -Xmx512m";
@@ -18,7 +20,7 @@ $ENV{'MAVEN_OPTS'} = "-Xms256m -Xmx512m";
 #This might work with ant 1.5, but that'd be the earliest, give it a try? 
     ant => {
 	cmd => "ant -version",
-	min =>"1.5",
+	min =>"1.7",
 	max =>"1.7",
     },
     javac => {
@@ -117,18 +119,24 @@ do
 }
 until ($clean eq "n" || $clean eq "y");	    # Redo while wrong input
 
+$nowstring = strftime "%m-%d-%y_%H-%M-%S", localtime;
+open(STDOUT, "| tee ./outputlog.$nowstring.log");
 
-#Change directory to this one
-chdir(dirname($builds[$buildno]));
 #Command to start it up!
 if ($clean eq "n") {
-    $cleanvar = "-Dnoclean=active";
+    $cleanvar = "-Dnoclean=noclean";
+}
+else {
+    $cleanvar = "-Dclean=clean";
 }
 
 $typevar = "prod";
 
-$cmd = "ant -f ../../build.xml -Dtype=$typevar $cleanvar";
+#Change directory to the builds directory
+chdir(dirname($builds[$buildno]));
+$cmd = "ant -f ../../build.xml -Dtype=$typevar $cleanvar 2>&1";
 system $cmd; 
+close(STDOUT);
 
 END { print RESET; }
 

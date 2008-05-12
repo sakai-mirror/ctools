@@ -297,6 +297,19 @@ if changes are needed.
 	<!-- eliminate for the moment, since nothing is required in build itself. -->
 	<module>ctools-reference</module>
 	<!-- <module>ctools-webservices</module> -->
+
+	<!-- contrib -->
+	<module>test-center</module>
+	<!--
+	<module>mneme</module>
+	<module>ambrosia</module>
+	<module>itunes</module>
+	<module>config-viewer</module>
+	<module>evaluation</module>
+	-->
+	<module>hierarchy</module>
+	<module>melete</module>
+
       </modules>
     </profile>
   </profiles>
