@@ -1,12 +1,18 @@
 #!/usr/bin/perl
 
+# Script to test manual builds of ctools
+# $HeadURL:
+# $Id: 
 #http://www.perl.com/doc/FAQs/FAQ/oldfaq-html/Q5.15.html
 #http://www.unix.org.ua/orelly/perl/prog3/ch09_04.htm
-#Script to test manual builds of ctools
 
 use File::Basename;
 use Term::ANSIColor qw(:constants);
 use POSIX qw(strftime);
+use strict;
+
+#Define which type to build, this might be prompted later
+my $typevar = "prod";
 
 $ENV{'JAVA_OPTS'} = "-server -Xms512m -Xmx1024m -XX:PermSize=128m -XX:MaxPermSize=196m -XX:NewSize=192m -XX:MaxNewSize=384m";
 $ENV{'MAVEN_OPTS'} = "-Xms256m -Xmx512m";
@@ -14,8 +20,8 @@ $ENV{'MAVEN_OPTS'} = "-Xms256m -Xmx512m";
 #This is for Sakai 2.5
 #Find the minimum and maximum versions that this will work on
 #To add a new required software to this list follow the format, the cmd must return at least
-#An major.minor version somewhere in the text as the first number with a decimal.
-%requiredSoftware = (
+#A major.minor version somewhere in the text as the first number with a decimal.
+my %requiredSoftware = (
 
 #This might work with ant 1.5, but that'd be the earliest, give it a try? 
     ant => {
@@ -53,8 +59,12 @@ $ENV{'MAVEN_OPTS'} = "-Xms256m -Xmx512m";
 ); 
 
 #Check Versions
-$majorerror=0;
-$minorerror=0;
+my ($majorerror,$minorerror) = 0;
+my ($required,$result);
+my ($minmajor,$minminor,$maxmajor,$maxminor,$resultmajor,$resultminor);
+my ($minstatus,$maxstatus);
+
+#Check for required software
 for $required ( keys %requiredSoftware) {
     print "Checking program $required: ";
     $result=`$requiredSoftware{$required}{cmd} 2>&1`;
@@ -62,7 +72,7 @@ for $required ( keys %requiredSoftware) {
     ($minmajor,$minminor) = split(/\./,$requiredSoftware{$required}{min});
     ($maxmajor,$maxminor) = split(/\./,$requiredSoftware{$required}{max});
     if ($result) {
-         ($resultmajor,$resultminor) = $result =~ m/(\d+)\.(\d+)\.\d+/;
+        ($resultmajor,$resultminor) = $result =~ m/(\d+)\.(\d+)\.\d+/;
 	$minstatus = ($resultmajor >= $minmajor && $resultminor >= $minminor) ? "Ok" : "version installed lower than tested";
 	$maxstatus = ($resultmajor <= $maxmajor && $resultminor <= $maxminor) ? "Ok" : "version installed higher than tested";
 
@@ -90,54 +100,71 @@ if ($minorerror) {
     print "The software was not tested with this version, you can continue but may have errors.\n";
 }
 
-@builds = `find configs -name "defaultbuild.properties" | sort`;
-
-print "Detected ".@builds." candidates:\n";
-$i=0;
-foreach $build (@builds) {
-    ($configs,$dirname,$file) = split(/\//,$build);
-    print WHITE,"$i ", RESET, "$dirname\n";
-    $i++;
+my ($svninfo,$svnversion,$svnvar);
+$svninfo = `svn info`;
+if ($svninfo) {
+    ($svnversion) = $svninfo =~ m/Revision: (\d*)/;
 }
 
+if ($svnversion) {
+    print "Building revision: $svnversion\n";
+    $svnvar = "-DCANDIDATE.revision=$svnversion";
+}
+
+#Look for a list of builds
+my @builds = `find configs -name "defaultbuild.properties" | sort`;
+
+print "Detected ".@builds." candidates:\n";
+my ($buildcount,$build)=0;
+foreach $build (@builds) {
+    my ($configs,$dirname,$file) = split(/\//,$build);
+    print WHITE,"$buildcount ", RESET, "$dirname\n";
+    $buildcount++;
+}
+
+#Get the build directory input from the user
+my ($buildin,$cleanin, $builddir);
 do
 {
     print "Enter a number to build (Ctrl-C to abort):";	# Ask for input
-    $buildno = <STDIN>;	# Get input
-    chop $buildno;	    # Chop off newline
+    $buildin = <STDIN>;	# Get input
+    chop $buildin;	    # Chop off newline
 }
-while ($buildno > @builds-1);	    # Redo while wrong input
+until ($builddir = dirname($builds[$buildin]));	    # Redo while wrong input
 
 #Find out other options like if they want to clean out the build, or just update whats there
 #ETC!
 
+print "NOTE: The resulting packages will be placed in ./artifacts/$builddir\n";
+
+#Prompt if they want a clean install, parts of this are still being worked on in the scripts.
 do
 {
     print "Do you want to do a clean install? (First time will always be clean) [y/n]";	# Ask for input
-    $clean = <STDIN>;	# Get input
-    chop $clean;	    # Chop off newline
+    $cleanin = <STDIN>;	# Get input
+    chop $cleanin;	    # Chop off newline
 }
-until ($clean eq "n" || $clean eq "y");	    # Redo while wrong input
+until ($cleanin eq "n" || $cleanin eq "y");	    # Redo while wrong input
 
-$nowstring = strftime "%m-%d-%y_%H-%M-%S", localtime;
+#Get a log file started for further analysis
+my $nowstring = strftime "%m-%d-%y_%H-%M-%S", localtime;
 open(STDOUT, "| tee ./outputlog.$nowstring.log");
 
+my $cleanvar;
 #Command to start it up!
-if ($clean eq "n") {
+if ($cleanin eq "n") {
     $cleanvar = "-Dnoclean=noclean";
 }
 else {
     $cleanvar = "-Dclean=clean";
 }
 
-$typevar = "prod";
-
 #Change directory to the builds directory
-chdir(dirname($builds[$buildno]));
-$cmd = "ant -f ../../build.xml -Dtype=$typevar $cleanvar 2>&1";
+chdir($builddir);
+my $cmd = "ant -f ../../build.xml -Dtype=$typevar $cleanvar $svnvar 2>&1";
 system $cmd; 
 close(STDOUT);
 
-END { print RESET; }
+0;
 
-#IT PUTS THE GZIP in the artifacts directory.
+END { print RESET; }
