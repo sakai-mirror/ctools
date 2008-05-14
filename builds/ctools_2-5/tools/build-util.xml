@@ -48,8 +48,8 @@
   <target name="prepareBuildDirs"
 	  description="clean all the directories needed for a build." >
     <echo> build ${type} release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
-    <antcall target="deleteBuildDirs.if" />
-    <antcall target="deleteBuildDirs.else" />
+    <antcall target="deleteBuildDirs.noclean" />
+    <antcall target="deleteBuildDirs.clean" />
     <mkdir dir="${work.dir}" />
     <mkdir dir="${artifacts.dir}" />
     <mkdir dir="${build.dir}" />
@@ -62,12 +62,12 @@
     
   </target>
 
-  <target name="deleteBuildDirs.if" if="noclean">
+  <target name="deleteBuildDirs.noclean" if="noclean">
 	<echo>Not cleaning work directories</echo>
   </target>
 
 
-  <target name="deleteBuildDirs.else" unless="noclean">
+  <target name="deleteBuildDirs.clean" unless="noclean">
 	<echo>Cleaning work directories</echo>
         <delete dir="${work.dir}" />
 	<delete dir="${artifacts.dir}" />

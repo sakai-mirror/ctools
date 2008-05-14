@@ -153,13 +153,12 @@
     </copy>
   </target>
 
-  <!--
   <target name="handleTinyMce" if="tiny_mce.name.dest" >
+    <mkdir dir="${image.dir}/webapps" />
     <get src="${tiny_mce.path}/${tiny_mce.name.src}" dest="${image.dir}/webapps/${tiny_mce.name.dest}" />
   </target>
-  -->
 
-  <target name="imageSakai" depends="handleTomcatWebXml" > 
+  <target name="imageSakai" depends="handleTomcatWebXml,handleTinyMce" > 
 
     <removeWarFromImage deleteWar="sakai-comp-test-app1.war" />
     <removeWarFromImage deleteWar="sakai-group-test.war" />
@@ -183,7 +182,7 @@
   
   <property name="maven_name" value="mvn" />
 
-  <target name="compileSakai" depends="editMaster">
+  <target name="compileSakai.clean" depends="editMaster" unless="noclean">
     <exec executable="${maven_name}"
 	  dir="${build.dir}"
 	  failonerror="true"
@@ -204,6 +203,7 @@
       <!-- <arg value="pack-demo" /> -->
 
       <arg value="clean" />
+
       <arg value="install" />
 
       <!--
@@ -214,6 +214,41 @@
       -->
     </exec>
   </target>
+
+  <target name="compileSakai.noclean" depends="editMaster" if="noclean">
+    <exec executable="${maven_name}"
+	  dir="${build.dir}"
+	  failonerror="true"
+	  searchpath="true"
+	  >
+      <env key="MAVEN_OPTS" value="-Djava.net.preferIPv4Stack=true -Xmx768m" />
+
+      <!-- use this profile -->
+      <!-- <arg value="-P ctools" /> --> <!-- does a build with new ctools profile -->
+      <!-- <arg value="-P pack-demo" /> --> <!-- creates an install artifact -->
+      <arg value="-P ctools-assembly" />
+      <arg value="-e" /> 
+      <arg value="-Dmaven.junit.fork=true" />
+      <!-- <arg value="-X" /> -->
+      <!--  sometimes need to avoid this with a new build, but usually speeds things up. -->
+      <!-- <arg value="-o" />   -->
+
+      <!-- <arg value="pack-demo" /> -->
+
+      <!-- Figure this out 
+      <arg value="clean" />
+      -->
+      <arg value="install" />
+
+      <!--
+      <arg value="sakai:clean" />
+      <arg value="sakai:build" />
+      <arg value="sakai:deploy-zip" />
+      <arg value="pack-src" /> 
+      -->
+    </exec>
+  </target>
+
 
   <target name="packSource">
     <defaultexcludes remove="**/.svn"/>
