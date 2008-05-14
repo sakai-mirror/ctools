@@ -10,37 +10,37 @@
 -- $Id$
 
 -- =========================================
--- *** Included already?
+-- already done.
 --metaobj conversion
-alter TABLE metaobj_form_def add alternateCreateXslt varchar2(36) NULL;
-alter TABLE metaobj_form_def add alternateViewXslt varchar2(36) NULL;
+-- alter TABLE metaobj_form_def add alternateCreateXslt varchar2(36) NULL;
+-- alter TABLE metaobj_form_def add alternateViewXslt varchar2(36) NULL;
 
 -- =========================================
--- *** Included already?
+-- *** Needs to be done.
 --Post'em SAK-8232
 ALTER TABLE SAKAI_POSTEM_HEADINGS MODIFY heading VARCHAR2 (500);
 
 -- =========================================
--- *** Included already?
+-- *** Included, BUT what about the index?
 -- SAK-9808: Implement ability to delete threaded messages within Forums
 -- also released in sakai_2_4_0-2_4_x_oracle_conversion_001.sql 
-alter table MFR_MESSAGE_T add DELETED number(1, 0) default '0' not null;
-create index MFR_MESSAGE_DELETED_I on MFR_MESSAGE_T (DELETED);
+-- alter table MFR_MESSAGE_T add DELETED number(1, 0) default '0' not null;
+-- create index MFR_MESSAGE_DELETED_I on MFR_MESSAGE_T (DELETED);
 
 -- =========================================
 -- *** Included already?
 
 -- SAK-13137
-create index MFR_MEMBERSHIP_ITEM_I01_I on MFR_MEMBERSHIP_ITEM_T (t_surrogateKey);
-create index MFR_MEMBERSHIP_ITEM_I02_I on MFR_MEMBERSHIP_ITEM_T (a_surrogateKey);
+-- create index MFR_MEMBERSHIP_ITEM_I01_I on MFR_MEMBERSHIP_ITEM_T (t_surrogateKey);
+-- create index MFR_MEMBERSHIP_ITEM_I02_I on MFR_MEMBERSHIP_ITEM_T (a_surrogateKey);
 
 -- =========================================
--- *** Included already?
+-- *** Included BUT what about the indices?
 
 -- SAK-13138
-create index MFR_MESSAGE_T_IN_REPLY_TO_I on MFR_MESSAGE_T (IN_REPLY_TO);
-create index MFR_TOPIC_T_UUID_I on MFR_TOPIC_T (UUID);
-create index MFR_UNREAD_STATUS_I2 on MFR_UNREAD_STATUS_T (MESSAGE_C, USER_C, READ_C);
+-- create index MFR_MESSAGE_T_IN_REPLY_TO_I on MFR_MESSAGE_T (IN_REPLY_TO);
+-- create index MFR_TOPIC_T_UUID_I on MFR_TOPIC_T (UUID);
+-- create index MFR_UNREAD_STATUS_I2 on MFR_UNREAD_STATUS_T (MESSAGE_C, USER_C, READ_C);
 
 
 
