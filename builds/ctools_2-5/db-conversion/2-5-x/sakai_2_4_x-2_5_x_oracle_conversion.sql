@@ -9,23 +9,44 @@
 -- $HeadURL$
 -- $Id$
 
+-- =========================================
+-- *** Included already?
 --metaobj conversion
 alter TABLE metaobj_form_def add alternateCreateXslt varchar2(36) NULL;
 alter TABLE metaobj_form_def add alternateViewXslt varchar2(36) NULL;
 
+-- =========================================
+-- *** Included already?
 --Post'em SAK-8232
 ALTER TABLE SAKAI_POSTEM_HEADINGS MODIFY heading VARCHAR2 (500);
 
-
--- Add colums to search to improve performance SAK-9865
-alter table searchbuilderitem add itemscope integer;
-create index isearchbuilderitem_sco on searchbuilderitem (itemscope);
-
+-- =========================================
+-- *** Included already?
 -- SAK-9808: Implement ability to delete threaded messages within Forums
 -- also released in sakai_2_4_0-2_4_x_oracle_conversion_001.sql 
 alter table MFR_MESSAGE_T add DELETED number(1, 0) default '0' not null;
 create index MFR_MESSAGE_DELETED_I on MFR_MESSAGE_T (DELETED);
 
+-- =========================================
+-- *** Included already?
+
+-- SAK-13137
+create index MFR_MEMBERSHIP_ITEM_I01_I on MFR_MEMBERSHIP_ITEM_T (t_surrogateKey);
+create index MFR_MEMBERSHIP_ITEM_I02_I on MFR_MEMBERSHIP_ITEM_T (a_surrogateKey);
+
+-- =========================================
+-- *** Included already?
+
+-- SAK-13138
+create index MFR_MESSAGE_T_IN_REPLY_TO_I on MFR_MESSAGE_T (IN_REPLY_TO);
+create index MFR_TOPIC_T_UUID_I on MFR_TOPIC_T (UUID);
+create index MFR_UNREAD_STATUS_I2 on MFR_UNREAD_STATUS_T (MESSAGE_C, USER_C, READ_C);
+
+
+
+-- =========================================
+-- *** Included already?
+-- Verify that this has been done.
 --Chat SAK-10682
 alter table CHAT2_CHANNEL modify (CONTEXT VARCHAR2(99));
 
@@ -45,17 +66,43 @@ where EXISTS
 
 update CHAT2_CHANNEL set placementDefaultChannel=0 where placementDefaultChannel is null;
 
---OSP SAK-10396: Add a default layout to be specified for a portfolio
-alter table osp_presentation add layout_id varchar2(36) NULL;
+-- =========================================
+-- *** Included already?
 
+--Chat SAK-10215
+--This only has to be run if you've upgraded from 2.3 and had chat data
+-- also released in sakai_2_4_0-2_4_x_oracle_conversion_004.sql 
+update SAKAI_SITE_TOOL set title = 'Chat Room' where REGISTRATION = 'sakai.chat' and TITLE like 'Chat Room: "%';
+
+
+-- =========================================
+-- *** Included already?
+
+-- =========================================
 --Profile add dateOfBirth property SAK-8423
 alter table SAKAI_PERSON_T add (dateOfBirth date);
+
+-- =========================================
+-- *** Included already?
+
+-- SAK-11876, SAK-10490
+alter table sakai_person_t add locked number(1.0);
+
+
+
+-- =========================================
+-- *** Included already?
 
 -- SAK-8780, SAK-7452 - Add SESSION_ACTIVE flag to explicitly indicate when
 -- a session is active rather than relying on SESSION_START and SESSION_END
 -- having the same value.
 alter table SAKAI_SESSION add SESSION_ACTIVE number(1,0);
 create index SESSION_ACTIVE_IE on SAKAI_SESSION (SESSION_ACTIVE);
+
+
+
+-- =========================================
+-- *** Included already?
 
 --Add categories to gradebook
 create table GB_CATEGORY_T (ID number(19,0) not null, VERSION number(10,0) not null, GRADEBOOK_ID number(19,0) not null, NAME varchar2(255 char) not null, WEIGHT double precision, DROP_LOWEST number(10,0), REMOVED number(1,0), primary key (ID));
@@ -113,20 +160,9 @@ create sequence GB_PERMISSION_S;
 -- also released in sakai_2_4_0-2_4_x_oracle_conversion_005.sql  
 CREATE INDEX GB_GRADING_EVENT_T_STU_OBJ_ID ON GB_GRADING_EVENT_T (STUDENT_ID, GRADABLE_OBJECT_ID);
 
---OSP SAK-10553
-alter table osp_wizard_page_def add SUPPRESS_ITEMS number(1, 0) default '0' not null; 
 
---OSP SAK-10612
-alter table osp_scaffolding add reviewerGroupAccess number(10, 0) default '0' not null;
-
---OSP SAK-10832
-create table osp_wiz_page_def_attachments
-(
-	wiz_page_def_id		varchar2(36)	not null,
-	artifact_id			varchar2(255)	null,
-	seq_num				number(10,0)	not null,
-	PRIMARY KEY(wiz_page_def_id,seq_num)
-);
+-- =========================================
+-- *** Included already?
 
 -- Dropbox updates SAK-11342
 CREATE TABLE CONTENT_DROPBOX_CHANGES
@@ -145,6 +181,36 @@ CREATE INDEX CONTENT_DROPBOX_INCOLL_INDEX ON CONTENT_DROPBOX_CHANGES
 (
 	IN_COLLECTION
 );
+
+
+-- =========================================
+-- *** Included already?
+
+-- SAK-11908 moved content-hosting conversions to this conversion script  
+-- Verify that this is done already.
+
+-- alter table CONTENT_COLLECTION add BINARY_ENTITY BLOB default null;
+-- alter table CONTENT_RESOURCE add BINARY_ENTITY BLOB default null;
+
+-- alter table CONTENT_RESOURCE add FILE_SIZE NUMBER(18) default null;
+-- alter table CONTENT_RESOURCE add CONTEXT VARCHAR2(99) default null;
+-- create index CONTENT_RESOURCE_CI on CONTENT_RESOURCE (CONTEXT);
+
+-- alter table CONTENT_RESOURCE_DELETE add FILE_SIZE NUMBER(20) default null;
+-- alter table CONTENT_RESOURCE_DELETE add CONTEXT VARCHAR2(99) default null;
+-- create index CONTENT_RESOURCE_DELETE_CI on CONTENT_RESOURCE_DELETE (CONTEXT);
+
+-- alter table CONTENT_RESOURCE add RESOURCE_TYPE_ID VARCHAR2(255) default null;
+-- create index CONTENT_RESOURCE_RTI on CONTENT_RESOURCE (RESOURCE_TYPE_ID);
+
+-- alter table CONTENT_RESOURCE_DELETE add BINARY_ENTITY BLOB default null;
+
+-- alter table CONTENT_RESOURCE_DELETE add RESOURCE_TYPE_ID VARCHAR2(255) default null;
+-- create index CONTENT_RESOURCE_DELETE_RTI on CONTENT_RESOURCE_DELETE (RESOURCE_TYPE_ID);
+
+
+-- =========================================
+-- *** Included already?
 
 
 INSERT INTO SAKAI_REALM_FUNCTION VALUES (SAKAI_REALM_FUNCTION_SEQ.NEXTVAL, 'reports.view');
@@ -693,6 +759,63 @@ DELETE From SAKAI_REALM_RL_FN WHERE REALM_KEY = (select REALM_KEY from SAKAI_REA
 DELETE From SAKAI_REALM_RL_FN WHERE REALM_KEY = (select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio') AND ROLE_KEY = (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant') and FUNCTION_KEY = (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'reports.view');
 
 
+
+-- =========================================
+-- *** Included already?
+
+--OSP SAK-10396: Add a default layout to be specified for a portfolio
+alter table osp_presentation add layout_id varchar2(36) NULL;
+
+-- =========================================
+-- *** Included already?
+
+--OSP SAK-10553
+alter table osp_wizard_page_def add SUPPRESS_ITEMS number(1, 0) default '0' not null; 
+
+
+--OSP SAK-10612
+alter table osp_scaffolding add reviewerGroupAccess number(10, 0) default '0' not null;
+
+--OSP SAK-10832
+create table osp_wiz_page_def_attachments
+(
+	wiz_page_def_id		varchar2(36)	not null,
+	artifact_id			varchar2(255)	null,
+	seq_num				number(10,0)	not null,
+	PRIMARY KEY(wiz_page_def_id,seq_num)
+);
+
+-- =========================================
+-- *** Included already?
+
+-- SAK-13205: missing default permissions for osp tools
+
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.matrix.scaffolding.use'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.comment'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.copy'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.create'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.layout.create'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.layout.delete'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.layout.edit'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.style.create'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.wizard.view'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.matrix.scaffolding.use'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.comment'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.copy'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.create'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.layout.create'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.layout.delete'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.layout.edit'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.style.create'));
+INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.wizard.view'));
+
+-- backfill permissions into my workspace.
+INSERT INTO SAKAI_REALM_RL_FN SELECT DISTINCT SR.REALM_KEY, SRR.ROLE_KEY, SRF.FUNCTION_KEY  from SAKAI_REALM SR, SAKAI_REALM_ROLE SRR, SAKAI_REALM_FUNCTION SRF where SR.REALM_ID like '/site/~%' AND SRR.ROLE_NAME = 'maintain' AND SRF.FUNCTION_NAME = 'osp.matrix.scaffolding.use';
+
+
+-- =========================================
+-- *** Included already?
+
 --Reports conversion SAK-10545
 RENAME osp_report_xsl TO report_xsl_file;
 
@@ -713,6 +836,18 @@ RENAME osp_report_def_xml TO reports_def_xml;
 RENAME osp_reports_params TO reports_param;
 RENAME osp_reports TO reports_report;
 RENAME osp_reports_results TO reports_result;
+
+
+
+-- =========================================
+-- *** Included already?
+-- Add colums to search to improve performance SAK-9865
+alter table searchbuilderitem add itemscope integer;
+create index isearchbuilderitem_sco on searchbuilderitem (itemscope);
+
+
+-- =========================================
+-- *** Included already?
 
 -- SAK-11245 -- new search indexer
 
@@ -740,6 +875,9 @@ insert into search_transaction ( txid, txname ) values (0,'mergeSequence');
 insert into search_transaction ( txid, txname ) values (0,'sharedOptimizeSequence');
 insert into search_transaction ( txid, txname ) values (0,'indexerTransaction');
 
+-- =========================================
+-- *** Included already?
+
 -- SAK-11204
 
 ALTER TABLE CALENDAR_EVENT ADD (RANGE_START INTEGER);
@@ -748,25 +886,9 @@ ALTER TABLE CALENDAR_EVENT ADD (RANGE_END INTEGER);
 CREATE INDEX CALENDAR_EVENT_RSTART ON CALENDAR_EVENT(RANGE_START);
 CREATE INDEX CALENDAR_EVENT_REND ON CALENDAR_EVENT(RANGE_END);
 
--- SAK-11908 moved content-hosting conversions to this conversion script  
-alter table CONTENT_COLLECTION add BINARY_ENTITY BLOB default null;
-alter table CONTENT_RESOURCE add BINARY_ENTITY BLOB default null;
 
-alter table CONTENT_RESOURCE add FILE_SIZE NUMBER(18) default null;
-alter table CONTENT_RESOURCE add CONTEXT VARCHAR2(99) default null;
-create index CONTENT_RESOURCE_CI on CONTENT_RESOURCE (CONTEXT);
-
-alter table CONTENT_RESOURCE_DELETE add FILE_SIZE NUMBER(20) default null;
-alter table CONTENT_RESOURCE_DELETE add CONTEXT VARCHAR2(99) default null;
-create index CONTENT_RESOURCE_DELETE_CI on CONTENT_RESOURCE_DELETE (CONTEXT);
-
-alter table CONTENT_RESOURCE add RESOURCE_TYPE_ID VARCHAR2(255) default null;
-create index CONTENT_RESOURCE_RTI on CONTENT_RESOURCE (RESOURCE_TYPE_ID);
-
-alter table CONTENT_RESOURCE_DELETE add BINARY_ENTITY BLOB default null;
-
-alter table CONTENT_RESOURCE_DELETE add RESOURCE_TYPE_ID VARCHAR2(255) default null;
-create index CONTENT_RESOURCE_DELETE_RTI on CONTENT_RESOURCE_DELETE (RESOURCE_TYPE_ID);
+-- =========================================
+-- *** Included already?
 
 -- SAK-11256 - Added T1 code to book.title ris_identifier field
 update CITATION_SCHEMA_FIELD set PROPERTY_VALUE = 'BT,T1' where SCHEMA_ID = 'book' and FIELD_ID = 'title' and PROPERTY_NAME = 'sakai:ris_identifier';
@@ -781,6 +903,11 @@ create index CITATION_COLLECTION_INDEX2 on CITATION_COLLECTION (COLLECTION_ID, P
 create index CITATION_CITATION_INDEX2 on CITATION_CITATION (CITATION_ID, PROPERTY_NAME);
 create index CITATION_SCHEMA_INDEX2 on CITATION_SCHEMA (SCHEMA_ID, PROPERTY_NAME);
 create index CITATION_SCHEMA_FIELD_INDEX2 on CITATION_SCHEMA_FIELD (SCHEMA_ID, FIELD_ID, PROPERTY_NAME);
+
+
+
+-- =========================================
+-- *** Included already?
 
 -- SAK-11935 -- New Roster permissions (and new meanings for old permissions)
 
@@ -857,6 +984,8 @@ from
 delete from PERMISSIONS_TEMP;
 delete from PERMISSIONS_SRC_TEMP;
 
+
+
 -- Backfill groups with roster permissions
 INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','roster.viewallmembers');
 INSERT INTO PERMISSIONS_SRC_TEMP values ('Teaching Assistant','roster.viewhidden');
@@ -883,7 +1012,7 @@ from
     join PERMISSIONS_TEMP TMP on (SRRFD.ROLE_KEY = TMP.ROLE_KEY)
     join SAKAI_REALM SR on (SRRFD.REALM_KEY = SR.REALM_KEY)
     where SR.REALM_ID not like '!%'
-    and SR.REALM_ID not like '/site/~%'
+    And SR.REALM_ID not like '/site/~%'
     and SR.REALM_ID not like '/site/!%'
     and SR.REALM_ID like '/site/%/group/%'
     and not exists (
@@ -932,6 +1061,10 @@ INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where RE
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.course'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Student'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'roster.viewallmembers'));
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.course'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'Student'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'roster.viewgroup'));
 
+
+
+-- =========================================
+-- *** Included already?
 -- SAK-11821 - eliminate duplicates in ASSIGNMENT_SUBMISSION
 DELETE FROM ASSIGNMENT_SUBMISSION WHERE CONTEXT IS NULL;
 ALTER TABLE ASSIGNMENT_SUBMISSION MODIFY CONTEXT NOT NULL;
@@ -944,27 +1077,12 @@ CREATE UNIQUE INDEX ASN_SUB_SUB_INDEX ON ASSIGNMENT_SUBMISSION
 	CONTEXT,SUBMITTER_ID
 );
 
--- SAK-11876, SAK-10490
-alter table sakai_person_t add locked number(1.0);
-
-
---Chat SAK-10215
---This only has to be run if you've upgraded from 2.3 and had chat data
--- also released in sakai_2_4_0-2_4_x_oracle_conversion_004.sql 
-update SAKAI_SITE_TOOL set title = 'Chat Room' where REGISTRATION = 'sakai.chat' and TITLE like 'Chat Room: "%';
+-- =========================================
+-- *** Included already?
 
 --SAK-8957 new colums for polls
 alter table POLL_POLL add POLL_UUID varchar2(255);
 alter table POLL_OPTION add OPTION_UUID varchar2(255);
-
--- SAK-13137
-create index MFR_MEMBERSHIP_ITEM_I01_I on MFR_MEMBERSHIP_ITEM_T (t_surrogateKey);
-create index MFR_MEMBERSHIP_ITEM_I02_I on MFR_MEMBERSHIP_ITEM_T (a_surrogateKey);
-
--- SAK-13138
-create index MFR_MESSAGE_T_IN_REPLY_TO_I on MFR_MESSAGE_T (IN_REPLY_TO);
-create index MFR_TOPIC_T_UUID_I on MFR_TOPIC_T (UUID);
-create index MFR_UNREAD_STATUS_I2 on MFR_UNREAD_STATUS_T (MESSAGE_C, USER_C, READ_C);
 
 
 -- Update the realm tables to add new permission, 'site.upd.site.mbrshp' SAK-10990
@@ -1046,38 +1164,20 @@ drop table PERMISSIONS_TEMP;
 drop table PERMISSIONS_SRC_TEMP;
 
 
--- Samigo
--- SAK-10441: Added indexes to imporve Samigo performance
--- also released in sakai_2_4_0-2_4_x_oracle_conversion_002.sql  (SAK-10454)
-create index SAM_AMETADATA_ASSESSMENTID_I on SAM_ASSESSMETADATA_T (ASSESSMENTID);
-create index SAM_ANSWER_ITEMID_I on SAM_ANSWER_T (ITEMID);
-create index SAM_ASSGRAD_AID_PUBASSEID_T on SAM_ASSESSMENTGRADING_T (AGENTID,PUBLISHEDASSESSMENTID);
-create index SAM_PUBMETDATA_ASSESSMENT_I on SAM_PUBLISHEDMETADATA_T(ASSESSMENTID);
-create index SAM_QPOOLITEM_QPOOL_I on SAM_QUESTIONPOOLITEM_T (QUESTIONPOOLID);
-create index SAM_SECUREDIP_ASSESSMENTID_I on SAM_SECUREDIP_T (ASSESSMENTID);
-create index SAM_SECTION_ASSESSMENTID_I on SAM_SECTION_T (ASSESSMENTID);
-create index SAM_SECTIONMETA_SECTIONID_I on SAM_SECTIONMETADATA_T (SECTIONID);
+-- =========================================
+-- Samigo will go away !!!
 
--- SAK-13205: missing default permissions for osp tools
+-- -- Samigo
+-- -- SAK-10441: Added indexes to imporve Samigo performance
+-- -- also released in sakai_2_4_0-2_4_x_oracle_conversion_002.sql  (SAK-10454)
+-- create index SAM_AMETADATA_ASSESSMENTID_I on SAM_ASSESSMETADATA_T (ASSESSMENTID);
+-- create index SAM_ANSWER_ITEMID_I on SAM_ANSWER_T (ITEMID);
+-- create index SAM_ASSGRAD_AID_PUBASSEID_T on SAM_ASSESSMENTGRADING_T (AGENTID,PUBLISHEDASSESSMENTID);
+-- create index SAM_PUBMETDATA_ASSESSMENT_I on SAM_PUBLISHEDMETADATA_T(ASSESSMENTID);
+-- create index SAM_QPOOLITEM_QPOOL_I on SAM_QUESTIONPOOLITEM_T (QUESTIONPOOLID);
+-- create index SAM_SECUREDIP_ASSESSMENTID_I on SAM_SECUREDIP_T (ASSESSMENTID);
+-- create index SAM_SECTION_ASSESSMENTID_I on SAM_SECTION_T (ASSESSMENTID);
+-- create index SAM_SECTIONMETA_SECTIONID_I on SAM_SECTIONMETADATA_T (SECTIONID);
 
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.matrix.scaffolding.use'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.comment'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.copy'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.create'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.layout.create'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.layout.delete'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.layout.edit'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.style.create'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!group.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.wizard.view'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.matrix.scaffolding.use'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.comment'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.copy'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.create'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.layout.create'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.layout.delete'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.presentation.layout.edit'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.style.create'));
-INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.wizard.view'));
 
-INSERT INTO SAKAI_REALM_RL_FN
-SELECT DISTINCT SR.REALM_KEY, SRR.ROLE_KEY, SRF.FUNCTION_KEY  from SAKAI_REALM SR, SAKAI_REALM_ROLE SRR, SAKAI_REALM_FUNCTION SRF where SR.REALM_ID like '/site/~%' AND SRR.ROLE_NAME = 'maintain' AND SRF.FUNCTION_NAME = 'osp.matrix.scaffolding.use';
+
