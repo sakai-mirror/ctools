@@ -48,13 +48,15 @@ ALTER TABLE SAKAI_POSTEM_HEADINGS MODIFY heading VARCHAR2 (500);
 -- *** Included already?
 -- Verify that this has been done.
 --Chat SAK-10682
-alter table CHAT2_CHANNEL modify (CONTEXT VARCHAR2(99));
+-- alter table CHAT2_CHANNEL modify (CONTEXT VARCHAR2(99));
 
 --Chat SAK-10163
 -- also released in sakai_2_4_0-2_4_x_oracle_conversion_003.sql 
-ALTER TABLE CHAT2_CHANNEL ADD PLACEMENT_ID varchar2(99) NULL;
-ALTER TABLE CHAT2_CHANNEL RENAME COLUMN contextDefaultChannel TO placementDefaultChannel;
+-- BUT have placement_id, and placement default channel, but also have contextdefaultchannel
+-- ALTER TABLE CHAT2_CHANNEL ADD PLACEMENT_ID varchar2(99) NULL;
+-- ALTER TABLE CHAT2_CHANNEL RENAME COLUMN contextDefaultChannel TO placementDefaultChannel;
 
+-- ??
 update CHAT2_CHANNEL cc
 set cc.PLACEMENT_ID = (select st.TOOL_ID from SAKAI_SITE_TOOL st where st.REGISTRATION = 'sakai.chat' 
    and cc.placementDefaultChannel = 1
@@ -64,6 +66,7 @@ where EXISTS
    and cc.placementDefaultChannel = 1
    and cc.CONTEXT = st.SITE_ID and ROWNUM = 1);
 
+
 update CHAT2_CHANNEL set placementDefaultChannel=0 where placementDefaultChannel is null;
 
 -- =========================================
@@ -72,18 +75,15 @@ update CHAT2_CHANNEL set placementDefaultChannel=0 where placementDefaultChannel
 --Chat SAK-10215
 --This only has to be run if you've upgraded from 2.3 and had chat data
 -- also released in sakai_2_4_0-2_4_x_oracle_conversion_004.sql 
+-- ?? No values?
 update SAKAI_SITE_TOOL set title = 'Chat Room' where REGISTRATION = 'sakai.chat' and TITLE like 'Chat Room: "%';
 
 
 -- =========================================
--- *** Included already?
+-- *** needed
 
--- =========================================
 --Profile add dateOfBirth property SAK-8423
 alter table SAKAI_PERSON_T add (dateOfBirth date);
-
--- =========================================
--- *** Included already?
 
 -- SAK-11876, SAK-10490
 alter table sakai_person_t add locked number(1.0);
@@ -91,7 +91,7 @@ alter table sakai_person_t add locked number(1.0);
 
 
 -- =========================================
--- *** Included already?
+-- *** Needed
 
 -- SAK-8780, SAK-7452 - Add SESSION_ACTIVE flag to explicitly indicate when
 -- a session is active rather than relying on SESSION_START and SESSION_END
@@ -102,7 +102,7 @@ create index SESSION_ACTIVE_IE on SAKAI_SESSION (SESSION_ACTIVE);
 
 
 -- =========================================
--- *** Included already?
+-- *** gradebook stuff needed.
 
 --Add categories to gradebook
 create table GB_CATEGORY_T (ID number(19,0) not null, VERSION number(10,0) not null, GRADEBOOK_ID number(19,0) not null, NAME varchar2(255 char) not null, WEIGHT double precision, DROP_LOWEST number(10,0), REMOVED number(1,0), primary key (ID));
@@ -162,15 +162,15 @@ CREATE INDEX GB_GRADING_EVENT_T_STU_OBJ_ID ON GB_GRADING_EVENT_T (STUDENT_ID, GR
 
 
 -- =========================================
--- *** Included already?
+-- *** Table created Indices needed?
 
 -- Dropbox updates SAK-11342
-CREATE TABLE CONTENT_DROPBOX_CHANGES
-(
-    DROPBOX_ID VARCHAR2 (255) NOT NULL,
-    IN_COLLECTION VARCHAR2 (255),
-    LAST_UPDATE VARCHAR2 (24)
-);
+-- CREATE TABLE CONTENT_DROPBOX_CHANGES
+-- (
+--    DROPBOX_ID VARCHAR2 (255) NOT NULL,
+--    IN_COLLECTION VARCHAR2 (255),
+--    LAST_UPDATE VARCHAR2 (24)
+-- );
 
 CREATE UNIQUE INDEX CONTENT_DROPBOX_CHANGES_INDEX ON CONTENT_DROPBOX_CHANGES
 (
@@ -184,7 +184,7 @@ CREATE INDEX CONTENT_DROPBOX_INCOLL_INDEX ON CONTENT_DROPBOX_CHANGES
 
 
 -- =========================================
--- *** Included already?
+-- *** content conversion is done already.
 
 -- SAK-11908 moved content-hosting conversions to this conversion script  
 -- Verify that this is done already.
@@ -210,7 +210,7 @@ CREATE INDEX CONTENT_DROPBOX_INCOLL_INDEX ON CONTENT_DROPBOX_CHANGES
 
 
 -- =========================================
--- *** Included already?
+-- Keep (harmless if already there).
 
 
 INSERT INTO SAKAI_REALM_FUNCTION VALUES (SAKAI_REALM_FUNCTION_SEQ.NEXTVAL, 'reports.view');
@@ -761,13 +761,11 @@ DELETE From SAKAI_REALM_RL_FN WHERE REALM_KEY = (select REALM_KEY from SAKAI_REA
 
 
 -- =========================================
--- *** Included already?
+-- *** Needed
 
 --OSP SAK-10396: Add a default layout to be specified for a portfolio
 alter table osp_presentation add layout_id varchar2(36) NULL;
 
--- =========================================
--- *** Included already?
 
 --OSP SAK-10553
 alter table osp_wizard_page_def add SUPPRESS_ITEMS number(1, 0) default '0' not null; 
@@ -786,7 +784,7 @@ create table osp_wiz_page_def_attachments
 );
 
 -- =========================================
--- *** Included already?
+-- *** Needed (or harmless)
 
 -- SAK-13205: missing default permissions for osp tools
 
@@ -809,12 +807,12 @@ INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where RE
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.style.create'));
 INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where REALM_ID = '!site.template.portfolio'), (select ROLE_KEY from SAKAI_REALM_ROLE where ROLE_NAME = 'CIG Participant'), (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME = 'osp.wizard.view'));
 
--- backfill permissions into my workspace.
+-- backfill permissions into 'my workspace'.
 INSERT INTO SAKAI_REALM_RL_FN SELECT DISTINCT SR.REALM_KEY, SRR.ROLE_KEY, SRF.FUNCTION_KEY  from SAKAI_REALM SR, SAKAI_REALM_ROLE SRR, SAKAI_REALM_FUNCTION SRF where SR.REALM_ID like '/site/~%' AND SRR.ROLE_NAME = 'maintain' AND SRF.FUNCTION_NAME = 'osp.matrix.scaffolding.use';
 
 
 -- =========================================
--- *** Included already?
+-- *** Needed unless not doing reports.
 
 --Reports conversion SAK-10545
 RENAME osp_report_xsl TO report_xsl_file;
@@ -837,17 +835,14 @@ RENAME osp_reports_params TO reports_param;
 RENAME osp_reports TO reports_report;
 RENAME osp_reports_results TO reports_result;
 
-
-
 -- =========================================
--- *** Included already?
+-- *** Needed
 -- Add colums to search to improve performance SAK-9865
 alter table searchbuilderitem add itemscope integer;
 create index isearchbuilderitem_sco on searchbuilderitem (itemscope);
 
-
 -- =========================================
--- *** Included already?
+-- *** Needed
 
 -- SAK-11245 -- new search indexer
 
@@ -876,19 +871,19 @@ insert into search_transaction ( txid, txname ) values (0,'sharedOptimizeSequenc
 insert into search_transaction ( txid, txname ) values (0,'indexerTransaction');
 
 -- =========================================
--- *** Included already?
+-- *** Included (what about indices?)
 
 -- SAK-11204
 
-ALTER TABLE CALENDAR_EVENT ADD (RANGE_START INTEGER);
-ALTER TABLE CALENDAR_EVENT ADD (RANGE_END INTEGER);
+-- ALTER TABLE CALENDAR_EVENT ADD (RANGE_START INTEGER);
+-- ALTER TABLE CALENDAR_EVENT ADD (RANGE_END INTEGER);
 
-CREATE INDEX CALENDAR_EVENT_RSTART ON CALENDAR_EVENT(RANGE_START);
-CREATE INDEX CALENDAR_EVENT_REND ON CALENDAR_EVENT(RANGE_END);
+-- CREATE INDEX CALENDAR_EVENT_RSTART ON CALENDAR_EVENT(RANGE_START);
+-- CREATE INDEX CALENDAR_EVENT_REND ON CALENDAR_EVENT(RANGE_END);
 
 
 -- =========================================
--- *** Included already?
+-- *** Probably needed (what about indices?)
 
 -- SAK-11256 - Added T1 code to book.title ris_identifier field
 update CITATION_SCHEMA_FIELD set PROPERTY_VALUE = 'BT,T1' where SCHEMA_ID = 'book' and FIELD_ID = 'title' and PROPERTY_NAME = 'sakai:ris_identifier';
@@ -907,7 +902,7 @@ create index CITATION_SCHEMA_FIELD_INDEX2 on CITATION_SCHEMA_FIELD (SCHEMA_ID, F
 
 
 -- =========================================
--- *** Included already?
+-- *** Needed (if using roster).
 
 -- SAK-11935 -- New Roster permissions (and new meanings for old permissions)
 
@@ -1064,21 +1059,21 @@ INSERT INTO SAKAI_REALM_RL_FN VALUES((select REALM_KEY from SAKAI_REALM where RE
 
 
 -- =========================================
--- *** Included already?
+-- *** Included (not needed)
 -- SAK-11821 - eliminate duplicates in ASSIGNMENT_SUBMISSION
-DELETE FROM ASSIGNMENT_SUBMISSION WHERE CONTEXT IS NULL;
-ALTER TABLE ASSIGNMENT_SUBMISSION MODIFY CONTEXT NOT NULL;
-alter table ASSIGNMENT_SUBMISSION add SUBMITTER_ID VARCHAR2 (99) NOT NULL;
-alter table ASSIGNMENT_SUBMISSION add SUBMIT_TIME VARCHAR2 (99) default null;
-alter table ASSIGNMENT_SUBMISSION add SUBMITTED VARCHAR2 (6) default null;
-alter table ASSIGNMENT_SUBMISSION add GRADED VARCHAR2 (6) default null;
-CREATE UNIQUE INDEX ASN_SUB_SUB_INDEX ON ASSIGNMENT_SUBMISSION
-(
-	CONTEXT,SUBMITTER_ID
-);
+-- DELETE FROM ASSIGNMENT_SUBMISSION WHERE CONTEXT IS NULL;
+-- ALTER TABLE ASSIGNMENT_SUBMISSION MODIFY CONTEXT NOT NULL;
+-- alter table ASSIGNMENT_SUBMISSION add SUBMITTER_ID VARCHAR2 (99) NOT NULL;
+-- alter table ASSIGNMENT_SUBMISSION add SUBMIT_TIME VARCHAR2 (99) default null;
+-- alter table ASSIGNMENT_SUBMISSION add SUBMITTED VARCHAR2 (6) default null;
+-- alter table ASSIGNMENT_SUBMISSION add GRADED VARCHAR2 (6) default null;
+-- CREATE UNIQUE INDEX ASN_SUB_SUB_INDEX ON ASSIGNMENT_SUBMISSION
+-- (
+-- 	CONTEXT,SUBMITTER_ID
+-- );
 
 -- =========================================
--- *** Included already?
+-- *** Needed
 
 --SAK-8957 new colums for polls
 alter table POLL_POLL add POLL_UUID varchar2(255);
