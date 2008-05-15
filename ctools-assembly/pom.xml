@@ -18,6 +18,29 @@
     <name>University of Michigan</name>
     <url>http://sakaiproject.org/</url>
   </organization>
+  
+  <!-- gradebook customization -->
+  <!-- These are defined now in a local build properties file, but I modified them like this incase they were still used this way 
+  -->
+  <condition property="gradebook.grades.config.sourcefile" value="UMichGrades.xml">
+    <not><isset property="gradebook.grades.config.sourcefile" /></not>
+  </condition>
+
+  <condition property="gradebook.grades.config.tofile" value="gradebook/service/sakai-pack/src/webapp/WEB-INF/components.xml">
+    <not><isset property="gradebook.grades.config.tofile" /></not>
+  </condition>
+
+  <condition property="tiny_mce.path" value="http://source.sakaiproject.org/maven/tiny_mce/wars">
+    <not><isset property="tiny_mce.path" /></not>
+  </condition>
+
+  <condition property="tiny_mce.name.src" value="tiny_mce-3.0.3.war">
+    <not><isset property="tiny_mce.name.src" /></not>
+  </condition>
+  <condition property="tiny_mce.name.dest" value="tiny_mce.war">
+    <not><isset property="tiny_mce.name.dest" /></not>
+  </condition>
+
   <properties>
     <sakai.plugin.version>2.2</sakai.plugin.version>
     <sakai.tomcat.version>5.5.23</sakai.tomcat.version>
@@ -28,13 +51,6 @@
     <errorpages.dir>error-pages</errorpages.dir>
     <tomcatWebXml.name>web.xml.5.5.23</tomcatWebXml.name>
 
-    <!-- gradebook customization -->
-    <gradebook.grades.config.sourcefile>UMichGrades.xml</gradebook.grades.config.sourcefile>
-    <gradebook.grades.config.tofile>gradebook/service/sakai-pack/src/webapp/WEB-INF/components.xml</gradebook.grades.config.tofile>
-
-    <tiny_mce.path>http://source.sakaiproject.org/maven/tiny_mce/wars</tiny_mce.path>
-    <tiny_mce.name.src>tiny_mce-3.0.3.war</tiny_mce.name.src>
-    <tiny_mce.name.dest>tiny_mce.war</tiny_mce.name.dest>
 
   </properties>
 
