@@ -19,28 +19,6 @@
     <url>http://sakaiproject.org/</url>
   </organization>
   
-  <!-- gradebook customization -->
-  <!-- These are defined now in a local build properties file, but I modified them like this incase they were still used this way 
-  -->
-  <condition property="gradebook.grades.config.sourcefile" value="UMichGrades.xml">
-    <not><isset property="gradebook.grades.config.sourcefile" /></not>
-  </condition>
-
-  <condition property="gradebook.grades.config.tofile" value="gradebook/service/sakai-pack/src/webapp/WEB-INF/components.xml">
-    <not><isset property="gradebook.grades.config.tofile" /></not>
-  </condition>
-
-  <condition property="tiny_mce.path" value="http://source.sakaiproject.org/maven/tiny_mce/wars">
-    <not><isset property="tiny_mce.path" /></not>
-  </condition>
-
-  <condition property="tiny_mce.name.src" value="tiny_mce-3.0.3.war">
-    <not><isset property="tiny_mce.name.src" /></not>
-  </condition>
-  <condition property="tiny_mce.name.dest" value="tiny_mce.war">
-    <not><isset property="tiny_mce.name.dest" /></not>
-  </condition>
-
   <properties>
     <sakai.plugin.version>2.2</sakai.plugin.version>
     <sakai.tomcat.version>5.5.23</sakai.tomcat.version>
@@ -73,7 +51,28 @@
 	    <phase>install</phase>
 	    <configuration>
 	      <tasks>
-		<!-- clear the deploy area -->
+		<!-- gradebook customization -->
+	  <!-- These are defined now in a local build properties file, but I modified them like this incase they were still used this way 
+	  -->
+	  <condition property="gradebook.grades.config.sourcefile" value="UMichGrades.xml">
+	    <not><isset property="gradebook.grades.config.sourcefile" /></not>
+	  </condition>
+
+	  <condition property="gradebook.grades.config.tofile" value="gradebook/service/sakai-pack/src/webapp/WEB-INF/components.xml">
+	    <not><isset property="gradebook.grades.config.tofile" /></not>
+	  </condition>
+
+	  <condition property="tiny_mce.path" value="http://source.sakaiproject.org/maven/tiny_mce/wars">
+	    <not><isset property="tiny_mce.path" /></not>
+	  </condition>
+
+	  <condition property="tiny_mce.name.src" value="tiny_mce-3.0.3.war">
+	    <not><isset property="tiny_mce.name.src" /></not>
+	  </condition>
+	  <condition property="tiny_mce.name.dest" value="tiny_mce.war">
+	    <not><isset property="tiny_mce.name.dest" /></not>
+	  </condition>
+	<!-- clear the deploy area -->
 		<delete dir="${basedir}/target/unpack"/>
 		<delete dir="${basedir}/target/pack"/>
 
