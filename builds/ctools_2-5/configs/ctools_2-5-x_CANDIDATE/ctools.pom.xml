@@ -296,19 +296,21 @@ if changes are needed.
 	<module>ctools-providers</module>
 	<!-- eliminate for the moment, since nothing is required in build itself. -->
 	<module>ctools-reference</module>
-	<!-- <module>ctools-webservices</module> -->
-
+	<!--
+	<module>ctools-webservices</module>
+	<module>itunes</module>
+	<module>evaluation</module>
+	<module>config-viewer</module>
+	-->
 	<!-- contrib -->
 	<module>test-center</module>
 	<!--
 	<module>mneme</module>
 	<module>ambrosia</module>
-	<module>itunes</module>
-	<module>config-viewer</module>
-	<module>evaluation</module>
 	-->
 	<module>hierarchy</module>
 	<module>melete</module>
+	<module>discussion</module>
 
       </modules>
     </profile>

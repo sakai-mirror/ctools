@@ -124,12 +124,12 @@
 ########
 #### Test Center
 test-center -rHEAD     https://source.sakaiproject.org/contrib/muse/test-center/tags/1.1.3-2.5.0
-ambrosia -rHEAD https://source.sakaiproject.org/contrib/muse/ambrosia/tags/1.1.0
-mneme    -rHEAD https://source.sakaiproject.org/contrib/muse/mneme/tags/1.1.0
-# Will also need TinyMCE webapp
+#I think there are the old test center
+#ambrosia -rHEAD https://source.sakaiproject.org/contrib/muse/ambrosia/tags/1.1.0
+#mneme    -rHEAD https://source.sakaiproject.org/contrib/muse/mneme/tags/1.1.0
 ##
- itunes -rHEAD https://source.sakaiproject.org/contrib/umctx/tags/sakai_2-4-0
- config-viewer -rHEAD https://source.sakaiproject.org/contrib/config-viewer/branches/config-viewer-2.4.x
+ itunes -rHEAD https://source.sakaiproject.org/contrib/umctx/trunk/itunesu-tool/
+ config-viewer -rHEAD https://source.sakaiproject.org/contrib/config-viewer/trunk/ 
  #
   ## course evaluation tool
   evaluation -rHEAD https://source.sakaiproject.org/contrib/evaluation/branches/umich
@@ -138,6 +138,8 @@ mneme    -rHEAD https://source.sakaiproject.org/contrib/muse/mneme/tags/1.1.0
  # we really should not pull from trunk to production, but we were not given any choice for these
  # in the evaluation project.
  hierarchy -rHEAD https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
-
+#Trunk doesn't compile and this is marked as depreciated, use the tagged version.
+# discussion -rHEAD https://source.sakaiproject.org/contrib/deprecated/discussion/trunk/
+discussion -rHEAD https://source.sakaiproject.org/contrib/deprecated/discussion/branches/sakai_2-5-x/
   #
 #end
