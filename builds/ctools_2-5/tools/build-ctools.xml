@@ -104,19 +104,15 @@ $HeadURL$
 	  description="Replace default Sakai pom with one customized for CTools." >
     <echo>Insert a top level pom suitable for CTools.</echo>
     <!-- backup the sakai pom -->
+    <!--
     <move file="${build.dir}/pom.xml" tofile="${build.dir}/pom.xml.dist" />
+    -->
     <!-- insert the ctools pom -->
     <echo> user.dir: ${user.dir} </echo>
     <copy file="${user.dir}/ctools.pom.xml"
-	  tofile="${build.dir}/pom.xml"
+  	  tofile="${build.dir}/ctools-build/pom.xml"
 	  overwrite="true"
 	  />
-    <!--
-    <copy file="${reference.dir}/ctools.pom.xml"
-	  tofile="${build.dir}/pom.xml"
-	  overwrite="true"
-	  />
-    -->
   </target>
 
   <!-- copy in the rwiki default pages properties file. -->
@@ -126,12 +122,16 @@ $HeadURL$
 
   <!-- Need to do a search and replace on itunes presently in the current version -->
   <target name="editiTunes">
-      <exec executable="/bin/bash" failonerror="true">
-	 <arg value="-c" />
-	 <arg value="find ${work.dir}/build/itunes -type f -print0|xargs -0 perl -w -i -p -e 's/SNAPSHOT/M2/g'" />
-    </exec>
-  
-  
+      <echo>editing itunes: SNAPSHOT->M2</echo>
+         <replaceregexp >
+	     <fileset dir="${work.dir}/build/itunes" >
+  	     <include name="**/.classpath" />
+	     <include name="**/pom.xml"/>
+	</fileset>
+         <regexp pattern="SNAPSHOT" />
+	 <substitution  expression="M2" />
+	 </replaceregexp>
+     
   </target>
 
 

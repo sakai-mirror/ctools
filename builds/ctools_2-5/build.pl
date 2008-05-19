@@ -7,8 +7,11 @@
 #http://www.unix.org.ua/orelly/perl/prog3/ch09_04.htm
 
 use File::Basename;
+use FindBin qw($Bin);
 use Term::ANSIColor qw(:constants);
 use POSIX qw(strftime);
+#use Properties;
+
 use strict;
 
 #Define which type to build, this might be prompted later
@@ -111,10 +114,15 @@ if ($svnversion) {
     $svnvar = "-DCANDIDATE.revision=$svnversion";
 }
 
-#Look for a list of builds
+print "Searching for valid build files!\n";
+#Look for a list of builds in the config directory
 my @builds = `find configs -name "defaultbuild.properties" | sort`;
+if (!@builds) {
+     #Look for a list of builds in the current directory
+     @builds = `find . -name "defaultbuild.properties" | sort`;
+}
 
-print "Detected ".@builds." candidates:\n";
+print "Detected ".@builds." candidate(s) (You can create a new candidate by cp -r one of the configs in the configs directory and editing the sakai.tag property to match this new name.):\n";
 my ($buildcount,$build)=0;
 foreach $build (@builds) {
     my ($configs,$dirname,$file) = split(/\//,$build);
@@ -135,7 +143,7 @@ until ($builddir = dirname($builds[$buildin]));	    # Redo while wrong input
 #Find out other options like if they want to clean out the build, or just update whats there
 #ETC!
 
-print "NOTE: The resulting packages will be placed in ./artifacts/$builddir\n";
+print "NOTE: The resulting packages will be placed in $Bin/artifacts/$builddir\n";
 
 #Prompt if they want a clean install, parts of this are still being worked on in the scripts.
 do
@@ -148,7 +156,8 @@ until ($cleanin eq "n" || $cleanin eq "y");	    # Redo while wrong input
 
 #Get a log file started for further analysis
 my $nowstring = strftime "%m-%d-%y_%H-%M-%S", localtime;
-open(STDOUT, "| tee ./outputlog.$nowstring.log");
+mkdir("./logs");
+open(STDOUT, "| tee ./logs/outputlog.$nowstring.log");
 
 my $cleanvar;
 #Command to start it up!
@@ -161,7 +170,7 @@ else {
 
 #Change directory to the builds directory
 chdir($builddir);
-my $cmd = "ant -f ../../build.xml -Dtype=$typevar $cleanvar $svnvar 2>&1";
+my $cmd = "ant -s build.xml -Dtype=$typevar $cleanvar $svnvar 2>&1";
 system $cmd; 
 close(STDOUT);
 
