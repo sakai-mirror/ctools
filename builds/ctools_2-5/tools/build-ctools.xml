@@ -41,7 +41,7 @@ $HeadURL$
 
   <!-- change source as required -->
   <target name="editCtools" 
-	  depends="editSrcGlobal,editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editRwikiSrc,updatePomWithCToolsPom" >
+	  depends="editSrcGlobal,editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editRwikiSrc,updatePomWithCToolsPom,editiTunes" >
     <!-- edit the files that need to be modified for ctools -->
   </target>
 
@@ -122,6 +122,16 @@ $HeadURL$
   <!-- copy in the rwiki default pages properties file. -->
 
   <target name="editRwikiSrc" unless="skipPrepopulatePages" >
+  </target>
+
+  <!-- Need to do a search and replace on itunes presently in the current version -->
+  <target name="editiTunes">
+      <exec executable="/bin/bash" failonerror="true">
+	 <arg value="-c" />
+	 <arg value="find ${work.dir}/build/itunes -type f -print0|xargs -0 perl -w -i -p -e 's/SNAPSHOT/M2/g'" />
+    </exec>
+  
+  
   </target>
 
 

@@ -35,7 +35,8 @@
  course-management -rHEAD https://source.sakaiproject.org/svn/course-management/branches/sakai_2-5-x
  dav -rHEAD https://source.sakaiproject.org/svn/dav/branches/sakai_2-5-x
  db -rHEAD https://source.sakaiproject.org/svn/db/branches/sakai_2-5-x
- discussion -rHEAD https://source.sakaiproject.org/svn/discussion/branches/sakai_2-5-x
+#This doesn't compile
+ #discussion -rHEAD https://source.sakaiproject.org/svn/discussion/branches/sakai_2-5-x
  email -rHEAD https://source.sakaiproject.org/svn/email/branches/sakai_2-5-x
  entity -rHEAD https://source.sakaiproject.org/svn/entity/branches/sakai_2-5-x
  entitybroker -rHEAD https://source.sakaiproject.org/svn/entitybroker/branches/sakai_2-5-x
@@ -122,24 +123,20 @@
 ########
 ######## Contrib tools
 ########
-#### Test Center
-test-center -rHEAD     https://source.sakaiproject.org/contrib/muse/test-center/tags/1.1.3-2.5.0
-#I think there are the old test center
-#ambrosia -rHEAD https://source.sakaiproject.org/contrib/muse/ambrosia/tags/1.1.0
-#mneme    -rHEAD https://source.sakaiproject.org/contrib/muse/mneme/tags/1.1.0
-##
+#### Test Center ambrosia and mneme combined
+ test-center -rHEAD     https://source.sakaiproject.org/contrib/muse/test-center/tags/1.1.3-2.5.0
+## Current version is being patched
  itunes -rHEAD https://source.sakaiproject.org/contrib/umctx/trunk/itunesu-tool/
  config-viewer -rHEAD https://source.sakaiproject.org/contrib/config-viewer/trunk/ 
  #
   ## course evaluation tool
-  evaluation -rHEAD https://source.sakaiproject.org/contrib/evaluation/branches/umich
+  ## The trunk builds but the umich branch is currently missing some files for mvn2
+ evaluation -rHEAD https://source.sakaiproject.org/contrib/evaluation/branches/umich
  #Melete
-  melete    -rHEAD https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-4-5_sak-2-5-0
+ melete    -rHEAD https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-4-5_sak-2-5-0
  # we really should not pull from trunk to production, but we were not given any choice for these
  # in the evaluation project.
  hierarchy -rHEAD https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
-#Trunk doesn't compile and this is marked as depreciated, use the tagged version.
-# discussion -rHEAD https://source.sakaiproject.org/contrib/deprecated/discussion/trunk/
-discussion -rHEAD https://source.sakaiproject.org/contrib/deprecated/discussion/branches/sakai_2-5-x/
+ discussion -rHEAD https://source.sakaiproject.org/contrib/deprecated/discussion/trunk/
   #
 #end

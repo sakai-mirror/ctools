@@ -289,25 +289,22 @@ if changes are needed.
 	<module>reports</module>
 	<!-- <module>reset-pass</module> -->
 
-	<!-- gradtools not converted -->
-	<!-- <module>gradtools</module>  -->
 	<module>ctools-apps</module>
 	<module>ctools-libhelp</module>
 	<module>ctools-providers</module>
 	<!-- eliminate for the moment, since nothing is required in build itself. -->
 	<module>ctools-reference</module>
-	<!--
+
+	<!-- gradtools not converted -->
+	<!-- 
+	<module>gradtools</module>  
 	<module>ctools-webservices</module>
-	<module>itunes</module>
 	<module>evaluation</module>
+	-->
 	<module>config-viewer</module>
-	-->
 	<!-- contrib -->
+	<module>itunes</module>
 	<module>test-center</module>
-	<!--
-	<module>mneme</module>
-	<module>ambrosia</module>
-	-->
 	<module>hierarchy</module>
 	<module>melete</module>
 	<module>discussion</module>

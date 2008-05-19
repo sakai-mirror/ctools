@@ -193,6 +193,7 @@
       <!-- use this profile -->
       <!-- <arg value="-P ctools" /> --> <!-- does a build with new ctools profile -->
       <!-- <arg value="-P pack-demo" /> --> <!-- creates an install artifact -->
+      <!-- Pass parameters to the next phase of the build -->
       <arg value="-P ctools-assembly" />
       <arg value="-e" /> 
       <arg value="-Dmaven.junit.fork=true" />
@@ -230,18 +231,17 @@
       <!-- <arg value="-P pack-demo" /> --> <!-- creates an install artifact -->
       <arg value="-P ctools-assembly" />
       <arg value="-e" /> 
+      <!-- Pass parameters to the next phase of the build -->
       <arg value="-Dmaven.junit.fork=true" />
       <arg value="-Dgradebook.grades.config.sourcefile=${gradebook.grades.config.sourcefile}"/>
       <arg value="-Dtiny_mce.name.src=${tiny_mce.name.src}"/>
+      <arg value="-Dnoclean=${noclean}"/>
       <!-- <arg value="-X" /> -->
       <!--  sometimes need to avoid this with a new build, but usually speeds things up. -->
       <!-- <arg value="-o" />   -->
 
       <!-- <arg value="pack-demo" /> -->
 
-      <!-- Figure this out 
-      <arg value="clean" />
-      -->
       <arg value="install" />
 
       <!--
