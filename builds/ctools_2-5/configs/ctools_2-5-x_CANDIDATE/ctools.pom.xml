@@ -140,15 +140,19 @@ if changes are needed.
 	<!-- eliminate for the moment, since nothing is required in build itself. -->
 	<module>../ctools-reference</module>
 
-	<!-- gradtools not converted -->
+	<!-- gradtools not converted  -->
+	<!-- ctools-webservices not converted  -->
+	<!-- evaluation not updated with branch  -->
 	<!-- 
-	<module>../gradtools</module>  
 	<module>../ctools-webservices</module>
+	<module>../gradtools</module>  
 	<module>../evaluation</module>
 	-->
 	<module>../config-viewer</module>
 	<!-- contrib -->
+	<!-- Currently won't work unless configured, but it builds
 	<module>../itunes</module>
+	-->
 	<module>../test-center</module>
 	<module>../hierarchy</module>
 	<module>../melete</module>
