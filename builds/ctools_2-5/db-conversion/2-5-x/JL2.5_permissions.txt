@@ -47,6 +47,9 @@ ALTER TABLE SAKAI_POSTEM_HEADINGS MODIFY heading VARCHAR2 (500);
 
 -- =========================================
 -- *** Included already?
+
+echo "chat";
+
 -- Verify that this has been done.
 --Chat SAK-10682
 -- alter table CHAT2_CHANNEL modify (CONTEXT VARCHAR2(99));
@@ -103,6 +106,7 @@ create index SESSION_ACTIVE_IE on SAKAI_SESSION (SESSION_ACTIVE);
 
 
 -- =========================================
+echo "GRADEBOOK";
 -- *** gradebook stuff needed.
 
 --Add categories to gradebook
@@ -163,6 +167,7 @@ CREATE INDEX GB_GRADING_EVENT_T_STU_OBJ_ID ON GB_GRADING_EVENT_T (STUDENT_ID, GR
 
 
 -- =========================================
+echo "DROPBOX";
 -- *** Table created Indices needed?
 
 -- Dropbox updates SAK-11342
@@ -211,6 +216,7 @@ CREATE INDEX CONTENT_DROPBOX_INCOLL_INDEX ON CONTENT_DROPBOX_CHANGES
 
 
 -- =========================================
+echo "OSP ADD PERMISSIONS";
 -- Keep (harmless if already there).
 
 permission.FUNCTION.ADD: [osp.help.glossary.add]
@@ -763,6 +769,7 @@ create table osp_wiz_page_def_attachments
 );
 
 -- =========================================
+echo "OSP ADD MORE PERMISSIONS";
 -- *** Needed (or harmless)
 
 -- SAK-13205: missing default permissions for osp tools
@@ -815,6 +822,7 @@ RENAME osp_reports TO reports_report;
 RENAME osp_reports_results TO reports_result;
 
 -- =========================================
+echo "SEARCH NEW";
 -- *** Needed
 -- Add colums to search to improve performance SAK-9865
 alter table searchbuilderitem add itemscope integer;
@@ -862,6 +870,7 @@ insert into search_transaction ( txid, txname ) values (0,'indexerTransaction');
 
 
 -- =========================================
+echo "CITATION";
 -- *** Probably needed (what about indices?)
 
 -- SAK-11256 - Added T1 code to book.title ris_identifier field
@@ -881,6 +890,7 @@ create index CITATION_SCHEMA_FIELD_INDEX2 on CITATION_SCHEMA_FIELD (SCHEMA_ID, F
 
 
 -- =========================================
+echo "ROSTER";
 -- *** Needed (if using roster).
 
 -- SAK-11935 -- New Roster permissions (and new meanings for old permissions)
@@ -1049,6 +1059,7 @@ permission.ADD: [!group.template.course][Student][roster.viewgroup]
 -- );
 
 -- =========================================
+echo "POLLS";
 -- *** Needed
 
 --SAK-8957 new colums for polls
@@ -1057,8 +1068,10 @@ alter table POLL_OPTION add OPTION_UUID varchar2(255);
 
 
 -- Update the realm tables to add new permission, 'site.upd.site.mbrshp' SAK-10990
-
+echo "SITE.UPD.SITE.MBRSHP";
 permission.FUNCTION.ADD: [site.upd.site.mbrshp]
+-- echo "*** ADDED GROUP MBRSHP function";
+permission.FUNCTION.ADD: [site.upd.grp.mbrshp]
 
 -- for those exising roles with site.upd we need to add 'site.upd.site.mbrshp' and 'site.upd.grp.mbrshp' to them
 -- what follows here is two approaches to do this
