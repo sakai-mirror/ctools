@@ -4,5 +4,7 @@ permission.ADD: [!group.template.course][Instructor][osp.help.glossary.add]
 permission.BACKFILL: [CIG Coordinator][site.upd.grp.mbrshp]
 permission.DELETE: [!group.template.portfolio][CIG Participant][reports.run]
 permission.FUNCTION.ADD: [osp.help.glossary.add]
-permission.FUNCTION.DELETE: [roster.%]
+
+-- Below is too rare to bother with.
+-- permission.FUNCTION.DELETE: [roster.%]
 -- end

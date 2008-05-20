@@ -42,19 +42,20 @@ while(<>) {
 	$printed = 1;
     }
 
-#delete from SAKAI_REALM_RL_FN where function_key in (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME like 'roster.%');
-    if (/delete from SAKAI_REALM_RL_FN where function_key in \(select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME like '(.*)'\);/i) {
-	print "permission.FUNCTION.DELETE: [$1]\n";
-	$printed = 1;
-    }
+## Seems to rare to bother with.
+# #delete from SAKAI_REALM_RL_FN where function_key in (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME like 'roster.%');
+#     if (/delete from SAKAI_REALM_RL_FN where function_key in \(select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME like '(.*)'\);/i) {
+# 	print "permission.FUNCTION.DELETE: [$1]\n";
+# 	$printed = 1;
+#     }
 
-    if (/^\s*permission\.FUNCTION\.DELETE: \[(.*)\]/) {
-	print "--  $_" if ($printShortCommented);
-	my($function) = ($1);
+#     if (/^\s*permission\.FUNCTION\.DELETE: \[(.*)\]/) {
+# 	print "--  $_" if ($printShortCommented);
+# 	my($function) = ($1);
 	
-	print "delete from SAKAI_REALM_RL_FN where function_key in \(select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME like '$function'\);\n";
-	$printed = 1;
-    }
+# 	print "delete from SAKAI_REALM_RL_FN where function_key in \(select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME like '$function'\);\n";
+# 	$printed = 1;
+#     }
 
     ##########
     # add a new role
