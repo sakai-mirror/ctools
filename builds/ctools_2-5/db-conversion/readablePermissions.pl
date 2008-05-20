@@ -86,7 +86,7 @@ while(<>) {
     if (/^\s*permission\.FUNCTION\.ADD: \[(.*)\]/i) {
 	my($function) = ($1);
 	print "--  $_" if ($printShortCommented);
-	print "insert into SAKAI_REALM_FUNCTION '$function';\n";
+	print "insert into SAKAI_REALM_FUNCTION VALUES(SAKAI_REALM_FUNCTION_SEQ.NEXTVAL,'$function');\n";
 	$printed=1;
 	$lines-- if ($discountHandled);
     }
