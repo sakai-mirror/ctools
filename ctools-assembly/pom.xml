@@ -206,8 +206,8 @@
 
 		<!-- ===================== compile Sakai/CTools ============== -->
 		<!-- build Sakai and assemble an image into ctools-assembly.  Should the profile be a variable? -->
-		<echo>Executing cd ../;mvn  -P ctools -Dmaven.tomcat.home=${basedir}/target/pack -Dmaven.test.skip=true clean install sakai:deploy</echo> 
-		<exec dir="../" executable="mvn" failonerror="true" >
+		<echo>Executing cd ${src.dir}/ctools-build;mvn  -P ctools -Dmaven.tomcat.home=${basedir}/target/pack -Dmaven.test.skip=true clean install sakai:deploy</echo> 
+		<exec dir="${src.dir}/ctools-build" executable="mvn" failonerror="true" >
 		  <arg value="-P ctools" />
 		  <arg value="-Dmaven.tomcat.home=${basedir}/target/pack"/>
 		  <arg value="-Dmaven.test.skip=true"/>
@@ -245,7 +245,6 @@
 
 
 		<!-- ================== notes about what is left to do =================== -->
-		<echo>* what about melete? </echo>
 		<echo>* what about section fields?</echo>
 		<!-- <echo>gradtools edit</echo> -->
 		<echo>* Berg modification script (some day maybe)</echo>
