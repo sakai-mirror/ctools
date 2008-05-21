@@ -103,10 +103,11 @@ if ($minorerror) {
     print "The software was not tested with this version, you can continue but may have errors.\n";
 }
 
+print "Getting newest version of config files from svn:\n";
 my ($svninfo,$svnversion,$svnvar);
-$svninfo = `svn info`;
+$svninfo = `svn up`;
 if ($svninfo) {
-    ($svnversion) = $svninfo =~ m/Revision: (\d*)/;
+    ($svnversion) = $svninfo =~ m/revision (\d*)/;
 }
 
 if ($svnversion) {
