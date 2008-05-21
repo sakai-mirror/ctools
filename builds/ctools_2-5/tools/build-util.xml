@@ -73,10 +73,10 @@
         <delete dir="${work.dir}" />
 	<delete dir="${artifacts.dir}" />
 	<delete dir="${build.dir}" />
-	<delete dir="${logs.dir}" />
 	<delete dir="${image.dir}" />
 	<delete dir="${instances.dir}" />
     <!--
+    <delete dir="${logs.dir}" />
     <delete dir="${install.test.dir}" />
     -->
   </target>

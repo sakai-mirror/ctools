@@ -28,7 +28,7 @@
   <!--               deal with Sakai proper               -->
   <!-- ================================================== -->
 
-  <target name="getSakaiSrc" depends="prepareBuildDirs">
+  <target name="getSakaiSrc" depends="prepareBuildDirs" unless="noclean">
     <echo> Get source via perl script </echo>
     <exec dir="." executable="perl" failonerror="true">
       <arg value="${scripts.dir}/svnCheckoutExternalsFormat.pl" />
@@ -37,16 +37,8 @@
       <arg value="${svnCmd}" />
       <arg value="${user.dir}/${build.externals.file}" />
     </exec>
-    <antcall target="removeUnneededSakai" />
   </target>
 
-  <!--
-  <target name="getSakaiSrcOld" depends="prepareBuildDirs">
-    <execSvnCmd url="${sakai.svnurl}" revision="${sakai.revision}"/>
-    <antcall target="removeUnneededSakai" />
-  </target>
-
-  -->
   <target name="getConfigurationSrc"
 	  description="update the configuration information (not the executable files)." >
     <echo> update configuration from ${build.configuration.svnurl}/${build.configuration.configdir} revision: ${build.configuration.revision}</echo>

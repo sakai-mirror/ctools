@@ -89,7 +89,7 @@ if changes are needed.
         <module>../gradebook</module>
         <module>../help</module>
         <module>../jobscheduler</module>
-	<module>../jcr</module> 
+	<!-- <module>../jcr</module> -->
         <module>../jsf</module>
         <module>../linktool</module>
         <module>../login</module>

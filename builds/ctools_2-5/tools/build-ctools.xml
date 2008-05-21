@@ -41,7 +41,7 @@ $HeadURL$
 
   <!-- change source as required -->
   <target name="editCtools" 
-	  depends="editSrcGlobal,editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editRwikiSrc,updatePomWithCToolsPom,editiTunes" >
+	  depends="editSrcGlobal,editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editRwikiSrc,updatePomWithCToolsPom,editiTunes,editPoms" >
     <!-- edit the files that need to be modified for ctools -->
   </target>
 
@@ -133,6 +133,50 @@ $HeadURL$
 	 </replaceregexp>
      
   </target>
+
+  <!-- This target edits out some modules from poms before the build -->
+  <!-- I've been searching for which ones to remove with 
+  find . -name "pom.xml" | xargs grep <component to remove>
+  And using the directory as the tool and toolname as the value in the pom to remove
+
+  I manually comment it out and run a mvn install to make sure it builds successful to save time.
+  -->
+  <target name="editPoms">
+      <antcall target="doRegexpPoms">
+	  <param name="toolname" value="content"/>
+          <param name="modulename" value="content-impl-providers/pack"/>
+      </antcall>
+      <antcall target="doRegexpPoms">
+	  <param name="toolname" value="site-manage"/>
+	  <param name="modulename" value="site-manage-impl/pack"/>
+      </antcall>
+      <antcall target="doRegexpPoms">
+	  <param name="toolname" value="providers"/>
+          <param name="modulename" value="component"/>
+      </antcall>
+      <antcall target="doRegexpPoms">
+	  <param name="toolname" value="course-management"/>
+	  <param name="modulename" value="cm-impl/hibernate-pack"/>
+      </antcall>
+  </target>
+
+  <!--
+    Performs a regexp on pom.xml files in a directory to comment out modules
+	param toolname=name of directory of pom tool to search
+	param modulename=name of module to remowe
+  -->
+  <target name="doRegexpPoms">
+      <echo>pre-removing ${toolname}/${modulename}</echo>
+         <replaceregexp flags="g">
+	     <fileset dir="${work.dir}/build/${toolname}/" >
+	     <include name="**/pom.xml"/>
+	</fileset>
+	<!-- This regexp matches a <module>toolname</module> and comments it out. It was fixed it allow it to be reran if a comment was already added -->
+	<regexp pattern="(&lt;!--)?.*(&lt;module.*${modulename}.*module&gt;).*(--&gt;)?" />
+	<substitution expression="&lt;!-- \2 --&gt;" />
+	</replaceregexp>
+    </target>
+
 
 
 </project>
