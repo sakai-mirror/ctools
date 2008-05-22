@@ -28,8 +28,6 @@
     <favicon.name>favicon.ico</favicon.name>
     <errorpages.dir>error-pages</errorpages.dir>
     <tomcatWebXml.name>web.xml.5.5.23</tomcatWebXml.name>
-
-
   </properties>
 
   <dependencies>
@@ -51,9 +49,6 @@
 	    <phase>install</phase>
 	    <configuration>
 	      <tasks>
-		  <tstamp>
-		      <format property="timestamp" pattern="MM/dd/yy HH:mm:ss" />
-		  </tstamp>
 		<!-- gradebook customization -->
 	  <!-- These are defined now in a local build properties file, but I modified them like this incase they were still used this way 
 	  -->
@@ -79,6 +74,8 @@
 		<delete dir="${basedir}/target/unpack"/>
 		<delete dir="${basedir}/target/pack"/>
 
+
+		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
 		<echo>Pre-compile changes started at ${timestamp}</echo>
 		<!-- ===================== pre compile changes ============== -->
 		<echo> Copy in the UMich rwiki default pages </echo>
@@ -208,7 +205,8 @@
 
 		</replaceregexp>
     
-		<echo>Pre-compile changes ended at ${timestamp}</echo>
+		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
+		<echo>message=Pre-compile changes ended at ${timestamp}</echo> 
 		<!-- ===================== compile Sakai/CTools ============== -->
 		<!-- build Sakai and assemble an image into ctools-assembly.  Should the profile be a variable? -->
 		<echo>Executing cd ${src.dir}/ctools-build;mvn  -P ctools -Dmaven.tomcat.home=${basedir}/target/pack -Dmaven.test.skip=true clean install sakai:deploy</echo> 
@@ -221,6 +219,7 @@
 		  <arg value="sakai:deploy"/>
 		</exec>                       
 		
+		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
 		<echo>Post-compile changes started at ${timestamp}</echo>
 		<!-- Post-Compile Changes -->
 		<!-- Insert the ctools favorite icon -->
@@ -260,6 +259,8 @@
 		     <echo>gradebook grades</echo>
 		     <echo>linktool</echo>
 		     <echo>ctools jws</echo>
+		     
+
 		-->
 
 		<!--
@@ -272,10 +273,12 @@
 		</target>
 		-->
 
+		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
 		<echo>Post-compile changes ended at ${timestamp}</echo>
 
 		<!-- tar it -->
 		<delete file="${ctools.archive.name}-${sakai.version}.tar" />
+		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
 		<echo>make ctools archive started at ${timestamp}</echo>
 		<tar destfile="${ctools.archive.name}-${sakai.version}.tar" longfile="gnu" compression="none">
 		  <!-- <tarfileset dir="${basedir}/target/pack/" mode="755" prefix="${ctools.archive.name}-${sakai.version}"> -->
@@ -287,10 +290,12 @@
 		    <exclude name="**/*.sh"/>
 		  </tarfileset>
 		</tar>
+		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
 		<echo>* * * ${ctools.archive.name}-${sakai.version}.tar ended at ${timestamp}</echo>
 
 		<!-- make a src tar (and include the svn directories) -->
 		<delete file="${ctools.archive.name}-${sakai.version}-src.tar.gz" />
+		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
 		<echo>make ctools src tgz started at ${timestamp}</echo>
 		<!-- make sure to INCLUDE the .svn files and EXCLUDE the binary files. -->
 		<defaultexcludes remove="**/.svn" />
@@ -304,6 +309,7 @@
 		  <tarfileset dir="${basedir}/.." mode="755" prefix="${ctools.archive.name}-${sakai.version}-src">
 		  </tarfileset>
 		</tar>
+		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
 		<echo>* * * ${ctools.archive.name}-${sakai.version}-src.tar.gz ended at ${timestamp}</echo>
 		<echo> do not remove build yet</echo>
 		<!--
