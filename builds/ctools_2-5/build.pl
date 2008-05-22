@@ -197,7 +197,7 @@ my ($sakaitag,$logdir);
 $sakaitag = $ctoolsproperties->getProperty('sakai.tag');
 #Find out other options like if they want to clean out the build, or just update whats there
 
-print "NOTE: The resulting packages will be placed in:\n$Bin/artifacts/$builddir\n";
+print "NOTE: The resulting packages will be placed in:\n$Bin/artifacts/$sakaitag.$typevar\n";
 
 #Prompt if they want a clean install, parts of this are still being worked on in the scripts.
 do

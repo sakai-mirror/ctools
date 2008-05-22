@@ -136,7 +136,7 @@
  melete    -rHEAD https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-4-5_sak-2-5-0
  # we really should not pull from trunk to production, but we were not given any choice for these
  # in the evaluation project.
- hierarchy -rHEAD https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
+ hierarchy -rHEAD https://source.sakaiproject.org/contrib/caret/hierarchy/tags/1.1.1/
  discussion -rHEAD https://source.sakaiproject.org/contrib/deprecated/discussion/trunk/
   #
 #end
