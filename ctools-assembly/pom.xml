@@ -51,6 +51,9 @@
 	    <phase>install</phase>
 	    <configuration>
 	      <tasks>
+		  <tstamp>
+		      <format property="timestamp" pattern="MM/dd/yy HH:mm:ss" />
+		  </tstamp>
 		<!-- gradebook customization -->
 	  <!-- These are defined now in a local build properties file, but I modified them like this incase they were still used this way 
 	  -->
@@ -76,6 +79,7 @@
 		<delete dir="${basedir}/target/unpack"/>
 		<delete dir="${basedir}/target/pack"/>
 
+		<echo>Pre-compile changes started at ${timestamp}</echo>
 		<!-- ===================== pre compile changes ============== -->
 		<echo> Copy in the UMich rwiki default pages </echo>
 
@@ -203,7 +207,8 @@
 		  </fileset>
 
 		</replaceregexp>
-
+    
+		<echo>Pre-compile changes ended at ${timestamp}</echo>
 		<!-- ===================== compile Sakai/CTools ============== -->
 		<!-- build Sakai and assemble an image into ctools-assembly.  Should the profile be a variable? -->
 		<echo>Executing cd ${src.dir}/ctools-build;mvn  -P ctools -Dmaven.tomcat.home=${basedir}/target/pack -Dmaven.test.skip=true clean install sakai:deploy</echo> 
@@ -216,6 +221,8 @@
 		  <arg value="sakai:deploy"/>
 		</exec>                       
 		
+		<echo>Post-compile changes started at ${timestamp}</echo>
+		<!-- Post-Compile Changes -->
 		<!-- Insert the ctools favorite icon -->
 		<echo>add favicon</echo>
 		<mkdir dir="${basedir}/target/pack/webapps/ROOT" />
@@ -255,14 +262,6 @@
 		     <echo>ctools jws</echo>
 		-->
 
-		<!-- make an image -->
-		<!--
-		    <delete file="${ctools.archive.name}-${sakai.version}.zip" />
-		    <zip destfile="${ctools.archive.name}-${sakai.version}.zip" compress="yes" >
-		    <zipfileset dir="${basedir}/target/pack/" prefix="${ctools.archive.name}-${sakai.version}" />
-		    </zip>
-		    <echo>* * * ${ctools.archive.name}-${sakai.version}.zip</echo>
-		-->
 		<!--
 		<target name="handleErrorPages" if="errorpages.dir" >
 		  <mkdir dir="${image.dir}/webapps/ROOT" />
@@ -273,9 +272,12 @@
 		</target>
 		-->
 
+		<echo>Post-compile changes ended at ${timestamp}</echo>
+
 		<!-- tar it -->
-		<delete file="${ctools.archive.name}-${sakai.version}.tar.gz" />
-		<tar destfile="${ctools.archive.name}-${sakai.version}.tar.gz" longfile="gnu" compression="none">
+		<delete file="${ctools.archive.name}-${sakai.version}.tar" />
+		<echo>make ctools archive started at ${timestamp}</echo>
+		<tar destfile="${ctools.archive.name}-${sakai.version}.tar" longfile="gnu" compression="none">
 		  <!-- <tarfileset dir="${basedir}/target/pack/" mode="755" prefix="${ctools.archive.name}-${sakai.version}"> -->
 		  <tarfileset dir="${basedir}/target/pack/" mode="755" >
 		    <include name="**/*.sh"/>
@@ -285,11 +287,11 @@
 		    <exclude name="**/*.sh"/>
 		  </tarfileset>
 		</tar>
-		<echo>* * * ${ctools.archive.name}-${sakai.version}.tar.gz</echo>
+		<echo>* * * ${ctools.archive.name}-${sakai.version}.tar ended at ${timestamp}</echo>
 
 		<!-- make a src tar (and include the svn directories) -->
 		<delete file="${ctools.archive.name}-${sakai.version}-src.tar.gz" />
-		<echo>make ctools src tar</echo>
+		<echo>make ctools src tgz started at ${timestamp}</echo>
 		<!-- make sure to INCLUDE the .svn files and EXCLUDE the binary files. -->
 		<defaultexcludes remove="**/.svn" />
 		<defaultexcludes remove="**/.svn/**" />
@@ -302,7 +304,7 @@
 		  <tarfileset dir="${basedir}/.." mode="755" prefix="${ctools.archive.name}-${sakai.version}-src">
 		  </tarfileset>
 		</tar>
-		<echo>* * * ${ctools.archive.name}-${sakai.version}-src.tar.gz</echo>
+		<echo>* * * ${ctools.archive.name}-${sakai.version}-src.tar.gz ended at ${timestamp}</echo>
 		<echo> do not remove build yet</echo>
 		<!--
 		<delete dir="${basedir}/target/pack/"/>
