@@ -20,6 +20,22 @@
        TTD:
   -->
 
+  <!-- 
+    This script might be userful someday
+  -->
+   <target name="getHeadRevision"> 
+       <exec program="svn" commandline="info" output="${logs.dir}svn.info.log" resultproperty="svn.head.revision" />
+    
+  <!-- Load the content of the file in property svn.head.revision -->
+  <loadfile property="svn.head.revision" file="${logs.dir}svn.info.log" />
+    
+  <!-- Look for the 'vision: ' string -->
+      <property name="index.of.revision" value="${string::index-of(svn.head.revision, 'vision: ')}" />  <!-- Make sure we have found the index of the substring -->  <if test="${bool::parse(int::parse(index.of.revision) != -1)}">   
+      <property name="svn.head.revision" value="${string::substring(svn.head.revision, int::parse(index.of.revision) + 9, 3)}" verbose="true"/>               
+      <echo message="Rev: ${svn.head.revision}"/> 
+   </if>
+  </target>
+
   <target name="info-util">
 
     <echo>

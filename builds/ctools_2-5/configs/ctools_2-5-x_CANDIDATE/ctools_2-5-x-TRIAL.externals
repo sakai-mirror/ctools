@@ -84,7 +84,7 @@
  usermembership -rHEAD https://source.sakaiproject.org/svn/usermembership/branches/sakai_2-5-x
  util -rHEAD https://source.sakaiproject.org/svn/util/branches/sakai_2-5-x
  velocity -rHEAD https://source.sakaiproject.org/svn/velocity/branches/sakai_2-5-x
- web -rHEAD https://source.sakaiproject.org/svn/web/branches/sakai_2-5-x
+# web -rHEAD https://source.sakaiproject.org/svn/web/branches/sakai_2-5-x
  webservices -rHEAD https://source.sakaiproject.org/svn/webservices/branches/sakai_2-5-x
 
  warehouse -rHEAD https://source.sakaiproject.org/svn/warehouse/branches/sakai_2-5-x
@@ -119,6 +119,8 @@
  ctools-webservices -rHEAD https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
  gradtools -rHEAD https://source.sakaiproject.org/svn/ctools/trunk/gradtools
  ctools-libhelp -rHEAD https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
+ #CTools specific web
+ web -rHEAD https://source.sakaiproject.org/svn/ctools/trunk/web/
 
 ########
 ######## Contrib tools
