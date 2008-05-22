@@ -152,8 +152,8 @@ if changes are needed.
 	<!-- contrib -->
 	<module>../itunes</module>
 	<module>../test-center</module>
-	<module>../hierarchy</module>
 	<!-- Currently removed for migration issues
+	<module>../hierarchy</module>
 	<module>../melete</module>
 	-->
 	<module>../discussion</module>
