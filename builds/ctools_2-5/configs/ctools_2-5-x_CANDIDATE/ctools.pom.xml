@@ -153,7 +153,9 @@ if changes are needed.
 	<module>../itunes</module>
 	<module>../test-center</module>
 	<module>../hierarchy</module>
+	<!-- Currently removed for migration issues
 	<module>../melete</module>
+	-->
 	<module>../discussion</module>
 
       </modules>
