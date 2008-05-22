@@ -75,8 +75,8 @@
 		<delete dir="${basedir}/target/pack"/>
 
 
-		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
-		<echo>Pre-compile changes started at ${timestamp}</echo>
+		<tstamp><format property="timestamp.prestart" pattern="HH:mm:ss"/></tstamp>
+		<echo>Pre-compile changes started at ${timestamp.prestart}</echo>
 		<!-- ===================== pre compile changes ============== -->
 		<echo> Copy in the UMich rwiki default pages </echo>
 
@@ -205,8 +205,8 @@
 
 		</replaceregexp>
     
-		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
-		<echo>message=Pre-compile changes ended at ${timestamp}</echo> 
+		<tstamp><format property="timestamp.preend" pattern="HH:mm:ss"/></tstamp>
+		<echo>message=Pre-compile changes ended at ${timestamp.preend}</echo> 
 		<!-- ===================== compile Sakai/CTools ============== -->
 		<!-- build Sakai and assemble an image into ctools-assembly.  Should the profile be a variable? -->
 		<echo>Executing cd ${src.dir}/ctools-build;mvn  -P ctools -Dmaven.tomcat.home=${basedir}/target/pack -Dmaven.test.skip=true clean install sakai:deploy</echo> 
@@ -219,8 +219,8 @@
 		  <arg value="sakai:deploy"/>
 		</exec>                       
 		
-		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
-		<echo>Post-compile changes started at ${timestamp}</echo>
+		<tstamp><format property="timestamp.poststart" pattern="HH:mm:ss"/></tstamp>
+		<echo>Post-compile changes started at ${timestamp.poststart}</echo>
 		<!-- Post-Compile Changes -->
 		<!-- Insert the ctools favorite icon -->
 		<echo>add favicon</echo>
@@ -273,13 +273,13 @@
 		</target>
 		-->
 
-		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
-		<echo>Post-compile changes ended at ${timestamp}</echo>
+		<tstamp><format property="timestamp.postend" pattern="HH:mm:ss"/></tstamp>
+		<echo>Post-compile changes ended at ${timestamp.postend}</echo>
 
 		<!-- tar it -->
 		<delete file="${ctools.archive.name}-${sakai.version}.tar" />
-		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
-		<echo>make ctools archive started at ${timestamp}</echo>
+		<tstamp><format property="timestamp.archivestart" pattern="HH:mm:ss"/></tstamp>
+		<echo>make ctools archive started at ${timestamp.archivestart}</echo>
 		<tar destfile="${ctools.archive.name}-${sakai.version}.tar" longfile="gnu" compression="none">
 		  <!-- <tarfileset dir="${basedir}/target/pack/" mode="755" prefix="${ctools.archive.name}-${sakai.version}"> -->
 		  <tarfileset dir="${basedir}/target/pack/" mode="755" >
@@ -290,13 +290,13 @@
 		    <exclude name="**/*.sh"/>
 		  </tarfileset>
 		</tar>
-		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
-		<echo>* * * ${ctools.archive.name}-${sakai.version}.tar ended at ${timestamp}</echo>
+		<tstamp><format property="timestamp.archiveend" pattern="HH:mm:ss"/></tstamp>
+		<echo>* * * ${ctools.archive.name}-${sakai.version}.tar ended at ${timestamp.archiveend}</echo>
 
 		<!-- make a src tar (and include the svn directories) -->
 		<delete file="${ctools.archive.name}-${sakai.version}-src.tar.gz" />
-		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
-		<echo>make ctools src tgz started at ${timestamp}</echo>
+		<tstamp><format property="timestamp.srcstart" pattern="HH:mm:ss"/></tstamp>
+		<echo>make ctools src tgz started at ${timestamp.srcstart}</echo>
 		<!-- make sure to INCLUDE the .svn files and EXCLUDE the binary files. -->
 		<defaultexcludes remove="**/.svn" />
 		<defaultexcludes remove="**/.svn/**" />
@@ -309,8 +309,8 @@
 		  <tarfileset dir="${basedir}/.." mode="755" prefix="${ctools.archive.name}-${sakai.version}-src">
 		  </tarfileset>
 		</tar>
-		<tstamp><format property="timestamp" pattern="HH:mm:ss"/></tstamp>
-		<echo>* * * ${ctools.archive.name}-${sakai.version}-src.tar.gz ended at ${timestamp}</echo>
+		<tstamp><format property="timestamp.srcend" pattern="HH:mm:ss"/></tstamp>
+		<echo>* * * ${ctools.archive.name}-${sakai.version}-src.tar.gz ended at ${timestamp.srcend}</echo>
 		<echo> do not remove build yet</echo>
 		<!--
 		<delete dir="${basedir}/target/pack/"/>
