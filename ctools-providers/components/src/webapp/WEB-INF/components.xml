@@ -54,7 +54,17 @@
 	singleton="true">
 	<property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
   </bean>
-
+  
+  	<!--  New in site-mangage in 2.5.
+   		Our implmentation is null, but some implimentation is required since we 
+  		delete all of site-manage. -->
+  	
+	<bean id="org.sakaiproject.sitemanage.api.AffiliatedSectionProvider"
+			class="org.sakaiproject.sitemanage.impl.AffiliatedSectionProviderImpl"
+			init-method="init"
+			destroy-method="destroy"
+			singleton="true">
+	</bean>
   <!-- 
   This section illustrates how to use Spring AOP to trace calls to our provider.  A custom trace class may be more convenient
   in the longer run.
