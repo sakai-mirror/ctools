@@ -81,7 +81,7 @@ This should have nothing specific to a particular build type.
   <!--         image targets           -->
   <!-- =============================== -->
 
-  <target name="buildImage" depends="assembleImage,modifyImage,bundleImage,summarizeBuild" />
+  <target name="buildImage" depends="extractImage,assembleImage,modifyImage,bundleImage,summarizeBuild" />
 
 
 
