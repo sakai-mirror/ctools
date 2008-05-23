@@ -130,8 +130,8 @@ if changes are needed.
         <module>../polls</module> 
         <module>../usermembership</module>
 	<!-- <module>../sakai-mock</module> -->
-	<module>../warehouse</module>
-	<module>../reports</module>
+	<!-- <module>../warehouse</module> -->
+	<!-- <module>../reports</module> -->
 	<!-- <module>../reset-pass</module> -->
 
 	<module>../ctools-apps</module>
