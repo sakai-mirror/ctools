@@ -250,7 +250,7 @@
     <defaultexcludes remove="**/.svn"/>
     <defaultexcludes remove="**/.svn/**"/>
     <tar destfile="sakai-src-svn.tar" longfile="gnu" >
-      <tarfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,sakai*.tar.gz" 
+      <tarfileset dir="." prefix="sakai-src" excludes="CVS/**,**/target/**,**/bin/**,sakai*.zip,,sakai*.tar.gz,sakai*.tar" 
 		  compression="gzip" />
     </tar>
     <defaultexcludes default="true"/>
