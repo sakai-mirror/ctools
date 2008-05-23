@@ -160,10 +160,10 @@ if ($svnversion) {
 
 print "Searching for valid build files!\n";
 #Look for a list of builds in the config directory
-my @builds = `find configs -name "$defaultpropertyfile" | sort`;
+my @builds = `find configs -name "$defaultpropertyfile" 2>/dev/null | sort`;
 if (!@builds) {
      #Look for a list of builds in the current directory
-     @builds = `find . -name "$defaultpropertyfile" | sort`;
+     @builds = `find . -name "$defaultpropertyfile" 2>/dev/null| sort`;
 }
 
 print "Detected ".@builds." candidate(s) (You can create a new candidate by cp -r one of the configs in the configs directory and editing the sakai.tag property to match this new name.):\n";

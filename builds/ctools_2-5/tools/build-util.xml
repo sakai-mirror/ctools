@@ -126,15 +126,13 @@
   </target>
 
   <target name="bundleImage" depends="moveSrcTar">
+    <!--
     <move  file="${src.dir}/${ctools-prefix}.tar" tofile="${image.dest.dir}/image.${sakai.tag}.tar" /> 
-  <!--
-  do not create zip by default
+    do not create zip by default
     <zip basedir="${image.dir}" destfile="${image.dest.dir}/image.${sakai.tag}.zip" />
     -->
-  <!--
-    <tar basedir="${image.dir}" destfile="${image.dest.dir}/image.${sakai.tag}.tar.gz" 
-	 longfile="gnu" compression="gzip" />
-    -->
+    <tar basedir="${image.dir}" destfile="${image.dest.dir}/image.${sakai.tag}.tar" 
+	 longfile="gnu" compression="none" />
   </target>
 
 

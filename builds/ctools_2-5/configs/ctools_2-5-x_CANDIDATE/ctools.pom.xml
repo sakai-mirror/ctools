@@ -140,12 +140,11 @@ if changes are needed.
 	<!-- eliminate for the moment, since nothing is required in build itself. -->
 	<module>../ctools-reference</module>
 
-	<!-- gradtools not converted  -->
+	<module>../gradtools</module>  
 	<!-- ctools-webservices not converted  -->
 	<!-- evaluation not updated with branch  -->
 	<!-- 
 	<module>../ctools-webservices</module>
-	<module>../gradtools</module>  
 	<module>../evaluation</module>
 	-->
 	<module>../config-viewer</module>
