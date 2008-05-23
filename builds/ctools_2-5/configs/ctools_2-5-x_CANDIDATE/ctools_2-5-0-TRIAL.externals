@@ -35,8 +35,7 @@
  course-management -rHEAD https://source.sakaiproject.org/svn/course-management/tags/sakai_2-5-0
  dav -rHEAD https://source.sakaiproject.org/svn/dav/tags/sakai_2-5-0
  db -rHEAD https://source.sakaiproject.org/svn/db/tags/sakai_2-5-0
-#This doesn't compile
- #discussion -rHEAD https://source.sakaiproject.org/svn/discussion/tags/sakai_2-5-0
+ # Discussion is now pulled from contrib, so it is configured below.
  email -rHEAD https://source.sakaiproject.org/svn/email/tags/sakai_2-5-0
  entity -rHEAD https://source.sakaiproject.org/svn/entity/tags/sakai_2-5-0
  entitybroker -rHEAD https://source.sakaiproject.org/svn/entitybroker/tags/sakai_2-5-0
