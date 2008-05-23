@@ -110,14 +110,14 @@
   <property name="src.dir" value="${build.dir}/ctools-assembly" />
   <property name="ctools-prefix" value="ctools-assembly-M2" />
   <!-- create the image -->
-  <target name="assembleImage">
+  <!-- UGH UNTAR!! -->
+  <target name="assembleImage" if="dbdriver">
     <!-- to assemble image need to add dbdriver and take out licences -->
     <!-- <untar src="${build.dir}/sakai.tar.gz" dest="${image.dir}" compression="gzip" />-->
-    <!--
-    <untar src="${src.dir}/ctools-assembly-M2.tar.gz" dest="${image.dir}" compression="gzip" />
+    
+    <untar src="${src.dir}/ctools-assembly-M2.tar" dest="${image.dir}" compression="none" />
     <copy file="${dbdriver}" todir="${image.dir}/common/lib" />
     <delete dir="${image.dir}/licenses" />
-    -->
   </target>
 
   <target name="moveSrcTar" >

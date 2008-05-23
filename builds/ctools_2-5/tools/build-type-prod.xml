@@ -56,8 +56,6 @@ This doesn't supply the sakai.properties files you want to customize.
 
   <import file="./build-type-generic.xml" />
 
-  <import file="./build-melete.xml" />
-
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
   <!-- ========================= -->

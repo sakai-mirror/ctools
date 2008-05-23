@@ -87,7 +87,7 @@ This should have nothing specific to a particular build type.
 
   <!-- Whice files are available? -->
   <available property="image.exists.zip" file="${image.dest.dir}/image.${sakai.tag}.zip" />
-  <available property="image.exists.tar.gz" file="${image.dest.dir}/image.${sakai.tag}.tar.gz" />
+  <available property="image.exists.tar" file="${image.dest.dir}/image.${sakai.tag}.tar" />
 
   <!-- use zip not tar since the ant tar won't untar the files with long path names -->
 
@@ -129,10 +129,10 @@ This should have nothing specific to a particular build type.
 
   </target>
 
-  <target name="installTgzImage" if="image.exists.tar.gz" >
-    <untar src="${image.dest.dir}/image.${sakai.tag}.tar.gz"
+  <target name="installTgzImage" if="image.exists.tar" >
+    <untar src="${image.dest.dir}/image.${sakai.tag}.tar"
 	   dest="${install.test.dir}/"
-	   compression="gzip" />
+	   compression="none" />
   </target>
 
   <!--
