@@ -304,6 +304,7 @@
 		<defaultexcludes add="**/m2-target/**" />
 		<defaultexcludes add="**/bin/**" />
 		<defaultexcludes add="**/${ctools.archive.name}-${sakai.version}.tar.gz" />
+		<defaultexcludes add="**/${ctools.archive.name}-${sakai.version}.tar" />
 
 		<tar destfile="${ctools.archive.name}-${sakai.version}-src.tar.gz" longfile="gnu" compression="gzip">
 		  <tarfileset dir="${basedir}/.." mode="755" prefix="${ctools.archive.name}-${sakai.version}-src">
