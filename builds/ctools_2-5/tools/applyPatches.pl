@@ -37,7 +37,7 @@ sub applyPatchFiles {
   $maxRc = 0;
   foreach (@patchFileNames) {
     my ($rc,$log) = applyPatchFile($_);
-    $fullLog .= $log;
+        $fullLog .= $log;
     $maxRc = ($rc != 0 ? abs($rc) : $maxRc);
   }
   return $maxRc;
@@ -52,13 +52,15 @@ sub applyPatchFileList {
   my ($maxRc,$fullLog);
   $maxRc = 0;
   foreach (@patchFileNames) {
-    print "******** patch file: [$_] ***********\n";
+    print "- patch file: [$_]\n";
     my $rc = applyOnePatchFile("$patchesDir/$_",$logFileName);
     print "aPFL: rc: [$rc]\n" if ($applyPatchesTrace);
     $maxRc = ($rc != 0 ? abs($rc) : $maxRc);
-    print "*************************************\n";
   }
   print "aPFL: maxRc: [$maxRc]\n" if ($applyPatchesTrace);
+  if ($maxRc !=0 ) {
+	print "One or more patches failed, results saved to a log file\n";
+  }
   exit ($maxRc == 0 ? 0 : 1);
 }
 
@@ -78,6 +80,10 @@ sub applyOnePatchFile {
   my($patchFileName,$logfile) = @_;
   print "$0: patchFileName: [$patchFileName] logfile: [$logfile]\n" if ($applyPatchesTrace);
   my($rc,$log) = applyPatchFile($patchFileName);
+  if ($rc !=0 ) {
+	print "Patching $_ failed with code: $rc\n";
+  }
+
   appendTextToFile($logfile,$log);
   print "aOPF: rc: [$rc]\n" if ($applyPatchesTrace);
   return($rc);

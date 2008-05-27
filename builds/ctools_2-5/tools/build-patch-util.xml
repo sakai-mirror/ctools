@@ -41,7 +41,6 @@
     <exec executable="perl"
 	  dir="${build.dir}"
 	  failonerror="true"
-	  output="${logs.dir}/${ant.project.name}.patches.log"
 	  append="true">
       <arg value="${scripts.dir}/applyPatches.pl" />
       <arg value="${logs.dir}/${ant.project.name}.patches.log" />
