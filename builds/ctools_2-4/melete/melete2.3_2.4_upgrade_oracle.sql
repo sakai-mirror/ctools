@@ -1,16 +1,18 @@
 /*
-  Oracle Upgrade script
+  Oracle Database Upgrade script
   Melete 2.3 to 2.4
   
   Adapted by Dave Haines at the University of Michigan.
-  $HeadURL:$
-  $Id:$
+  $HeadURL$
+  $Id$
 */
 
 /* steps:
    1) run this sql
    2) drop field MELETE_MODULE.LICENSE_CODE
    3) drop table MELETE_MODULE
+
+   (There are other conversion steps, but this is all for the database conversion.)
 */
 
 CREATE TABLE melete_module_bkup as SELECT * FROM melete_module WHERE MODULE_ID in (SELECT MODULE_ID FROM melete_course_module where DELETE_FLAG=0);
