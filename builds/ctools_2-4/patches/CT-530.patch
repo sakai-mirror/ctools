@@ -1,16 +1,3 @@
-Index: melete/melete-app/src/webapp/tools/sakai.melete.xml
-===================================================================
---- melete/melete-app/src/webapp/tools/sakai.melete.xml	(revision 48145)
-+++ melete/melete-app/src/webapp/tools/sakai.melete.xml	(working copy)
-@@ -11,7 +11,7 @@
- 			description="Modules - Melete Lesson Builder for creating and organizing learning sequences.">
- 			
- 			<category name="course" />
--			<category name="project" />
-+			
- 	</tool>
- 
- </registration>
 Index: melete/melete-app/src/webapp/WEB-INF/web.xml
 ===================================================================
 --- melete/melete-app/src/webapp/WEB-INF/web.xml	(revision 48145)
