@@ -1,8 +1,10 @@
 /*
   Oracle Database Upgrade script
   Melete 2.3 to 2.4
-  
+
   Adapted by Dave Haines at the University of Michigan.
+  Modified by Drew Zhu too.
+
   $HeadURL$
   $Id$
 */
@@ -23,6 +25,8 @@ CREATE TABLE melete_license (
  DESCRIPTION varchar2(40),
  PRIMARY KEY  (CODE)
  );
+
+--modified
 CREATE TABLE melete_resource (
   RESOURCE_ID varchar2(255) NOT NULL,
   VERSION number(11) NOT NULL,
@@ -33,16 +37,26 @@ CREATE TABLE melete_resource (
   ALLOW_MOD number(11),
   COPYRIGHT_OWNER varchar2(55),
   COPYRIGHT_YEAR varchar2(25),
-  PRIMARY KEY  (RESOURCE_ID)
+  constraint pk_melete_resource PRIMARY KEY  (RESOURCE_ID) using index tablespace ctools_indexes
 );
+
+--modified
 CREATE TABLE melete_section_resource (
   SECTION_ID number(11) NOT NULL,
   RESOURCE_ID varchar2(255),
-  PRIMARY KEY  (SECTION_ID)
-);
+  constraint pk_melete_section_resource PRIMARY KEY  (SECTION_ID) using index tablespace ctools_indexes
+ );
 
-ALTER TABLE melete_section_resource ADD (FOREIGN KEY (RESOURCE_ID) REFERENCES melete_resource(RESOURCE_ID));
-ALTER TABLE melete_section_resource ADD (FOREIGN KEY (SECTION_ID) REFERENCES melete_section(SECTION_ID));
+
+----Modified
+ALTER TABLE melete_section_resource ADD constraint fk_mel_sec_res_RESOURCE_ID FOREIGN KEY (RESOURCE_ID) REFERENCES melete_resource(RESOURCE_ID);
+ALTER TABLE melete_section_resource ADD constraint fk_mel_sec_res_SECTION_ID FOREIGN KEY (SECTION_ID) REFERENCES melete_section(SECTION_ID);
+
+--Added
+create index mel_sec_res_RESOURCE_ID_idx on melete_section_resource(RESOURCE_ID) tablespace ctools_indexes;
+
+--index alread exists just for sure
+create index mel_sec_res_SECTION_ID_idx on melete_section_resource(SECTION_ID) tablespace ctools_indexes;
 
 ALTER TABLE melete_module ADD (SEQ_XML CLOB);
 ALTER TABLE melete_module MODIFY (CREATED_BY_FNAME VARCHAR2(50));
@@ -54,7 +68,8 @@ ALTER TABLE melete_module DROP COLUMN REQ_ATTR;
 ALTER TABLE melete_module DROP COLUMN ALLOW_CMRCL;
 ALTER TABLE melete_module DROP COLUMN ALLOW_MOD;
 
-CREATE INDEX COURSE_ID_IDX ON melete_course_module (COURSE_ID) Storage (Initial 5M Next 1M);
+--Modified and removed the storage clauses
+CREATE INDEX COURSE_ID_IDX ON melete_course_module (COURSE_ID) tablespace ctools_indexes;
 
 ALTER TABLE melete_section MODIFY (CREATED_BY_FNAME varchar2(50));
 ALTER TABLE melete_section MODIFY (CREATED_BY_LNAME varchar2(50));
@@ -89,4 +104,4 @@ ALTER TABLE melete_section MODIFY ("MODIFICATION_DATE" DATE);
 ALTER TABLE melete_section_bkup MODIFY ("CREATION_DATE" DATE); 
 ALTER TABLE melete_section_bkup MODIFY ("MODIFICATION_DATE" DATE);
 
-
+#end
