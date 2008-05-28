@@ -73,12 +73,27 @@
       </fileset>
     </replaceregexp>
 
+    <replaceregexp match="/var/melete/packagefiles/packagefilesscorm" replace="/melete/packagefiles/packagefilesscorm" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<!-- <include name="meleteDocs.xml" /> -->
+	<include name="**/web.xml" />
+      </fileset>
+    </replaceregexp>
+
+    <replaceregexp match="/var/uploads" replace="/melete/uploads" flags="g" >
+      <fileset dir="${build.dir}/${melete.dirname}">
+	<!-- <include name="meleteDocs.xml" /> -->
+	<include name="**/web.xml" />
+      </fileset>
+    </replaceregexp>
+
     <replaceregexp match="/var/meleteDocs" replace="/melete/meleteDocs" flags="g" >
       <fileset dir="${build.dir}/${melete.dirname}">
 	<include name="meleteDocs.xml" /> 
-	<!-- <include name="**/web.xml" /> -->
+	<include name="**/web.xml" /> 
       </fileset>
     </replaceregexp>
+
 
   </target>
 
