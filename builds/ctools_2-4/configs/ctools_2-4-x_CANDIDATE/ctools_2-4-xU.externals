@@ -138,6 +138,6 @@ mneme    -r47481 https://source.sakaiproject.org/contrib/muse/mneme/tags/1.1.0
  entitybroker -r12107 https://source.sakaiproject.org/contrib/caret/entitybroker/trunk/
  hierarchy -r11987 https://source.sakaiproject.org/contrib/caret/hierarchy/trunk/
   #
- melete    -r48145 https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-4-5_sak-2-5-0
+ melete    -r48145 https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-4-5
 
 #end
