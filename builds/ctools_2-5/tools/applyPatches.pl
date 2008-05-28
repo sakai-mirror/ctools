@@ -21,11 +21,22 @@
 # to problematic.
 
 use strict;
+use Cwd 'abs_path';
+use File::Basename 'dirname';
+use IO::File;
+use File::Copy;
 
 my ($log,$patchDir);
-my $applyPatchesTrace = 0;
+my $applyPatchesTrace = 1;
+#Add when testing to not actually apply the patches
+my $dryrun = 1;
 
 print "ap: args:",join("|",@ARGV),"\n" if ($applyPatchesTrace);
+
+if (@ARGV == 0) {
+    print "Usage: $0 <log file> <patches directory> <build directory> <comma separated patch files>\n";
+    exit;
+}
 
 ## Take a list of patch files and apply them, accumulating
 # the log file and maintaining a non-zero return code if any
@@ -46,15 +57,30 @@ sub applyPatchFiles {
 # take a list of patch files and apply them.
 sub applyPatchFileList {
   my ($logFileName,$patchesDir,$buildDir,$patchFileNames) = @_;
+  #Since we might be moving around
+  $buildDir = abs_path ($buildDir);
+  $patchesDir = abs_path($patchesDir);
+      
+  die "Please specify a build directory" unless (-d $buildDir);
+  die "Please specify a patch directory" unless(-d $patchesDir);
+  die "Please specify at least one patch name" unless($patchFileNames) ;
+  print "Applying patch files\n";
 
-  exit 0 unless($patchFileNames) ;
   my (@patchFileNames) = split(",",$patchFileNames);
-  my ($maxRc,$fullLog);
+  my ($maxRc,$fullLog,$copyFile);
   $maxRc = 0;
-  foreach (@patchFileNames) {
+  my $patchFile;
+  foreach $patchFile (@patchFileNames) {
     print "- patch file: [$_]\n";
-    my $rc = applyOnePatchFile("$patchesDir/$_",$logFileName);
+
+    my $rc = applyOnePatchFile(patchfile=>"$patchesDir/$patchFile",builddir=>$buildDir,logfile=>$logFileName);
     print "aPFL: rc: [$rc]\n" if ($applyPatchesTrace);
+    if ($rc == 0) {
+        $rc = applyOneActionFile(patchfile=>"$patchesDir/$patchFile",builddir=>$buildDir,logfile=>$logFileName);
+    }
+    else {
+	print "Not running actions on patch $patchFile that failed\n";
+    }
     $maxRc = ($rc != 0 ? abs($rc) : $maxRc);
   }
   print "aPFL: maxRc: [$maxRc]\n" if ($applyPatchesTrace);
@@ -64,27 +90,63 @@ sub applyPatchFileList {
   exit ($maxRc == 0 ? 0 : 1);
 }
 
+#Opens a file in the format
+#=?= <source file>,<destination directory> 
+#And performs some action on that file
+#Currently the only action supported is the copy action =c=
+#All source files are relative to the patch directory and destinations are relative to buildDir
+# %args = 'patchfile', 'builddir', 'logfile'
+sub applyOneActionFile {
+    my %args = @_;
+
+    my $rc;
+    print "Applying Action File\n";
+    my $fh = new IO::File;
+    unless ($fh->open($args{'patchfile'},'r')) {
+	print STDERR "Can't open $args{'patchfile'}: $!\n";
+	return;
+    }
+
+    my $patchDir = dirname($args{'patchfile'});
+
+    my $action;
+    while (<$fh>) {	    # note use of indirection
+	if (($action) = $_ =~ m/^=(\w)=/) {
+	    if ($action eq 'c') {
+		my ($srcFile,$destFile) = $_ =~ m/.*=(.*),(.*)/;
+		$rc = copy("$patchDir/$srcFile","$args{'builddir'}/$destFile");
+	    }
+	}   
+    }
+
+    $fh->close;
+    return $rc;
+}
+
 # Apply a single patch file and return the return code.
 # The log output will be ignored.
+# %args = $'patchfile', $'builddir', $'logfile'
 sub applyPatchFile {
-  my ($patchFileName) = shift;
-  my $cmd = makePatchCmd($patchFileName);
+  my %args = @_;
+  my $cmd = makePatchCmd(patchfile=>$args{'patchfile'},builddir=>$args{'builddir'});
   return runShellCmdGetResult($cmd);
 }
 
 
 # Apply a single patch file, log the output and 
 # return the return code.
+# %args = $'patchfile', $'builddir', $'logfile'
 
 sub applyOnePatchFile {
-  my($patchFileName,$logfile) = @_;
-  print "$0: patchFileName: [$patchFileName] logfile: [$logfile]\n" if ($applyPatchesTrace);
-  my($rc,$log) = applyPatchFile($patchFileName);
+  my %args = @_;
+  print "$0: patchFileName: [$args{'patchfile'}] logfile: [$args{'logfile'}]\n" if ($applyPatchesTrace);
+  
+  my($rc,$log) = applyPatchFile(%args);
   if ($rc !=0 ) {
 	print "Patching $_ failed with code: $rc\n";
   }
 
-  appendTextToFile($logfile,$log);
+  appendTextToFile(filename=>$args{'logfile'},text=>$log);
   print "aOPF: rc: [$rc]\n" if ($applyPatchesTrace);
   return($rc);
 }
@@ -111,20 +173,27 @@ sub runShellCmdGetResult {
 }
 
 # Create a sh command to apply a patch in the current directory.
+# %args = $'patchfile', $'builddir', $'logfile'
 sub makePatchCmd {
-  my ($patchFileName) = @_;
+  my %args=@_;
+  
+  my $patchDebugCmds;
   # To get more debug information include this string in the command string below.
-  my $patchDebugCmds = " --debug=10 --dry-run ";
-  my $patchCmd = "patch -p0 --verbose --ignore-whitespace --remove-empty-files --input=$patchFileName";
+
+  if ($dryrun == 1) {
+     $patchDebugCmds = " --debug=1 --dry-run ";
+  }
+  my $patchCmd = "patch -p0 --verbose -d $args{'builddir'} --ignore-whitespace --remove-empty-files --input=$args{'patchfile'} $patchDebugCmds";
 }
 
 # Append text to a file.
+# %args = $'filename', $'text'
 sub appendTextToFile{
-  my($fileName,$text) = @_;
-  $text .= `date`;
-  print "USING TEXTFILE: [$fileName]\n" if ($applyPatchesTrace);
-  open(TEXTFILE,">>$fileName") or die("Can't open text file: [$fileName] $!");
-  print TEXTFILE $text;
+  my %args = @_;
+  $args{'text'} .= `date`;
+  print "USING TEXTFILE: [$args{'filename'}]\n" if ($applyPatchesTrace);
+  open(TEXTFILE,">>$args{'filename'}") or die("Can't open text file: [$args{'filename'}] $!");
+  print TEXTFILE $args{'text'};
   close(TEXTFILE) or die("can't close text file $!");
 }
 
@@ -134,9 +203,6 @@ sub appendTextToFile{
 # making the routines in this script available to other scripts by
 # including the file in other Perl script (via 'require
 # "applyPatches.pl";').
-
-# Use this if only doing 1 patch file.
-#applyOnePatchFile(@ARGV) if (@ARGV);
 
 # Use this if doing a bunch of patch files.
 applyPatchFileList(@ARGV) if (@ARGV);
