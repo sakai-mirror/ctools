@@ -20,6 +20,29 @@
 # worth the work at the moment, but would be worth it if it turns out
 # to problematic.
 
+=readme
+This supports regular diff patches but also extended patches with 2 commands right now
+All of the destinations are relative to the build directory. 
+The sources are relative to the directory of the patch file directory 
+IF they do not begin with a / or a http://.
+
+You can have these in a separate patch or append these to the top of your patch (patch ignores
+them).
+
+=copy= <source>,<destination>
+Example: =copy= to-bottom.png,user/user-tool-prefs/tool/src/webapp/prefs/
+=svnm= <source>,<source revision>,<destination>,<destination revision>
+
+#Example: =svnm= https://source.sakaiproject.org/svn/user/branches/SAK-12870_2-5-x/user-tool-prefs,43671,user/user-tool-prefs,HEAD
+Put something like this in your patch file to make patch happy:
+
+--- /dev/null
++++ tmp
+@@ -0,0 +1 @@
++ 
+
+=cut
+
 use strict;
 use Cwd 'abs_path';
 use File::Basename 'dirname';
@@ -99,7 +122,7 @@ sub applyPatchFileList {
 sub applyOneActionFile {
     my %args = @_;
 
-    my $rc;
+    my $rc = 0;
     print "Applying Action File\n";
     my $fh = new IO::File;
     unless ($fh->open($args{'patchfile'},'r')) {
@@ -107,18 +130,58 @@ sub applyOneActionFile {
 	return;
     }
 
+    my $log;
+
     my $patchDir = dirname($args{'patchfile'});
 
-    my $action;
+    my ($action,$target);
     while (<$fh>) {	    # note use of indirection
-	if (($action) = $_ =~ m/^=(\w)=/) {
-	    if ($action eq 'c') {
-		my ($srcFile,$destFile) = $_ =~ m/.*=(.*),(.*)/;
-		$rc = copy("$patchDir/$srcFile","$args{'builddir'}/$destFile");
+	if (($action,$target) = $_ =~ m/^=(\w*)=\s*(.*)/) {
+	    if ($action && !$target) {
+		print "No target found for action\n";
+		return 3;
+	    }
+
+	    if ($action eq "copy") {
+		my ($srcFile,$destFile) = $target =~ m/(.*),(.*)/;
+		   print "copy action $patchDir/$srcFile->$args{'builddir'}/$destFile\n";
+		if ($srcFile&&$destFile) {
+			$rc = $! unless copy("$patchDir/$srcFile","$args{'builddir'}/$destFile");
+		}
+	    }
+	    elsif ($action eq "svnm")  {
+		print "svn action\n";
+		my ($srcFile,$srcRev,$destFile,$destRev) = $target =~ m/(.*),(.*),(.*),(.*)/;
+		my ($cmd,$svnDebugCmds);
+		if ($destFile && $srcFile && $destRev) {
+		    #See if we need to add paths to the source or destination
+		    if ($srcFile =~ m/http.*:\/\// || $srcFile =~ m/^\//) {}
+		    else {$srcFile=$patchDir."/".$srcFile;}
+		    if ($destFile =~ m/http:\/\// || $destFile =~ m/^\//) {}
+		    else {$destFile=$args{'builddir'}."/".$destFile;}
+
+		    if ($dryrun == 1) {
+			 $svnDebugCmds = " --dry-run ";
+		    }
+		    $cmd = "svn merge $svnDebugCmds -r$srcRev:$destRev $srcFile $destFile";
+		    my $result = runShellCmdGetResult($cmd);
+		    $rc = $?;
+		    $log.=$result;
+		}
+		else {
+		    print "svn action found with incorrect parameters\n";
+		    $rc = 2;
+		}
 	    }
 	}   
+	if ($rc != 0) {
+	    appendTextToFile(filename=>$args{'logfile'},text=>$log);
+	    $fh->close;	    
+	    return $rc;
+	}
     }
 
+    appendTextToFile(filename=>$args{'logfile'},text=>$log);
     $fh->close;
     return $rc;
 }
@@ -143,7 +206,7 @@ sub applyOnePatchFile {
   
   my($rc,$log) = applyPatchFile(%args);
   if ($rc !=0 ) {
-	print "Patching $_ failed with code: $rc\n";
+	print "Patching $args{'patchfile'} failed with code: $rc\n";
   }
 
   appendTextToFile(filename=>$args{'logfile'},text=>$log);
@@ -181,7 +244,7 @@ sub makePatchCmd {
   # To get more debug information include this string in the command string below.
 
   if ($dryrun == 1) {
-     $patchDebugCmds = " --debug=1 --dry-run ";
+     $patchDebugCmds = " --debug=10 --dry-run ";
   }
   my $patchCmd = "patch -p0 --verbose -d $args{'builddir'} --ignore-whitespace --remove-empty-files --input=$args{'patchfile'} $patchDebugCmds";
 }
