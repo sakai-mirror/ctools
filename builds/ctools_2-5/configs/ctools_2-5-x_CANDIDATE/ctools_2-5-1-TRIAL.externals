@@ -79,9 +79,7 @@
  test-harness -rHEAD https://source.sakaiproject.org/svn/test-harness/tags/sakai_2-5-1_rc01
  textarea -rHEAD https://source.sakaiproject.org/svn/textarea/tags/sakai_2-5-1_rc01
  tool -rHEAD https://source.sakaiproject.org/svn/tool/tags/sakai_2-5-1_rc01
-# user -rHEAD https://source.sakaiproject.org/svn/user/tags/sakai_2-5-1_rc01
-# Based on ctools JIRA 529
- user -r46128 https://source.sakaiproject.org/svn/user/branches/SAK-12870_2-5-x/user-tool-prefs 
+ user -rHEAD https://source.sakaiproject.org/svn/user/tags/sakai_2-5-1_rc01
  usermembership -rHEAD https://source.sakaiproject.org/svn/usermembership/tags/sakai_2-5-1_rc01
  util -rHEAD https://source.sakaiproject.org/svn/util/tags/sakai_2-5-1_rc01
  velocity -rHEAD https://source.sakaiproject.org/svn/velocity/tags/sakai_2-5-1_rc01

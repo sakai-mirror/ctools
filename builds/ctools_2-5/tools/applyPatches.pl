@@ -33,7 +33,7 @@ them).
 Example: =copy= to-bottom.png,user/user-tool-prefs/tool/src/webapp/prefs/
 =svnm= <source>,<source revision>,<destination>,<destination revision>
 
-#Example: =svnm= https://source.sakaiproject.org/svn/user/branches/SAK-12870_2-5-x/user-tool-prefs,43671,user/user-tool-prefs,HEAD
+#Example: =svnm= https://source.sakaiproject.org/svn/user/branches/SAK-12870_2-5-x/user-tool-prefs,43671,user/user-tool-prefs
 Put something like this in your patch file to make patch happy:
 
 --- /dev/null
@@ -48,6 +48,9 @@ use Cwd 'abs_path';
 use File::Basename 'dirname';
 use IO::File;
 use File::Copy;
+use FindBin qw($Bin);
+use Data::Dumper;
+
 
 my ($log,$patchDir);
 my $applyPatchesTrace = 0;
@@ -59,6 +62,40 @@ print "ap: args:",join("|",@ARGV),"\n" if ($applyPatchesTrace);
 if (@ARGV == 0) {
     print "Usage: $0 <log file> <patches directory> <build directory> <comma separated patch files>\n";
     exit;
+}
+
+#Trims whitespace from beginning and end of string
+sub trim($)
+{
+    my $string = shift;
+    if ($string) {
+        $string =~ s/^\s+//;
+	$string =~ s/\s+$//;
+    }
+    return $string;
+}
+
+#Returns a hash containing the results of an svn info command
+# %args = 'repo'
+#Should return an array containing these keys:
+#
+#Path, URL, Repository Root, Repository UUID, Revision, Node Kind, Schedule, Last Changed Author,Last Changed Rev, Last Changed Date
+
+sub svnInfo(%) {
+    my %args = @_;
+    my %data;
+    my (@results,$result);
+    if ($args{'repo'}) {
+	@results = `svn info $args{'repo'}`;
+	foreach $result (@results) {
+	    #Only split on first : . . . Thought about using YAML because it's similar
+            my ($key,$value) = split(/:/,$result,2); 
+	    if ($key) {
+	      $data{trim($key)} = trim($value);
+	    }
+	}
+    }
+    return %data;
 }
 
 ## Take a list of patch files and apply them, accumulating
@@ -119,57 +156,73 @@ sub applyPatchFileList {
 #Currently the only action supported is the copy action =c=
 #All source files are relative to the patch directory and destinations are relative to buildDir
 # %args = 'patchfile', 'builddir', 'logfile'
-sub applyOneActionFile {
+sub applyOneActionFile(%) {
     my %args = @_;
 
+    my $log = "";
+
     my $rc = 0;
-    print "Applying Action File\n";
+    $log.=print "Applying Action File\n";
     my $fh = new IO::File;
     unless ($fh->open($args{'patchfile'},'r')) {
 	print STDERR "Can't open $args{'patchfile'}: $!\n";
 	return;
     }
 
-    my $log;
 
     my $patchDir = dirname($args{'patchfile'});
 
     my ($action,$target);
     while (<$fh>) {	    # note use of indirection
 	if (($action,$target) = $_ =~ m/^=(\w*)=\s*(.*)/) {
+	    #If the regex found an action with no target.
 	    if ($action && !$target) {
-		print "No target found for action\n";
+		$log.= "No target found for action\n";
 		return 3;
 	    }
 
 	    if ($action eq "copy") {
 		my ($srcFile,$destFile) = $target =~ m/(.*),(.*)/;
-		   print "copy action $patchDir/$srcFile->$args{'builddir'}/$destFile\n";
+		   $log.= "copy action $patchDir/$srcFile->$args{'builddir'}/$destFile\n";
 		if ($srcFile&&$destFile) {
 			$rc = $! unless copy("$patchDir/$srcFile","$args{'builddir'}/$destFile");
 		}
 	    }
 	    elsif ($action eq "svnm")  {
 		print "svn action\n";
-		my ($srcFile,$srcRev,$destFile,$destRev) = $target =~ m/(.*),(.*),(.*),(.*)/;
-		my ($cmd,$svnDebugCmds);
-		if ($destFile && $srcFile && $destRev) {
+		my ($svnSrc,$srcRev,$svnDest) = $target =~ m/(.*),(.*),(.*)/;
+		my $cmd="";
+		my $svnDebugCmds = "";
+		if ($svnDest && $svnSrc && $srcRev) {
 		    #See if we need to add paths to the source or destination
-		    if ($srcFile =~ m/http.*:\/\// || $srcFile =~ m/^\//) {}
-		    else {$srcFile=$patchDir."/".$srcFile;}
-		    if ($destFile =~ m/http:\/\// || $destFile =~ m/^\//) {}
-		    else {$destFile=$args{'builddir'}."/".$destFile;}
+		    if ($svnSrc =~ m/http.*:\/\// || $svnSrc =~ m/^\//) {}
+		    else {$svnSrc=$patchDir."/".$svnSrc;}
+		    if ($svnDest =~ m/http:\/\// || $svnDest =~ m/^\//) {}
+		    else {$svnDest=$args{'builddir'}."/".$svnDest;}
+
+		    #Get information about the destination of the merge 
+		    #Get the revision and URL that this was checked out from so we can compare
+		    #Since I can't figure out the syntax to make it compare otherwise.
+		    my %destInfo = svnInfo(repo=>$svnDest);
+		    my $destRev = $destInfo{'Revision'};
+		    my $URL = $destInfo{'URL'};
 
 		    if ($dryrun == 1) {
 			 $svnDebugCmds = " --dry-run ";
 		    }
-		    $cmd = "svn merge $svnDebugCmds -r$srcRev:$destRev $srcFile $destFile";
-		    my $result = runShellCmdGetResult($cmd);
-		    $rc = $?;
-		    $log.=$result;
+		    if ($destRev && $URL) {
+			$cmd = "svn merge $svnDebugCmds $URL\@$destRev $svnSrc\@$srcRev $svnDest";
+			my $result = runShellCmdGetResult($cmd);
+			$rc = $?;
+			$log.=$result;
+		    }
+		    else {
+			$log.="info for working copy $svnDest not found!";
+			$rc=4;
+		    }
 		}
 		else {
-		    print "svn action found with incorrect parameters\n";
+		    print "svn action called with incorrect parameters\n";
 		    $rc = 2;
 		}
 	    }
@@ -189,7 +242,7 @@ sub applyOneActionFile {
 # Apply a single patch file and return the return code.
 # The log output will be ignored.
 # %args = $'patchfile', $'builddir', $'logfile'
-sub applyPatchFile {
+sub applyPatchFile(%) {
   my %args = @_;
   my $cmd = makePatchCmd(patchfile=>$args{'patchfile'},builddir=>$args{'builddir'});
   return runShellCmdGetResult($cmd);
@@ -200,7 +253,7 @@ sub applyPatchFile {
 # return the return code.
 # %args = $'patchfile', $'builddir', $'logfile'
 
-sub applyOnePatchFile {
+sub applyOnePatchFile(%) {
   my %args = @_;
   print "$0: patchFileName: [$args{'patchfile'}] logfile: [$args{'logfile'}]\n" if ($applyPatchesTrace);
   
@@ -218,7 +271,7 @@ sub applyOnePatchFile {
 # Run a shell command capturing the return code and the stdout and stderr.
 # Stderr and stdout will be combined in the same output stream.
 # Will return a $rc in scalar context and the $rc and output in list context.
-sub runShellCmdGetResult {
+sub runShellCmdGetResult($) {
   my $cmd = shift;
 
   my $log = "";
@@ -237,10 +290,10 @@ sub runShellCmdGetResult {
 
 # Create a sh command to apply a patch in the current directory.
 # %args = $'patchfile', $'builddir', $'logfile'
-sub makePatchCmd {
+sub makePatchCmd(%) {
   my %args=@_;
   
-  my $patchDebugCmds;
+  my $patchDebugCmds = "";
   # To get more debug information include this string in the command string below.
 
   if ($dryrun == 1) {
@@ -251,7 +304,7 @@ sub makePatchCmd {
 
 # Append text to a file.
 # %args = $'filename', $'text'
-sub appendTextToFile{
+sub appendTextToFile(%){
   my %args = @_;
   $args{'text'} .= `date`;
   print "USING TEXTFILE: [$args{'filename'}]\n" if ($applyPatchesTrace);
