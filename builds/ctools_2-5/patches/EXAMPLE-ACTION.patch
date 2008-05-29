@@ -1,0 +1,8 @@
+These are just examples
+=svnm= https://source.sakaiproject.org/svn/user/branches/SAK-12870_2-5-x/user-tool-prefs,43671,user/user-tool-prefs,HEAD
+=copy= test.jpg,destinationtool
+
+--- /dev/null
++++ tmp
+@@ -0,0 +1 @@
++ 

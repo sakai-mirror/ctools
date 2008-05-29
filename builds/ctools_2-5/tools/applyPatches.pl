@@ -50,9 +50,9 @@ use IO::File;
 use File::Copy;
 
 my ($log,$patchDir);
-my $applyPatchesTrace = 1;
+my $applyPatchesTrace = 0;
 #Add when testing to not actually apply the patches
-my $dryrun = 1;
+my $dryrun = 0;
 
 print "ap: args:",join("|",@ARGV),"\n" if ($applyPatchesTrace);
 
@@ -94,7 +94,7 @@ sub applyPatchFileList {
   $maxRc = 0;
   my $patchFile;
   foreach $patchFile (@patchFileNames) {
-    print "- patch file: [$_]\n";
+    print "- patch file: [$patchFile]\n";
 
     my $rc = applyOnePatchFile(patchfile=>"$patchesDir/$patchFile",builddir=>$buildDir,logfile=>$logFileName);
     print "aPFL: rc: [$rc]\n" if ($applyPatchesTrace);
@@ -244,7 +244,7 @@ sub makePatchCmd {
   # To get more debug information include this string in the command string below.
 
   if ($dryrun == 1) {
-     $patchDebugCmds = " --debug=10 --dry-run ";
+     $patchDebugCmds = " --debug=1 --dry-run ";
   }
   my $patchCmd = "patch -p0 --verbose -d $args{'builddir'} --ignore-whitespace --remove-empty-files --input=$args{'patchfile'} $patchDebugCmds";
 }
