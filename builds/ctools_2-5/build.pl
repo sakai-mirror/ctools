@@ -14,7 +14,7 @@ use warnings;
 use File::Path;
 use File::Basename;
 use FindBin qw($Bin);
-use Term::ANSIColor qw(:constants);
+#use Term::ANSIColor qw(:constants);
 use POSIX qw(strftime);
 use IO::File;
 #Config::Properties is not part of core perl so its installed after
@@ -167,22 +167,32 @@ if (!@builds) {
 }
 
 print "Detected ".@builds." candidate(s) (You can create a new candidate by cp -r one of the configs in the configs directory and editing the sakai.tag property to match this new name.):\n";
-my ($buildcount,$build)=0;
-foreach $build (@builds) {
-    my ($configs,$dirname,$file) = split(/\//,$build);
-    print WHITE,"$buildcount ", RESET, "$dirname\n";
-    $buildcount++;
-}
-
-#Get the build directory input from the user
+my ($buildcount,$build, $buildin)=0;
 my ($buildin,$cleanin, $builddir);
-do
-{
-    print "Enter a number to build (Ctrl-C to abort):";	# Ask for input
-    $buildin = <STDIN>;	# Get input
-    chop $buildin;	    # Chop off newline
+
+if (@builds > 1) {
+
+    foreach $build (@builds) {
+	my ($configs,$dirname,$file) = split(/\//,$build);
+	print "$buildcount : $dirname\n";
+	$buildcount++;
+    }
+
+    #Get the build directory input from the user
+    do
+    {
+	print "Enter a number to build (Ctrl-C to abort):";	# Ask for input
+	$buildin = <STDIN>;	# Get input
+	chop $buildin;	    # Chop off newline
+    }
+    until ($buildin =~ m/\d+/ && $buildin >=0 && $buildin < $buildcount); # Redo while wrong input
 }
-until ($buildin =~ m/\d+/ && $buildin >=0 && $buildin < $buildcount); # Redo while wrong input
+elsif (@builds == 1) {
+    $buildin = 0;
+}
+else {
+    die "No valid build files were found, exiting\n";
+}
 
 $builddir = dirname($builds[$buildin]);
 
@@ -235,4 +245,4 @@ system $cmd;
 
 0;
 
-END { print RESET; }
+END { print ""; }
