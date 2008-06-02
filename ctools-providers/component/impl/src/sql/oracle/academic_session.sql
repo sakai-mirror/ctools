@@ -58,3 +58,15 @@ insert into cm_academic_session_t values(17, 1, 'admin', '09-MAY-07', 'admin', '
 insert into cm_academic_session_t values(18, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'SPRING_SUMMER 2007', 'SPRING_SUMMER 2007', 'SpSu07', '01-MAY-2007', '17-AUG-2007');
 insert into cm_academic_session_t values(19, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'SUMMER 2007', 'SUMMER 2007', 'Su07', '27-JUN-2007', '17-AUG-2007');
 insert into cm_academic_session_t values(20, 1, 'admin', '09-MAY-07', 'admin', '09-MAY-07', 'FALL 2007', 'FALL 2007', 'F07', '04-SEP-2007', '11-DEC-2007');
+
+-- 2008 winter, spring spring_summer summer, fall
+prompt 2008 winter, spring spring_summer summer, fall
+insert into cm_academic_session_t values(21, 1, 'admin', '09-MAY-08', 'admin', '09-MAY-08', 'WINTER 2008', 'WINTER 2008', 'W08', '03-JAN-2008', '15-APR-2008');
+insert into cm_academic_session_t values(22, 1, 'admin', '09-MAY-08', 'admin', '09-MAY-08', 'SPRING 2008', 'SPRING 2008', 'Sp08', '29-APR-2008', '20-JUN-2008');
+insert into cm_academic_session_t values(23, 1, 'admin', '09-MAY-08', 'admin', '09-MAY-08', 'SPRING_SUMMER 2008', 'SPRING_SUMMER 2008', 'SpSu08', '29-APR-2008', '15-AUG-2008');
+insert into cm_academic_session_t values(24, 1, 'admin', '09-MAY-08', 'admin', '09-MAY-08', 'SUMMER 2008', 'SUMMER 2008', 'Su08', '25-JUN-2008', '15-AUG-2008');
+insert into cm_academic_session_t values(25, 1, 'admin', '09-MAY-08', 'admin', '09-MAY-08', 'FALL 2008', 'FALL 2008', 'F08', '02-SEP-2008', '09-DEC-2008');
+
+-- 2009 winter, spring spring_summer summer, fall
+prompt 2009 winter, spring spring_summer summer, fall
+insert into cm_academic_session_t values(21, 1, 'admin', '09-MAY-08', 'admin', '09-MAY-08', 'WINTER 2009', 'WINTER 2009', 'W09', '07-JAN-2009', '21-APR-2009');
