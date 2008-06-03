@@ -29,6 +29,7 @@ IF they do not begin with a / or a http://.
 You can have these in a separate patch or append these to the top of your patch (patch ignores
 them).
 
+---- PATCH.FILE ----
 =copy= <source>,<destination>
 Example: =copy= to-bottom.png,user/user-tool-prefs/tool/src/webapp/prefs/
 =svnm= <source>,<source revision>,<destination>,<destination revision>
@@ -37,10 +38,11 @@ Example: =copy= to-bottom.png,user/user-tool-prefs/tool/src/webapp/prefs/
 Put something like this in your patch file to make patch happy:
 
 --- /dev/null
-+++ tmp
++++ SAK-12870.tmp   <-- This has to be a unique temporary name unless you are patching something
 @@ -0,0 +1 @@
 + 
 
+---- END FILE ----
 =cut
 
 use strict;
@@ -61,6 +63,7 @@ print "ap: args:",join("|",@ARGV),"\n" if ($applyPatchesTrace);
 
 if (@ARGV == 0) {
     print "Usage: $0 <log file> <patches directory> <build directory> <comma separated patch files>\n";
+    print "Example: $0 out.log ../patches ../work/ctools_2-5-x_CANDIDATE/work.prod/build SAK-12868.patch\n";
     exit;
 }
 
@@ -145,7 +148,7 @@ sub applyPatchFileList {
   }
   print "aPFL: maxRc: [$maxRc]\n" if ($applyPatchesTrace);
   if ($maxRc !=0 ) {
-	print "One or more patches failed, results saved to a log file\n";
+	print "One or more patches failed, results saved to a log file.\n";
   }
   exit ($maxRc == 0 ? 0 : 1);
 }

@@ -1,0 +1,8 @@
+Update based on SAK-12868
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java,46176,site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java 
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties,45338,site-manage/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties 
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-type.vm,45301,site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-type.vm 
+--- /dev/null
++++ SAK-12868.tmp
+@@ -0,0 +1 @@
++ 
