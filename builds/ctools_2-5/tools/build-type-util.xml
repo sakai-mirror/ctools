@@ -173,7 +173,8 @@ This should have nothing specific to a particular build type.
 	<property name="config.dir" value="${config.dir}" />
 	<property name="keystore.dir" value="${keystore.dir}" />
 	<property name="keystore" value="${keystore}" />
-	<property name="propertiesfileslist" value="${propertiesfileslist}" />
+	<property name="propertiesfiles.local" value="${propertiesfiles.local}" />
+	<property name="propertiesfiles.global" value="${propertiesfiles.global}" />
       </ant>
     </sequential>
   </macrodef>

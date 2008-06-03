@@ -82,8 +82,8 @@
  <target name="buildPropertiesFileConcat"> 
     <concat destfile="${instances.dir}/${instance-type}/sakai.properties">
       <filelist dir="${config.dir}" files="sakai.properties" />
-      <filelist dir="${config.dir}" files="${propertiesfileslist}" /> 
-      <filelist dir="${config.dir}/${instance-type}" files="${propertiesfileslist}" />
+      <filelist dir="${config.dir}" files="${propertiesfiles.global}" /> 
+      <filelist dir="${config.dir}/${instance-type}" files="${propertiesfiles.local}" />
       <filterchain>
 	<expandproperties/>
       </filterchain>
