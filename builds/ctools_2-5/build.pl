@@ -167,8 +167,8 @@ if (!@builds) {
 }
 
 print "Detected ".@builds." candidate(s) (You can create a new candidate by cp -r one of the configs in the configs directory and editing the sakai.tag property to match this new name.):\n";
-my ($buildcount,$build, $buildin)=0;
-my ($buildin,$cleanin, $builddir);
+my ($buildcount,$build,$buildin)=0;
+my ($cleanin, $builddir);
 
 if (@builds > 1) {
 
