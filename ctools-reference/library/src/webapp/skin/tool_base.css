@@ -820,26 +820,31 @@ font-weight: bold;
 	padding: 0.5em;
 }
 
+
 /* Make a list based css menu */
-
-
 ul.makeMenu, ul.makeMenu ul {
   width: auto;
-  border: 1px solid #ddd  !important;
+  border: 1px solid #ddd !important;
   background:#fff; 
   padding: 3px;
-  padding-left: 6px;
-  margin-right: 3px;
-  cursor: default;
-  margin-left: 0px;
+ 	cursor: default;
+ 	 margin-left: 0px;
 	display:inline;
 	position: relative;
 	text-align: left;
 	white-space: nowrap;
 }
+
+ul.makeMenu{
+	background:#eee url(images/makemenu.gif) top left repeat-x
+}
+
 ul.makeMenu:hover{
-	border:1px solid #666  !important;
+	color:#2A5EAB;
+	border:1px solid #000  !important;
+	background:#eee url(images/makemenu-h.gif) top left repeat-x
 }	
+
 .listHier ul.makeMenu img{
 	margin-right: 0;
 	vertical-align: middle;
@@ -847,34 +852,81 @@ ul.makeMenu:hover{
 
 ul.makeMenu li {
   list-style-type: none;
-  margin: 0px;
+  margin: 0px; 
+/*  padding:5px; 
   position: relative;
-  color: #000000  !important;
- display:inline;
+  color: #000000;
+  display:inline;*/
 }
+
 ul.makeMenu li > ul {
   display: none;
-  position: absolute;
-  top: 4px;
-  left: 0;
-}
-ul.makeMenu li:hover, ul.makeMenu li.CSStoHighlight {
-  color: #000  !important;
-}
-ul.makeMenu ul.CSStoShow {
-  display: block;
-}
-ul.makeMenu li:hover > ul {
-	display: block;
   	width: 14em;
 	background-color:#ffffff;
 	background-image:none;
 	position:absolute;
-	border:1px solid #666  !important;
-	margin-top:9px;
+	border:1px solid #000 !important;
+	margin-top:0px;
  	z-index:3
 }
-ul.makeMenu li a { display: block; width: 100%; text-decoration: underline;   padding:6px; color:#35B !importan}
-ul.makeMenu li a:hover, ul.makeMenu li a.CSStoHighLink { color: #000  !important; ; }
+
+.makeMenuChild{
+  display: none;
+  position: absolute;
+	width: 14em;
+	background-color:#ffffff;
+	background-image:none;
+	position:absolute;
+	border:1px solid #666 !important;
+	margin-top:0px;
+ 	z-index:3
+}
+
+.makeMenuChild li{
+	padding:0 !important;
+}
+ul.makeMenu li a { display: block; width: 100%; text-decoration: underline;   padding:6px; color:#35B !important;	}
+ul.makeMenu li a:active{outline:none;}
+ul.makeMenu li a:hover, ul.makeMenu li a.CSStoHighLink { color: #000 !important; }
 ul.makeMenu li:hover > a { color: #000; }
 
+ul.makeMenu li.menuClose{
+	display:block;
+	height:100%;
+	font-size:.9em;
+	font-weight: bold;
+	border-bottom:1px solid blue;
+}
+ul.makeMenu li.menuClose:hover{
+	border-bottom:1px solid green;
+}
+ul.makeMenu li.menuClose a {
+	display:block;
+	color:blue !important;
+	text-align: right;
+	text-decoration: none !important;
+	height:20px;
+	padding:3px 0;
+	outline:none;
+}
+ul.makeMenu li.menuClose a:hover {
+	color:green !important;
+	text-decoration: none !important;
+}
+
+.centerLines td{
+	vertical-align: middle;
+}
+.menuOpen{
+	cursor:pointer;
+}
+/*any list (ul) of messages in a synoptic list view*/
+.synopticList{
+	margin:0;
+	padding:0;
+}
+/*a list item - children are h3.textPanelHeader, p.textPanelFooter, div.textPanel*/
+.synopticList li{ 
+	padding:0;
+	margin:.5em 0 ;
+} 
