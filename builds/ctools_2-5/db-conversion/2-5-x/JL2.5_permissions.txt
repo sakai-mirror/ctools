@@ -7,8 +7,8 @@
 --
 ----------------------------------------------------------------------------------------------------------------------------------------
 
--- $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/db-conversion/2-5-x/sakai_2_4_x-2_5_x_oracle_conversion.sql $
--- $Id: sakai_2_4_x-2_5_x_oracle_conversion.sql 46427 2008-05-14 20:08:42Z dlhaines@umich.edu $
+-- $HeadURL$
+-- $Id$
 
 -- =========================================
 -- already done.
