@@ -1,0 +1,19 @@
+Index: mailtool/mailtool/src/java/org/sakaiproject/tool/mailtool/Mailtool.java
+===================================================================
+--- mailtool/mailtool/src/java/org/sakaiproject/tool/mailtool/Mailtool.java	(revision 47058)
++++ mailtool/mailtool/src/java/org/sakaiproject/tool/mailtool/Mailtool.java	(working copy)
+@@ -784,12 +784,13 @@
+ 
+ 		String smtp_server = ServerConfigurationService
+ 				.getString("smtp@org.sakaiproject.email.api.EmailService");
++		String smtp_port = ServerConfigurationService.getString("smtpPort@org.sakaiproject.email.api.EmailService");
+ 		// String smtp_port = ServerConfigurationService.getString("smtp.port");
+ 		try {
+ 			Properties props = new Properties();
+ 			props.put("mail.smtp.host", smtp_server);
+ 			props.put("mail.smtp.sendpartial", "true");
+-			// props.put("mail.smtp.port", smtp_port);
++			props.put("mail.smtp.port", smtp_port);
+ 			Session s = Session.getInstance(props, null);
+ 
+ 			MimeMessage message = new MimeMessage(s);

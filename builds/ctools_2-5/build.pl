@@ -240,7 +240,7 @@ else {
 
 #Change directory to the builds directory
 chdir($builddir);
-my $cmd = "ant -s build.xml -Dtype=$typevar $cleanvar $svnvar 2>&1";
+my $cmd = "ant -s build.xml -Dtype=$typevar -DtargetJdk=1.5 $cleanvar $svnvar 2>&1";
 system $cmd; 
 
 0;
