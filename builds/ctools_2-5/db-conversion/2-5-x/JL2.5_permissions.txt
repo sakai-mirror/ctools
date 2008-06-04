@@ -47,6 +47,8 @@ ALTER TABLE SAKAI_POSTEM_HEADINGS MODIFY heading VARCHAR2 (500);
 
 -- =========================================
 -- *** Included already?
+echo "chat conversion";
+
 -- Verify that this has been done.
 --Chat SAK-10682
 -- alter table CHAT2_CHANNEL modify (CONTEXT VARCHAR2(99));
@@ -57,18 +59,18 @@ ALTER TABLE SAKAI_POSTEM_HEADINGS MODIFY heading VARCHAR2 (500);
 -- ALTER TABLE CHAT2_CHANNEL ADD PLACEMENT_ID varchar2(99) NULL;
 -- ALTER TABLE CHAT2_CHANNEL RENAME COLUMN contextDefaultChannel TO placementDefaultChannel;
 
--- ??
-update CHAT2_CHANNEL cc
-set cc.PLACEMENT_ID = (select st.TOOL_ID from SAKAI_SITE_TOOL st where st.REGISTRATION = 'sakai.chat' 
-   and cc.placementDefaultChannel = 1
-   and cc.CONTEXT = st.SITE_ID and ROWNUM = 1)
-where EXISTS 
-(select st.TOOL_ID from SAKAI_SITE_TOOL st where st.REGISTRATION = 'sakai.chat' 
-   and cc.placementDefaultChannel = 1
-   and cc.CONTEXT = st.SITE_ID and ROWNUM = 1);
+-- -- Assume not needed as yet
+-- update CHAT2_CHANNEL cc
+-- set cc.PLACEMENT_ID = (select st.TOOL_ID from SAKAI_SITE_TOOL st where st.REGISTRATION = 'sakai.chat' 
+--    and cc.placementDefaultChannel = 1
+--    and cc.CONTEXT = st.SITE_ID and ROWNUM = 1)
+-- where EXISTS 
+-- (select st.TOOL_ID from SAKAI_SITE_TOOL st where st.REGISTRATION = 'sakai.chat' 
+--    and cc.placementDefaultChannel = 1
+--    and cc.CONTEXT = st.SITE_ID and ROWNUM = 1);
 
 
-update CHAT2_CHANNEL set placementDefaultChannel=0 where placementDefaultChannel is null;
+-- update CHAT2_CHANNEL set placementDefaultChannel=0 where placementDefaultChannel is null;
 
 -- =========================================
 -- *** Included already?
@@ -77,7 +79,8 @@ update CHAT2_CHANNEL set placementDefaultChannel=0 where placementDefaultChannel
 --This only has to be run if you've upgraded from 2.3 and had chat data
 -- also released in sakai_2_4_0-2_4_x_oracle_conversion_004.sql 
 -- ?? No values?
-update SAKAI_SITE_TOOL set title = 'Chat Room' where REGISTRATION = 'sakai.chat' and TITLE like 'Chat Room: "%';
+-- Assume not needed.
+-- update SAKAI_SITE_TOOL set title = 'Chat Room' where REGISTRATION = 'sakai.chat' and TITLE like 'Chat Room: "%';
 
 
 -- =========================================
@@ -808,6 +811,7 @@ permission.ADD: [!site.template.portfolio][CIG Participant][osp.presentation.lay
 permission.ADD: [!site.template.portfolio][CIG Participant][osp.style.create]
 permission.ADD: [!site.template.portfolio][CIG Participant][osp.wizard.view]
 
+echo "OSP special permission backfill";
 -- backfill permissions into 'my workspace'.
 INSERT INTO SAKAI_REALM_RL_FN SELECT DISTINCT SR.REALM_KEY, SRR.ROLE_KEY, SRF.FUNCTION_KEY  from SAKAI_REALM SR, SAKAI_REALM_ROLE SRR, SAKAI_REALM_FUNCTION SRF where SR.REALM_ID like '/site/~%' AND SRR.ROLE_NAME = 'maintain' AND SRF.FUNCTION_NAME = 'osp.matrix.scaffolding.use';
 
@@ -837,6 +841,7 @@ RENAME osp_reports TO reports_report;
 RENAME osp_reports_results TO reports_result;
 
 -- =========================================
+echo "SEARCH CONVERSION";
 -- *** Needed
 -- Add colums to search to improve performance SAK-9865
 alter table searchbuilderitem add itemscope integer;
@@ -2793,8 +2798,8 @@ permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][site.upd.gr
 permission.ADD: [!group.template.portfolio][CIG Coordinator][site.upd.site.mbrshp]
 permission.ADD: [!group.template.portfolio][CIG Coordinator][site.upd.grp.mbrshp]
 
-permission.ADD: [/site/mercury][maintain][site.upd.site.mbrshp]
-permission.ADD: [/site/mercury][maintain][site.upd.grp.mbrshp]
+-- permission.ADD: [/site/mercury][maintain][site.upd.grp.mbrshp]
+-- permission.ADD: [/site/mercury][maintain][site.upd.site.mbrshp]
 
 -- 2 if need to update all existing realms
 -- for each realm that has a role matching something in this table, we will add to that role the function from this table
