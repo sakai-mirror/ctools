@@ -21,6 +21,8 @@
   <property file="${user.dir}/${ctoolsBuildFileName}" />  
 
   <property name="scripts.dir" value="${basedir}/tools" />
+  <!-- First import -->
+  <import file="${scripts.dir}/import-contrib.xml" />
 
   <!-- group the build directories. -->
   <property name="work.dir" value="${basedir}/work/${sakai.tag}/work.${type}" /> 

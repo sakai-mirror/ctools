@@ -1,0 +1,8 @@
+<project name="import-contrib" basedir="..">
+    <!-- I hope this basedir continues to work for now -->
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+	    <pathelement location="${basedir}/lib/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+</project>

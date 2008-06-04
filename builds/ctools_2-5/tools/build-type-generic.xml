@@ -99,11 +99,11 @@ createConfig - add dependencies to customize which instances have properties fil
   <target name="createConfig" 
 	  description="Customize the properties files on an instance by instance basis.">
 
-    <buildPropertiesFileSimple instanceName="ctools" />
-    <buildPropertiesFileSimple instanceName="ctoolsload" />
-    <buildPropertiesFileSimple instanceName="testctools" />
-    <buildPropertiesFileSimple instanceName="localhost" />
-    <buildPropertiesFileSimple instanceName="ctpilot" />
+    <for list="${instances}" delimiter="," param="instanceName">
+	<sequential>
+	<buildPropertiesFileSimple instanceName="@{instanceName}" />
+        </sequential>
+    </for>
     
   </target>
 
