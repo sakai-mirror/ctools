@@ -1,0 +1,1692 @@
+
+-- This is the Oracle Sakai 2.4.0 (or later) -> 2.5.0 conversion script adapted for CTools.
+----------------------------------------------------------------------------------------------------------------------------------------
+--
+-- use this to convert a Sakai database from 2.4.0 to 2.5.0.  Run this before you run your first app server.
+-- auto.ddl does not need to be enabled in your app server - this script takes care of all new TABLEs, changed TABLEs, and changed data.
+--
+----------------------------------------------------------------------------------------------------------------------------------------
+
+-- $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/db-conversion/2-5-x/sakai_2_4_x-2_5_x_oracle_conversion.sql $
+-- $Id: sakai_2_4_x-2_5_x_oracle_conversion.sql 46427 2008-05-14 20:08:42Z dlhaines@umich.edu $
+
+-- =========================================
+-- already done.
+--metaobj conversion
+-- alter TABLE metaobj_form_def add alternateCreateXslt varchar2(36) NULL;
+-- alter TABLE metaobj_form_def add alternateViewXslt varchar2(36) NULL;
+
+-- =========================================
+-- *** Needs to be done.
+--Post'em SAK-8232
+ALTER TABLE SAKAI_POSTEM_HEADINGS MODIFY heading VARCHAR2 (500);
+
+-- =========================================
+-- *** Included, BUT what about the index?
+-- SAK-9808: Implement ability to delete threaded messages within Forums
+-- also released in sakai_2_4_0-2_4_x_oracle_conversion_001.sql 
+-- alter table MFR_MESSAGE_T add DELETED number(1, 0) default '0' not null;
+-- create index MFR_MESSAGE_DELETED_I on MFR_MESSAGE_T (DELETED);
+
+-- =========================================
+-- *** Included already?
+
+-- SAK-13137
+-- create index MFR_MEMBERSHIP_ITEM_I01_I on MFR_MEMBERSHIP_ITEM_T (t_surrogateKey);
+-- create index MFR_MEMBERSHIP_ITEM_I02_I on MFR_MEMBERSHIP_ITEM_T (a_surrogateKey);
+
+-- =========================================
+-- *** Included BUT what about the indices?
+
+-- SAK-13138
+-- create index MFR_MESSAGE_T_IN_REPLY_TO_I on MFR_MESSAGE_T (IN_REPLY_TO);
+-- create index MFR_TOPIC_T_UUID_I on MFR_TOPIC_T (UUID);
+-- create index MFR_UNREAD_STATUS_I2 on MFR_UNREAD_STATUS_T (MESSAGE_C, USER_C, READ_C);
+
+
+
+-- =========================================
+-- *** Included already?
+-- Verify that this has been done.
+--Chat SAK-10682
+-- alter table CHAT2_CHANNEL modify (CONTEXT VARCHAR2(99));
+
+--Chat SAK-10163
+-- also released in sakai_2_4_0-2_4_x_oracle_conversion_003.sql 
+-- BUT have placement_id, and placement default channel, but also have contextdefaultchannel
+-- ALTER TABLE CHAT2_CHANNEL ADD PLACEMENT_ID varchar2(99) NULL;
+-- ALTER TABLE CHAT2_CHANNEL RENAME COLUMN contextDefaultChannel TO placementDefaultChannel;
+
+-- ??
+update CHAT2_CHANNEL cc
+set cc.PLACEMENT_ID = (select st.TOOL_ID from SAKAI_SITE_TOOL st where st.REGISTRATION = 'sakai.chat' 
+  and cc.placementDefaultChannel = 1
+  and cc.CONTEXT = st.SITE_ID and ROWNUM = 1)
+where EXISTS 
+(select st.TOOL_ID from SAKAI_SITE_TOOL st where st.REGISTRATION = 'sakai.chat' 
+  and cc.placementDefaultChannel = 1
+  and cc.CONTEXT = st.SITE_ID and ROWNUM = 1);
+
+
+update CHAT2_CHANNEL set placementDefaultChannel=0 where placementDefaultChannel is null;
+
+-- =========================================
+-- *** Included already?
+
+--Chat SAK-10215
+--This only has to be run if you've upgraded from 2.3 and had chat data
+-- also released in sakai_2_4_0-2_4_x_oracle_conversion_004.sql 
+-- ?? No values?
+update SAKAI_SITE_TOOL set title = 'Chat Room' where REGISTRATION = 'sakai.chat' and TITLE like 'Chat Room: "%';
+
+
+-- =========================================
+-- *** needed
+
+--Profile add dateOfBirth property SAK-8423
+alter table SAKAI_PERSON_T add (dateOfBirth date);
+
+-- SAK-11876, SAK-10490
+alter table sakai_person_t add locked number(1.0);
+
+
+
+-- =========================================
+-- *** Needed
+
+-- SAK-8780, SAK-7452 - Add SESSION_ACTIVE flag to explicitly indicate when
+-- a session is active rather than relying on SESSION_START and SESSION_END
+-- having the same value.
+alter table SAKAI_SESSION add SESSION_ACTIVE number(1,0);
+create index SESSION_ACTIVE_IE on SAKAI_SESSION (SESSION_ACTIVE);
+
+
+
+-- =========================================
+-- *** gradebook stuff needed.
+
+--Add categories to gradebook
+create table GB_CATEGORY_T (ID number(19,0) not null, VERSION number(10,0) not null, GRADEBOOK_ID number(19,0) not null, NAME varchar2(255 char) not null, WEIGHT double precision, DROP_LOWEST number(10,0), REMOVED number(1,0), primary key (ID));
+alter table GB_GRADABLE_OBJECT_T add CATEGORY_ID number(19,0);
+alter table GB_GRADEBOOK_T add GRADE_TYPE number(10,0);
+alter table GB_GRADEBOOK_T add CATEGORY_TYPE number(10,0);
+alter table GB_CATEGORY_T add constraint FKCD333737325D7986 foreign key (GRADEBOOK_ID) references GB_GRADEBOOK_T;
+alter table GB_GRADABLE_OBJECT_T add constraint FK759996A7F09DEFAE foreign key (CATEGORY_ID) references GB_CATEGORY_T;
+create sequence GB_CATEGORY_S;
+create index GB_CATEGORY_GB_IDX on GB_CATEGORY_T (GRADEBOOK_ID);
+create index GB_GRADABLE_OBJ_CT_IDX on GB_GRADABLE_OBJECT_T (CATEGORY_ID);
+update GB_GRADEBOOK_T set GRADE_TYPE = 1, CATEGORY_TYPE = 1;
+alter table GB_GRADEBOOK_T modify ( GRADE_TYPE number(10,0) not null, CATEGORY_TYPE number(10,0) not null );
+
+--Gradebook SAK-10427
+alter table GB_GRADABLE_OBJECT_T add (UNGRADED number(1,0));
+update GB_GRADABLE_OBJECT_T set UNGRADED = 0;
+
+--Gradebook SAK-10571
+create table GB_LETTERGRADE_MAPPING (LG_MAPPING_ID number(19,0) not null, VALUE double precision, GRADE varchar2(255 char) not null, primary key (LG_MAPPING_ID, GRADE));
+create table GB_LETTERGRADE_PERCENT_MAPPING (LGP_MAPPING_ID number(19,0) not null, VERSION number(10,0) not null, MAPPING_TYPE number(10,0) not null, GRADEBOOK_ID number(19,0), primary key (LGP_MAPPING_ID), unique (MAPPING_TYPE, GRADEBOOK_ID));
+alter table GB_LETTERGRADE_MAPPING add constraint FKC8CDDC5CE7F3A761 foreign key (LG_MAPPING_ID) references GB_LETTERGRADE_PERCENT_MAPPING (LGP_MAPPING_ID);
+create sequence GB_LETTER_MAPPING_S;
+
+insert into GB_LETTERGRADE_PERCENT_MAPPING values (GB_LETTER_MAPPING_S.NEXTVAL, 0, 1, null);
+insert into GB_LETTERGRADE_MAPPING values (1, 100.0, 'A+');
+insert into GB_LETTERGRADE_MAPPING values (1, 95.0, 'A');
+insert into GB_LETTERGRADE_MAPPING values (1, 90.0, 'A-');
+insert into GB_LETTERGRADE_MAPPING values (1, 87.0, 'B+');
+insert into GB_LETTERGRADE_MAPPING values (1, 83.0, 'B');
+insert into GB_LETTERGRADE_MAPPING values (1, 80.0, 'B-');
+insert into GB_LETTERGRADE_MAPPING values (1, 77.0, 'C+');
+insert into GB_LETTERGRADE_MAPPING values (1, 73.0, 'C');
+insert into GB_LETTERGRADE_MAPPING values (1, 70.0, 'C-');
+insert into GB_LETTERGRADE_MAPPING values (1, 67.0, 'D+');
+insert into GB_LETTERGRADE_MAPPING values (1, 63.0, 'D');
+insert into GB_LETTERGRADE_MAPPING values (1, 60.0, 'D-');
+insert into GB_LETTERGRADE_MAPPING values (1, 0.0, 'F');
+
+--Gradebook SAK-10835
+CREATE TABLE GB_PERMISSION_T ( 
+   GB_PERMISSION_ID number(19,0) not null,
+   VERSION     	number(10,0) not null,
+   GRADEBOOK_ID	number(19,0) not null,
+   USER_ID     	varchar2(99) not null,
+   FUNCTION_NAME 	varchar2(5) not null,
+   CATEGORY_ID 	number(19,0) null,
+   GROUP_ID    	varchar2(255) null,
+   PRIMARY KEY(GB_PERMISSION_ID)
+);
+
+create sequence GB_PERMISSION_S;
+
+--Gradebook SAK-12429
+-- also released in sakai_2_4_0-2_4_x_oracle_conversion_005.sql  
+CREATE INDEX GB_GRADING_EVENT_T_STU_OBJ_ID ON GB_GRADING_EVENT_T (STUDENT_ID, GRADABLE_OBJECT_ID);
+
+
+-- =========================================
+-- *** Table created Indices needed?
+
+-- Dropbox updates SAK-11342
+-- CREATE TABLE CONTENT_DROPBOX_CHANGES
+-- (
+--    DROPBOX_ID VARCHAR2 (255) NOT NULL,
+--    IN_COLLECTION VARCHAR2 (255),
+--    LAST_UPDATE VARCHAR2 (24)
+-- );
+
+CREATE UNIQUE INDEX CONTENT_DROPBOX_CHANGES_INDEX ON CONTENT_DROPBOX_CHANGES
+(
+	DROPBOX_ID
+);
+
+CREATE INDEX CONTENT_DROPBOX_INCOLL_INDEX ON CONTENT_DROPBOX_CHANGES
+(
+	IN_COLLECTION
+);
+
+
+-- =========================================
+-- *** content conversion is done already.
+
+-- SAK-11908 moved content-hosting conversions to this conversion script  
+-- Verify that this is done already.
+
+-- alter table CONTENT_COLLECTION add BINARY_ENTITY BLOB default null;
+-- alter table CONTENT_RESOURCE add BINARY_ENTITY BLOB default null;
+
+-- alter table CONTENT_RESOURCE add FILE_SIZE NUMBER(18) default null;
+-- alter table CONTENT_RESOURCE add CONTEXT VARCHAR2(99) default null;
+-- create index CONTENT_RESOURCE_CI on CONTENT_RESOURCE (CONTEXT);
+
+-- alter table CONTENT_RESOURCE_DELETE add FILE_SIZE NUMBER(20) default null;
+-- alter table CONTENT_RESOURCE_DELETE add CONTEXT VARCHAR2(99) default null;
+-- create index CONTENT_RESOURCE_DELETE_CI on CONTENT_RESOURCE_DELETE (CONTEXT);
+
+-- alter table CONTENT_RESOURCE add RESOURCE_TYPE_ID VARCHAR2(255) default null;
+-- create index CONTENT_RESOURCE_RTI on CONTENT_RESOURCE (RESOURCE_TYPE_ID);
+
+-- alter table CONTENT_RESOURCE_DELETE add BINARY_ENTITY BLOB default null;
+
+-- alter table CONTENT_RESOURCE_DELETE add RESOURCE_TYPE_ID VARCHAR2(255) default null;
+-- create index CONTENT_RESOURCE_DELETE_RTI on CONTENT_RESOURCE_DELETE (RESOURCE_TYPE_ID);
+
+
+-- =========================================
+-- Keep (harmless if already there).
+
+
+permission.FUNCTION.ADD: [reports.view]
+permission.FUNCTION.ADD: [reports.run]
+permission.FUNCTION.ADD: [reports.create]
+permission.FUNCTION.ADD: [reports.edit]
+permission.FUNCTION.ADD: [reports.delete]
+permission.FUNCTION.ADD: [reports.share]
+permission.FUNCTION.ADD: [osp.style.globalPublish]
+permission.FUNCTION.ADD: [osp.style.publish]
+permission.FUNCTION.ADD: [osp.style.delete]
+permission.FUNCTION.ADD: [osp.style.create]
+permission.FUNCTION.ADD: [osp.style.edit]
+permission.FUNCTION.ADD: [osp.style.suggestGlobalPublish]
+permission.FUNCTION.ADD: [osp.help.glossary.delete]
+permission.FUNCTION.ADD: [osp.help.glossary.add]
+permission.FUNCTION.ADD: [osp.help.glossary.edit]
+permission.FUNCTION.ADD: [osp.help.glossary.export]
+permission.FUNCTION.ADD: [osp.matrix.review]
+permission.FUNCTION.ADD: [osp.matrix.scaffolding.create]
+permission.FUNCTION.ADD: [osp.matrix.scaffolding.edit]
+permission.FUNCTION.ADD: [osp.matrix.scaffolding.delete]
+permission.FUNCTION.ADD: [osp.matrix.scaffolding.publish]
+permission.FUNCTION.ADD: [osp.matrix.scaffolding.export]
+permission.FUNCTION.ADD: [osp.matrix.scaffolding.use]
+permission.FUNCTION.ADD: [osp.matrix.evaluate]
+permission.FUNCTION.ADD: [osp.matrix.viewOwner]
+permission.FUNCTION.ADD: [osp.presentation.create]
+permission.FUNCTION.ADD: [osp.presentation.edit]
+permission.FUNCTION.ADD: [osp.presentation.delete]
+permission.FUNCTION.ADD: [osp.presentation.copy]
+permission.FUNCTION.ADD: [osp.presentation.comment]
+permission.FUNCTION.ADD: [osp.presentation.template.copy]
+permission.FUNCTION.ADD: [osp.presentation.template.publish]
+permission.FUNCTION.ADD: [osp.presentation.template.delete]
+permission.FUNCTION.ADD: [osp.presentation.template.create]
+permission.FUNCTION.ADD: [osp.presentation.template.edit]
+permission.FUNCTION.ADD: [osp.presentation.template.export]
+permission.FUNCTION.ADD: [osp.presentation.layout.publish]
+permission.FUNCTION.ADD: [osp.presentation.layout.delete]
+permission.FUNCTION.ADD: [osp.presentation.layout.create]
+permission.FUNCTION.ADD: [osp.presentation.layout.edit]
+permission.FUNCTION.ADD: [osp.presentation.layout.suggestPublish]
+permission.FUNCTION.ADD: [osp.wizard.publish]
+permission.FUNCTION.ADD: [osp.wizard.delete]
+permission.FUNCTION.ADD: [osp.wizard.create]
+permission.FUNCTION.ADD: [osp.wizard.edit]
+permission.FUNCTION.ADD: [osp.wizard.review]
+permission.FUNCTION.ADD: [osp.wizard.export]
+permission.FUNCTION.ADD: [osp.wizard.view]
+permission.FUNCTION.ADD: [osp.wizard.evaluate]
+
+-- default when no site type, we don't use currently at UM
+permission.ADD: [!site.template][access][osp.style.create]
+permission.ADD: [!site.template][access][osp.matrix.scaffolding.use]
+permission.ADD: [!site.template][access][osp.presentation.create]
+permission.ADD: [!site.template][access][osp.presentation.copy]
+permission.ADD: [!site.template][access][osp.presentation.comment]
+permission.ADD: [!site.template][access][osp.presentation.layout.create]
+permission.ADD: [!site.template][access][osp.presentation.layout.delete]
+permission.ADD: [!site.template][access][osp.presentation.layout.edit]
+permission.ADD: [!site.template][access][osp.wizard.view]
+
+permission.ADD: [!site.template][maintain][osp.style.globalPublish]
+permission.ADD: [!site.template][maintain][osp.style.publish]
+permission.ADD: [!site.template][maintain][osp.style.delete]
+permission.ADD: [!site.template][maintain][osp.style.create]
+permission.ADD: [!site.template][maintain][osp.style.edit]
+permission.ADD: [!site.template][maintain][osp.style.suggestGlobalPublish]
+permission.ADD: [!site.template][maintain][osp.help.glossary.delete]
+permission.ADD: [!site.template][maintain][osp.help.glossary.add]
+permission.ADD: [!site.template][maintain][osp.help.glossary.edit]
+permission.ADD: [!site.template][maintain][osp.help.glossary.export]
+permission.ADD: [!site.template][maintain][osp.matrix.review]
+permission.ADD: [!site.template][maintain][osp.matrix.scaffolding.create]
+permission.ADD: [!site.template][maintain][osp.matrix.scaffolding.edit]
+permission.ADD: [!site.template][maintain][osp.matrix.scaffolding.delete]
+permission.ADD: [!site.template][maintain][osp.matrix.scaffolding.publish]
+permission.ADD: [!site.template][maintain][osp.matrix.scaffolding.export]
+permission.ADD: [!site.template][maintain][osp.matrix.evaluate]
+permission.ADD: [!site.template][maintain][osp.matrix.viewOwner]
+permission.ADD: [!site.template][maintain][osp.matrix.review]
+permission.ADD: [!site.template][maintain][osp.presentation.create]
+permission.ADD: [!site.template][maintain][osp.presentation.edit]
+permission.ADD: [!site.template][maintain][osp.presentation.delete]
+permission.ADD: [!site.template][maintain][osp.presentation.copy]
+permission.ADD: [!site.template][maintain][osp.presentation.comment]
+permission.ADD: [!site.template][maintain][osp.presentation.template.copy]
+permission.ADD: [!site.template][maintain][osp.presentation.template.publish]
+permission.ADD: [!site.template][maintain][osp.presentation.template.delete]
+permission.ADD: [!site.template][maintain][osp.presentation.template.create]
+permission.ADD: [!site.template][maintain][osp.presentation.template.edit]
+permission.ADD: [!site.template][maintain][osp.presentation.template.export]
+permission.ADD: [!site.template][maintain][osp.presentation.layout.publish]
+permission.ADD: [!site.template][maintain][osp.presentation.layout.delete]
+permission.ADD: [!site.template][maintain][osp.presentation.layout.create]
+permission.ADD: [!site.template][maintain][osp.presentation.layout.edit]
+permission.ADD: [!site.template][maintain][osp.presentation.layout.suggestPublish]
+permission.ADD: [!site.template][maintain][osp.wizard.publish]
+permission.ADD: [!site.template][maintain][osp.wizard.delete]
+permission.ADD: [!site.template][maintain][osp.wizard.create]
+permission.ADD: [!site.template][maintain][osp.wizard.edit]
+permission.ADD: [!site.template][maintain][osp.wizard.review]
+permission.ADD: [!site.template][maintain][osp.wizard.export]
+permission.ADD: [!site.template][maintain][reports.view]
+permission.ADD: [!site.template][maintain][reports.run]
+permission.ADD: [!site.template][maintain][reports.create]
+permission.ADD: [!site.template][maintain][reports.edit]
+permission.ADD: [!site.template][maintain][reports.delete]
+permission.ADD: [!site.template][maintain][reports.share]
+
+-- course sites
+permission.ADD: [!site.template.course][Instructor][osp.style.globalPublish]
+permission.ADD: [!site.template.course][Instructor][osp.style.publish]
+permission.ADD: [!site.template.course][Instructor][osp.style.delete]
+permission.ADD: [!site.template.course][Instructor][osp.style.create]
+permission.ADD: [!site.template.course][Instructor][osp.style.edit]
+permission.ADD: [!site.template.course][Instructor][osp.style.suggestGlobalPublish]
+permission.ADD: [!site.template.course][Instructor][osp.help.glossary.delete]
+permission.ADD: [!site.template.course][Instructor][osp.help.glossary.add]
+permission.ADD: [!site.template.course][Instructor][osp.help.glossary.edit]
+permission.ADD: [!site.template.course][Instructor][osp.help.glossary.export]
+permission.ADD: [!site.template.course][Instructor][osp.matrix.review]
+permission.ADD: [!site.template.course][Instructor][osp.matrix.scaffolding.create]
+permission.ADD: [!site.template.course][Instructor][osp.matrix.scaffolding.edit]
+permission.ADD: [!site.template.course][Instructor][osp.matrix.scaffolding.delete]
+permission.ADD: [!site.template.course][Instructor][osp.matrix.scaffolding.publish]
+permission.ADD: [!site.template.course][Instructor][osp.matrix.scaffolding.export]
+permission.ADD: [!site.template.course][Instructor][osp.matrix.evaluate]
+permission.ADD: [!site.template.course][Instructor][osp.matrix.viewOwner]
+permission.ADD: [!site.template.course][Instructor][osp.matrix.review]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.create]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.edit]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.delete]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.copy]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.comment]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.template.copy]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.template.publish]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.template.delete]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.template.create]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.template.edit]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.template.export]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.layout.publish]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.layout.delete]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.layout.create]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.layout.edit]
+permission.ADD: [!site.template.course][Instructor][osp.presentation.layout.suggestPublish]
+permission.ADD: [!site.template.course][Instructor][osp.wizard.publish]
+permission.ADD: [!site.template.course][Instructor][osp.wizard.delete]
+permission.ADD: [!site.template.course][Instructor][osp.wizard.create]
+permission.ADD: [!site.template.course][Instructor][osp.wizard.edit]
+permission.ADD: [!site.template.course][Instructor][osp.wizard.review]
+permission.ADD: [!site.template.course][Instructor][osp.wizard.export]
+permission.ADD: [!site.template.course][Instructor][reports.view]
+permission.ADD: [!site.template.course][Instructor][reports.run]
+permission.ADD: [!site.template.course][Instructor][reports.create]
+permission.ADD: [!site.template.course][Instructor][reports.edit]
+permission.ADD: [!site.template.course][Instructor][reports.delete]
+permission.ADD: [!site.template.course][Instructor][reports.share]
+
+permission.ADD: [!site.template.course][Affiliate][osp.style.globalPublish]
+permission.ADD: [!site.template.course][Affiliate][osp.style.publish]
+permission.ADD: [!site.template.course][Affiliate][osp.style.delete]
+permission.ADD: [!site.template.course][Affiliate][osp.style.create]
+permission.ADD: [!site.template.course][Affiliate][osp.style.edit]
+permission.ADD: [!site.template.course][Affiliate][osp.style.suggestGlobalPublish]
+permission.ADD: [!site.template.course][Affiliate][osp.help.glossary.delete]
+permission.ADD: [!site.template.course][Affiliate][osp.help.glossary.add]
+permission.ADD: [!site.template.course][Affiliate][osp.help.glossary.edit]
+permission.ADD: [!site.template.course][Affiliate][osp.help.glossary.export]
+permission.ADD: [!site.template.course][Affiliate][osp.matrix.review]
+permission.ADD: [!site.template.course][Affiliate][osp.matrix.scaffolding.create]
+permission.ADD: [!site.template.course][Affiliate][osp.matrix.scaffolding.edit]
+permission.ADD: [!site.template.course][Affiliate][osp.matrix.scaffolding.delete]
+permission.ADD: [!site.template.course][Affiliate][osp.matrix.scaffolding.publish]
+permission.ADD: [!site.template.course][Affiliate][osp.matrix.scaffolding.export]
+permission.ADD: [!site.template.course][Affiliate][osp.matrix.evaluate]
+permission.ADD: [!site.template.course][Affiliate][osp.matrix.viewOwner]
+permission.ADD: [!site.template.course][Affiliate][osp.matrix.review]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.create]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.edit]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.delete]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.copy]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.comment]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.template.copy]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.template.publish]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.template.delete]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.template.create]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.template.edit]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.template.export]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.layout.publish]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.layout.delete]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.layout.create]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.layout.edit]
+permission.ADD: [!site.template.course][Affiliate][osp.presentation.layout.suggestPublish]
+permission.ADD: [!site.template.course][Affiliate][osp.wizard.publish]
+permission.ADD: [!site.template.course][Affiliate][osp.wizard.delete]
+permission.ADD: [!site.template.course][Affiliate][osp.wizard.create]
+permission.ADD: [!site.template.course][Affiliate][osp.wizard.edit]
+permission.ADD: [!site.template.course][Affiliate][osp.wizard.review]
+permission.ADD: [!site.template.course][Affiliate][osp.wizard.export]
+permission.ADD: [!site.template.course][Affiliate][reports.view]
+permission.ADD: [!site.template.course][Affiliate][reports.run]
+permission.ADD: [!site.template.course][Affiliate][reports.share]
+
+permission.ADD: [!site.template.course][Owner][osp.style.globalPublish]
+permission.ADD: [!site.template.course][Owner][osp.style.publish]
+permission.ADD: [!site.template.course][Owner][osp.style.delete]
+permission.ADD: [!site.template.course][Owner][osp.style.create]
+permission.ADD: [!site.template.course][Owner][osp.style.edit]
+permission.ADD: [!site.template.course][Owner][osp.style.suggestGlobalPublish]
+permission.ADD: [!site.template.course][Owner][osp.help.glossary.delete]
+permission.ADD: [!site.template.course][Owner][osp.help.glossary.add]
+permission.ADD: [!site.template.course][Owner][osp.help.glossary.edit]
+permission.ADD: [!site.template.course][Owner][osp.help.glossary.export]
+permission.ADD: [!site.template.course][Owner][osp.matrix.review]
+permission.ADD: [!site.template.course][Owner][osp.matrix.scaffolding.create]
+permission.ADD: [!site.template.course][Owner][osp.matrix.scaffolding.edit]
+permission.ADD: [!site.template.course][Owner][osp.matrix.scaffolding.delete]
+permission.ADD: [!site.template.course][Owner][osp.matrix.scaffolding.publish]
+permission.ADD: [!site.template.course][Owner][osp.matrix.scaffolding.export]
+permission.ADD: [!site.template.course][Owner][osp.matrix.evaluate]
+permission.ADD: [!site.template.course][Owner][osp.matrix.viewOwner]
+permission.ADD: [!site.template.course][Owner][osp.matrix.review]
+permission.ADD: [!site.template.course][Owner][osp.presentation.create]
+permission.ADD: [!site.template.course][Owner][osp.presentation.edit]
+permission.ADD: [!site.template.course][Owner][osp.presentation.delete]
+permission.ADD: [!site.template.course][Owner][osp.presentation.copy]
+permission.ADD: [!site.template.course][Owner][osp.presentation.comment]
+permission.ADD: [!site.template.course][Owner][osp.presentation.template.copy]
+permission.ADD: [!site.template.course][Owner][osp.presentation.template.publish]
+permission.ADD: [!site.template.course][Owner][osp.presentation.template.delete]
+permission.ADD: [!site.template.course][Owner][osp.presentation.template.create]
+permission.ADD: [!site.template.course][Owner][osp.presentation.template.edit]
+permission.ADD: [!site.template.course][Owner][osp.presentation.template.export]
+permission.ADD: [!site.template.course][Owner][osp.presentation.layout.publish]
+permission.ADD: [!site.template.course][Owner][osp.presentation.layout.delete]
+permission.ADD: [!site.template.course][Owner][osp.presentation.layout.create]
+permission.ADD: [!site.template.course][Owner][osp.presentation.layout.edit]
+permission.ADD: [!site.template.course][Owner][osp.presentation.layout.suggestPublish]
+permission.ADD: [!site.template.course][Owner][osp.wizard.publish]
+permission.ADD: [!site.template.course][Owner][osp.wizard.delete]
+permission.ADD: [!site.template.course][Owner][osp.wizard.create]
+permission.ADD: [!site.template.course][Owner][osp.wizard.edit]
+permission.ADD: [!site.template.course][Owner][osp.wizard.review]
+permission.ADD: [!site.template.course][Owner][osp.wizard.export]
+permission.ADD: [!site.template.course][Owner][reports.view]
+permission.ADD: [!site.template.course][Owner][reports.run]
+permission.ADD: [!site.template.course][Owner][reports.create]
+permission.ADD: [!site.template.course][Owner][reports.edit]
+permission.ADD: [!site.template.course][Owner][reports.delete]
+permission.ADD: [!site.template.course][Owner][reports.share]
+
+permission.ADD: [!site.template.course][Student][osp.style.create]
+permission.ADD: [!site.template.course][Student][osp.matrix.scaffolding.use]
+permission.ADD: [!site.template.course][Student][osp.presentation.create]
+permission.ADD: [!site.template.course][Student][osp.presentation.copy]
+permission.ADD: [!site.template.course][Student][osp.presentation.comment]
+permission.ADD: [!site.template.course][Student][osp.presentation.layout.create]
+permission.ADD: [!site.template.course][Student][osp.presentation.layout.delete]
+permission.ADD: [!site.template.course][Student][osp.presentation.layout.edit]
+permission.ADD: [!site.template.course][Student][osp.wizard.view]
+
+permission.ADD: [!site.template.course][Assistant][osp.style.create]
+permission.ADD: [!site.template.course][Assistant][osp.matrix.scaffolding.use]
+permission.ADD: [!site.template.course][Assistant][osp.presentation.create]
+permission.ADD: [!site.template.course][Assistant][osp.presentation.copy]
+permission.ADD: [!site.template.course][Assistant][osp.presentation.comment]
+permission.ADD: [!site.template.course][Assistant][osp.presentation.layout.create]
+permission.ADD: [!site.template.course][Assistant][osp.presentation.layout.delete]
+permission.ADD: [!site.template.course][Assistant][osp.presentation.layout.edit]
+permission.ADD: [!site.template.course][Assistant][osp.wizard.view]
+permission.ADD: [!site.template.course][Assistant][reports.view]
+permission.ADD: [!site.template.course][Assistant][reports.run]
+permission.ADD: [!site.template.course][Assistant][reports.create]
+permission.ADD: [!site.template.course][Assistant][reports.edit]
+permission.ADD: [!site.template.course][Assistant][reports.delete]
+permission.ADD: [!site.template.course][Assistant][reports.share]
+
+-- no permissions by default for Librarian and Observer roles for 
+-- !site.template.course, for osp permissions
+
+-- project sites
+permission.ADD: [!site.template.project][Owner][osp.style.globalPublish]
+permission.ADD: [!site.template.project][Owner][osp.style.publish]
+permission.ADD: [!site.template.project][Owner][osp.style.delete]
+permission.ADD: [!site.template.project][Owner][osp.style.create]
+permission.ADD: [!site.template.project][Owner][osp.style.edit]
+permission.ADD: [!site.template.project][Owner][osp.style.suggestGlobalPublish]
+permission.ADD: [!site.template.project][Owner][osp.help.glossary.delete]
+permission.ADD: [!site.template.project][Owner][osp.help.glossary.add]
+permission.ADD: [!site.template.project][Owner][osp.help.glossary.edit]
+permission.ADD: [!site.template.project][Owner][osp.help.glossary.export]
+permission.ADD: [!site.template.project][Owner][osp.matrix.review]
+permission.ADD: [!site.template.project][Owner][osp.matrix.scaffolding.create]
+permission.ADD: [!site.template.project][Owner][osp.matrix.scaffolding.edit]
+permission.ADD: [!site.template.project][Owner][osp.matrix.scaffolding.delete]
+permission.ADD: [!site.template.project][Owner][osp.matrix.scaffolding.publish]
+permission.ADD: [!site.template.project][Owner][osp.matrix.scaffolding.export]
+permission.ADD: [!site.template.project][Owner][osp.matrix.evaluate]
+permission.ADD: [!site.template.project][Owner][osp.matrix.viewOwner]
+permission.ADD: [!site.template.project][Owner][osp.matrix.review]
+permission.ADD: [!site.template.project][Owner][osp.presentation.create]
+permission.ADD: [!site.template.project][Owner][osp.presentation.edit]
+permission.ADD: [!site.template.project][Owner][osp.presentation.delete]
+permission.ADD: [!site.template.project][Owner][osp.presentation.copy]
+permission.ADD: [!site.template.project][Owner][osp.presentation.comment]
+permission.ADD: [!site.template.project][Owner][osp.presentation.template.copy]
+permission.ADD: [!site.template.project][Owner][osp.presentation.template.publish]
+permission.ADD: [!site.template.project][Owner][osp.presentation.template.delete]
+permission.ADD: [!site.template.project][Owner][osp.presentation.template.create]
+permission.ADD: [!site.template.project][Owner][osp.presentation.template.edit]
+permission.ADD: [!site.template.project][Owner][osp.presentation.template.export]
+permission.ADD: [!site.template.project][Owner][osp.presentation.layout.publish]
+permission.ADD: [!site.template.project][Owner][osp.presentation.layout.delete]
+permission.ADD: [!site.template.project][Owner][osp.presentation.layout.create]
+permission.ADD: [!site.template.project][Owner][osp.presentation.layout.edit]
+permission.ADD: [!site.template.project][Owner][osp.presentation.layout.suggestPublish]
+permission.ADD: [!site.template.project][Owner][osp.wizard.publish]
+permission.ADD: [!site.template.project][Owner][osp.wizard.delete]
+permission.ADD: [!site.template.project][Owner][osp.wizard.create]
+permission.ADD: [!site.template.project][Owner][osp.wizard.edit]
+permission.ADD: [!site.template.project][Owner][osp.wizard.review]
+permission.ADD: [!site.template.project][Owner][osp.wizard.export]
+permission.ADD: [!site.template.project][Owner][reports.view]
+permission.ADD: [!site.template.project][Owner][reports.run]
+permission.ADD: [!site.template.project][Owner][reports.create]
+permission.ADD: [!site.template.project][Owner][reports.edit]
+permission.ADD: [!site.template.project][Owner][reports.delete]
+permission.ADD: [!site.template.project][Owner][reports.share]
+
+permission.ADD: [!site.template.project][Organizer][osp.style.globalPublish]
+permission.ADD: [!site.template.project][Organizer][osp.style.publish]
+permission.ADD: [!site.template.project][Organizer][osp.style.delete]
+permission.ADD: [!site.template.project][Organizer][osp.style.create]
+permission.ADD: [!site.template.project][Organizer][osp.style.edit]
+permission.ADD: [!site.template.project][Organizer][osp.style.suggestGlobalPublish]
+permission.ADD: [!site.template.project][Organizer][osp.help.glossary.delete]
+permission.ADD: [!site.template.project][Organizer][osp.help.glossary.add]
+permission.ADD: [!site.template.project][Organizer][osp.help.glossary.edit]
+permission.ADD: [!site.template.project][Organizer][osp.help.glossary.export]
+permission.ADD: [!site.template.project][Organizer][osp.matrix.review]
+permission.ADD: [!site.template.project][Organizer][osp.matrix.scaffolding.create]
+permission.ADD: [!site.template.project][Organizer][osp.matrix.scaffolding.edit]
+permission.ADD: [!site.template.project][Organizer][osp.matrix.scaffolding.delete]
+permission.ADD: [!site.template.project][Organizer][osp.matrix.scaffolding.publish]
+permission.ADD: [!site.template.project][Organizer][osp.matrix.scaffolding.export]
+permission.ADD: [!site.template.project][Organizer][osp.matrix.evaluate]
+permission.ADD: [!site.template.project][Organizer][osp.matrix.viewOrganizer]
+permission.ADD: [!site.template.project][Organizer][osp.matrix.review]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.create]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.edit]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.delete]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.copy]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.comment]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.template.copy]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.template.publish]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.template.delete]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.template.create]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.template.edit]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.template.export]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.layout.publish]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.layout.delete]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.layout.create]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.layout.edit]
+permission.ADD: [!site.template.project][Organizer][osp.presentation.layout.suggestPublish]
+permission.ADD: [!site.template.project][Organizer][osp.wizard.publish]
+permission.ADD: [!site.template.project][Organizer][osp.wizard.delete]
+permission.ADD: [!site.template.project][Organizer][osp.wizard.create]
+permission.ADD: [!site.template.project][Organizer][osp.wizard.edit]
+permission.ADD: [!site.template.project][Organizer][osp.wizard.review]
+permission.ADD: [!site.template.project][Organizer][osp.wizard.export]
+permission.ADD: [!site.template.project][Organizer][reports.view]
+permission.ADD: [!site.template.project][Organizer][reports.run]
+permission.ADD: [!site.template.project][Organizer][reports.create]
+permission.ADD: [!site.template.project][Organizer][reports.edit]
+permission.ADD: [!site.template.project][Organizer][reports.delete]
+permission.ADD: [!site.template.project][Organizer][reports.share]
+
+permission.ADD: [!site.template.project][Member][osp.style.create]
+permission.ADD: [!site.template.project][Member][osp.matrix.scaffolding.use]
+permission.ADD: [!site.template.project][Member][osp.presentation.create]
+permission.ADD: [!site.template.project][Member][osp.presentation.copy]
+permission.ADD: [!site.template.project][Member][osp.presentation.comment]
+permission.ADD: [!site.template.project][Member][osp.presentation.layout.create]
+permission.ADD: [!site.template.project][Member][osp.presentation.layout.delete]
+permission.ADD: [!site.template.project][Member][osp.presentation.layout.edit]
+permission.ADD: [!site.template.project][Member][osp.wizard.view]
+
+-- no permissions by default for Observer role, for osp permissions
+
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.style.globalPublish]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.style.publish]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.style.delete]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.style.create]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.style.edit]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.style.suggestGlobalPublish]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.help.glossary.delete]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.help.glossary.add]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.help.glossary.edit]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.help.glossary.export]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.matrix.review]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.matrix.scaffolding.create]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.matrix.scaffolding.edit]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.matrix.scaffolding.delete]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.matrix.scaffolding.publish]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.matrix.scaffolding.export]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.matrix.evaluate]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.matrix.viewOwner]
+
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.create]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.edit]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.delete]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.copy]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.comment]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.template.copy]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.template.publish]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.template.delete]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.template.create]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.template.edit]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.template.export]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.layout.publish]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.layout.delete]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.layout.create]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.layout.edit]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.presentation.layout.suggestPublish]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.wizard.publish]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.wizard.delete]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.wizard.create]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.wizard.edit]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.wizard.review]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][osp.wizard.export]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][reports.view]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][reports.run]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][reports.create]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][reports.edit]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][reports.delete]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][reports.share]
+
+permission.ADD: [!site.template.portfolio][Reviewer][osp.matrix.review]
+permission.ADD: [!site.template.portfolio][Reviewer][osp.presentation.copy]
+permission.ADD: [!site.template.portfolio][Reviewer][osp.presentation.comment]
+permission.ADD: [!site.template.portfolio][Reviewer][osp.wizard.review]
+
+permission.ADD: [!site.template.portfolio][Evaluator][reports.run]
+permission.ADD: [!site.template.portfolio][Evaluator][reports.view]
+
+permission.ADD: [!site.template.portfolio][Evaluator][osp.matrix.evaluate]
+permission.ADD: [!site.template.portfolio][Evaluator][osp.matrix.viewOwner]
+permission.ADD: [!site.template.portfolio][Evaluator][osp.presentation.copy]
+permission.ADD: [!site.template.portfolio][Evaluator][osp.presentation.comment]
+permission.ADD: [!site.template.portfolio][Evaluator][osp.wizard.evaluate]
+
+permission.DELETE: [!site.template.portfolio][CIG Participant][reports.run]
+permission.DELETE: [!site.template.portfolio][CIG Participant][reports.view]
+
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.style.globalPublish]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.style.publish]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.style.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.style.create]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.style.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.style.suggestGlobalPublish]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.help.glossary.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.help.glossary.add]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.help.glossary.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.help.glossary.export]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.matrix.review]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.matrix.scaffolding.create]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.matrix.scaffolding.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.matrix.scaffolding.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.matrix.scaffolding.publish]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.matrix.scaffolding.export]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.matrix.evaluate]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.matrix.viewOwner]
+
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.create]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.copy]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.comment]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.template.copy]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.template.publish]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.template.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.template.create]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.template.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.template.export]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.layout.publish]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.layout.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.layout.create]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.layout.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.presentation.layout.suggestPublish]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.wizard.publish]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.wizard.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.wizard.create]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.wizard.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.wizard.review]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][osp.wizard.export]
+
+
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.style.globalPublish]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.style.publish]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.style.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.style.create]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.style.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.style.suggestGlobalPublish]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.help.glossary.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.help.glossary.add]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.help.glossary.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.help.glossary.export]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.matrix.review]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.matrix.scaffolding.create]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.matrix.scaffolding.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.matrix.scaffolding.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.matrix.scaffolding.publish]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.matrix.scaffolding.export]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.matrix.evaluate]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.matrix.viewOwner]
+
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.create]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.copy]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.comment]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.template.copy]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.template.publish]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.template.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.template.create]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.template.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.template.export]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.layout.publish]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.layout.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.layout.create]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.layout.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.presentation.layout.suggestPublish]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.wizard.publish]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.wizard.delete]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.wizard.create]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.wizard.edit]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.wizard.review]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][osp.wizard.export]
+
+permission.ADD: [!site.user][maintain][osp.matrix.scaffolding.use]
+
+
+-- group permissons for sites with no type, not currently used by UM
+permission.ADD: [!group.template][access][osp.style.create]
+permission.ADD: [!group.template][access][osp.matrix.scaffolding.use]
+permission.ADD: [!group.template][access][osp.presentation.create]
+permission.ADD: [!group.template][access][osp.presentation.copy]
+permission.ADD: [!group.template][access][osp.presentation.comment]
+permission.ADD: [!group.template][access][osp.presentation.layout.create]
+permission.ADD: [!group.template][access][osp.presentation.layout.delete]
+permission.ADD: [!group.template][access][osp.presentation.layout.edit]
+permission.ADD: [!group.template][access][osp.wizard.view]
+
+
+permission.ADD: [!group.template][maintain][osp.style.globalPublish]
+permission.ADD: [!group.template][maintain][osp.style.publish]
+permission.ADD: [!group.template][maintain][osp.style.delete]
+permission.ADD: [!group.template][maintain][osp.style.create]
+permission.ADD: [!group.template][maintain][osp.style.edit]
+permission.ADD: [!group.template][maintain][osp.style.suggestGlobalPublish]
+permission.ADD: [!group.template][maintain][osp.help.glossary.delete]
+permission.ADD: [!group.template][maintain][osp.help.glossary.add]
+permission.ADD: [!group.template][maintain][osp.help.glossary.edit]
+permission.ADD: [!group.template][maintain][osp.help.glossary.export]
+permission.ADD: [!group.template][maintain][osp.matrix.review]
+permission.ADD: [!group.template][maintain][osp.matrix.scaffolding.create]
+permission.ADD: [!group.template][maintain][osp.matrix.scaffolding.edit]
+permission.ADD: [!group.template][maintain][osp.matrix.scaffolding.delete]
+permission.ADD: [!group.template][maintain][osp.matrix.scaffolding.publish]
+permission.ADD: [!group.template][maintain][osp.matrix.scaffolding.export]
+permission.ADD: [!group.template][maintain][osp.matrix.evaluate]
+permission.ADD: [!group.template][maintain][osp.matrix.viewOwner]
+
+permission.ADD: [!group.template][maintain][osp.presentation.create]
+permission.ADD: [!group.template][maintain][osp.presentation.edit]
+permission.ADD: [!group.template][maintain][osp.presentation.delete]
+permission.ADD: [!group.template][maintain][osp.presentation.copy]
+permission.ADD: [!group.template][maintain][osp.presentation.comment]
+permission.ADD: [!group.template][maintain][osp.presentation.template.copy]
+permission.ADD: [!group.template][maintain][osp.presentation.template.publish]
+permission.ADD: [!group.template][maintain][osp.presentation.template.delete]
+permission.ADD: [!group.template][maintain][osp.presentation.template.create]
+permission.ADD: [!group.template][maintain][osp.presentation.template.edit]
+permission.ADD: [!group.template][maintain][osp.presentation.template.export]
+permission.ADD: [!group.template][maintain][osp.presentation.layout.publish]
+permission.ADD: [!group.template][maintain][osp.presentation.layout.delete]
+permission.ADD: [!group.template][maintain][osp.presentation.layout.create]
+permission.ADD: [!group.template][maintain][osp.presentation.layout.edit]
+permission.ADD: [!group.template][maintain][osp.presentation.layout.suggestPublish]
+permission.ADD: [!group.template][maintain][osp.wizard.publish]
+permission.ADD: [!group.template][maintain][osp.wizard.delete]
+permission.ADD: [!group.template][maintain][osp.wizard.create]
+permission.ADD: [!group.template][maintain][osp.wizard.edit]
+permission.ADD: [!group.template][maintain][osp.wizard.review]
+permission.ADD: [!group.template][maintain][osp.wizard.export]
+
+-- group permissions for course sites
+permission.ADD: [!group.template.course][Instructor][osp.style.globalPublish]
+permission.ADD: [!group.template.course][Instructor][osp.style.publish]
+permission.ADD: [!group.template.course][Instructor][osp.style.delete]
+permission.ADD: [!group.template.course][Instructor][osp.style.create]
+permission.ADD: [!group.template.course][Instructor][osp.style.edit]
+permission.ADD: [!group.template.course][Instructor][osp.style.suggestGlobalPublish]
+permission.ADD: [!group.template.course][Instructor][osp.help.glossary.delete]
+permission.ADD: [!group.template.course][Instructor][osp.help.glossary.add]
+permission.ADD: [!group.template.course][Instructor][osp.help.glossary.edit]
+permission.ADD: [!group.template.course][Instructor][osp.help.glossary.export]
+permission.ADD: [!group.template.course][Instructor][osp.matrix.review]
+permission.ADD: [!group.template.course][Instructor][osp.matrix.scaffolding.create]
+permission.ADD: [!group.template.course][Instructor][osp.matrix.scaffolding.edit]
+permission.ADD: [!group.template.course][Instructor][osp.matrix.scaffolding.delete]
+permission.ADD: [!group.template.course][Instructor][osp.matrix.scaffolding.publish]
+permission.ADD: [!group.template.course][Instructor][osp.matrix.scaffolding.export]
+permission.ADD: [!group.template.course][Instructor][osp.matrix.evaluate]
+permission.ADD: [!group.template.course][Instructor][osp.matrix.viewOwner]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.create]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.edit]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.delete]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.copy]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.comment]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.template.copy]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.template.publish]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.template.delete]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.template.create]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.template.edit]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.template.export]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.layout.publish]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.layout.delete]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.layout.create]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.layout.edit]
+permission.ADD: [!group.template.course][Instructor][osp.presentation.layout.suggestPublish]
+permission.ADD: [!group.template.course][Instructor][osp.wizard.publish]
+permission.ADD: [!group.template.course][Instructor][osp.wizard.delete]
+permission.ADD: [!group.template.course][Instructor][osp.wizard.create]
+permission.ADD: [!group.template.course][Instructor][osp.wizard.edit]
+permission.ADD: [!group.template.course][Instructor][osp.wizard.review]
+permission.ADD: [!group.template.course][Instructor][osp.wizard.export]
+
+permission.ADD: [!group.template.course][Affiliate][osp.style.globalPublish]
+permission.ADD: [!group.template.course][Affiliate][osp.style.publish]
+permission.ADD: [!group.template.course][Affiliate][osp.style.delete]
+permission.ADD: [!group.template.course][Affiliate][osp.style.create]
+permission.ADD: [!group.template.course][Affiliate][osp.style.edit]
+permission.ADD: [!group.template.course][Affiliate][osp.style.suggestGlobalPublish]
+permission.ADD: [!group.template.course][Affiliate][osp.help.glossary.delete]
+permission.ADD: [!group.template.course][Affiliate][osp.help.glossary.add]
+permission.ADD: [!group.template.course][Affiliate][osp.help.glossary.edit]
+permission.ADD: [!group.template.course][Affiliate][osp.help.glossary.export]
+permission.ADD: [!group.template.course][Affiliate][osp.matrix.review]
+permission.ADD: [!group.template.course][Affiliate][osp.matrix.scaffolding.create]
+permission.ADD: [!group.template.course][Affiliate][osp.matrix.scaffolding.edit]
+permission.ADD: [!group.template.course][Affiliate][osp.matrix.scaffolding.delete]
+permission.ADD: [!group.template.course][Affiliate][osp.matrix.scaffolding.publish]
+permission.ADD: [!group.template.course][Affiliate][osp.matrix.scaffolding.export]
+permission.ADD: [!group.template.course][Affiliate][osp.matrix.evaluate]
+permission.ADD: [!group.template.course][Affiliate][osp.matrix.viewOwner]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.create]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.edit]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.delete]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.copy]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.comment]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.template.copy]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.template.publish]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.template.delete]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.template.create]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.template.edit]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.template.export]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.layout.publish]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.layout.delete]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.layout.create]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.layout.edit]
+permission.ADD: [!group.template.course][Affiliate][osp.presentation.layout.suggestPublish]
+permission.ADD: [!group.template.course][Affiliate][osp.wizard.publish]
+permission.ADD: [!group.template.course][Affiliate][osp.wizard.delete]
+permission.ADD: [!group.template.course][Affiliate][osp.wizard.create]
+permission.ADD: [!group.template.course][Affiliate][osp.wizard.edit]
+permission.ADD: [!group.template.course][Affiliate][osp.wizard.review]
+permission.ADD: [!group.template.course][Affiliate][osp.wizard.export]
+
+permission.ADD: [!group.template.course][Owner][osp.style.globalPublish]
+permission.ADD: [!group.template.course][Owner][osp.style.publish]
+permission.ADD: [!group.template.course][Owner][osp.style.delete]
+permission.ADD: [!group.template.course][Owner][osp.style.create]
+permission.ADD: [!group.template.course][Owner][osp.style.edit]
+permission.ADD: [!group.template.course][Owner][osp.style.suggestGlobalPublish]
+permission.ADD: [!group.template.course][Owner][osp.help.glossary.delete]
+permission.ADD: [!group.template.course][Owner][osp.help.glossary.add]
+permission.ADD: [!group.template.course][Owner][osp.help.glossary.edit]
+permission.ADD: [!group.template.course][Owner][osp.help.glossary.export]
+permission.ADD: [!group.template.course][Owner][osp.matrix.review]
+permission.ADD: [!group.template.course][Owner][osp.matrix.scaffolding.create]
+permission.ADD: [!group.template.course][Owner][osp.matrix.scaffolding.edit]
+permission.ADD: [!group.template.course][Owner][osp.matrix.scaffolding.delete]
+permission.ADD: [!group.template.course][Owner][osp.matrix.scaffolding.publish]
+permission.ADD: [!group.template.course][Owner][osp.matrix.scaffolding.export]
+permission.ADD: [!group.template.course][Owner][osp.matrix.evaluate]
+permission.ADD: [!group.template.course][Owner][osp.matrix.viewOwner]
+permission.ADD: [!group.template.course][Owner][osp.presentation.create]
+permission.ADD: [!group.template.course][Owner][osp.presentation.edit]
+permission.ADD: [!group.template.course][Owner][osp.presentation.delete]
+permission.ADD: [!group.template.course][Owner][osp.presentation.copy]
+permission.ADD: [!group.template.course][Owner][osp.presentation.comment]
+permission.ADD: [!group.template.course][Owner][osp.presentation.template.copy]
+permission.ADD: [!group.template.course][Owner][osp.presentation.template.publish]
+permission.ADD: [!group.template.course][Owner][osp.presentation.template.delete]
+permission.ADD: [!group.template.course][Owner][osp.presentation.template.create]
+permission.ADD: [!group.template.course][Owner][osp.presentation.template.edit]
+permission.ADD: [!group.template.course][Owner][osp.presentation.template.export]
+permission.ADD: [!group.template.course][Owner][osp.presentation.layout.publish]
+permission.ADD: [!group.template.course][Owner][osp.presentation.layout.delete]
+permission.ADD: [!group.template.course][Owner][osp.presentation.layout.create]
+permission.ADD: [!group.template.course][Owner][osp.presentation.layout.edit]
+permission.ADD: [!group.template.course][Owner][osp.presentation.layout.suggestPublish]
+permission.ADD: [!group.template.course][Owner][osp.wizard.publish]
+permission.ADD: [!group.template.course][Owner][osp.wizard.delete]
+permission.ADD: [!group.template.course][Owner][osp.wizard.create]
+permission.ADD: [!group.template.course][Owner][osp.wizard.edit]
+permission.ADD: [!group.template.course][Owner][osp.wizard.review]
+permission.ADD: [!group.template.course][Owner][osp.wizard.export]
+
+permission.ADD: [!group.template.course][Student][osp.style.create]
+permission.ADD: [!group.template.course][Student][osp.matrix.scaffolding.use]
+permission.ADD: [!group.template.course][Student][osp.presentation.create]
+permission.ADD: [!group.template.course][Student][osp.presentation.copy]
+permission.ADD: [!group.template.course][Student][osp.presentation.comment]
+permission.ADD: [!group.template.course][Student][osp.presentation.layout.create]
+permission.ADD: [!group.template.course][Student][osp.presentation.layout.delete]
+permission.ADD: [!group.template.course][Student][osp.presentation.layout.edit]
+permission.ADD: [!group.template.course][Student][osp.wizard.view]
+
+permission.ADD: [!group.template.course][Assistant][osp.style.create]
+permission.ADD: [!group.template.course][Assistant][osp.matrix.scaffolding.use]
+permission.ADD: [!group.template.course][Assistant][osp.presentation.create]
+permission.ADD: [!group.template.course][Assistant][osp.presentation.copy]
+permission.ADD: [!group.template.course][Assistant][osp.presentation.comment]
+permission.ADD: [!group.template.course][Assistant][osp.presentation.layout.create]
+permission.ADD: [!group.template.course][Assistant][osp.presentation.layout.delete]
+permission.ADD: [!group.template.course][Assistant][osp.presentation.layout.edit]
+permission.ADD: [!group.template.course][Assistant][osp.wizard.view]
+
+-- no group permissions for Libaraian, Observer roles in course sites
+
+
+-- group permissions for course sites
+permission.ADD: [!group.template.project][Organizer][osp.style.globalPublish]
+permission.ADD: [!group.template.project][Organizer][osp.style.publish]
+permission.ADD: [!group.template.project][Organizer][osp.style.delete]
+permission.ADD: [!group.template.project][Organizer][osp.style.create]
+permission.ADD: [!group.template.project][Organizer][osp.style.edit]
+permission.ADD: [!group.template.project][Organizer][osp.style.suggestGlobalPublish]
+permission.ADD: [!group.template.project][Organizer][osp.help.glossary.delete]
+permission.ADD: [!group.template.project][Organizer][osp.help.glossary.add]
+permission.ADD: [!group.template.project][Organizer][osp.help.glossary.edit]
+permission.ADD: [!group.template.project][Organizer][osp.help.glossary.export]
+permission.ADD: [!group.template.project][Organizer][osp.matrix.review]
+permission.ADD: [!group.template.project][Organizer][osp.matrix.scaffolding.create]
+permission.ADD: [!group.template.project][Organizer][osp.matrix.scaffolding.edit]
+permission.ADD: [!group.template.project][Organizer][osp.matrix.scaffolding.delete]
+permission.ADD: [!group.template.project][Organizer][osp.matrix.scaffolding.publish]
+permission.ADD: [!group.template.project][Organizer][osp.matrix.scaffolding.export]
+permission.ADD: [!group.template.project][Organizer][osp.matrix.evaluate]
+permission.ADD: [!group.template.project][Organizer][osp.matrix.viewOwner]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.create]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.edit]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.delete]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.copy]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.comment]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.template.copy]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.template.publish]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.template.delete]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.template.create]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.template.edit]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.template.export]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.layout.publish]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.layout.delete]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.layout.create]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.layout.edit]
+permission.ADD: [!group.template.project][Organizer][osp.presentation.layout.suggestPublish]
+permission.ADD: [!group.template.project][Organizer][osp.wizard.publish]
+permission.ADD: [!group.template.project][Organizer][osp.wizard.delete]
+permission.ADD: [!group.template.project][Organizer][osp.wizard.create]
+permission.ADD: [!group.template.project][Organizer][osp.wizard.edit]
+permission.ADD: [!group.template.project][Organizer][osp.wizard.review]
+permission.ADD: [!group.template.project][Organizer][osp.wizard.export]
+
+permission.ADD: [!group.template.project][Owner][osp.style.globalPublish]
+permission.ADD: [!group.template.project][Owner][osp.style.publish]
+permission.ADD: [!group.template.project][Owner][osp.style.delete]
+permission.ADD: [!group.template.project][Owner][osp.style.create]
+permission.ADD: [!group.template.project][Owner][osp.style.edit]
+permission.ADD: [!group.template.project][Owner][osp.style.suggestGlobalPublish]
+permission.ADD: [!group.template.project][Owner][osp.help.glossary.delete]
+permission.ADD: [!group.template.project][Owner][osp.help.glossary.add]
+permission.ADD: [!group.template.project][Owner][osp.help.glossary.edit]
+permission.ADD: [!group.template.project][Owner][osp.help.glossary.export]
+permission.ADD: [!group.template.project][Owner][osp.matrix.review]
+permission.ADD: [!group.template.project][Owner][osp.matrix.scaffolding.create]
+permission.ADD: [!group.template.project][Owner][osp.matrix.scaffolding.edit]
+permission.ADD: [!group.template.project][Owner][osp.matrix.scaffolding.delete]
+permission.ADD: [!group.template.project][Owner][osp.matrix.scaffolding.publish]
+permission.ADD: [!group.template.project][Owner][osp.matrix.scaffolding.export]
+permission.ADD: [!group.template.project][Owner][osp.matrix.evaluate]
+permission.ADD: [!group.template.project][Owner][osp.matrix.viewOwner]
+permission.ADD: [!group.template.project][Owner][osp.presentation.create]
+permission.ADD: [!group.template.project][Owner][osp.presentation.edit]
+permission.ADD: [!group.template.project][Owner][osp.presentation.delete]
+permission.ADD: [!group.template.project][Owner][osp.presentation.copy]
+permission.ADD: [!group.template.project][Owner][osp.presentation.comment]
+permission.ADD: [!group.template.project][Owner][osp.presentation.template.copy]
+permission.ADD: [!group.template.project][Owner][osp.presentation.template.publish]
+permission.ADD: [!group.template.project][Owner][osp.presentation.template.delete]
+permission.ADD: [!group.template.project][Owner][osp.presentation.template.create]
+permission.ADD: [!group.template.project][Owner][osp.presentation.template.edit]
+permission.ADD: [!group.template.project][Owner][osp.presentation.template.export]
+permission.ADD: [!group.template.project][Owner][osp.presentation.layout.publish]
+permission.ADD: [!group.template.project][Owner][osp.presentation.layout.delete]
+permission.ADD: [!group.template.project][Owner][osp.presentation.layout.create]
+permission.ADD: [!group.template.project][Owner][osp.presentation.layout.edit]
+permission.ADD: [!group.template.project][Owner][osp.presentation.layout.suggestPublish]
+permission.ADD: [!group.template.project][Owner][osp.wizard.publish]
+permission.ADD: [!group.template.project][Owner][osp.wizard.delete]
+permission.ADD: [!group.template.project][Owner][osp.wizard.create]
+permission.ADD: [!group.template.project][Owner][osp.wizard.edit]
+permission.ADD: [!group.template.project][Owner][osp.wizard.review]
+permission.ADD: [!group.template.project][Owner][osp.wizard.export]
+
+permission.ADD: [!group.template.project][Member][osp.style.create]
+permission.ADD: [!group.template.project][Member][osp.matrix.scaffolding.use]
+permission.ADD: [!group.template.project][Member][osp.presentation.create]
+permission.ADD: [!group.template.project][Member][osp.presentation.copy]
+permission.ADD: [!group.template.project][Member][osp.presentation.comment]
+permission.ADD: [!group.template.project][Member][osp.presentation.layout.create]
+permission.ADD: [!group.template.project][Member][osp.presentation.layout.delete]
+permission.ADD: [!group.template.project][Member][osp.presentation.layout.edit]
+permission.ADD: [!group.template.project][Member][osp.wizard.view]
+
+-- no osp Observer permissions by default for project groups
+
+
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.style.globalPublish]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.style.publish]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.style.delete]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.style.create]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.style.edit]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.style.suggestGlobalPublish]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.help.glossary.delete]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.help.glossary.add]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.help.glossary.edit]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.help.glossary.export]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.matrix.review]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.matrix.scaffolding.create]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.matrix.scaffolding.edit]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.matrix.scaffolding.delete]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.matrix.scaffolding.publish]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.matrix.scaffolding.export]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.matrix.evaluate]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.matrix.viewOwner]
+
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.create]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.edit]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.delete]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.copy]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.comment]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.template.copy]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.template.publish]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.template.delete]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.template.create]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.template.edit]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.template.export]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.layout.publish]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.layout.delete]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.layout.create]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.layout.edit]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.presentation.layout.suggestPublish]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.wizard.publish]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.wizard.delete]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.wizard.create]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.wizard.edit]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.wizard.review]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][osp.wizard.export]
+
+permission.ADD: [!group.template.portfolio][Reviewer][reports.run]
+permission.ADD: [!group.template.portfolio][Reviewer][reports.view]
+
+permission.ADD: [!group.template.portfolio][Reviewer][osp.matrix.review]
+permission.ADD: [!group.template.portfolio][Reviewer][osp.presentation.copy]
+permission.ADD: [!group.template.portfolio][Reviewer][osp.presentation.comment]
+permission.ADD: [!group.template.portfolio][Reviewer][osp.wizard.review]
+
+permission.ADD: [!group.template.portfolio][Evaluator][reports.run]
+permission.ADD: [!group.template.portfolio][Evaluator][reports.view]
+
+permission.ADD: [!group.template.portfolio][Evaluator][osp.matrix.evaluate]
+permission.ADD: [!group.template.portfolio][Evaluator][osp.matrix.viewOwner]
+permission.ADD: [!group.template.portfolio][Evaluator][osp.presentation.copy]
+permission.ADD: [!group.template.portfolio][Evaluator][osp.presentation.comment]
+permission.ADD: [!group.template.portfolio][Evaluator][osp.wizard.evaluate]
+
+permission.ADD: [!group.template.course][Instructor][reports.view]
+permission.ADD: [!group.template.course][Instructor][reports.run]
+permission.ADD: [!group.template.course][Instructor][reports.create]
+permission.ADD: [!group.template.course][Instructor][reports.edit]
+permission.ADD: [!group.template.course][Instructor][reports.delete]
+permission.ADD: [!group.template.course][Instructor][reports.share]
+
+permission.ADD: [!group.template.course][Assistant][reports.view]
+permission.ADD: [!group.template.course][Assistant][reports.run]
+permission.ADD: [!group.template.course][Assistant][reports.share]
+
+permission.ADD: [!group.template.portfolio][CIG Coordinator][reports.view]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][reports.run]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][reports.create]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][reports.edit]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][reports.delete]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][reports.share]
+
+permission.DELETE: [!group.template.portfolio][CIG Participant][reports.run]
+permission.DELETE: [!group.template.portfolio][CIG Participant][reports.view]
+
+
+
+-- =========================================
+-- *** Needed
+
+--OSP SAK-10396: Add a default layout to be specified for a portfolio
+alter table osp_presentation add layout_id varchar2(36) NULL;
+
+
+--OSP SAK-10553
+alter table osp_wizard_page_def add SUPPRESS_ITEMS number(1, 0) default '0' not null; 
+
+
+--OSP SAK-10612
+alter table osp_scaffolding add reviewerGroupAccess number(10, 0) default '0' not null;
+
+--OSP SAK-10832
+create table osp_wiz_page_def_attachments
+(
+	wiz_page_def_id		varchar2(36)	not null,
+	artifact_id			varchar2(255)	null,
+	seq_num				number(10,0)	not null,
+	PRIMARY KEY(wiz_page_def_id,seq_num)
+);
+
+-- =========================================
+-- *** Needed (or harmless)
+
+-- SAK-13205: missing default permissions for osp tools
+
+permission.ADD: [!group.template.portfolio][CIG Participant][osp.matrix.scaffolding.use]
+permission.ADD: [!group.template.portfolio][CIG Participant][osp.presentation.comment]
+permission.ADD: [!group.template.portfolio][CIG Participant][osp.presentation.copy]
+permission.ADD: [!group.template.portfolio][CIG Participant][osp.presentation.create]
+permission.ADD: [!group.template.portfolio][CIG Participant][osp.presentation.layout.create]
+permission.ADD: [!group.template.portfolio][CIG Participant][osp.presentation.layout.delete]
+permission.ADD: [!group.template.portfolio][CIG Participant][osp.presentation.layout.edit]
+permission.ADD: [!group.template.portfolio][CIG Participant][osp.style.create]
+permission.ADD: [!group.template.portfolio][CIG Participant][osp.wizard.view]
+permission.ADD: [!site.template.portfolio][CIG Participant][osp.matrix.scaffolding.use]
+permission.ADD: [!site.template.portfolio][CIG Participant][osp.presentation.comment]
+permission.ADD: [!site.template.portfolio][CIG Participant][osp.presentation.copy]
+permission.ADD: [!site.template.portfolio][CIG Participant][osp.presentation.create]
+permission.ADD: [!site.template.portfolio][CIG Participant][osp.presentation.layout.create]
+permission.ADD: [!site.template.portfolio][CIG Participant][osp.presentation.layout.delete]
+permission.ADD: [!site.template.portfolio][CIG Participant][osp.presentation.layout.edit]
+permission.ADD: [!site.template.portfolio][CIG Participant][osp.style.create]
+permission.ADD: [!site.template.portfolio][CIG Participant][osp.wizard.view]
+
+-- backfill permissions into 'my workspace'.
+INSERT INTO SAKAI_REALM_RL_FN SELECT DISTINCT SR.REALM_KEY, SRR.ROLE_KEY, SRF.FUNCTION_KEY  from SAKAI_REALM SR, SAKAI_REALM_ROLE SRR, SAKAI_REALM_FUNCTION SRF where SR.REALM_ID like '/site/~%' AND SRR.ROLE_NAME = 'maintain' AND SRF.FUNCTION_NAME = 'osp.matrix.scaffolding.use';
+
+
+-- =========================================
+-- *** Needed unless not doing reports.
+
+--Reports conversion SAK-10545
+RENAME osp_report_xsl TO report_xsl_file;
+
+ALTER TABLE report_xsl_file 
+	DROP PRIMARY KEY;
+
+ALTER TABLE report_xsl_file 
+	RENAME COLUMN reportXslFileId TO xslFileHash;
+
+ALTER TABLE report_xsl_file 
+	MODIFY (xslFileHash VARCHAR2(255 CHAR));
+
+
+ALTER TABLE report_xsl_file 
+	ADD (PRIMARY KEY (reportDefId, xslFileHash));
+
+RENAME osp_report_def_xml TO reports_def_xml;
+RENAME osp_reports_params TO reports_param;
+RENAME osp_reports TO reports_report;
+RENAME osp_reports_results TO reports_result;
+
+-- =========================================
+-- *** Needed
+-- Add colums to search to improve performance SAK-9865
+alter table searchbuilderitem add itemscope integer;
+create index isearchbuilderitem_sco on searchbuilderitem (itemscope);
+
+-- =========================================
+-- *** Needed
+
+-- SAK-11245 -- new search indexer
+
+create table search_transaction ( 
+	txname varchar2(64) not null, 
+	txid number(19,0),  
+	primary key (txname));
+	
+create table search_journal ( 
+	txid number(19,0)  not null, 
+	txts number(19,0) not null, 
+	indexwriter varchar2(255)  not null, 
+	status varchar2(32) not null,  
+	primary key  (txid) );
+
+create table search_node_status ( 
+	jid number(19,0)  not null, 
+	jidts number(19,0)  not null, 
+	serverid varchar2(255)  not null, 
+	primary key (serverid) );
+
+		
+insert into search_transaction ( txid, txname ) values (0,'optimizeSequence');
+insert into search_transaction ( txid, txname ) values (0,'mergeSequence');
+insert into search_transaction ( txid, txname ) values (0,'sharedOptimizeSequence');
+insert into search_transaction ( txid, txname ) values (0,'indexerTransaction');
+
+-- =========================================
+-- *** Included (what about indices?)
+
+-- SAK-11204
+
+-- ALTER TABLE CALENDAR_EVENT ADD (RANGE_START INTEGER);
+-- ALTER TABLE CALENDAR_EVENT ADD (RANGE_END INTEGER);
+
+-- CREATE INDEX CALENDAR_EVENT_RSTART ON CALENDAR_EVENT(RANGE_START);
+-- CREATE INDEX CALENDAR_EVENT_REND ON CALENDAR_EVENT(RANGE_END);
+
+
+-- =========================================
+-- *** Probably needed (what about indices?)
+
+-- SAK-11256 - Added T1 code to book.title ris_identifier field
+update CITATION_SCHEMA_FIELD set PROPERTY_VALUE = 'BT,T1' where SCHEMA_ID = 'book' and FIELD_ID = 'title' and PROPERTY_NAME = 'sakai:ris_identifier';
+
+-- SAK-11918 - No longer replacing schema tables but adding indexes for performance.
+create index CITATION_COLLECTION_INDEX on CITATION_COLLECTION (COLLECTION_ID);
+create index CITATION_CITATION_INDEX on CITATION_CITATION (CITATION_ID);
+create index CITATION_SCHEMA_INDEX on CITATION_SCHEMA (SCHEMA_ID);
+create index CITATION_SCHEMA_FIELD_INDEX on CITATION_SCHEMA_FIELD (SCHEMA_ID, FIELD_ID);
+
+create index CITATION_COLLECTION_INDEX2 on CITATION_COLLECTION (COLLECTION_ID, PROPERTY_NAME);
+create index CITATION_CITATION_INDEX2 on CITATION_CITATION (CITATION_ID, PROPERTY_NAME);
+create index CITATION_SCHEMA_INDEX2 on CITATION_SCHEMA (SCHEMA_ID, PROPERTY_NAME);
+create index CITATION_SCHEMA_FIELD_INDEX2 on CITATION_SCHEMA_FIELD (SCHEMA_ID, FIELD_ID, PROPERTY_NAME);
+
+
+
+-- =========================================
+-- *** Needed (if using roster).
+
+-- SAK-11935 -- New Roster permissions (and new meanings for old permissions)
+
+-- Remove all roster permissions from all sites and groups, since the meanings of these permissions have changed
+permission.FUNCTION.DELETE: [roster.%]
+delete from SAKAI_REALM_RL_FN where function_key in (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME like 'roster.%');
+
+-- Remove the roster permissions themselves
+delete from SAKAI_REALM_FUNCTION where function_name like 'roster.%';
+
+-- Add the new roster permissions
+permission.FUNCTION.ADD: [roster.viewallmembers]
+permission.FUNCTION.ADD: [roster.viewhidden]
+permission.FUNCTION.ADD: [roster.viewgroup]
+permission.FUNCTION.ADD: [roster.viewenrollmentstatus]
+permission.FUNCTION.ADD: [roster.viewprofile]
+permission.FUNCTION.ADD: [roster.viewofficialphoto]
+permission.FUNCTION.ADD: [roster.export]
+
+----------------------------------------------------------------------------------------------------------------------------------------
+-- backfill roster permissions into existing sites and groups
+----------------------------------------------------------------------------------------------------------------------------------------
+CREATE TABLE PERMISSIONS_SRC_TEMP (ROLE_NAME VARCHAR(99), FUNCTION_NAME VARCHAR(99));
+CREATE TABLE PERMISSIONS_TEMP (ROLE_KEY INTEGER, FUNCTION_KEY INTEGER);
+
+-- Backfill sites
+permission.BACKFILL: [Instructor][roster.viewallmembers]
+permission.BACKFILL: [Instructor][roster.viewhidden]
+permission.BACKFILL: [Instructor][roster.viewgroup]
+permission.BACKFILL: [Instructor][roster.viewenrollmentstatus]
+permission.BACKFILL: [Instructor][roster.viewprofile]
+permission.BACKFILL: [Instructor][roster.viewofficialphoto]
+permission.BACKFILL: [Instructor][roster.export]
+
+permission.BACKFILL: [Owner][roster.viewallmembers]
+permission.BACKFILL: [Owner][roster.viewhidden]
+permission.BACKFILL: [Owner][roster.viewgroup]
+permission.BACKFILL: [Owner][roster.viewenrollmentstatus]
+permission.BACKFILL: [Owner][roster.viewprofile]
+permission.BACKFILL: [Owner][roster.viewofficialphoto]
+permission.BACKFILL: [Owner][roster.export]
+
+permission.BACKFILL: [Organizer][roster.viewallmembers]
+permission.BACKFILL: [Organizer][roster.viewhidden]
+permission.BACKFILL: [Organizer][roster.viewgroup]
+permission.BACKFILL: [Organizer][roster.viewenrollmentstatus]
+permission.BACKFILL: [Organizer][roster.viewprofile]
+permission.BACKFILL: [Organizer][roster.viewofficialphoto]
+permission.BACKFILL: [Organizer][roster.export]
+
+permission.BACKFILL: [Affiliate][roster.viewallmembers]
+permission.BACKFILL: [Affiliate][roster.viewhidden]
+permission.BACKFILL: [Affiliate][roster.viewgroup]
+permission.BACKFILL: [Affiliate][roster.viewenrollmentstatus]
+permission.BACKFILL: [Affiliate][roster.viewprofile]
+permission.BACKFILL: [Affiliate][roster.viewofficialphoto]
+permission.BACKFILL: [Affiliate][roster.export]
+
+permission.BACKFILL: [Assistant][roster.viewprofile]
+permission.BACKFILL: [Assistant][roster.viewofficialphoto]
+permission.BACKFILL: [Assistant][roster.export]
+
+permission.BACKFILL: [Member][roster.viewallmembers]
+permission.BACKFILL: [Member][roster.viewprofile]
+permission.BACKFILL: [Member][roster.export]
+
+permission.BACKFILL: [Librarian][roster.viewallmembers]
+permission.BACKFILL: [Librarian][roster.viewprofile]
+permission.BACKFILL: [Librarian][roster.export]
+
+permission.BACKFILL: [maintain][roster.viewallmembers]
+permission.BACKFILL: [maintain][roster.viewgroup]
+permission.BACKFILL: [maintain][roster.viewprofile]
+permission.BACKFILL: [maintain][roster.export]
+
+permission.BACKFILL: [access][roster.viewallmembers]
+permission.BACKFILL: [access][roster.viewprofile]
+permission.BACKFILL: [access][roster.export]
+
+-- backfill permissions for Test Center
+permission.BACKFILL: [Owner][mneme.manage]
+permission.BACKFILL: [Owner][mneme.grade]
+
+permission.BACKFILL: [Instructor][mneme.manage]
+permission.BACKFILL: [Instructor][mneme.grade]
+
+permission.BACKFILL: [Assistant][mneme.manage]
+permission.BACKFILL: [Assistant][mneme.grade]
+
+permission.BACKFILL: [Affiliate][mneme.manage]
+permission.BACKFILL: [Affiliate][mneme.grade]
+
+permission.BACKFILL: [Organizer][mneme.manage]
+permission.BACKFILL: [Organizer][mneme.grade]
+
+permission.BACKFILL: [Student][mneme.submit]
+
+permission.BACKFILL: [Member][mneme.submit]
+
+-- backfill for content.hidden - we never did that I think
+permission.BACKFILL: [Owner][content.hidden]
+permission.BACKFILL: [Instructor][content.hidden]
+permission.BACKFILL: [Organizer][content.hidden]
+permission.BACKFILL: [Assistant][content.hidden]
+permission.BACKFILL: [Affiliate][content.hidden]
+permission.BACKFILL: [Librarian][content.hidden]
+
+
+-- Lookup the role and function keys
+insert into PERMISSIONS_TEMP (ROLE_KEY, FUNCTION_KEY)
+select SRR.ROLE_KEY, SRF.FUNCTION_KEY
+from PERMISSIONS_SRC_TEMP TMPSRC
+join SAKAI_REALM_ROLE SRR on (TMPSRC.ROLE_NAME = SRR.ROLE_NAME)
+join SAKAI_REALM_FUNCTION SRF on (TMPSRC.FUNCTION_NAME = SRF.FUNCTION_NAME);
+
+-- Insert the new functions into the roles of any existing realm that has the role (don't convert the "!site.helper" or any group realms)
+insert into SAKAI_REALM_RL_FN (REALM_KEY, ROLE_KEY, FUNCTION_KEY)
+select
+   SRRFD.REALM_KEY, SRRFD.ROLE_KEY, TMP.FUNCTION_KEY
+from
+   (select distinct SRRF.REALM_KEY, SRRF.ROLE_KEY from SAKAI_REALM_RL_FN SRRF) SRRFD
+   join PERMISSIONS_TEMP TMP on (SRRFD.ROLE_KEY = TMP.ROLE_KEY)
+   join SAKAI_REALM SR on (SRRFD.REALM_KEY = SR.REALM_KEY)
+   where SR.REALM_ID not like '!%'
+   and SR.REALM_ID like '/site/%'
+   and SR.REALM_ID not like '/site/~%'
+   and SR.REALM_ID not like '/site/!%'
+   and SR.REALM_ID not like '/site/%/group/%'
+   and not exists (
+       select 1
+           from SAKAI_REALM_RL_FN SRRFI
+           where SRRFI.REALM_KEY=SRRFD.REALM_KEY and SRRFI.ROLE_KEY=SRRFD.ROLE_KEY and  SRRFI.FUNCTION_KEY=TMP.FUNCTION_KEY
+   );
+
+-- clean up the temp tables to use again for group permissions
+delete from PERMISSIONS_TEMP;
+delete from PERMISSIONS_SRC_TEMP;
+
+
+
+-- Backfill groups with roster permissions
+permission.BACKFILL: [Assistant][roster.viewallmembers]
+permission.BACKFILL: [Assistant][roster.viewhidden]
+permission.BACKFILL: [Assistant][roster.viewgroup]
+
+permission.BACKFILL: [Student][roster.viewallmembers]
+permission.BACKFILL: [Student][roster.viewgroup]
+
+permission.BACKFILL: [Member][roster.viewallmembers]
+permission.BACKFILL: [Member][roster.viewgroup]
+
+permission.BACKFILL: [access][roster.viewgroup]
+
+-- lookup the role and function numbers
+insert into PERMISSIONS_TEMP (ROLE_KEY, FUNCTION_KEY)
+select SRR.ROLE_KEY, SRF.FUNCTION_KEY
+from PERMISSIONS_SRC_TEMP TMPSRC
+join SAKAI_REALM_ROLE SRR on (TMPSRC.ROLE_NAME = SRR.ROLE_NAME)
+join SAKAI_REALM_FUNCTION SRF on (TMPSRC.FUNCTION_NAME = SRF.FUNCTION_NAME);
+
+-- insert the new functions into the roles of any existing realm that has the role (don't convert the "!site.helper")
+insert into SAKAI_REALM_RL_FN (REALM_KEY, ROLE_KEY, FUNCTION_KEY)
+select
+   SRRFD.REALM_KEY, SRRFD.ROLE_KEY, TMP.FUNCTION_KEY
+from
+   (select distinct SRRF.REALM_KEY, SRRF.ROLE_KEY from SAKAI_REALM_RL_FN SRRF) SRRFD
+   join PERMISSIONS_TEMP TMP on (SRRFD.ROLE_KEY = TMP.ROLE_KEY)
+   join SAKAI_REALM SR on (SRRFD.REALM_KEY = SR.REALM_KEY)
+   where SR.REALM_ID not like '!%'
+   And SR.REALM_ID not like '/site/~%'
+   and SR.REALM_ID not like '/site/!%'
+   and SR.REALM_ID like '/site/%/group/%'
+   and not exists (
+       select 1
+           from SAKAI_REALM_RL_FN SRRFI
+           where SRRFI.REALM_KEY=SRRFD.REALM_KEY and SRRFI.ROLE_KEY=SRRFD.ROLE_KEY and  SRRFI.FUNCTION_KEY=TMP.FUNCTION_KEY
+   );
+
+-- remove the temp tables
+drop table PERMISSIONS_TEMP;
+drop table PERMISSIONS_SRC_TEMP;
+
+-- Update !site.template
+permission.ADD: [!site.template][access][roster.viewallmembers]
+permission.ADD: [!site.template][access][roster.viewprofile]
+permission.ADD: [!site.template][access][roster.export]
+
+permission.ADD: [!site.template][maintain][roster.viewgroup]
+permission.ADD: [!site.template][maintain][roster.viewallmembers]
+permission.ADD: [!site.template][maintain][roster.viewprofile]
+permission.ADD: [!site.template][maintain][roster.export]
+
+-- Update !site.template.course
+permission.ADD: [!site.template.course][Instructor][roster.viewallmembers]
+permission.ADD: [!site.template.course][Instructor][roster.viewenrollmentstatus]
+permission.ADD: [!site.template.course][Instructor][roster.viewhidden]
+permission.ADD: [!site.template.course][Instructor][roster.viewgroup]
+permission.ADD: [!site.template.course][Instructor][roster.viewofficialphoto]
+permission.ADD: [!site.template.course][Instructor][roster.viewprofile]
+permission.ADD: [!site.template.course][Instructor][roster.export]
+
+permission.ADD: [!site.template.course][Affiliate][roster.viewallmembers]
+permission.ADD: [!site.template.course][Affiliate][roster.viewenrollmentstatus]
+permission.ADD: [!site.template.course][Affiliate][roster.viewhidden]
+permission.ADD: [!site.template.course][Affiliate][roster.viewgroup]
+permission.ADD: [!site.template.course][Affiliate][roster.viewofficialphoto]
+permission.ADD: [!site.template.course][Affiliate][roster.viewprofile]
+permission.ADD: [!site.template.course][Affiliate][roster.export]
+
+permission.ADD: [!site.template.course][Owner][roster.viewallmembers]
+permission.ADD: [!site.template.course][Owner][roster.viewenrollmentstatus]
+permission.ADD: [!site.template.course][Owner][roster.viewhidden]
+permission.ADD: [!site.template.course][Owner][roster.viewgroup]
+permission.ADD: [!site.template.course][Owner][roster.viewofficialphoto]
+permission.ADD: [!site.template.course][Owner][roster.viewprofile]
+permission.ADD: [!site.template.course][Owner][roster.export]
+
+permission.ADD: [!site.template.course][Assistant][roster.viewprofile]
+permission.ADD: [!site.template.course][Assistant][roster.viewofficialphoto]
+permission.ADD: [!site.template.course][Assistant][roster.export]
+
+permission.ADD: [!site.template.course][Librarian][roster.viewprofile]
+permission.ADD: [!site.template.course][Librarian][roster.viewofficialphoto]
+permission.ADD: [!site.template.course][Librarian][roster.export]
+
+permission.ADD: [!site.template.course][Student][roster.viewprofile]
+
+-- update !site.template.project
+permission.ADD: [!site.template.project][Organizer][roster.viewallmembers]
+permission.ADD: [!site.template.project][Organizer][roster.viewenrollmentstatus]
+permission.ADD: [!site.template.project][Organizer][roster.viewhidden]
+permission.ADD: [!site.template.project][Organizer][roster.viewgroup]
+permission.ADD: [!site.template.project][Organizer][roster.viewofficialphoto]
+permission.ADD: [!site.template.project][Organizer][roster.viewprofile]
+permission.ADD: [!site.template.project][Organizer][roster.export]
+
+permission.ADD: [!site.template.project][Owner][roster.viewallmembers]
+permission.ADD: [!site.template.project][Owner][roster.viewenrollmentstatus]
+permission.ADD: [!site.template.project][Owner][roster.viewhidden]
+permission.ADD: [!site.template.project][Owner][roster.viewgroup]
+permission.ADD: [!site.template.project][Owner][roster.viewofficialphoto]
+permission.ADD: [!site.template.project][Owner][roster.viewprofile]
+permission.ADD: [!site.template.project][Owner][roster.export]
+
+permission.ADD: [!site.template.project][Member][roster.viewprofile]
+permission.ADD: [!site.template.project][Member][roster.viewofficialphoto]
+permission.ADD: [!site.template.project][Member][roster.export]
+
+permission.ADD: [!site.template.project][Observer][roster.viewprofile]
+
+-- Update !group.template
+permission.ADD: [!group.template][access][roster.viewgroup]
+
+-- Update !group.template.course
+permission.ADD: [!group.template.course][Assistant][roster.viewallmembers]
+permission.ADD: [!group.template.course][Assistant][roster.viewhidden]
+permission.ADD: [!group.template.course][Assistant][roster.viewgroup]
+
+permission.ADD: [!group.template.course][Student][roster.viewallmembers]
+permission.ADD: [!group.template.course][Student][roster.viewgroup]
+
+-- Update !group.template.project
+permission.ADD: [!group.template.project][Member][roster.viewallmembers]
+permission.ADD: [!group.template.project][Member][roster.viewhidden]
+permission.ADD: [!group.template.project][Member][roster.viewgroup]
+
+permission.ADD: [!group.template.project][Observer][roster.viewallmembers]
+permission.ADD: [!group.template.project][Observer][roster.viewgroup]
+
+-- =========================================
+-- *** Included (not needed)
+-- SAK-11821 - eliminate duplicates in ASSIGNMENT_SUBMISSION
+-- DELETE FROM ASSIGNMENT_SUBMISSION WHERE CONTEXT IS NULL;
+-- ALTER TABLE ASSIGNMENT_SUBMISSION MODIFY CONTEXT NOT NULL;
+-- alter table ASSIGNMENT_SUBMISSION add SUBMITTER_ID VARCHAR2 (99) NOT NULL;
+-- alter table ASSIGNMENT_SUBMISSION add SUBMIT_TIME VARCHAR2 (99) default null;
+-- alter table ASSIGNMENT_SUBMISSION add SUBMITTED VARCHAR2 (6) default null;
+-- alter table ASSIGNMENT_SUBMISSION add GRADED VARCHAR2 (6) default null;
+-- CREATE UNIQUE INDEX ASN_SUB_SUB_INDEX ON ASSIGNMENT_SUBMISSION
+-- (
+-- 	CONTEXT,SUBMITTER_ID
+-- );
+
+-- =========================================
+-- *** Needed
+
+--SAK-8957 new colums for polls
+alter table POLL_POLL add POLL_UUID varchar2(255);
+alter table POLL_OPTION add OPTION_UUID varchar2(255);
+
+
+-- Update the realm tables to add new permission, 'site.upd.site.mbrshp' SAK-10990
+
+permission.FUNCTION.ADD: [site.upd.site.mbrshp]
+
+-- for those exising roles with site.upd we need to add 'site.upd.site.mbrshp' and 'site.upd.grp.mbrshp' to them
+-- what follows here is two approaches to do this
+
+-- 1 if only the templates need to be updated, then run the following:
+permission.ADD: [!site.user][maintain][site.upd.site.mbrshp]
+permission.ADD: [!site.user][maintain][site.upd.grp.mbrshp]
+
+permission.ADD: [!site.template][maintain][site.upd.site.mbrshp]
+permission.ADD: [!site.template][maintain][site.upd.grp.mbrshp]
+
+permission.ADD: [!site.template.course][Instructor][site.upd.site.mbrshp]
+permission.ADD: [!site.template.course][Instructor][site.upd.grp.mbrshp]
+
+permission.ADD: [!site.template.course][Owner][site.upd.site.mbrshp]
+permission.ADD: [!site.template.course][Owner][site.upd.grp.mbrshp]
+
+permission.ADD: [!site.template.course][Assistant][site.upd.site.mbrshp]
+permission.ADD: [!site.template.course][Assistant][site.upd.grp.mbrshp]
+
+permission.ADD: [!site.template.course][Affiliate][site.upd.site.mbrshp]
+permission.ADD: [!site.template.course][Affiliate][site.upd.grp.mbrshp]
+
+permission.ADD: [!site.template.group][Owner][site.upd.site.mbrshp]
+permission.ADD: [!site.template.group][Owner][site.upd.grp.mbrshp]
+
+permission.ADD: [!site.template.group][Organizer][site.upd.site.mbrshp]
+permission.ADD: [!site.template.group][Organizer][site.upd.grp.mbrshp]
+
+permission.ADD: [!site.template.portfolio][CIG Coordinator][site.upd.site.mbrshp]
+permission.ADD: [!site.template.portfolio][CIG Coordinator][site.upd.grp.mbrshp]
+
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][site.upd.site.mbrshp]
+permission.ADD: [!site.template.portfolioAdmin][Program Admin][site.upd.grp.mbrshp]
+
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][site.upd.site.mbrshp]
+permission.ADD: [!site.template.portfolioAdmin][Program Coordinator][site.upd.grp.mbrshp]
+
+permission.ADD: [!group.template.portfolio][CIG Coordinator][site.upd.site.mbrshp]
+permission.ADD: [!group.template.portfolio][CIG Coordinator][site.upd.grp.mbrshp]
+
+permission.ADD: [/site/mercury][maintain][site.upd.site.mbrshp]
+permission.ADD: [/site/mercury][maintain][site.upd.grp.mbrshp]
+
+-- 2 if need to update all existing realms
+-- for each realm that has a role matching something in this table, we will add to that role the function from this table
+CREATE TABLE PERMISSIONS_SRC_TEMP (ROLE_NAME VARCHAR(99), FUNCTION_NAME VARCHAR(99));
+
+permission.BACKFILL: [maintain][site.upd.site.mbrshp]
+permission.BACKFILL: [maintain][site.upd.grp.mbrshp]
+
+permission.BACKFILL: [Instructor][site.upd.site.mbrshp]
+permission.BACKFILL: [Instructor][site.upd.grp.mbrshp]
+
+permission.BACKFILL: [Organizer][site.upd.site.mbrshp]
+permission.BACKFILL: [Organizer][site.upd.grp.mbrshp]
+
+permission.BACKFILL: [Owner][site.upd.site.mbrshp]
+permission.BACKFILL: [Owner][site.upd.grp.mbrshp]
+
+permission.BACKFILL: [Affiliate][site.upd.site.mbrshp]
+permission.BACKFILL: [Affiliate][site.upd.grp.mbrshp]
+
+permission.BACKFILL: [Assistant][site.upd.site.mbrshp]
+permission.BACKFILL: [Assistant][site.upd.grp.mbrshp]
+
+permission.BACKFILL: [CIG Coordinator][site.upd.site.mbrshp]
+permission.BACKFILL: [CIG Coordinator][site.upd.grp.mbrshp]
+
+permission.BACKFILL: [Program Admin][site.upd.site.mbrshp]
+permission.BACKFILL: [Program Admin][site.upd.grp.mbrshp]
+
+permission.BACKFILL: [Program Coordinator][site.upd.site.mbrshp]
+permission.BACKFILL: [Program Coordinator][site.upd.grp.mbrshp]
+
+-- lookup the role and function numbers
+create table PERMISSIONS_TEMP (ROLE_KEY INTEGER, FUNCTION_KEY INTEGER);
+insert into PERMISSIONS_TEMP (ROLE_KEY, FUNCTION_KEY)
+select SRR.ROLE_KEY, SRF.FUNCTION_KEY
+from PERMISSIONS_SRC_TEMP TMPSRC
+join SAKAI_REALM_ROLE SRR on (TMPSRC.ROLE_NAME = SRR.ROLE_NAME)
+join SAKAI_REALM_FUNCTION SRF on (TMPSRC.FUNCTION_NAME = SRF.FUNCTION_NAME);
+
+-- insert the new functions into the roles of any existing realm that has the role (don't convert the "!site.helper")
+insert into SAKAI_REALM_RL_FN (REALM_KEY, ROLE_KEY, FUNCTION_KEY)
+select
+   SRRFD.REALM_KEY, SRRFD.ROLE_KEY, TMP.FUNCTION_KEY
+from
+   (select distinct SRRF.REALM_KEY, SRRF.ROLE_KEY from SAKAI_REALM_RL_FN SRRF) SRRFD
+   join PERMISSIONS_TEMP TMP on (SRRFD.ROLE_KEY = TMP.ROLE_KEY)
+   join SAKAI_REALM SR on (SRRFD.REALM_KEY = SR.REALM_KEY)
+   where SR.REALM_ID != '!site.helper'
+   and not exists (
+       select 1
+           from SAKAI_REALM_RL_FN SRRFI
+           where SRRFI.REALM_KEY=SRRFD.REALM_KEY and SRRFI.ROLE_KEY=SRRFD.ROLE_KEY and  SRRFI.FUNCTION_KEY=TMP.FUNCTION_KEY
+   );
+
+-- clean up the temp tables
+drop table PERMISSIONS_TEMP;
+drop table PERMISSIONS_SRC_TEMP;
+
+
+-- =========================================
+-- Samigo will go away !!!
+
+-- -- Samigo
+-- -- SAK-10441: Added indexes to imporve Samigo performance
+-- -- also released in sakai_2_4_0-2_4_x_oracle_conversion_002.sql  (SAK-10454)
+-- create index SAM_AMETADATA_ASSESSMENTID_I on SAM_ASSESSMETADATA_T (ASSESSMENTID);
+-- create index SAM_ANSWER_ITEMID_I on SAM_ANSWER_T (ITEMID);
+-- create index SAM_ASSGRAD_AID_PUBASSEID_T on SAM_ASSESSMENTGRADING_T (AGENTID,PUBLISHEDASSESSMENTID);
+-- create index SAM_PUBMETDATA_ASSESSMENT_I on SAM_PUBLISHEDMETADATA_T(ASSESSMENTID);
+-- create index SAM_QPOOLITEM_QPOOL_I on SAM_QUESTIONPOOLITEM_T (QUESTIONPOOLID);
+-- create index SAM_SECUREDIP_ASSESSMENTID_I on SAM_SECUREDIP_T (ASSESSMENTID);
+-- create index SAM_SECTION_ASSESSMENTID_I on SAM_SECTION_T (ASSESSMENTID);
+-- create index SAM_SECTIONMETA_SECTIONID_I on SAM_SECTIONMETADATA_T (SECTIONID);
+
