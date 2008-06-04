@@ -85,17 +85,6 @@ createConfig - add dependencies to customize which instances have properties fil
 	 longfile="gnu" compression="gzip" />
   </target>
 
-  <target name="createConfigOld" 
-	  description="Customize the properties files on an instance by instance basis.">
-
-    <buildPropertiesFile instanceName="ctools" />
-    <buildPropertiesFile instanceName="ctoolsload" />
-    <buildPropertiesFile instanceName="testctools" />
-    <buildPropertiesFile instanceName="localhost" />
-    
-  </target>
-
-
   <target name="createConfig" 
 	  description="Customize the properties files on an instance by instance basis.">
 

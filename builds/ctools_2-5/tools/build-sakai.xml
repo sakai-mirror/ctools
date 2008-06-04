@@ -174,7 +174,7 @@
   
   <property name="maven_name" value="mvn" />
 
-  <target name="compileSakai.clean" depends="editMaster" unless="noclean">
+  <target name="compileSakai.clean" unless="noclean">
     <exec executable="${maven_name}"
 	dir="${build.dir}/ctools-build"
 	  failonerror="true"
@@ -210,7 +210,7 @@
     </exec>
   </target>
 
-  <target name="compileSakai.noclean" depends="editMaster" if="noclean">
+  <target name="compileSakai.noclean" if="noclean">
     <exec executable="${maven_name}"
     	  dir="${build.dir}/ctools-build"
 	  failonerror="true"
