@@ -57,7 +57,6 @@ This should have nothing specific to a particular build type.
     <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
   </target>
 
-
   <!-- ========================= -->
   <!-- secondary targets   These are customized based on the needs of the particular build.  -->
   <!-- ========================= -->
@@ -173,7 +172,6 @@ This should have nothing specific to a particular build type.
 	<property name="config.dir" value="${config.dir}" />
 	<property name="keystore.dir" value="${keystore.dir}" />
 	<property name="keystore" value="${keystore}" />
-	<property name="propertiesfiles.local" value="${propertiesfiles.local}" />
 	<property name="propertiesfiles.global" value="${propertiesfiles.global}" />
       </ant>
     </sequential>

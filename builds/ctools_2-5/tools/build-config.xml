@@ -79,11 +79,39 @@
     </copy>
   </target>
 
+ <!-- This target is wrapped because it redefines properties and ant doesn't override :( -->
  <target name="buildPropertiesFileConcat"> 
-    <concat destfile="${instances.dir}/${instance-type}/sakai.properties">
+    <antcall target="buildPropertiesFileConcatImpl">
+	<param name="config.dir" value="${config.dir}" />
+	<param name="instance-type" value="${instance-type}" />
+	<param name="instances.dir" value="${instances.dir}" />
+	<param name="propertiesfiles.global" value="${propertiesfiles.global}" />
+    </antcall>
+ </target>
+
+     <target name="buildPropertiesFileConcatImpl">
+     <!-- Files that are in the local instance -->
+     <!-- Build local properties files, exclude placeholder, and non.properties files -->    
+     <fileset id="localfileset" dir="${config.dir}/${instance-type}" excludes="placeholder.*" includes="*.properties" />
+
+         <pathconvert property="fileset.local" refid="localfileset" pathsep=",">
+             <flattenmapper />
+         </pathconvert>
+
+     <echo message="Local files: ${fileset.local}" />
+     <!-- Build global properties files include files in config properties, exclude local -->     
+     <fileset id="globalfileset" dir="${config.dir}" includes="${propertiesfiles.global}" excludes="${fileset.local}" />
+
+          <pathconvert property="fileset.global" refid="globalfileset" pathsep=",">
+		<flattenmapper />
+	  </pathconvert>
+
+     <echo message="Global files: ${fileset.global}" />
+
+     <concat destfile="${instances.dir}/${instance-type}/sakai.properties">
       <filelist dir="${config.dir}" files="sakai.properties" />
-      <filelist dir="${config.dir}" files="${propertiesfiles.global}" /> 
-      <filelist dir="${config.dir}/${instance-type}" files="${propertiesfiles.local}" />
+      <filelist dir="${config.dir}" files="${fileset.global}" /> 
+      <filelist dir="${config.dir}/${instance-type}" files="${fileset.local}" />
       <filterchain>
 	<expandproperties/>
       </filterchain>

@@ -121,15 +121,15 @@ $HeadURL$
   </target>
 
   <!-- Need to do a search and replace on itunes presently in the current version -->
+  <!-- This should be able to be used for a variety of contrib projects now -->
   <target name="editiTunes">
-      <echo>editing itunes: SNAPSHOT->M2</echo>
+      <echo>editing itunes: SNAPSHOT->${version.sakai.tag}</echo>
          <replaceregexp >
 	     <fileset dir="${work.dir}/build/itunes" >
-  	     <include name="**/.classpath" />
 	     <include name="**/pom.xml"/>
 	</fileset>
-         <regexp pattern="SNAPSHOT" />
-	 <substitution  expression="M2" />
+	<regexp pattern="(&lt;version&gt;)(.*)(&lt;/version&gt;)" />
+	<substitution expression="\1${version.sakai.tag}\3" />
 	 </replaceregexp>
      
   </target>
