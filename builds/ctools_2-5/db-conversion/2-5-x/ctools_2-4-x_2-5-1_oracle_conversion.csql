@@ -1302,6 +1302,10 @@ permission.FUNCTION.ADD: [roster.viewprofile]
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- backfill roster permissions into existing sites and groups
 ----------------------------------------------------------------------------------------------------------------------------------------
+-- Add drop to ensure there are no leftovers from prior conversions.
+drop table PERMISSIONS_TEMP;
+drop table PERMISSIONS_SRC_TEMP;
+
 CREATE TABLE PERMISSIONS_SRC_TEMP (ROLE_NAME VARCHAR(99), FUNCTION_NAME VARCHAR(99));
 CREATE TABLE PERMISSIONS_TEMP (ROLE_KEY INTEGER, FUNCTION_KEY INTEGER);
 
@@ -1415,6 +1419,7 @@ from
     );
 
 -- clean up the temp tables to use again for group permissions
+
 delete from PERMISSIONS_TEMP;
 delete from PERMISSIONS_SRC_TEMP;
 
@@ -1695,3 +1700,5 @@ echo "ALL DONE";
 -- create index SAM_SECTIONMETA_SECTIONID_I on SAM_SECTIONMETADATA_T (SECTIONID);
 
 #end
+-- lines: 648
+-- lines: 654
