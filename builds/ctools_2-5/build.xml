@@ -8,6 +8,10 @@
   <!-- 
        TTD:
   -->
+  <property name="scripts.dir" value="${basedir}/tools" />
+  <!-- First import -->
+  <import file="${scripts.dir}/import-contrib.xml" />
+
 
   <property name="configs.dir" value="${basedir}/configs" />
 
@@ -18,12 +22,36 @@
   <!-- put default file name in a property so it can be overridden on the command line. -->
   <property name="buildfilename" value="defaultbuild.properties" />
   <property file="${user.dir}/${buildfilename}" /> 
+  <!-- Find the current revision number of the build file, before importing properties file -->
+  <!-- temporary file -->
+      
+  <if>
+      <not>
+	    <isset property="CANDIDATE.revision"/>
+      </not>
+      <then>
+      <!-- Use 'svn info' output all information, but in XML -->
+      <property name="tmp.file" value="${user.dir}/svn.info.tmp.xml"/>
+      <exec executable="svn" output="${tmp.file}">
+	      <arg value="info"/>
+	      <arg value="--xml"/>
+	      <arg value="${user.dir}/${buildfilename}"/>
+      </exec>
+				
+      <!-- Read the information directly from xml -->
+      <xmlproperty file="${tmp.file}" prefix="buildsvn"/>
+      <!-- Delete the temp file -->
+      <delete file="${tmp.file}"/>
+      <!--
+      <echoproperties prefix="buildsvn."/>
+      -->
+      <property name="CANDIDATE.revision" value="${buildsvn.info.entry.commit(revision)}"/>
+      <echo>Building revision number: ${buildsvn.info.entry.commit(revision)}</echo>
+      </then>
+  </if>
+
+  <!-- Include the ctools build -->
   <property file="${user.dir}/${ctoolsBuildFileName}" />  
-
-  <property name="scripts.dir" value="${basedir}/tools" />
-  <!-- First import -->
-  <import file="${scripts.dir}/import-contrib.xml" />
-
   <!-- group the build directories. -->
   <property name="work.dir" value="${basedir}/work/${sakai.tag}/work.${type}" /> 
   <property name="patches.dir" value="${basedir}/patches" />
