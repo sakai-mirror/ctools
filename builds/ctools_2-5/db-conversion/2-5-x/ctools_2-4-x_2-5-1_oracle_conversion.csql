@@ -211,6 +211,9 @@ CREATE INDEX CONTENT_DROPBOX_INCOLL_INDEX ON CONTENT_DROPBOX_CHANGES
 -- alter table CONTENT_RESOURCE_DELETE add RESOURCE_TYPE_ID VARCHAR2(255) default null;
 -- create index CONTENT_RESOURCE_DELETE_RTI on CONTENT_RESOURCE_DELETE (RESOURCE_TYPE_ID);
 
+-- Not in script.
+INSERT INTO SAKAI_REALM (REALM_KEY,REALM_ID) VALUES (SAKAI_REALM_SEQ.NEXTVAL, '!group.template.project');
+
 
 -- =========================================
 echo "OSP ADD PERMISSIONS";
@@ -229,6 +232,8 @@ permission.FUNCTION.ADD: [osp.matrix.scaffolding.export]
 permission.FUNCTION.ADD: [osp.matrix.scaffolding.publish]
 permission.FUNCTION.ADD: [osp.matrix.scaffolding.use]
 permission.FUNCTION.ADD: [osp.matrix.viewOwner]
+-- Following was not in original script
+permission.FUNCTION.ADD: [osp.matrix.viewOrganizer]
 permission.FUNCTION.ADD: [osp.presentation.comment]
 permission.FUNCTION.ADD: [osp.presentation.copy]
 permission.FUNCTION.ADD: [osp.presentation.create]
@@ -1280,7 +1285,6 @@ echo "ROSTER";
 -- SAK-11935 -- New Roster permissions (and new meanings for old permissions)
 
 -- Remove all roster permissions from all sites and groups, since the meanings of these permissions have changed
-permission.FUNCTION.DELETE: [roster.%]
 delete from SAKAI_REALM_RL_FN where function_key in (select FUNCTION_KEY from SAKAI_REALM_FUNCTION where FUNCTION_NAME like 'roster.%');
 
 -- Remove the roster permissions themselves
