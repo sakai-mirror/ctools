@@ -1593,11 +1593,11 @@ permission.ADD: [!site.template.course][Assistant][site.upd.site.mbrshp]
 permission.ADD: [!site.template.course][Affiliate][site.upd.grp.mbrshp]
 permission.ADD: [!site.template.course][Affiliate][site.upd.site.mbrshp]
 
-permission.ADD: [!site.template.group][Owner][site.upd.grp.mbrshp]
-permission.ADD: [!site.template.group][Owner][site.upd.site.mbrshp]
+permission.ADD: [!site.template.project][Owner][site.upd.grp.mbrshp]
+permission.ADD: [!site.template.project][Owner][site.upd.site.mbrshp]
 
-permission.ADD: [!site.template.group][Organizer][site.upd.grp.mbrshp]
-permission.ADD: [!site.template.group][Organizer][site.upd.site.mbrshp]
+permission.ADD: [!site.template.project][Organizer][site.upd.grp.mbrshp]
+permission.ADD: [!site.template.project][Organizer][site.upd.site.mbrshp]
 
 permission.ADD: [!site.template.portfolio][CIG Coordinator][site.upd.grp.mbrshp]
 permission.ADD: [!site.template.portfolio][CIG Coordinator][site.upd.site.mbrshp]
