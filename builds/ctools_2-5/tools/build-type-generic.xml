@@ -81,8 +81,8 @@ createConfig - add dependencies to customize which instances have properties fil
 
   <!-- move to util script -->
   <target name="bundleConfig">
-    <tar basedir="${instances.dir}" destfile="${image.dest.dir}/instanceProperties.${sakai.tag}.tar.gz" 
-	 longfile="gnu" compression="gzip" />
+    <tar basedir="${instances.dir}" destfile="${image.dest.dir}/instanceProperties.${sakai.tag}.tar" 
+	 longfile="gnu" compression="none" />
   </target>
 
   <target name="createConfig" 

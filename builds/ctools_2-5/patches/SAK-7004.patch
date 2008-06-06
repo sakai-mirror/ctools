@@ -1,0 +1,18 @@
+Index: tool-impl/impl/src/java/org/sakaiproject/tool/impl/ActiveToolComponent.java
+===================================================================
+--- tool-impl/impl/src/java/org/sakaiproject/tool/impl/ActiveToolComponent.java	(revision 46902)
++++ tool-impl/impl/src/java/org/sakaiproject/tool/impl/ActiveToolComponent.java	(working copy)
+@@ -455,8 +455,12 @@
+ 			{
+ 				wreq = new WrappedRequest(req, toolContext, toolPath, placement, false, this);
+ 				WrappedResponse wres = new WrappedResponse(wreq, res);
++				RequestDispatcher dispatcher = getDispatcher();
++                                if (dispatcher == null) {
++				    throw new IllegalArgumentException("Unable to find registered context for tool with ID " + getId());
++				}
+ 
+-				getDispatcher().forward(wreq, wres);
++				dispatcher.forward(wreq, wres);
+ 			}
+ 			catch (IOException e)
+ 			{
