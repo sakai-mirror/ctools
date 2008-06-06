@@ -915,7 +915,8 @@ ul.makeMenu li.menuClose a:hover {
 }
 
 .centerLines td{
-	vertical-align: middle;
+    /*need to add the important here to override tool.css */
+	vertical-align: middle !important;
 }
 .menuOpen{
 	cursor:pointer;
