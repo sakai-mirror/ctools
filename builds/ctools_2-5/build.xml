@@ -32,10 +32,11 @@
       <then>
       <!-- Use 'svn info' output all information, but in XML -->
       <property name="tmp.file" value="${user.dir}/svn.info.tmp.xml"/>
+      <echo>${user.dir}/${ctoolsBuildFileName}</echo>
       <exec executable="svn" output="${tmp.file}">
 	      <arg value="info"/>
 	      <arg value="--xml"/>
-	      <arg value="${user.dir}/${buildfilename}"/>
+	      <arg value="${user.dir}/${ctoolsBuildFileName}"/>
       </exec>
 				
       <!-- Read the information directly from xml -->
