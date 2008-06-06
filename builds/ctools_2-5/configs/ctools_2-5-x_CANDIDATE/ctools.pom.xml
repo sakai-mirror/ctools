@@ -18,7 +18,7 @@ if changes are needed.
     <artifactId>master</artifactId>
     <groupId>org.sakaiproject</groupId>
     <version>M2</version>
-    <relativePath>master/pom.xml</relativePath>
+    <relativePath>../master/pom.xml</relativePath>
   </parent>
   <name>Sakai Core Project</name>
   <groupId>org.sakaiproject</groupId>
