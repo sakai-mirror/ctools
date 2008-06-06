@@ -34,7 +34,7 @@ $fh->close();
 # read XML file
 foreach $line (@externalsfile) {
 
-    ($start,$name,$revision,$svnpath,$end) = $line =~ m/(\W*?)([\w-]*)\s+-r(\w+)\s+(.*?\s+)(.*)$/;
+    ($start,$name,$revision,$svnpath,$end) = $line =~ m/(\W*?)(\S+)\s+-r(HEAD|\d+)\s+(.*?\s+)(.*)$/;
      if ($svnpath && $start !~ m/#/) {
         $info = `svn info --xml $svnpath`;
         $data = $xml->XMLin($info);
@@ -44,5 +44,8 @@ foreach $line (@externalsfile) {
 	if ($output !~ m/\n/) {
 	    print "\n";
 	}
+     } else {
+	 print $line;
      }
+
 }
