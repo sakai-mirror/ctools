@@ -108,7 +108,7 @@ public class IFrameAction extends VelocityPortletPaneledAction
 	protected final static String SPECIAL_SITE = "site";
 	
 	/** Special value for Engineering Honor Code site. */
-	protected final static String SPECIAL_INSTRUCTION = "instruction";
+	protected final static String SPECIAL_ANNOTATEDURL = "annotatedurl";
 
 	/** Special value for myworkspace. */
 	protected final static String SPECIAL_WORKSPACE = "workspace";
@@ -249,9 +249,9 @@ public class IFrameAction extends VelocityPortletPaneledAction
 			{
 				special = SPECIAL_WORKSITE;
 			}
-			else if ("true".equals(config.getProperty("instruction")))
+			else if ("true".equals(config.getProperty("annotatedurl")))
 			{
-				special = SPECIAL_INSTRUCTION;
+				special = SPECIAL_ANNOTATEDURL;
 				
 								
 			}
@@ -382,7 +382,7 @@ public class IFrameAction extends VelocityPortletPaneledAction
 			}
 		} 
 		
-		else if ((SPECIAL_INSTRUCTION.equals(special)))
+		else if ((SPECIAL_ANNOTATEDURL.equals(special)))
 		{
 			// set the url to the site of this request's config'ed url
 			
@@ -799,10 +799,10 @@ public class IFrameAction extends VelocityPortletPaneledAction
 				{
 				}
 			}
-			else if (SPECIAL_INSTRUCTION.equals(special))
+			else if (SPECIAL_ANNOTATEDURL.equals(special))
 			{
 				
-				context.put("heading", rb.getString("gen.custom.instruction"));
+				context.put("heading", rb.getString("gen.custom.annotatedurl"));
 
 				// for Engineering Honor Code page, also includes the description
 				try
@@ -890,9 +890,13 @@ public class IFrameAction extends VelocityPortletPaneledAction
 		{
 			template = template + "-customize";
 		}
-		else if (SPECIAL_INSTRUCTION.equals(special))
+		else if (SPECIAL_ANNOTATEDURL.equals(special))
 		{
-			template = template + "-instruction-customize";
+			template = template + "-annotatedurl-customize";
+		}
+		else
+		{
+			template = template + "-customize";
 		}
 
 		return template;
@@ -945,7 +949,7 @@ public class IFrameAction extends VelocityPortletPaneledAction
 			{
 			}
 		}
-		else if (SPECIAL_INSTRUCTION.equals(state.getAttribute(SPECIAL)))
+		else if (SPECIAL_ANNOTATEDURL.equals(state.getAttribute(SPECIAL)))
 		{
 			String infoUrl = StringUtil.trimToNull(data.getParameters().getString("infourl"));
 			if ((infoUrl != null) && (infoUrl.length() > 0) && (!infoUrl.startsWith("/")) && (infoUrl.indexOf("://") == -1))

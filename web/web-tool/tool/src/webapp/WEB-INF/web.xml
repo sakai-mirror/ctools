@@ -37,7 +37,7 @@
     
         <filter-mapping>
         <filter-name>sakai.request</filter-name>
-        <servlet-name>sakai.iframe.instruction</servlet-name>
+        <servlet-name>sakai.iframe.annotatedurl</servlet-name>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
         <dispatcher>INCLUDE</dispatcher>
@@ -110,7 +110,7 @@
      
       <servlet>
         <servlet-name>
-           sakai.iframe.instruction
+           sakai.iframe.annotatedurl
         </servlet-name>
         <servlet-class>
             org.sakaiproject.web.tool.IFrameAction

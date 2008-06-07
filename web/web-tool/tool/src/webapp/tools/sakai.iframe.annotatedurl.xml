@@ -3,13 +3,13 @@
 <registration>
 
 	<tool
-			id="sakai.iframe.instruction"
+			id="sakai.iframe.annotatedurl"
 			title="Engineering Honor Code"
-			description="For displaying the instructions">
+			description="For having an annotated url">
 
 		<configuration name="height" value="600px" />
 
-		<configuration name="special" value="instruction" type="final" />
+		<configuration name="special" value="annotatedurl" type="final" />
 		<configuration name="reset.button" value="false" type="final" />
 		<configuration name="TargetPageName" value="Target Page" />
 		<configuration name="TargetPageUrl" value="http://sakaiproject.org/" />
