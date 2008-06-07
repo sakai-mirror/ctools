@@ -1,7 +1,7 @@
-Index: tool-impl/impl/src/java/org/sakaiproject/tool/impl/ActiveToolComponent.java
+Index: tool/tool-impl/impl/src/java/org/sakaiproject/tool/impl/ActiveToolComponent.java
 ===================================================================
---- tool-impl/impl/src/java/org/sakaiproject/tool/impl/ActiveToolComponent.java	(revision 46902)
-+++ tool-impl/impl/src/java/org/sakaiproject/tool/impl/ActiveToolComponent.java	(working copy)
+--- tool/tool-impl/impl/src/java/org/sakaiproject/tool/impl/ActiveToolComponent.java	(revision 46902)
++++ tool/tool-impl/impl/src/java/org/sakaiproject/tool/impl/ActiveToolComponent.java	(working copy)
 @@ -455,8 +455,12 @@
  			{
  				wreq = new WrappedRequest(req, toolContext, toolPath, placement, false, this);
