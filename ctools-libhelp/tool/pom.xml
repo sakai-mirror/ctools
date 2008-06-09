@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!-- $HeadURL:$ -->
 <!-- $Id:$ -->
 
@@ -25,10 +24,12 @@
     <version>M2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
+
   <name>CTools libhelp</name>
   <groupId>org.sakaiproject</groupId>
   <artifactId>ctools-libhelp</artifactId>
   <packaging>war</packaging>
+  <version>M2</version>
 
   <dependencies>
 
@@ -110,9 +111,9 @@
       <artifactId>sakai-util</artifactId>
       <version>${sakai.version}</version>
       <!--
-      <properties>
-	<war.bundle>true</war.bundle>
-      </properties>
+	  <properties>
+	  <war.bundle>true</war.bundle>
+	  </properties>
       -->
     </dependency>
 
@@ -121,9 +122,9 @@
       <artifactId>sakai-velocity-tool</artifactId>
       <version>${sakai.version}</version>
       <!--
-      <properties>
-	<war.bundle>true</war.bundle>
-      </properties>
+	  <properties>
+	  <war.bundle>true</war.bundle>
+	  </properties>
       -->
     </dependency>
 
@@ -133,9 +134,9 @@
       <artifactId>velocity</artifactId>
       <version>1.3.1</version>
       <!--
-      <properties>
-	<war.bundle>true</war.bundle>
-      </properties>
+	  <properties>
+	  <war.bundle>true</war.bundle>
+	  </properties>
       -->
     </dependency>
 
@@ -144,9 +145,9 @@
       <artifactId>logkit</artifactId>
       <version>1.2</version>
       <!--
-      <properties>
-	<war.bundle>true</war.bundle>
-      </properties>
+	  <properties>
+	  <war.bundle>true</war.bundle>
+	  </properties>
       -->
     </dependency>
 
@@ -155,15 +156,69 @@
       <artifactId>oro</artifactId>
       <version>2.0.8</version>
       <!--
-      <properties>
-	<war.bundle>true</war.bundle>
-      </properties>
+	  <properties>
+	  <war.bundle>true</war.bundle>
+	  </properties>
       -->
     </dependency>
 
   </dependencies>
 
+
   <build>
+    <plugins>
+      <plugin>
+	<artifactId>maven-antrun-plugin</artifactId>
+	<executions>
+	  <execution>
+	    <id>ctools-libhelp</id>
+	    <phase>install</phase>
+	    <configuration>
+	      <tasks>
+		<!-- ctools library help is based on sakai iframe tool -->
+		<echo>Note: depends on sakai-web-tool war</echo>
+
+		<!-- <mkdir dir="${project.build.directory}/ctools-libhelp/tools" /> -->
+
+		<echo> src: [${settings.localRepository}/org/sakaiproject/sakai-web-tool/${pom.version}/sakai-web-tool-${pom.version}.war]</echo>
+		<echo> dest [${project.build.directory}/ctools-libhelp] </echo>
+
+		<!-- modify the content of the sakai-web-tool war to create ctools-libhelp webapp -->
+		<unwar src="${settings.localRepository}/org/sakaiproject/sakai-web-tool/${pom.version}/sakai-web-tool-${pom.version}.war" 
+		       dest="${project.build.directory}/ctools-libhelp" />
+		
+		<!-- add libhelp tool registration to a fresh tools dir -->
+		<delete dir="${project.build.directory}/ctools-libhelp/tools" />
+		<mkdir dir="${project.build.directory}/ctools-libhelp/tools" />
+		<copy file="${basedir}/src/webapp/tools/ctools.iframe.libhelp.xml"
+		      tofile="${project.build.directory}/ctools-libhelp/tools/ctools.iframe.libhelp.xml"
+		      overwrite="true" />
+		
+		<!-- replace the web.xml file -->
+		<delete file="${project.build.directory}/ctools-libhelp/WEB-INF/web.xml" />
+		<copy file="${basedir}/src/webapp/WEB-INF/web.xml"
+		      tofile="${project.build.directory}/ctools-libhelp/WEB-INF/web.xml"
+		      overwrite="true" />
+		
+		<!-- war up the results -->
+		<war destfile="${project.build.directory}/ctools-libhelp.war" 
+		     webxml="${project.build.directory}/ctools-libhelp/WEB-INF/web.xml"
+		     basedir="${project.build.directory}/ctools-libhelp" update="true" />
+		
+		<!-- war and pom are automatically copied to the local repo -->
+
+	      </tasks>
+	    </configuration>
+	    <goals>
+	      <goal>run</goal>
+	    </goals>
+	  </execution>
+	</executions>
+      </plugin>
+    </plugins>
+
+    
+    <!-- <build> -->
 
     <sourceDirectory>src/java</sourceDirectory>
 
