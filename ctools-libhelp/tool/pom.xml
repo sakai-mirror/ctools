@@ -6,7 +6,7 @@
   <!--
       <pomVersion>3</pomVersion>
       <extend>../../master/project.xml</extend>
-      <name>ctools-iframe-libhelp</name>
+      <name>ctools-iframe-lbhelp</name>
       <groupId>sakaiproject</groupId>
       <id>ctools-iframe-libhelp</id>
       <currentVersion>${sakai.version}</currentVersion>
@@ -73,7 +73,7 @@
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-web-tool</artifactId>
       <version>${sakai.version}</version>
-      <type>war</type>
+       <type>war</type> 
     </dependency>  
     
     <dependency>
@@ -172,38 +172,57 @@
 	<executions>
 	  <execution>
 	    <id>ctools-libhelp</id>
-	    <phase>install</phase>
+	    <!-- <phase>deploy</phase> -->
+	    <!-- <phase>install</phase> -->
+	    <!-- <phase>resources</phase> -->
+	    <!-- <phase>process-resources</phase> --> <!-- too early -->
+	    <!-- <phase>compile</phase>  --> <!-- too early -->
+	    <!-- <phase>package</phase> --> <!-- too late, war is already built -->
+	    <!-- <phase>test</phase>  --> <!-- too early -->
+	    <phase>package</phase> 
 	    <configuration>
 	      <tasks>
 		<!-- ctools library help is based on sakai iframe tool -->
 		<echo>Note: depends on sakai-web-tool war</echo>
 
-		<!-- <mkdir dir="${project.build.directory}/ctools-libhelp/tools" /> -->
-
 		<echo> src: [${settings.localRepository}/org/sakaiproject/sakai-web-tool/${pom.version}/sakai-web-tool-${pom.version}.war]</echo>
 		<echo> dest [${project.build.directory}/ctools-libhelp] </echo>
 
 		<!-- modify the content of the sakai-web-tool war to create ctools-libhelp webapp -->
+		<!--
 		<unwar src="${settings.localRepository}/org/sakaiproject/sakai-web-tool/${pom.version}/sakai-web-tool-${pom.version}.war" 
 		       dest="${project.build.directory}/ctools-libhelp" />
+		-->
 		
 		<!-- add libhelp tool registration to a fresh tools dir -->
+		<!--
 		<delete dir="${project.build.directory}/ctools-libhelp/tools" />
 		<mkdir dir="${project.build.directory}/ctools-libhelp/tools" />
+		-->
+
+		<echo> delete: [${project.build.directory}/ctools-libhelp-${pom.version}/tools]</echo>
+		<delete>
+		  <fileset dir="${project.build.directory}/ctools-libhelp-${pom.version}/tools" includes="**/sakai*xml" />
+		</delete>
+		<!-- copy in the new tool registration -->
 		<copy file="${basedir}/src/webapp/tools/ctools.iframe.libhelp.xml"
-		      tofile="${project.build.directory}/ctools-libhelp/tools/ctools.iframe.libhelp.xml"
+		      tofile="${project.build.directory}/ctools-libhelp-${pom.version}/tools/ctools.iframe.libhelp.xml"
 		      overwrite="true" />
 		
 		<!-- replace the web.xml file -->
-		<delete file="${project.build.directory}/ctools-libhelp/WEB-INF/web.xml" />
+		<delete file="${project.build.directory}/ctools-libhelp-${pom.version}/WEB-INF/web.xml" />
 		<copy file="${basedir}/src/webapp/WEB-INF/web.xml"
-		      tofile="${project.build.directory}/ctools-libhelp/WEB-INF/web.xml"
+		      tofile="${project.build.directory}/ctools-libhelp-${pom.version}/WEB-INF/web.xml"
 		      overwrite="true" />
 		
 		<!-- war up the results -->
-		<war destfile="${project.build.directory}/ctools-libhelp.war" 
-		     webxml="${project.build.directory}/ctools-libhelp/WEB-INF/web.xml"
-		     basedir="${project.build.directory}/ctools-libhelp" update="true" />
+		<!--  -->
+		<delete file="${project.build.directory}/ctools-libhelp-${pom.version}.war" />
+
+		<war destfile="${project.build.directory}/ctools-libhelp-${pom.version}.war" 
+		     webxml="${project.build.directory}/ctools-libhelp-${pom.version}/WEB-INF/web.xml"
+		     basedir="${project.build.directory}/ctools-libhelp-${pom.version}" update="true" />
+		<!-- -->
 		
 		<!-- war and pom are automatically copied to the local repo -->
 
