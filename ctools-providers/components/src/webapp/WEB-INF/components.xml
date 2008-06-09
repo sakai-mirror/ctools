@@ -53,6 +53,7 @@
 	destroy-method="destroy"
 	singleton="true">
 	<property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
+	<property name="courseManagementService"><ref bean="org.sakaiproject.coursemanagement.api.CourseManagementService"/></property>
   </bean>
   
   	<!--  New in site-mangage in 2.5.

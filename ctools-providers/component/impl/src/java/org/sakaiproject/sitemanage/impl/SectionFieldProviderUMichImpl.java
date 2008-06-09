@@ -26,6 +26,9 @@ import java.util.Hashtable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.coursemanagement.api.AcademicSession;
+import org.sakaiproject.coursemanagement.api.CourseManagementService;
+import org.sakaiproject.coursemanagement.api.exception.IdNotFoundException;
 import org.sakaiproject.sitemanage.api.SectionField;
 import org.sakaiproject.sitemanage.api.SectionFieldProvider;
 import org.sakaiproject.util.ResourceLoader;
@@ -50,6 +53,17 @@ public class SectionFieldProviderUMichImpl implements SectionFieldProvider {
 		return m_umiac;
 	}
 	
+	/** Dependency: CourseManagementService */
+	private CourseManagementService cms;
+	public void setCourseManagementService (CourseManagementService cms)
+	{
+		this.cms = cms;
+	}
+	public CourseManagementService getCourseManagementService()
+	{
+		return cms;
+	}
+	
 	public List<SectionField> getRequiredFields() {
 		ResourceLoader resourceLoader = new ResourceLoader("SectionFields");
 		List<SectionField> fieldList = new ArrayList<SectionField>();
@@ -63,7 +77,7 @@ public class SectionFieldProviderUMichImpl implements SectionFieldProvider {
 
 	public String getSectionEid(String academicSessionEid, List<SectionField> fields) {
 		if(fields == null || fields.isEmpty()) {
-			if(log.isDebugEnabled()) log.debug("Returning an empty sectionEID for an empty (or null) list of fields");
+			if(log.isDebugEnabled()) log.debug(this + ":getSectionEid Returning an empty sectionEID for an empty (or null) list of fields");
 			return "";
 		}
 		
@@ -86,6 +100,37 @@ public class SectionFieldProviderUMichImpl implements SectionFieldProvider {
 		return sEid;
 	}
 
+	public String getSectionTitle(String academicSessionEid, List<SectionField> fields) {
+		if(fields == null || fields.isEmpty()) {
+			if(log.isDebugEnabled()) log.debug(this + ":getSectionTitle Returning an empty sectionTitle for an empty (or null) list of fields");
+			return "";
+		}
+		
+		String title = "";
+		
+		for(int i = 0; i < fields.size(); i++) {
+			SectionField sf = fields.get(i);
+			title += sf.getValue() + " ";
+		}
+		
+		// academicSessionEid is of format "FALL 2007"
+		try
+		{
+			AcademicSession as = cms.getAcademicSession(academicSessionEid);
+			// if found
+			title += as.getDescription();
+		}
+		catch (IdNotFoundException e)
+		{
+			// cannot find academic session
+			log.warn(this + "getSectionTitle Cannot find acadmic session with eid = " + academicSessionEid);
+			// use academic session title 
+			title += academicSessionEid;
+		}
+		
+		return title;
+	}
+	
 	public void init() {
 		log.info("Initializing CTools:" + getClass().getName());
 	}
