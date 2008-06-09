@@ -1,202 +1,484 @@
-Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java
-===================================================================
---- content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java	(revision 14)
-+++ content/content-impl/impl/src/java/org/sakaiproject/content/impl/BaseContentService.java	(revision 15)
-@@ -6628,7 +6628,15 @@
- 			try
- 			{
- 				// get the root collection
--				ContentCollection oCollection = getCollection(fromContext);
-+				ContentCollection oCollection;
-+				if (fromContext.startsWith("/group/template")) {
-+					// if the original site is a template (i.e. site with id 
-+					// starts with "template"), bypass the security permission checking
-+					oCollection = findCollection(fromContext);					
-+					if (oCollection == null) throw new IdUnusedException(fromContext);
-+				} else {
-+					oCollection = getCollection(fromContext);
-+				}
- 	
- 				// Get the collection members from the 'new' collection
- 				List oResources = oCollection.getMemberResources();
-@@ -11156,3 +11164,4 @@
- 
- } // BaseContentService
- 
-+
 Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java
 ===================================================================
---- site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 14)
-+++ site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 15)
-@@ -409,6 +409,9 @@
+--- site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 46898)
++++ site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(working copy)
+@@ -55,6 +55,8 @@
+ import org.sakaiproject.authz.api.Member;
+ import org.sakaiproject.authz.api.PermissionsHelper;
+ import org.sakaiproject.authz.api.Role;
++import org.sakaiproject.authz.api.SecurityAdvisor;
++import org.sakaiproject.authz.api.SecurityAdvisor.SecurityAdvice;
+ import org.sakaiproject.authz.cover.AuthzGroupService;
+ import org.sakaiproject.authz.cover.SecurityService;
+ import org.sakaiproject.cheftool.Context;
+@@ -69,7 +71,7 @@
+ import org.sakaiproject.cheftool.menu.MenuImpl;
+ import org.sakaiproject.component.cover.ComponentManager;
+ import org.sakaiproject.component.cover.ServerConfigurationService;
+-import org.sakaiproject.content.cover.ContentHostingService;
++import org.sakaiproject.content.api.ContentHostingService;
+ import org.sakaiproject.coursemanagement.api.AcademicSession;
+ import org.sakaiproject.coursemanagement.api.CourseOffering;
+ import org.sakaiproject.coursemanagement.api.Enrollment;
+@@ -134,6 +136,8 @@
+ public class SiteAction extends PagedResourceActionII {
+ 	/** Our logger. */
+ 	private static Log M_log = LogFactory.getLog(SiteAction.class);
++	
++	private ContentHostingService m_contentHostingService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
  
+ 	private ImportService importService = org.sakaiproject.importer.cover.ImportService
+ 			.getInstance();
+@@ -412,6 +416,9 @@
  	/** State attribute for state initialization. */
  	private static final String STATE_INITIALIZED = "site.initialized";
-+	
+ 
 +	/** State attribute for state initialization. */
 +	private static final String STATE_TEMPLATE_SITE = "site.templateSite";
- 
++
  	/** The action for menu */
  	private static final String STATE_ACTION = "site.action";
-@@ -752,6 +755,9 @@
+ 
+@@ -588,6 +595,10 @@
+ 	// the string for course site type
+ 	private static final String STATE_COURSE_SITE_TYPE = "state_course_site_type";
+ 	
++	private static final String SITE_TEMPLATE_PREFIX = "!template";
++	
++	private static final String STATE_TYPE_SELECTED = "state_type_selected";
++	
+ 	/**
+ 	 * Populate the state object, if needed.
+ 	 */
+@@ -763,7 +774,9 @@
+ 		state.removeAttribute(STATE_CM_AUTHORIZER_SECTIONS);
  		state.removeAttribute(FORM_ADDITIONAL); // don't we need to clena this
  		// too? -daisyf
- 
-+		
+-
 +		state.removeAttribute(STATE_TEMPLATE_SITE);
++		state.removeAttribute(STATE_TYPE_SELECTED);
 +		
  	} // cleanState
  
  	/**
-@@ -1092,6 +1098,9 @@
+@@ -1099,14 +1112,17 @@
+ 			context.put("siteTypes", types);
+ 
+ 			// put selected/default site type into context
+-			if (siteInfo.site_type != null && siteInfo.site_type.length() > 0) {
+-				context.put("typeSelected", siteInfo.site_type);
+-			} else if (types.size() > 0) {
+-				context.put("typeSelected", types.get(0));
+-			}
++			String typeSelected = (String) state.getAttribute(STATE_TYPE_SELECTED);
++			context.put("typeSelected", state.getAttribute(STATE_TYPE_SELECTED) != null?state.getAttribute(STATE_TYPE_SELECTED):types.get(0));
++			
  			setTermListForContext(context, state, true); // true => only
++			
  			// upcoming terms
  			setSelectedTermForContext(context, state, STATE_TERM_SELECTED);
-+
-+            // template site - Denny
++			
++			// template site - Denny
 +			setTemplateListForContext(context, state);
++			
  			return (String) getContext(data).get("template") + TEMPLATE[1];
  
  		case 2:
-@@ -2128,7 +2137,13 @@
+@@ -2139,7 +2155,13 @@
  
  				// new site, go to confirmation page
  				context.put("continue", "10");
 -				if (fromENWModifyView(state)) {
 +				
 +				Site templateSite = (Site) state.getAttribute(STATE_TEMPLATE_SITE);
-+
 +				// if create based on template, back to 2
-+				if (templateSite != null) {
++				if (templateSite != null) 
++				{
 +					context.put("back", "2");					
 +				} else if (fromENWModifyView(state)) {
  					context.put("back", "26");
  				} else if (state.getAttribute(STATE_IMPORT) != null) {
  					context.put("back", "27");
-@@ -3718,6 +3733,9 @@
+@@ -3699,22 +3721,9 @@
+ 		cleanState(state);
  
  		List siteTypes = (List) state.getAttribute(STATE_SITE_TYPES);
- 		if (siteTypes != null) {
-+			// we don't want to skip the site type selection page
-+			// as it contains template selection menu.
-+            /*
- 			if (siteTypes.size() == 1) {
- 				String siteType = (String) siteTypes.get(0);
- 				if (!siteType.equals(ServerConfigurationService.getString(
-@@ -3731,8 +3749,9 @@
- 					state.setAttribute(STATE_TEMPLATE_INDEX, "1");
- 				}
- 			} else {
-+            */
- 				state.setAttribute(STATE_TEMPLATE_INDEX, "1");
+-		if (siteTypes != null) {
+-			if (siteTypes.size() == 1) {
+-				String siteType = (String) siteTypes.get(0);
+-				if (!siteType.equals(ServerConfigurationService.getString(
+-						"courseSiteType", (String) state.getAttribute(STATE_COURSE_SITE_TYPE)))) {
+-					// if only one site type is allowed and the type isn't
+-					// course type
+-					// skip the select site type step
+-					setNewSiteType(state, siteType);
+-					state.setAttribute(STATE_TEMPLATE_INDEX, "2");
+-				} else {
+-					state.setAttribute(STATE_TEMPLATE_INDEX, "1");
+-				}
+-			} else {
+-				state.setAttribute(STATE_TEMPLATE_INDEX, "1");
 -			}
-+			//}
++		if (siteTypes != null) 
++		{
++			state.setAttribute(STATE_TEMPLATE_INDEX, "1");
  		}
  
  	} // doNew_site
-@@ -4009,9 +4028,9 @@
+@@ -3991,8 +4000,8 @@
  		if (type == null) {
  			addAlert(state, rb.getString("java.select") + " ");
  		} else {
--			setNewSiteType(state, type);
- 
-			if (type.equalsIgnoreCase((String) state.getAttribute(STATE_COURSE_SITE_TYPE))) {
-+                setNewSiteType(state, type);
++			state.setAttribute(STATE_TYPE_SELECTED, type);
+ 			setNewSiteType(state, type);
+-
+ 			if (type.equalsIgnoreCase((String) state.getAttribute(STATE_COURSE_SITE_TYPE))) {
  				User user = UserDirectoryService.getCurrentUser();
  				String currentUserId = user.getEid();
- 
-@@ -4058,9 +4077,12 @@
- 					totalSteps = 5;
- 				}
- 			} else if (type.equals("project")) {
-+                setNewSiteType(state, type);
- 				totalSteps = 4;
-+
- 				state.setAttribute(STATE_TEMPLATE_INDEX, "2");
- 			} else if (type.equals(SITE_TYPE_GRADTOOLS_STUDENT)) {
-+                setNewSiteType(state, type);
- 				// if a GradTools site use pre-defined site info and exclude
- 				// from public listing
- 				SiteInfo siteInfo = new SiteInfo();
-@@ -4079,7 +4101,41 @@
+@@ -4063,15 +4072,49 @@
  
  				// skip directly to confirm creation of site
  				state.setAttribute(STATE_TEMPLATE_INDEX, "42");
++			/*
 +			} else if (type.equals("template")) {				
 +				String templateSiteId = params.getString("selectTemplate");
-+                Site templateSite = null;
-+                try {
-+                    templateSite = SiteService.getSite(templateSiteId);
-+                    // save the template site in state
-+    				state.setAttribute(STATE_TEMPLATE_SITE, templateSite);
-+                    
-+                    // the new site type is based on the template site
-+                    //System.err.println (templateSite.getType());
-+                    setNewSiteType(state, templateSite.getType());
-+                }
-+                catch (Exception e) {  
-+                	// should never happened, as the list of templates are generated
-+                	// from existing sites
-+                    System.err.println (e.getClass().getName() + " : " + e.getMessage());
-+                }
-+
-+                // grab site info from template
++				Site templateSite = null;
++				try
++				{
++					templateSite = SiteService.getSite(templateSiteId);
++					// save the template site in state
++					state.setAttribute(STATE_TEMPLATE_SITE, templateSite);
++				     
++					// the new site type is based on the template site
++					setNewSiteType(state, templateSite.getType());
++				}catch (Exception e) {  
++					// should never happened, as the list of templates are generated
++					// from existing sites
++					M_log.warn(this + e.getClass().getName() + " : " + e.getMessage());
++				}
++				
++				// grab site info from template
 +				SiteInfo siteInfo = new SiteInfo();
 +				if (state.getAttribute(STATE_SITE_INFO) != null) {
 +					siteInfo = (SiteInfo) state.getAttribute(STATE_SITE_INFO);
 +				}
-+
-+                // default site information. copied from the template site
-+				siteInfo.description = templateSite.getShortDescription();
-+				siteInfo.short_description = templateSite.getDescription();
++				
++				// default site information. copied from the template site
++				siteInfo.description = templateSite.getDescription();
++				siteInfo.short_description = templateSite.getShortDescription();
 +				//siteInfo.iconUrl = templateSite.getIconUrl();
 +				//siteInfo.include = false;
 +				state.setAttribute(STATE_SITE_INFO, siteInfo);
 +
 +				totalSteps = 3;
 +				state.setAttribute(STATE_TEMPLATE_INDEX, "2");
++			*/
  			} else {
-+                setNewSiteType(state, type);
  				state.setAttribute(STATE_TEMPLATE_INDEX, "2");
  			}
++			// get the user selected template
++			getSelectedTemplate(state, params, type);
  		}
-@@ -4564,6 +4620,12 @@
+ 
+ 		if (state.getAttribute(SITE_CREATE_TOTAL_STEPS) == null) {
+-			state
+-					.setAttribute(SITE_CREATE_TOTAL_STEPS, new Integer(
+-							totalSteps));
++			state.setAttribute(SITE_CREATE_TOTAL_STEPS, new Integer(totalSteps));
+ 		}
+ 
+ 		if (state.getAttribute(SITE_CREATE_CURRENT_STEP) == null) {
+@@ -4079,7 +4122,62 @@
+ 		}
+ 
+ 	} // doSite_type
++	
++	/**
++	 * see whether user selected any template
++	 * @param state
++	 * @param params
++	 * @param type
++	 */
++	private void getSelectedTemplate(SessionState state,
++			ParameterParser params, String type) {
++		String templateSiteId = params.getString("selectTemplate" + type);
++		if (templateSiteId != null)
++		{
++			Site templateSite = null;
++			try
++			{
++				templateSite = SiteService.getSite(templateSiteId);
++				// save the template site in state
++				state.setAttribute(STATE_TEMPLATE_SITE, templateSite);
++			     
++				// the new site type is based on the template site
++				setNewSiteType(state, templateSite.getType());
++			}catch (Exception e) {  
++				// should never happened, as the list of templates are generated
++				// from existing sites
++				M_log.warn(this + ".doSite_type" + e.getClass().getName(), e);
++			}
++			
++			// grab site info from template
++			SiteInfo siteInfo = new SiteInfo();
++			if (state.getAttribute(STATE_SITE_INFO) != null) {
++				siteInfo = (SiteInfo) state.getAttribute(STATE_SITE_INFO);
++			}
++			
++			// default site information. copied from the template site
++			siteInfo.description = templateSite.getDescription();
++			siteInfo.short_description = templateSite.getShortDescription();
++			//siteInfo.iconUrl = templateSite.getIconUrl();
++			//siteInfo.include = false;
++			
++			List<String> toolIdsSelected = new Vector<String>();
++			List pageList = templateSite.getPages();
++			if (!((pageList == null) || (pageList.size() == 0))) {
++				for (ListIterator i = pageList.listIterator(); i.hasNext();) {
++					SitePage page = (SitePage) i.next();
+ 
++					List pageToolList = page.getTools();
++					String toolId = ((ToolConfiguration) pageToolList
++							.get(0)).getTool().getId();
++					toolIdsSelected.add(toolId);
++				}
++			}
++			state.setAttribute(STATE_TOOL_REGISTRATION_SELECTED_LIST, toolIdsSelected);
++			state.setAttribute(STATE_SITE_INFO, siteInfo);
++		}
++	}
++
+ 	/**
+ 	 * Determine whether the selected term is considered of "future term"
+ 	 * @param state
+@@ -4548,6 +4646,12 @@
  		if (option.equalsIgnoreCase("continue"))
  		{
  			doContinue(data);
-+
 +			// if create based on template, skip the feature selection
 +			Site templateSite = (Site) state.getAttribute(STATE_TEMPLATE_SITE);
-+			if (templateSite != null) {
++			if (templateSite != null) 
++			{
 +				state.setAttribute(STATE_TEMPLATE_INDEX, "18");
 +			}
  		} else if (option.equalsIgnoreCase("back")) {
  			doBack(data);
  		} else if (option.equalsIgnoreCase("cancel")) {
-@@ -4918,7 +4980,11 @@
+@@ -4686,10 +4790,9 @@
+ 	} // readCourseSectionInfo
+ 
+ 	/**
+-	 * set the site type for new site
+ 	 * 
++	 * @param state
+ 	 * @param type
+-	 *            The type String
+ 	 */
+ 	private void setNewSiteType(SessionState state, String type) {
+ 		state.removeAttribute(STATE_TOOL_REGISTRATION_SELECTED_LIST);
+@@ -4847,6 +4950,12 @@
+ 		String option = data.getParameters().getString("option");
+ 		if (option.equals("continue")) {
+ 			doContinue(data);
++			
++			// if create based on template, skip the feature selection
++			Site templateSite = (Site) state.getAttribute(STATE_TEMPLATE_SITE);
++			if (templateSite != null) {
++				state.setAttribute(STATE_TEMPLATE_INDEX, "18");
++			}
+ 		} else if (option.equals("cancel")) {
+ 			doCancel_create(data);
+ 		} else if (option.equals("back")) {
+@@ -4909,10 +5018,20 @@
  
  			addNewSite(params, state);
  
 -			addFeatures(state);
-+			// if create based on template, skip add features
-+			Site templateSite = (Site) state.getAttribute(STATE_TEMPLATE_SITE);
-+			if (templateSite == null) {
-+				addFeatures(state);
-+			}
- 
+-
  			Site site = getStateSite(state);
  
-@@ -6958,6 +7024,9 @@
++			Site templateSite = (Site) state.getAttribute(STATE_TEMPLATE_SITE);
++			if (templateSite == null) 
++			{
++				// normal site creation: add the features.
++				addFeatures(state, site);
++			}
++			else
++			{
++				// create based on template: skip add features, and copying all the contents from the tools in template site
++				importToolContent(site.getId(), templateSite.getId(), site, true);
++			}
++				
+ 			// for course sites
+ 			String siteType = (String) state.getAttribute(STATE_SITE_TYPE);
+ 			if (siteType != null && siteType.equalsIgnoreCase((String) state.getAttribute(STATE_COURSE_SITE_TYPE))) {
+@@ -4934,6 +5053,12 @@
+ 
+ 			// commit site
+ 			commitSite(site);
++			
++			// transfer site content from template site
++			if (templateSite != null) 
++			{
++				sendTemplateUseNotification(site, UserDirectoryService.getCurrentUser(), templateSite);					
++			}
+ 
+ 			String siteId = (String) state.getAttribute(STATE_SITE_INSTANCE_ID);
+ 
+@@ -6263,6 +6388,7 @@
+ 	 * 
+ 	 */
+ 	private void init(VelocityPortlet portlet, RunData data, SessionState state) {
++
+ 		state.setAttribute(STATE_ACTION, "SiteAction");
+ 		setupFormNamesAndConstants(state);
+ 
+@@ -6737,7 +6863,11 @@
  					state.setAttribute(STATE_TEMPLATE_INDEX, "2");
  					return;
  				}
 +			} else {
 +				// removing previously selected template site
-+				state.removeAttribute(STATE_TEMPLATE_SITE);				
++					state.removeAttribute(STATE_TEMPLATE_SITE);				
  			}
++			
  			updateSiteAttributes(state);
  
-@@ -9283,7 +9352,7 @@
+ 			if (state.getAttribute(STATE_MESSAGE) == null) {
+@@ -7165,36 +7295,9 @@
+ 
+ 								// set title
+ 								site.setTitle(title);
++								
+ 								// import tool content
+-								List pageList = site.getPages();
+-								if (!((pageList == null) || (pageList.size() == 0))) {
+-									for (ListIterator i = pageList
+-											.listIterator(); i.hasNext();) {
+-										SitePage page = (SitePage) i.next();
+-
+-										List pageToolList = page.getTools();
+-										String toolId = ((ToolConfiguration) pageToolList
+-												.get(0)).getTool().getId();
+-										if (toolId
+-												.equalsIgnoreCase("sakai.resources")) {
+-											// handle
+-											// resource
+-											// tool
+-											// specially
+-											transferCopyEntities(
+-													toolId,
+-													ContentHostingService
+-															.getSiteCollection(oSiteId),
+-													ContentHostingService
+-															.getSiteCollection(nSiteId));
+-										} else {
+-											// other
+-											// tools
+-											transferCopyEntities(toolId,
+-													oSiteId, nSiteId);
+-										}
+-									}
+-								}
++								importToolContent(nSiteId, oSiteId, site, false);
+ 							} catch (Exception e1) {
+ 								// if goes here, IdService
+ 								// or SiteService has done
+@@ -7448,7 +7551,65 @@
+ 		}
+ 
+ 	}// actionFor Template
++	
++	/**
++	 * 
++	 * @param nSiteId
++	 * @param oSiteId
++	 * @param site
++	 */
++	private void importToolContent(String nSiteId, String oSiteId, Site site, boolean bypassSecurity) {
++		// import tool content
++		
++		if (bypassSecurity)
++		{
++			// importing from template, bypass the permission checking:
++			// temporarily allow the user to read and write from assignments (asn.revise permission)
++	        SecurityService.pushAdvisor(new SecurityAdvisor()
++	            {
++	                public SecurityAdvice isAllowed(String userId, String function, String reference)
++	                {
++	                    return SecurityAdvice.ALLOWED;
++	                }
++	            });
++		}
++				
++		List pageList = site.getPages();
++		if (!((pageList == null) || (pageList.size() == 0))) {
++			for (ListIterator i = pageList
++					.listIterator(); i.hasNext();) {
++				SitePage page = (SitePage) i.next();
+ 
++				List pageToolList = page.getTools();
++				String toolId = ((ToolConfiguration) pageToolList
++						.get(0)).getTool().getId();
++				if (toolId
++						.equalsIgnoreCase("sakai.resources")) {
++					// handle
++					// resource
++					// tool
++					// specially
++					transferCopyEntities(
++							toolId,
++							m_contentHostingService
++									.getSiteCollection(oSiteId),
++							m_contentHostingService
++									.getSiteCollection(nSiteId));
++				} else {
++					// other
++					// tools
++					transferCopyEntities(toolId,
++							oSiteId, nSiteId);
++				}
++			}
++		}
++		
++		if (bypassSecurity)
++		{
++			SecurityService.clearAdvisors();
++		}
++	}
++
+ 	/**
+ 	 * update current step index within the site creation wizard
+ 	 * 
+@@ -8771,10 +8932,13 @@
+ 	 * addFeatures adds features to a new site
+ 	 * 
+ 	 */
+-	private void addFeatures(SessionState state) {
++	private void addFeatures(SessionState state, Site site) {
+ 		List toolRegistrationList = (Vector) state
+ 				.getAttribute(STATE_TOOL_REGISTRATION_LIST);
+-		Site site = getStateSite(state);
++		List toolRegistrationList = (Vector) state.getAttribute(STATE_TOOL_REGISTRATION_LIST);
++		
++		Set multipleToolIdSet = (Set) state.getAttribute(STATE_MULTIPLE_TOOL_ID_SET);
++		Map multipleToolIdTitleMap = state.getAttribute(STATE_MULTIPLE_TOOL_ID_TITLE_MAP) != null? (Map) state.getAttribute(STATE_MULTIPLE_TOOL_ID_TITLE_MAP):new HashMap();
+ 
+ 		List pageList = new Vector();
+ 		int moves = 0;
+@@ -9044,9 +9208,9 @@
+ 						String fromSiteId = (String) importSiteIds.get(k);
+ 						String toSiteId = site.getId();
+ 
+-						String fromSiteCollectionId = ContentHostingService
++						String fromSiteCollectionId = m_contentHostingService
+ 								.getSiteCollection(fromSiteId);
+-						String toSiteCollectionId = ContentHostingService
++						String toSiteCollectionId = m_contentHostingService
+ 								.getSiteCollection(toSiteId);
+ 						transferCopyEntities(toolId, fromSiteCollectionId,
+ 								toSiteCollectionId);
+@@ -9055,7 +9219,7 @@
  				}
  			}
  
@@ -205,15 +487,13 @@ Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/Sit
  			for (int i = 0; i < toolIds.size(); i++) {
  				String toolId = (String) toolIds.get(i);
  				if (!toolId.equalsIgnoreCase("sakai.resources")
-@@ -9965,7 +10034,17 @@
+@@ -9757,7 +9921,18 @@
  		state.setAttribute(STATE_SITE_INFO, siteInfo);
  		if (state.getAttribute(STATE_MESSAGE) == null) {
  			try {
 -				Site site = SiteService.addSite(id, siteInfo.site_type);
 +				Site site = null;
-+	        	// add current user as the maintainer
-+				User currentUser = UserDirectoryService.getCurrentUser();						
-+				
++							
 +				// if create based on template,
 +				Site templateSite = (Site) state.getAttribute(STATE_TEMPLATE_SITE);
 +				if (templateSite != null) {
@@ -221,152 +501,65 @@ Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/Sit
 +				} else {
 +					site = SiteService.addSite(id, siteInfo.site_type);
 +				}
++				
++				// add current user as the maintainer
++				site.addMember(UserDirectoryService.getCurrentUser().getId(), site.getMaintainRole(), true, false);
  
  				String title = StringUtil.trimToNull(siteInfo.title);
  				String description = siteInfo.description;
-@@ -9993,7 +10072,52 @@
- 
- 				// commit newly added site in order to enable related realm
- 				commitSite(site);
-+				
-+				// transfer site content from template site
-+				if (templateSite != null) {
-+					transferSiteContent (site, templateSite);
-+					
-+					// send an email to track who are using the template
-+					String from = getSetupRequestEmailAddress();
- 
-+					// send it to the email archive of the template site
-+					// TODO: need a better way to get the email archive address
-+					//String domain = from.substring(from.indexOf('@'));
-+					String templateEmailArchive = templateSite.getId() 
-+						+ "@" + ServerConfigurationService.getServerName();
-+					String to = templateEmailArchive;
-+					String headerTo = templateEmailArchive;
-+					String replyTo = templateEmailArchive;
-+					String message_subject = templateSite.getId() + ": copied by " + currentUser.getDisplayId ();					
-+
-+					if (from != null && templateEmailArchive != null) {
-+						StringBuffer buf = new StringBuffer();
-+						buf.setLength(0);
-+
-+						// email body
-+						buf.append("Dear template maintainer,\n\n");
-+						buf.append("Congratulations!\n\n");
-+						buf.append("The following user just created a new site based on your template.\n\n");
-+						buf.append("Template name: " + templateSite.getTitle() + "\n");
-+						buf.append("User         : " + currentUser.getDisplayName() + " (" 
-+								+ currentUser.getDisplayId () + ")\n");
-+						buf.append("Date         : " + new java.util.Date() + "\n");
-+						buf.append("New site Id  : " + site.getId() + "\n");
-+						buf.append("New site name: " + site.getTitle() + "\n\n");
-+						buf.append("Cheers,\n");
-+						buf.append("Alliance Team\n");
-+
-+						String content = buf.toString();
-+						
-+						// to = "alliance@wicaksana.org";
-+
-+						EmailService.send(from, to, message_subject, content, headerTo,
-+								replyTo, null);
-+					}					
-+				}
-+				
-+				commitSite (site);				
-+
- 			} catch (IdUsedException e) {
- 				addAlert(state, rb.getString("java.sitewithid") + " " + id
- 						+ " " + rb.getString("java.exists"));
-@@ -10016,6 +10140,72 @@
+@@ -9808,7 +9983,87 @@
  		}
  	} // addNewSite
  
-+	
-+	private void transferSiteContent(Site toSite, Site fromSite)
-+			throws IdInvalidException, IdUsedException, PermissionException {
-+		String id = toSite.getId ();
-+		String templateSiteId = fromSite.getId();
 +
-+//		// do copy template using archiving method
-+//		org.sakaiproject.archive.api.ArchiveService archiveService = 
-+//			(org.sakaiproject.archive.api.ArchiveService) ComponentManager.get(
-+//					"org.sakaiproject.archive.api.ArchiveService");
-+//		archiveService.archive (templateSiteId);
-+//		archiveService.merge (templateSiteId + "-archive", id, null);
-+		
-+		// a direct transfer if the tool support entity transfer
-+		String templateSiteCollectionId = 
-+			ContentHostingService.getSiteCollection(templateSiteId);
-+		String toSiteCollectionId = 
-+			ContentHostingService.getSiteCollection(id);
 +
-+		// get a list of tools that support tranfer copy
-+		Set importCapableTools = importTools ();
-+//		System.out.println ("Transfer supported tools: " 
-+//				+ Arrays.toString (importCapableTools.toArray()));
-+		
-+		// get tools used in the template site
-+		Set templateTools = new HashSet ();
-+		List pageList = fromSite.getPages();
-+		if ((pageList != null) && ! pageList.isEmpty()) {
-+			for (Object objPage : pageList) {
-+				SitePage page = (SitePage) objPage;
-+				List pageToolList = page.getTools();
-+				
-+				if (pageToolList != null) {								
-+					for (Object objToolConf : pageToolList) {
-+						if (objToolConf != null) {
-+							ToolConfiguration toolConf = (ToolConfiguration) objToolConf;
-+							templateTools.add((toolConf.getTool().getId()));
-+						}
-+					}
-+				}
-+			}
-+		}
-+		
-+//		System.out.println ("Template tools: " + 
-+//				Arrays.toString (templateTools.toArray()));
-+		
-+		// transfer resources first. is this necessary?
-+		if (templateTools.contains("sakai.resources")) {
-+			transferCopyEntities("sakai.resources", templateSiteCollectionId,
-+					toSiteCollectionId);		
-+			templateTools.remove("sakai.resources");
-+		}
-+		
-+		// commit changes, it might be needed?
-+		commitSite (toSite);
-+		
-+		for (Object objToolId : templateTools) {
-+			String toolId = (String) objToolId;
-+			// System.out.println ("Transferring " + toolId);
++	private void sendTemplateUseNotification(Site site, User currentUser,
++			Site templateSite) {
++		// send an email to track who are using the template
++		String from = getSetupRequestEmailAddress();
++ 
++		// send it to the email archive of the template site
++		// TODO: need a better way to get the email archive address
++		//String domain = from.substring(from.indexOf('@'));
++		String templateEmailArchive = templateSite.getId() 
++			+ "@" + ServerConfigurationService.getServerName();
++		String to = templateEmailArchive;
++		String headerTo = templateEmailArchive;
++		String replyTo = templateEmailArchive;
++		String message_subject = templateSite.getId() + ": copied by " + currentUser.getDisplayId ();					
++
++		if (from != null && templateEmailArchive != null) {
++			StringBuffer buf = new StringBuffer();
++			buf.setLength(0);
++
++			// email body
++			buf.append("Dear template maintainer,\n\n");
++			buf.append("Congratulations!\n\n");
++			buf.append("The following user just created a new site based on your template.\n\n");
++			buf.append("Template name: " + templateSite.getTitle() + "\n");
++			buf.append("User         : " + currentUser.getDisplayName() + " (" 
++					+ currentUser.getDisplayId () + ")\n");
++			buf.append("Date         : " + new java.util.Date() + "\n");
++			buf.append("New site Id  : " + site.getId() + "\n");
++			buf.append("New site name: " + site.getTitle() + "\n\n");
++			buf.append("Cheers,\n");
++			buf.append("Alliance Team\n");
++			String content = buf.toString();
 +			
-+			// transfer copy if the tool support EntityTransfer
-+			transferCopyEntities(toolId, templateSiteId,
-+					id);			        
++			EmailService.send(from, to, message_subject, content, headerTo,
++					replyTo, null);
 +		}
 +	}
-+
++	
  	/**
- 	 * %%% legacy properties, to be cleaned up
- 	 * 
-@@ -11642,6 +11832,8 @@
- 
- 					// if this producer claims this tool id
- 					if (ArrayUtil.contains(et.myToolIds(), toolId)) {
-+//						System.out.println ("Transfer " + toolId + " from " + fromContext + " to " + toContext);
-+//						System.out.println (et);
- 						et.transferCopyEntities(fromContext, toContext,
- 								new Vector());
- 					}
-@@ -11728,6 +11920,32 @@
- 		}
- 	} // setTermListForContext
- 
-+
-+	// created based on setTermListForContext - Denny
++	 * created based on setTermListForContext - Denny
++	 * @param context
++	 * @param state
++	 */
 +	private void setTemplateListForContext(Context context, SessionState state)
-+    {   
++	{   
++		Hashtable<String, List<Site>> templateList = new Hashtable<String, List<Site>>();
++		
 +		// find all template sites.
 +		List templateSites = SiteService.getSites(
 +				org.sakaiproject.site.api.SiteService.SelectionType.ANY, 
@@ -375,62 +568,75 @@ Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/Sit
 +		
 +		for (Iterator itr = templateSites.iterator(); itr.hasNext(); ) {
 +			Site site = (Site) itr.next();
-+			// convention: template site should use site id "template*"
++			// convention: template site should use site id "!template*"
 +			// so, only administrator can create a site with a custom site id
-+			if (!site.getId().startsWith("template")) {
-+				// remove non-template sites
-+				itr.remove();				
-+			} else if (!site.isPublished()) {
-+				// remove unpublished template
-+				itr.remove();				
++			if (site.getId().startsWith(SITE_TEMPLATE_PREFIX)) 
++			{
++				// get the type of template
++				String type = site.getType();
++				if (type != null)
++				{
++					// populate the list according to template site type
++					List<Site> subTemplateList = new Vector<Site>();
++					if (templateList.containsKey(type))
++					{
++						subTemplateList = templateList.get(type);
++					}
++					subTemplateList.add(site);
++					templateList.put(type, subTemplateList);
++				}
 +			}
 +		}
-+
-+        context.put("templateList", templateSites);
++		
++	    context.put("templateList", templateList);
 +	} // setTemplateListForContext
-+
- 	private void setSelectedTermForContext(Context context, SessionState state,
- 			String stateAttribute) {
- 		if (state.getAttribute(stateAttribute) != null) {
-Index: site-manage/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties
-===================================================================
---- site-manage/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties	(revision 14)
-+++ site-manage/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties	(revision 15)
-@@ -584,10 +584,11 @@
- sitetype.acater    = Academic term:
- sitetype.alert     = Alert:
- sitetype.can       = Cancel
--sitetype.chothetyp = Choose the type of site you want to create. Only instructors can create official course websites.  Instructors and students can create project websites.  NOTE: Students, if you do not see a tab for your course, contact your instructor for information about  when your official course website will be available.
-+sitetype.chothetyp = You can create a new project site in one of two ways. A <b>Build-Your-Own project site</b> (for experienced users) lets you choose individual site tools and functions. A <b>Template-based site</b> (recommended for new users) comes pre-loaded with essential tools and functions. Please note, you can add or remove tools from either type of project site, once created.
- sitetype.con       = Continue
- sitetype.crenewsit = Creating a new site
- sitetype.gratooweb = Grad Tools website
-+sitetype.project   = Build-Your-Own project site
- sitetype.websit    = website
- 
- sitinfimp.alert  = Alert:
-@@ -997,4 +998,4 @@
- alert.protocol=Please use a valid web address.
- 
- #############UPV Revision ###########################
--zip_file_upload = Please select zip file to upload and extract to your site
-\ No newline at end of file
-+zip_file_upload = Please select zip file to upload and extract to your site
++	
++	/**
+ 	 * %%% legacy properties, to be cleaned up
+ 	 * 
+ 	 */
 Index: site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-type.vm
 ===================================================================
---- site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-type.vm	(revision 14)
-+++ site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-type.vm	(revision 15)
-@@ -14,6 +14,22 @@
+--- site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-type.vm	(revision 46898)
++++ site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-type.vm	(working copy)
+@@ -1,10 +1,10 @@
+ ##<!-- $Header: /cvs/sakai2/legacy/tools/src/webapp/vm/sitesetup/chef_site-type.vm,v 1.3 2005/06/04 02:41:16 ggolden.umich.edu Exp $ -->
+ <script type="text/javascript" language="JavaScript">
+- 	function selectCourseType(course)
++ 	function selectSiteType(type)
+  	{
+  		for (var i=0; i<document.typeform.itemType.length; i++)
+  		{
+- 			if (document.typeform.itemType[i].value==course)
++ 			if (document.typeform.itemType[i].value==type)
+  			{
+  				document.typeform.itemType[i].checked=true;
+  			}
+@@ -14,6 +14,36 @@
   			}
   		}
   	}
-+
-+
-+ 	function selectTemplateSite ()
++ 	
++ 	function toggleTemplateSelectList (type)
++ 	{
++ 		var selectTemplateType = "selectTemplate" + type;
++ 		var templateList = document.getElementById(selectTemplateType);
++ 		templateList.disabled = !templateList.disabled;
++ 		
++ 		var useTemplateType = "useTemplate" + type;
++ 		var useTemplateTypeCheckbox = document.getElementById(useTemplateType);
++ 		if (useTemplateTypeCheckbox.checked)
++ 		{
++ 			selectSiteType(type);
++ 		}
++ 	}
++ 	
++ 	function selectTemplateSite (type)
 + 	{
 + 		for (var i=0; i<document.typeform.itemType.length; i++)
 + 		{
-+ 			if (document.typeform.itemType[i].value=="template")
++ 			var templateType = "template" + type;
++ 			if (document.typeform.itemType[i].value==templateType)
 + 			{
 + 				document.typeform.itemType[i].checked=true;
 + 			}
@@ -443,97 +649,83 @@ Index: site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-type.
  </script>
  <div class ="portletBody">
  
-@@ -30,7 +46,9 @@
- 				<p class="checkbox indnt1">
- 					<input type="radio" name="itemType" id="$type" value="$type" #if ($type == $typeSelected) checked="checked" #end/>
- 						<label for = "$type">
--							#if ($type == "GradToolsStudent")
-+							#if ($type == "project")
-+								$tlang.getString("sitetype.project")
-+							#elseif ($type == "GradToolsStudent")
- 								$tlang.getString("sitetype.gratooweb")
- 							#else
- 								$type $tlang.getString("sitetype.websit")
-@@ -67,6 +85,20 @@
- 	
- 			#end
- 		#end
+@@ -22,7 +52,13 @@
+ 	</h3>
+ 	#if ($alertMessage)<div class="alertMessage">$tlang.getString("sitetype.alert") $validator.escapeHtml($alertMessage)</div>	#end
+ 	<p class="step">
+-		$tlang.getString("sitetype.chothetyp")
 +		#if ($templateList.size() > 0)
-+    		<p class="checkbox indnt1">
-+				<input type="radio" name="itemType" id="template" value="template"/>
-+					<label for = "template">Template-based project site</label>	
-+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
-+                    <select name="selectTemplate" id="selectTemplate" onchange="javascript:selectTemplateSite();">
-+                        #foreach($template in $templateList)
-+                            <option value ="$template.getId()">
-+                            $template.getTitle()
-+                            </option>
-+                        #end
-+                    </select> 
-+			</p>
-+        #end
++			## if there is template site types
++			$tlang.getString("sitetype.chothetyp.withtemplate")
++		#else
++			## if there is NO template site types
++			$tlang.getString("sitetype.chothetyp.withouttemplate")
++		#end
+ 	</p>
+ 	<form name="typeform" id="typeform" action="#toolForm("$action")" method="post">
+ 		#foreach ($type in $siteTypes)
+@@ -44,7 +80,7 @@
+ 									<label for="selectTerm">
+ 										$tlang.getString("sitetype.acater")
+ 									</label>	
+-									<select name="selectTerm" id="selectTerm" onclick="selectCourseType('$courseSiteType')">
++									<select name="selectTerm" id="selectTerm" onclick="selectSiteType('$type')">
+ 										#foreach($term in $termList)
+ 											<option value ="$term.eid"
+ 												#if ($!selectedTerm)
+@@ -64,8 +100,23 @@
+ 								</p>	
+ 							</div>	
+ 						#end
+-	
+ 			#end
++			#if ($templateList.size() > 0 && $templateList.containsKey($type))
++					<p class="checkbox indnt3">
++							#set($templatetype="useTemplate")
++							#set($templatetype=$templatetype.concat($type))
++							<input type="checkbox" name="$templatetype" id="$templatetype" value="$templatetype" onchange="toggleTemplateSelectList('$type');"/>
++							<label for = "$templatetype">$tlang.getString("sitetype.usetemplate")</label>
++							&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
++							<select name="selectTemplate$type" id="selectTemplate$type" disabled="true">
++								#foreach($template in $templateList.get($type))
++									<option value ="$template.getId()">
++										$template.getTitle()
++									</option>
++								#end
++							</select> 
++						</p>
++					#end
+ 		#end
  		<input type="hidden" name="back" value="0" />
  		<input type="hidden" name="template-index" value="1" />
- 		<div class ="act">
-Index: site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-newSiteInformation.vm
+Index: site-manage/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties
 ===================================================================
---- site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-newSiteInformation.vm	(revision 14)
-+++ site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-newSiteInformation.vm	(revision 15)
-@@ -188,12 +188,10 @@
- 						class="active" 
- 						accesskey="s" 
- 						onclick="document.siteInfoForm.option.value='continue'; document.siteInfoForm.submit(); return false;" />
--				#if ($!siteTypes.size() > 1)
--					<input type="button" name="Back" 
--							value="$tlang.getString('gen.back')"
--							accesskey="b"
--							onclick="document.siteInfoForm.option.value='back'; document.siteInfoForm.submit(); return false;" />
--				#end
-+                <input type="button" name="Back" 
-+                        value="$tlang.getString('gen.back')"
-+                        accesskey="b"
-+                        onclick="document.siteInfoForm.option.value='back'; document.siteInfoForm.submit(); return false;" />
- 				<input type="button" name="Cancel" 
- 						value="$tlang.getString('gen.cancel')"
- 						accesskey="x"
-Index: announcement/announcement-impl/impl/src/java/org/sakaiproject/announcement/impl/BaseAnnouncementService.java
-===================================================================
---- announcement/announcement-impl/impl/src/java/org/sakaiproject/announcement/impl/BaseAnnouncementService.java	(revision 14)
-+++ announcement/announcement-impl/impl/src/java/org/sakaiproject/announcement/impl/BaseAnnouncementService.java	(revision 15)
-@@ -714,7 +714,15 @@
- 		AnnouncementChannel oChannel = null;
- 		try
- 		{
--			oChannel = (AnnouncementChannel) getChannel(oChannelRef);
-+			if (fromContext.startsWith("template")) {
-+				// if the original site is a template (i.e. site with id 
-+				// starts with "template"), bypass the security permission checking			
-+				oChannel = (AnnouncementChannel) findChannel(oChannelRef);
-+				if (oChannel == null) throw new IdUnusedException(oChannelRef);
-+			} else {
-+				oChannel = (AnnouncementChannel) getChannel(oChannelRef);
-+			}
-+			
- 			// the "to" message channel
- 			String nChannelRef = channelReference(toContext, SiteService.MAIN_CONTAINER);
- 			AnnouncementChannel nChannel = null;
-@@ -746,7 +754,18 @@
- 			if (nChannel != null)
- 			{
- 				// pass the DOM to get new message ids, record the mapping from old to new, and adjust attachments
--				List oMessageList = oChannel.getMessages(null, true);
-+				List oMessageList = null;
-+
-+				if (fromContext.startsWith("template")) {
-+					// if the original site is a template (i.e. site with id 
-+					// starts with "template"), bypass the security permission checking	
-+					if (oChannel instanceof BaseMessageChannelEdit) {
-+						oMessageList = ((BaseMessageChannelEdit) oChannel).findFilterMessages(null, true);
-+					}
-+				} else {
-+					oMessageList = oChannel.getMessages(null, true);
-+				}
-+
- 				AnnouncementMessage oMessage = null;
- 				AnnouncementMessageHeader oMessageHeader = null;
- 				AnnouncementMessageEdit nMessage = null;
+--- site-manage/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties	(revision 46898)
++++ site-manage/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties	(working copy)
+@@ -589,11 +589,15 @@
+ sitetype.acater    = Academic term:
+ sitetype.alert     = Alert:
+ sitetype.can       = Cancel
+-sitetype.chothetyp = Choose the type of site you want to create. Only instructors can create official course websites.  Instructors and students can create project websites.  NOTE: Students, if you do not see a tab for your course, contact your instructor for information about  when your official course website will be available.
++sitetype.chothetyp.withtemplate = You can create a new project site in one of two ways. A <b>Build-Your-Own project site</b> (for experienced users) lets you choose individual site tools and functions. A <b>Template-based site</b> (recommended for new users) comes pre-loaded with essential tools and functions. Please note, you can add or remove tools from either type of project site, once created.
++sitetype.chothetyp.withouttemplate = Choose the type of site you want to create. Only instructors can create official course websites.  Instructors and students can create project websites.  NOTE: Students, if you do not see a tab for your course, contact your instructor for information about  when your official course website will be available.
+ sitetype.con       = Continue
+-sitetype.crenewsit = Creating a new site
+-sitetype.gratooweb = Grad Tools website
+-sitetype.websit    = website
++sitetype.crenewsit = Site Type
++sitetype.gratooweb = Grad Tools site
++sitetype.project   = Build-Your-Own project site
++sitetype.websit    = site
++sitetype.templatebased  = Template-based project site
++sitetype.usetemplate = Use template:
+ 
+ sitinfimp.alert  = Alert:
+ sitinfimp.can    = Cancel
+@@ -1004,4 +1008,4 @@
+ alert.protocol=Please use a valid web address.
+ 
+ #############UPV Revision ###########################
+-zip_file_upload = Please select zip file to upload and extract to your site
+\ No newline at end of file
++zip_file_upload = Please select zip file to upload and extract to your site

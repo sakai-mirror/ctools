@@ -89,7 +89,8 @@ if changes are needed.
         <module>../gradebook</module>
         <module>../help</module>
         <module>../jobscheduler</module>
-	<!-- <module>../jcr</module> -->
+	<!-- content needs jcr -->
+        <module>../jcr</module> 
         <module>../jsf</module>
         <module>../linktool</module>
         <module>../login</module>
@@ -118,7 +119,8 @@ if changes are needed.
         <module>../site</module>
 	<module>../site-manage</module> 
         <module>../syllabus</module>
-	<!-- <module>../test-harness</module> -->
+	<!-- Figure out how to remove -->
+	<module>../test-harness</module> 
         <module>../textarea</module>
         <module>../tool</module>
         <module>../user</module>
@@ -130,7 +132,8 @@ if changes are needed.
         <module>../polls</module> 
         <module>../usermembership</module>
 	<!-- <module>../sakai-mock</module> -->
-	<!-- <module>../warehouse</module> -->
+	<!-- Currently required by OSP, figure out how to remove -->
+	<module>../warehouse</module>
 	<!-- <module>../reports</module> -->
 	<!-- <module>../reset-pass</module> -->
 

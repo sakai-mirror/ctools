@@ -117,6 +117,12 @@ sub applyPatchFiles {
   return $maxRc;
 }
 
+sub cleanTmpFiles($) {
+    my $buildDir = shift;
+    unlink(glob("$buildDir/*.tmp"));
+}
+
+
 # take a list of patch files and apply them.
 sub applyPatchFileList {
   my ($logFileName,$patchesDir,$buildDir,$patchFileNames) = @_;
@@ -127,6 +133,7 @@ sub applyPatchFileList {
   die "Please specify a build directory" unless (-d $buildDir);
   die "Please specify a patch directory" unless(-d $patchesDir);
   die "Please specify at least one patch name" unless($patchFileNames) ;
+  cleanTmpFiles($buildDir);
   print "Applying patch files\n";
 
   my (@patchFileNames) = split(",",$patchFileNames);
@@ -193,34 +200,45 @@ sub applyOneActionFile(%) {
 	    }
 	    elsif ($action eq "svnm")  {
 		print "svn action\n";
-		my ($svnSrc,$srcRev,$svnDest) = $target =~ m/(.*),(.*),(.*)/;
+		my ($svnSrc,$srcRev,$svnDest,$destRev,$wCopy);
+		#First form
+		($svnSrc,$srcRev,$svnDest,$destRev,$wCopy) = $target =~ m/(.*?)\@(.*?)\s+(.*?)\@(.*?)\s+(.*)$/;
+		#Second Form
+		if (!$wCopy) {
+		    ($svnSrc,$srcRev,$wCopy) = $target =~ m/(.*?)\@(.*?)\s+(.*)$/;
+		}
+
 		my $cmd="";
 		my $svnDebugCmds = "";
-		if ($svnDest && $svnSrc && $srcRev) {
+		if ($wCopy && $svnSrc && $srcRev) {
 		    #See if we need to add paths to the source or destination
 		    if ($svnSrc =~ m/http.*:\/\// || $svnSrc =~ m/^\//) {}
 		    else {$svnSrc=$patchDir."/".$svnSrc;}
-		    if ($svnDest =~ m/http:\/\// || $svnDest =~ m/^\//) {}
-		    else {$svnDest=$args{'builddir'}."/".$svnDest;}
+
+		    if ($wCopy =~ m/http:\/\// || $wCopy =~ m/^\//) {}
+		    else {$wCopy=$args{'builddir'}."/".$wCopy;}
 
 		    #Get information about the destination of the merge 
 		    #Get the revision and URL that this was checked out from so we can compare
 		    #Since I can't figure out the syntax to make it compare otherwise.
-		    my %destInfo = svnInfo(repo=>$svnDest);
-		    my $destRev = $destInfo{'Revision'};
-		    my $URL = $destInfo{'URL'};
+		    if (!$destRev) {
+			my %destInfo = svnInfo(repo=>$wCopy);
+			$destRev = $destInfo{'Revision'};
+			$svnDest = $destInfo{'URL'};
+		    }
 
 		    if ($dryrun == 1) {
 			 $svnDebugCmds = " --dry-run ";
 		    }
-		    if ($destRev && $URL) {
-			$cmd = "svn merge $svnDebugCmds $URL\@$destRev $svnSrc\@$srcRev $svnDest";
+		    if ($destRev && $svnDest) {
+			$cmd = "svn merge $svnDebugCmds $svnDest\@$destRev $svnSrc\@$srcRev $wCopy";
+			print $cmd;
 			my $result = runShellCmdGetResult($cmd);
 			$rc = $?;
 			$log.=$result;
 		    }
 		    else {
-			$log.="info for working copy $svnDest not found!";
+			$log.="info for working copy $wCopy not found!";
 			$rc=4;
 		    }
 		}
