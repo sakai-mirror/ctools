@@ -11,25 +11,31 @@
 
    
      #if($TargetPageUrl)
-         <h3><a href=$TargetPageUrl>$TargetPageName</a></h3>      	 
+         <h3><a href=$TargetPageUrl>$TargetPageName</a></h3><br>
+         $desp      
      #end
-    
-     
-
+            	 
 	#if($options_title)
 	 	<div class="wcwmenu"> ##style="padding:0; margin:3px -2em -1em  -2em">
 	#else
 		<div class="wcwomenu"> ##style="padding:0; margin:-.3em -2em -1em -2em">
 	#end
+	
 		<iframe 
 			width="100%"
 			id="wciframe"
-			style="width:100%;padding:0 !important; height:$height"
+			style="width:100%;padding:0 !important; height:$height;"
 			frameborder="0"
 			marginwidth="0"
 			marginheight="0"
 			scrolling="auto"
-			src="$!url">
+			
+	     #if(!$TargetPageUrl)	
+			src="$!url">	
+		 #end
+		 
 		</iframe>
 	</div>
 </div>
+
+

@@ -4,13 +4,14 @@
 
 	<tool
 			id="sakai.iframe.annotatedurl"
-			title="Engineering Honor Code"
+			title="Annotated URL Tool"
 			description="For having an annotated url">
 
 		<configuration name="height" value="600px" />
 
 		<configuration name="special" value="annotatedurl" type="final" />
 		<configuration name="reset.button" value="false" type="final" />
+		<configuration name="desp" value="WELCOME TO ANNOTATEDURL TOOL.  You can have a custom text in here" />
 		<configuration name="TargetPageName" value="Target Page" />
 		<configuration name="TargetPageUrl" value="http://sakaiproject.org/" />
 

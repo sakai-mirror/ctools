@@ -91,12 +91,14 @@ public class IFrameAction extends VelocityPortletPaneledAction
 	/** The special attribute, in state, config and context. */
 	protected final static String SPECIAL = "special";
 	
-	/** The Engineering Honor code site's url attribute, in state, config and context. */
+	/** The Annotated URL Tool's url attribute, in state, config and context. */
 	protected final static String TARGETPAGE_URL = "TargetPageUrl";
 	
-	/** The Engineering Honor code site's name attribute, in state, config and context. */
+	/** The Annotated URL Tool's name attribute, in state, config and context. */
 	protected final static String TARGETPAGE_NAME = "TargetPageName";
 	
+	/** The Annotated URL Tool's text attribute, in state, config and context. */
+	protected final static String ANNOTATED_TEXT = "desp";
 
 	/** Support an external url defined in sakai.properties, in state, config and context. */
 	protected final static String SAKAI_PROPERTIES_URL_KEY = "sakai.properties.url.key";
@@ -107,7 +109,7 @@ public class IFrameAction extends VelocityPortletPaneledAction
 	/** Special value for site. */
 	protected final static String SPECIAL_SITE = "site";
 	
-	/** Special value for Engineering Honor Code site. */
+	/** Special value for Annotated URL Tool. */
 	protected final static String SPECIAL_ANNOTATEDURL = "annotatedurl";
 
 	/** Special value for myworkspace. */
@@ -295,19 +297,19 @@ public class IFrameAction extends VelocityPortletPaneledAction
 		state.setAttribute(HEIGHT, config.getProperty(HEIGHT, "600px"));
 		
 		
-		//state.setAttribute(TARGETPAGE_URL,config.getProperty(TARGETPAGE_URL, "NULL"));
+		state.setAttribute(ANNOTATED_TEXT, config.getProperty(ANNOTATED_TEXT, ""));
+		
+		
 		if(config.getProperty(TARGETPAGE_URL)!=null)
 				{
-			// set Target page url for Engineering Honor Code site
+			// set Target page url for Annotated URL Tool
 		state.setAttribute(TARGETPAGE_URL,config.getProperty(TARGETPAGE_URL));
 		
 		
-		// set Target page name for Engineering Honor Code site
+		// set Target page name for Annotated URL Tool
 		state.setAttribute(TARGETPAGE_NAME,config.getProperty(TARGETPAGE_NAME));
 				}
 		
-		
-
 		// set the title
 		state.setAttribute(TITLE, placement.getTitle());
 		
@@ -364,28 +366,6 @@ public class IFrameAction extends VelocityPortletPaneledAction
 		else if (SPECIAL_WORKSITE.equals(special))
 		{
 			// set the url to the site of this request's config'ed url
-			try
-			{
-				// get the site's info URL, if defined
-				Site s = SiteService.getSite(context);
-				rv = StringUtil.trimToNull(s.getInfoUrlFull());
-
-				// compute the info url for the site if it has no specific InfoUrl
-				if (rv == null)
-				{
-					// access will show the site description or title...
-					rv = ServerConfigurationService.getAccessUrl() + s.getReference();
-				}
-			}
-			catch (Exception any)
-			{
-			}
-		} 
-		
-		else if ((SPECIAL_ANNOTATEDURL.equals(special)))
-		{
-			// set the url to the site of this request's config'ed url
-			
 			try
 			{
 				// get the site's info URL, if defined
@@ -719,8 +699,10 @@ public class IFrameAction extends VelocityPortletPaneledAction
 		context.put(URL, (String) state.getAttribute(URL));
 		context.put(HEIGHT, state.getAttribute(HEIGHT));
 		
+		
 		context.put(TARGETPAGE_URL, state.getAttribute(TARGETPAGE_URL));
 		context.put(TARGETPAGE_NAME, state.getAttribute(TARGETPAGE_NAME));
+		context.put(ANNOTATED_TEXT, state.getAttribute(ANNOTATED_TEXT));
 		
 		
 
@@ -804,16 +786,12 @@ public class IFrameAction extends VelocityPortletPaneledAction
 				
 				context.put("heading", rb.getString("gen.custom.annotatedurl"));
 
-				// for Engineering Honor Code page, also includes the description
+				// for Annotated URL Tool page, also include the description
 				try
-				{
-					Site s = SiteService.getSite(ToolManager.getCurrentPlacement().getContext());
-
-					String description = StringUtil.trimToNull(s.getDescription());
-					if (description != null)
-					{
-						context.put("description", description);
-					}
+				{		
+					String desp = state.getAttribute(ANNOTATED_TEXT).toString();
+					context.put("description", desp);
+		            
 				}
 				catch (Throwable e)
 				{
@@ -951,17 +929,13 @@ public class IFrameAction extends VelocityPortletPaneledAction
 		}
 		else if (SPECIAL_ANNOTATEDURL.equals(state.getAttribute(SPECIAL)))
 		{
-			String infoUrl = StringUtil.trimToNull(data.getParameters().getString("infourl"));
-			if ((infoUrl != null) && (infoUrl.length() > 0) && (!infoUrl.startsWith("/")) && (infoUrl.indexOf("://") == -1))
-			{
-				infoUrl = "http://" + infoUrl;
-			}
-			String description = StringUtil.trimToNull(data.getParameters().getString("description"));
-
 			// update the site info
 			try
 			{
-				SiteService.saveSiteInfo(ToolManager.getCurrentPlacement().getContext(), description, infoUrl);
+				String desp = data.getParameters().getString("description");
+				state.setAttribute(ANNOTATED_TEXT, desp);
+				placement.getPlacementConfig().setProperty(ANNOTATED_TEXT, desp);
+					
 			}
 			catch (Throwable e)
 			{
