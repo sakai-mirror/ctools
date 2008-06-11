@@ -41,7 +41,7 @@ $HeadURL$
 
   <!-- change source as required -->
   <target name="editCtools" 
-	  depends="editSrcGlobal,editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editRwikiSrc,updatePomWithCToolsPom,editiTunes,editPoms" >
+	  depends="editSrcGlobal,editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editRwikiSrc,updatePomWithCToolsPom,editSnapshot,editPoms" >
     <!-- edit the files that need to be modified for ctools -->
   </target>
 
@@ -122,7 +122,7 @@ $HeadURL$
 
   <!-- Need to do a search and replace on itunes presently in the current version -->
   <!-- This should be able to be used for a variety of contrib projects now -->
-  <target name="editiTunes">
+  <target name="editSnapshot">
       <echo>editing itunes: .*->${version.sakai.tag}</echo>
          <replaceregexp >
 	     <fileset dir="${work.dir}/build/itunes" >
@@ -139,7 +139,15 @@ $HeadURL$
 	<regexp pattern="(&lt;version&gt;)(.*)(&lt;/version&gt;)" />
 	<substitution expression="\1${version.sakai.tag}\3" />
 	 </replaceregexp>
-     
+        <echo>editing portal: .*->${version.sakai.tag}</echo>
+         <replaceregexp >
+	     <fileset dir="${work.dir}/build/portal" >
+	     <include name="**/pom.xml"/>
+	</fileset>
+	<regexp pattern="(&lt;version&gt;)(SNAPSHOT)(&lt;/version&gt;)" />
+	<substitution expression="\1${version.sakai.tag}\3" />
+	 </replaceregexp>
+    
   </target>
 
   <!-- This target edits out some modules from poms before the build -->
