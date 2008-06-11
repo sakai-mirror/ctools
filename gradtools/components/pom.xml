@@ -3,32 +3,40 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>gradtools-base</artifactId>
-    <groupId>org.sakaiproject</groupId>
+    <groupId>org.sakaiproject.gradtools</groupId>
     <version>M2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <name>gradtools-pack</name>
-  <groupId>org.sakaiproject</groupId>
+  <groupId>org.sakaiproject.gradtools</groupId>
   <artifactId>gradtools-pack</artifactId>
   <organization>
     <name>University of Michigan</name>
     <url>http://sakaiproject.org/</url>
   </organization>
   <inceptionYear>2003</inceptionYear>
+  <!-- you must deploy your pack to components -->
    <packaging>sakai-component</packaging>
    <properties>
     <deploy.target>components</deploy.target>
    </properties>
 	<dependencies>
+	    <!-- GradTools dependencies -->
 		<dependency>
-			<groupId>org.sakaiproject</groupId>
+			<groupId>org.sakaiproject.gradtools</groupId>
 			<artifactId>gradtools-component</artifactId>
 			<version>${sakai.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.sakaiproject</groupId>
+			<artifactId>sakai-util</artifactId>
+			<version>${sakai.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-component-api</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
@@ -40,11 +48,7 @@
 			<artifactId>sakai-entity-util</artifactId>
 			<version>${sakai.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.sakaiproject</groupId>
-			<artifactId>sakai-util</artifactId>
-			<version>${sakai.version}</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-db-storage</artifactId>
@@ -58,7 +62,7 @@
 		<dependency>
 			<groupId>quartz</groupId>
 			<artifactId>quartz</artifactId>
-			<version>1.4.0</version>		
+			<version>1.5.2</version>		
 		</dependency>
 	</dependencies>
 	<build>

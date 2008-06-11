@@ -3,49 +3,47 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>gradtools-base</artifactId>
-    <groupId>org.sakaiproject</groupId>
+    <groupId>org.sakaiproject.gradtools</groupId>
     <version>M2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <name>gradtools-api</name>
-  <groupId>org.sakaiproject</groupId>
+  <groupId>org.sakaiproject.gradtools</groupId>
   <artifactId>gradtools-api</artifactId>
   <organization>
     <name>Sakai</name>
     <url>http://sakaiproject.org/</url>
   </organization>
   <inceptionYear>2003</inceptionYear>
-  <packaging>jar</packaging>
-  <properties>
-  	<deploy.type>jar</deploy.type>
-    <deploy.target>shared</deploy.target>
-  </properties>
+  <!-- you must deploy your API to shared or it will be 
+        inaccessible from your tool -->
+    <packaging>jar</packaging>
+    <properties>
+        <deploy.target>shared</deploy.target>
+    </properties>
   <dependencies>
-		<dependency>
-			<groupId>quartz</groupId>
-			<artifactId>quartz</artifactId>
-			<version>1.4.0</version>		
-		</dependency>
+   <!-- sakai dependencies -->
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-component</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.sakaiproject</groupId>
-			<artifactId>sakai-entity-api</artifactId>
-			<version>${sakai.version}</version>
-		</dependency>
+       <dependency>
+            <groupId>org.sakaiproject</groupId>
+            <artifactId>sakai-entity-api</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-user-api</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-util-api</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
+		<!-- Quartz scheduling -->
+        <dependency>
+            <groupId>quartz</groupId>
+            <artifactId>quartz</artifactId>
+        </dependency>
   </dependencies>
   	<build>
 		<sourceDirectory>src/java</sourceDirectory>

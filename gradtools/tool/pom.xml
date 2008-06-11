@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>gradtools-base</artifactId>
-    <groupId>org.sakaiproject</groupId>
+    <groupId>org.sakaiproject.gradtools</groupId>
     <version>M2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <name>gradtools-tool</name>
-  <groupId>org.sakaiproject</groupId>
+  <groupId>org.sakaiproject.gradtools</groupId>
   <artifactId>gradtools-tool</artifactId>
   <organization>
     <name>University of Michigan</name>
@@ -17,53 +17,32 @@
   <inceptionYear>2003</inceptionYear>
   <packaging>war</packaging>
   <dependencies>
-		<dependency>
-			<groupId>servletapi</groupId>
-			<artifactId>servletapi</artifactId>
-			<version>2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.sakaiproject</groupId>
+         <!-- GradTools dependencies -->
+  		<dependency>
+			<groupId>org.sakaiproject.gradtools</groupId>
 			<artifactId>gradtools-api</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.sakaiproject</groupId>
-			<artifactId>gradtools-component</artifactId>
-			<version>${sakai.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>quartz</groupId>
-			<artifactId>quartz</artifactId>
-			<!--  
-			<version>1.4.0</version>
-			-->
-			<version>1.5.2</version>
-		</dependency>
+		
+		<!-- Sakai dependencies -->
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-authz-api</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-component</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-component-api</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-content-api</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-entity-api</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
@@ -73,32 +52,30 @@
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-event-api</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-site-api</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-tool-api</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
 		<dependency>
 		  <groupId>org.sakaiproject</groupId>
 		  <artifactId>sakai-user-api</artifactId>
-		  <version>${sakai.version}</version>
 		</dependency>
+		
+		<!-- Sakai util -->
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-util</artifactId>
 			<version>${sakai.version}</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-util-api</artifactId>
-			<version>${sakai.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
@@ -108,7 +85,20 @@
 		<dependency>
 			<groupId>org.sakaiproject</groupId>
 			<artifactId>sakai-velocity-tool-api</artifactId>
-			<version>${sakai.version}</version>
+		</dependency>
+		
+		<!-- Servlet dependency -->
+		<dependency>
+			<groupId>servletapi</groupId>
+			<artifactId>servletapi</artifactId>
+			<version>2.4</version>
+		</dependency>
+		
+		<!-- Quartz dependencies -->
+		<dependency>
+			<groupId>quartz</groupId>
+			<artifactId>quartz</artifactId>
+			<version>1.5.2</version>
 		</dependency>
 		
 		<!-- velocity and dependencies (logkit, oro, collections) -->

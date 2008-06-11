@@ -8,7 +8,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <name>gradtools-base</name>
-  <groupId>org.sakaiproject</groupId>
+  <groupId>org.sakaiproject.gradtools</groupId>
   <artifactId>gradtools-base</artifactId>
   <packaging>pom</packaging>
   <modules>
@@ -17,4 +17,30 @@
     <module>components</module>
     <module>tool</module>
   </modules>
+  <dependencyManagement>
+  	<dependencies>
+  		<dependency>
+  			<groupId>org.sakaiproject.gradtools</groupId>
+  			<artifactId>gradtools-api</artifactId>
+  			<version>${sakai.version}</version>
+  			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.sakaiproject.gradtools</groupId>
+			<artifactId>gradtools-impl</artifactId>
+			<version>${sakai.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.sakaiproject.gradtools</groupId>
+			<artifactId>gradtools-pack</artifactId>
+			<version>${sakai.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.sakaiproject.</groupId>
+			<artifactId>gradtools-tool</artifactId>
+			<version>${sakai.version}</version>
+		</dependency>
+	</dependencies>
+  </dependencyManagement>
 </project>
