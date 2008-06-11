@@ -58,7 +58,9 @@
  osp                 -r46870     https://source.sakaiproject.org/svn/osp/tags/sakai_2-5-1_rc01
  podcasts            -r46872     https://source.sakaiproject.org/svn/podcasts/tags/sakai_2-5-1_rc01
  polls               -r46913     https://source.sakaiproject.org/svn/polls/tags/sakai_2-5-1_rc01
- portal              -r46874     https://source.sakaiproject.org/svn/portal/tags/sakai_2-5-1_rc01
+# portal              -r46874     https://source.sakaiproject.org/svn/portal/tags/sakai_2-5-1_rc01
+ portal              -r47268      https://source.sakaiproject.org/svn/portal/branches/SAK-8152
+
  postem              -r46875     https://source.sakaiproject.org/svn/postem/tags/sakai_2-5-1_rc01
  presence            -r46880     https://source.sakaiproject.org/svn/presence/tags/sakai_2-5-1_rc01
  presentation        -r46881     https://source.sakaiproject.org/svn/presentation/tags/sakai_2-5-1_rc01
