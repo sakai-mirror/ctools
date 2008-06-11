@@ -1,0 +1,17 @@
+Index: search/search-impl/pack/src/webapp/WEB-INF/components.xml
+===================================================================
+--- search/search-impl/pack/src/webapp/WEB-INF/components.xml	(revision 46895)
++++ search/search-impl/pack/src/webapp/WEB-INF/components.xml	(working copy)
+@@ -24,10 +24,10 @@
+ -->
+ <beans>
+  
++   <import resource="coreSearchComponents.xml" />
+ <!--
+-   <import resource="coreSearchComponents.xml" />
++   <import resource="parallelIndexComponents.xml" />
+ -->
+-   <import resource="parallelIndexComponents.xml" />
+    <import resource="messageAdapterComponents.xml" />
+    <import resource="contentAdapterComponents.xml" />
+   
