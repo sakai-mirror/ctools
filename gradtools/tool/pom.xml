@@ -21,6 +21,7 @@
   		<dependency>
 			<groupId>org.sakaiproject.gradtools</groupId>
 			<artifactId>gradtools-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		
 		<!-- Sakai dependencies -->

@@ -44,6 +44,7 @@ import org.sakaiproject.api.app.dissertation.DissertationStep;
 import org.sakaiproject.api.app.dissertation.DissertationStepEdit;
 import org.sakaiproject.api.app.dissertation.StepStatus;
 import org.sakaiproject.api.app.dissertation.StepStatusEdit;
+import org.sakaiproject.api.app.dissertation.exception.MultipleObjectsException;
 import org.sakaiproject.db.api.SqlService;
 import org.sakaiproject.util.BaseDbSingleStorage;
 
@@ -634,22 +635,16 @@ public class DbDissertationService extends BaseDissertationService
 			CandidatePath retVal = null;
 			if(id != null)
 			{
-				try
+				List all = super.getAllResourcesWhere("CANDIDATE", id);
+				if(all != null && all.size()==1)
 				{
-					List all = super.getAllResourcesWhere("CANDIDATE", id);
-					if(all != null && all.size()==1)
-					{
-						retVal = (CandidatePath)all.get(0);
-					}
-					else if (all != null && all.size() > 1)
-					{
-						//getForCandidate(String) should only return one CandidatePath
-						m_logger.warn(this + ".getForCandidate(String) returned " + all.size() + " CandidatePaths for id " + id);
-					}
+					retVal = (CandidatePath)all.get(0);
 				}
-				catch(Exception e) 
+				else if (all != null && all.size() > 1)
 				{
-					m_logger.warn(this + ".getForCandidate id = " + id + " Exception " + e);
+					//getForCandidate(String) should only return one CandidatePath
+					m_logger.warn(this + ".getForCandidate(String) returned " + all.size() + " CandidatePaths for id " + id);
+					throw new MultipleObjectsException(id, "CandidatePath");
 				}
 			}
 			return retVal;

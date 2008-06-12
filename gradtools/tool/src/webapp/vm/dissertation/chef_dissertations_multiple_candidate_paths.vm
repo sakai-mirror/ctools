@@ -1,0 +1,8 @@
+##<!-- $Header: /cvs/ctools/gradtools/tool/src/webapp/vm/dissertation/chef_dissertations_multiple_candidate_paths.vm,v 1.2 Exp $ -->
+## Dissertations - This template is used to display a MultipleObjectsException involving CandidatePath objects.
+#if ($alertMessage)<div class="alertMessage">Alert: $validator.escapeHtml($alertMessage)</div>#end
+<div class="portletBody">
+	<p class="instruction">
+		This student has more than one checklist. Please send email to gradtools@umich.edu reporting the problem.
+	</p>
+</div>

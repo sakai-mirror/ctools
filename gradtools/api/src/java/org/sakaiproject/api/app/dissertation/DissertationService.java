@@ -1052,10 +1052,13 @@ public interface DissertationService
 	* @param byte[] m OARD data extract upload.
 	* @param String oardFileName the OARD data file name or "none" if none
 	* @param String mpFileName the MP data file name or "none" if none
-	* @return String containing message re job execution report.
+	* @param List collecting parameter for collecting results
+	* @return
 	*/
-	public String executeUploadExtractsJob(String site, byte[] o, byte[] m, String oardFileName, String mpFileName)
+	public void executeUploadExtractsJob(String site, byte[] o, byte[] m, 
+			String oardFileName, String mpFileName, List collecting)
 		throws JobExecutionException;
+
 
 }	// DissertationService
 

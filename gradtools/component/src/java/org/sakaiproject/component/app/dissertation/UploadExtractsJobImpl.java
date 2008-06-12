@@ -24,6 +24,7 @@
 package org.sakaiproject.component.app.dissertation;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -52,6 +53,10 @@ import org.sakaiproject.api.app.dissertation.Dissertation;
 import org.sakaiproject.api.app.dissertation.StepStatus;
 import org.sakaiproject.api.app.dissertation.StepStatusEdit;
 import org.sakaiproject.api.app.dissertation.cover.DissertationService;
+import org.sakaiproject.api.app.dissertation.exception.MultipleObjectsException;
+import org.sakaiproject.exception.IdUnusedException;
+import org.sakaiproject.exception.InUseException;
+import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.time.api.Time;
 import org.sakaiproject.time.api.TimeBreakdown;
 import org.sakaiproject.time.cover.TimeService;
@@ -74,68 +79,65 @@ import org.sakaiproject.util.Web;
 public class UploadExtractsJobImpl implements UploadExtractsJob
 {
 	private static final Log m_logger = LogFactory.getLog(UploadExtractsJobImpl.class);
-	private String jobName = null;
-	private StringBuffer buf = new StringBuffer();
-	private JobDetail jobDetail = null;
-	private JobDataMap dataMap = null;
-	private JobAnnouncement announcement = null;
-	private Calendar cal = Calendar.getInstance();
-	private SimpleDateFormat formatter = new SimpleDateFormat(DissertationService.STEP_JOB_DATE_FORMAT);
+	private static final Log metric = LogFactory.getLog("metrics." + UploadExtractsJobImpl.class.getName());
+	private final int METRIC_INTERVAL = 500;
+	private String jobName;
+	private StringBuffer buf;
+	private JobDetail jobDetail;
+	private JobDataMap dataMap;
+	private JobAnnouncement announcement;
+	private Calendar cal;
+	private SimpleDateFormat formatter;
+
+	//key = emplid, value = uniqname (campus_id, Sakai eid)
+	private Hashtable ids;
+
+	List OARDRecords;
+	List MPRecords;
+	
+	//execution parameters
+	private String m_currentUser;
+	private String m_oardFileName;
+	private String[] m_oardRecords;
+	private String m_mpFileName;
+	private String[] m_mpRecords;
+	
+	//TODO get from ServerConfiguration
+	private String m_musicPerformanceSite;
+	
+	/** Holds the School administrative Block Grant Group numbers. */
+	protected Hashtable m_schoolGroups;
+	
+	/** regular expressions used in data validation **/
+	Matcher matcher;
+	
 	static final String NEWLINE = Web.escapeHtmlFormattedText("<br/>");
 	static final String START_ITALIC = Web.escapeHtmlFormattedText("<i>");
 	static final String END_ITALIC = Web.escapeHtmlFormattedText("</i>");
 	
-	//key = emplid, value = uniqname (campus_id, Sakai eid)
-	private Hashtable ids = new Hashtable();
-	
-	//collection of OARD records
-	List OARDRecords = new Vector();
-	
-	//collection of MP records
-	List MPRecords = new Vector();
-	
-	//flag set if there is a validation error
-	private boolean vErrors = false;
-	
-	//execution parameters
-	private String m_currentUser = null;
-	private String m_oardFileName = null;
-	private String[] m_oardRecords;
-	private String m_mpFileName = null;
-	private String[] m_mpRecords;
-	
-	//TODO get from ServerConfiguration
-	private String m_musicPerformanceSite = null;
-	
-	/** Holds the School administrative Block Grant Group numbers. */
-	protected Hashtable m_schoolGroups = null;
-	
-	/** regular expressions used in data validation **/
-	Matcher matcher = null;
-	
 	//general patterns
-	private static Pattern  m_patternDate = Pattern.compile("(^([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/[0-9]{4}$|)");
+	private static final Pattern  m_patternDate = Pattern.compile("(^([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/[0-9]{4}$|)");
 	
 	//required (not null) data common to both database extracts
-	private static Pattern m_patternUMId = Pattern.compile("^\"[0-9]{8}\"$");
-	private static Pattern m_patternCampusId = Pattern.compile("(^\"[A-Za-z0-9]{1,8}\"\r?$)|(^\".+@.+\"\r?$)");
+	private static final Pattern m_patternUMId = Pattern.compile("^\"[0-9]{8}\"$");
+	private static final Pattern m_patternCampusId = Pattern.compile("(^\"[A-Za-z0-9]{1,8}\"\r?$)|(^\".+@.+\"\r?$)");
 	 
 	//MPathways fields
-	private static Pattern m_patternAcadProg = Pattern.compile("(^\"[0-9]{5}\"$|^\"\"$)");
-	private static Pattern m_patternAnticipate = Pattern.compile("(^\"[A-Z]{2}[- ][0-9]{4}\"$|^\"[A-Za-z]*( |,)[0-9]{4}\"$|^\"\"$)");
-	private static Pattern m_patternDateCompl = Pattern.compile("(^([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/[0-9]{4}$|)");
-	private static Pattern m_patternMilestone = Pattern.compile("(^\"[A-Za-z]*\"$|^\"\"$)");
-	private static Pattern m_patternAcademicPlan = Pattern.compile("(^\"[0-9]{4}[A-Z0-9]*\"|^\"[0-9]{4}[A-Z0-9]*\"\r?$|^\"\"$|^\"\"\r?$)");
-	private static Pattern m_patternRole = Pattern.compile("(^\".*\"$|^\"\"$|^\"#EMPTY\"$)"); //not restrictive
-	private static Pattern m_patternMember = Pattern.compile("(^\".*\"$|^\"\"$|^\"#EMPTY\"$)"); //not restrictive
-	private static Pattern m_patternEvalDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"#EMPTY\"$|^\"\"$|)");
-	private static Pattern m_patternCommitteeApprovedDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"\r$|^\"#EMPTY\"\r$|^\"\"\r$|)");
+	private static final Pattern m_patternAcadProg = Pattern.compile("(^\"[0-9]{5}\"$|^\"\"$)");
+	private static final Pattern m_patternAnticipate = Pattern.compile("(^\"[A-Z]{2}[- ][0-9]{4}\"$|^\"[A-Za-z]*( |,)[0-9]{4}\"$|^\"\"$)");
+	private static final Pattern m_patternDateCompl = Pattern.compile("(^([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/[0-9]{4}$|)");
+	private static final Pattern m_patternMilestone = Pattern.compile("(^\"[A-Za-z]*\"$|^\"\"$)");
+	private static final Pattern m_patternAcademicPlan = Pattern.compile("(^\"[0-9]{4}[A-Z0-9]*\"|^\"[0-9]{4}[A-Z0-9]*\"\r?$|^\"\"$|^\"\"\r?$)");
+	private static final Pattern m_patternRole = Pattern.compile("(^\".*\"$|^\"\"$|^\"#EMPTY\"$)"); //not restrictive
+	private static final Pattern m_patternMember = Pattern.compile("(^\"[A-Z]([- A-Za-z])+,[A-Z]([- A-Za-z])+\"$|^\"\"$|^\"#EMPTY\"$)");
+	private static final Pattern m_patternEvalDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"#EMPTY\"$|^\"\"$|)");
+	private static final Pattern m_patternCommitteeApprovedDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"\r$|^\"#EMPTY\"\r$|^\"\"\r$|)");
 		
-	//Rackham OARD database fields
-	private static Pattern 	m_patternFOS = Pattern.compile("(^\"[0-9]{4}\"$|^\"\"$)");
-	private static Pattern 	m_patternDegreeTermTrans = Pattern.compile("(^\"[A-Za-z]{2}( |-)[0-9]{4}\"$|^\"\"$)");
-	private static Pattern 	m_patternOralExamTime = Pattern.compile("(^\".*\"$|^\"\"$)"); //not restrictive
-	private static Pattern	m_patternOralExamPlace = Pattern.compile("(^\".*\"$|^\"\"$)"); //not restrictive
+	//Office of Academic Records and Dissertations fields
+	private static final Pattern m_patternFOS = Pattern.compile("(^\"[0-9]{4}\"$|^\"\"$)");
+	private static final Pattern m_patternDegreeTermTrans = Pattern.compile("(^\"[A-Za-z]{2}( |-)[0-9]{4}\"$|^\"\"$)");
+	private static final Pattern m_patternOralExamTime = Pattern.compile("(^\".*\"$|^\"\"$)"); //not restrictive
+	private static final Pattern m_patternOralExamPlace = Pattern.compile("(^\".*\"$|^\"\"$)"); //not restrictive
 
 
 	/* (non-Javadoc)
@@ -143,15 +145,24 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 	 */
 	public void execute(JobExecutionContext context) throws JobExecutionException 
 	{
+		//collecting parameter pattern for collecting results
+		List collecting = new ArrayList();
+		
+		//validation error
+		boolean vErrors = false;
+		//loading error
+		boolean lErrors = false;
+		
 		//execute() is the main method of a Quartz job
 		try
 		{
-			//Spring injection of Logger was getting lost when Quartz instantiated job
-			//m_logger = org.sakaiproject.service.framework.log.cover.Logger.getInstance();
 			if(m_logger == null)
 				System.out.println(this + ".execute() couldn't get a logger");
+			if(metric.isInfoEnabled())
+				metric.info(this + ".execute() start");
 			
-			//TODO set user to current user
+			init();
+			
 			Session s = SessionManager.getCurrentSession();
 			if (s != null)
 				s.setUserId(UserDirectoryService.ADMIN_ID);
@@ -174,9 +185,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 					m_logger.warn(this + ".execute() could not get instance of JobAnnouncement");
 			
 			//set job execution parameters
-			if(!setJobExecutionParameters(context))
-				if(m_logger.isWarnEnabled())
-					m_logger.warn(this + ".execute() could not get all required job execution parameters");
+			setJobExecutionParameters(context, collecting);
 			
 			//TODO make sure we have permission
 			
@@ -185,54 +194,35 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			//set CandidateInfo's
 			//set StepStatus's
 			
+			//Note: either one or two extract files might have been uploaded
 			if(m_oardFileName != null && m_oardFileName.length()>0)
-				buf.append("The OARD Upload File is '" + m_oardFileName + "'." + NEWLINE);
+				collecting.add("The OARD Upload File is '" + m_oardFileName + "'."  + NEWLINE);
+				
 			if(m_mpFileName != null && m_mpFileName.length()>0)
-				buf.append("The MP Upload File is '" + m_mpFileName + "'." + NEWLINE);
+				collecting.add("The MP Upload File is '" + m_mpFileName + "'." + NEWLINE);
 		
-			//note job is starting
-			buf.append(getTime() + " JOB NAME: " + jobName + " - START" + NEWLINE);
+			collecting.add(getTime() + " JOB NAME: " + jobName + " - START" + NEWLINE);
 				
 			if(m_logger.isInfoEnabled())
 				m_logger.info(getTime() + " " + jobName + " - START");
-			
-			//one or two extract files might have been uploaded
-			
-			String validErrors = null;
-			
+		
 			//validate the String[]'s passed as job detail data
-			if(m_oardRecords != null && m_oardRecords.length > 1)
-			{
-				validErrors = createOARDRecords(m_oardRecords);
-				if(validErrors != null && validErrors.length()!=0)
-				{
-					vErrors = true;
-					buf.append(validErrors);
-				}
-			}
-			if(m_mpRecords != null && m_mpRecords.length > 1)
-			{
-				validErrors = createMPRecords(m_mpRecords);
-				if(validErrors != null && validErrors.length()!=0)
-				{
-					vErrors = true;
-					buf.append(validErrors);
-				}
-			}
+			if(m_oardRecords != null && m_oardRecords.length > 0)
+				vErrors = createOARDRecords(m_oardRecords, collecting);
+			
+			if(m_mpRecords != null && m_mpRecords.length > 0)
+				vErrors = createMPRecords(m_mpRecords, collecting);
 			
 			//if there are no validation errors, convert and use the data
 			if(!vErrors)
 			{
-				buf.append("There were no validation errors, so the data will be used to update checklist status." + NEWLINE);
+				collecting.add("There were no validation errors, so the data will be used to update checklist status." + NEWLINE);
 				
 				//if we have no ids at this point bail out
 				if(!ids.elements().hasMoreElements())
 				{
 					//note exception in job execution report
-					buf.append(getTime() + " " + jobName + " exception - no employee id-uniquename map" + NEWLINE);
-					
-					if(m_logger.isWarnEnabled())
-						m_logger.warn(getTime() + " " + jobName + " exception - no employee id-uniquename map");
+					collecting.add(getTime() + " " + jobName + " exception - no employee id-uniquename map" + NEWLINE);
 				}
 				
 				/** for each id in ids, use data to initialize 
@@ -240,30 +230,22 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 				 * and at end pass Collection to dumpData(data)
 				 * returning alerts etc.*/
 				
-				String loadErrors = null;
-				
 				//load the extract data to update path step status
-				loadErrors = queryLists(OARDRecords, MPRecords, ids);
+				lErrors = queryLists(OARDRecords, MPRecords, ids, collecting);
 				
-				//there were load errors
-				if(loadErrors != null && loadErrors.length()!=0)
-				{
-					buf.append(loadErrors);
-				}
 			}
 			else
 			{	
-				
-				//there were validation errors
-				buf.append(getTime() + " JOB NAME: " + jobName + " - data validation errors" + NEWLINE);
-				buf.append("Because there were validation errors, the data have not be used to update checklist status." + NEWLINE);
-				buf.append("Please correct the errors and upload the data again." + NEWLINE);
+				//there were validation errors, don't process the data until it's been fixed
+				collecting.add(getTime() + " JOB NAME: " + jobName + " - data validation errors" + NEWLINE);
+				collecting.add("Because there were validation errors, the data have not be used to update checklist status." + NEWLINE);
+				collecting.add("Please correct the errors and upload the data again." + NEWLINE);
 			}
 		}
 		catch(Exception e)
 		{
 			//note exception in job execution report
-			buf.append(getTime() + " JOB NAME: " + jobName + " exception - " + NEWLINE + e  + NEWLINE);
+			collecting.add(getTime() + " JOB NAME: " + jobName + " exception - " + e  + NEWLINE);
 			
 			if(m_logger.isWarnEnabled())
 				m_logger.warn(getTime() + " " + jobName + " exception - " + e  + NEWLINE);
@@ -272,25 +254,13 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		{
 			
 			//note that job is done
-			buf.append(getTime() + " JOB NAME: " + jobName + " - DONE" + NEWLINE);
-			
+			collecting.add(getTime() + " JOB NAME: " + jobName + " - DONE" + NEWLINE);
+			if(lErrors)
+				collecting.add("Note: There were errors loading data which require attention." + NEWLINE);
 			if(m_logger.isInfoEnabled())
 				m_logger.info(getTime() + " " + jobName + " - DONE");
 			
-			//send report of job execution to Announcements
-			String announce = buf.toString();
-			try
-			{
-				if(announce != null && !announce.equals(""))
-					announcement.addAnnouncementMessage(announce);
-			}
-			catch(Exception e)
-			{
-				if(m_logger.isWarnEnabled())
-					m_logger.warn(this + ".execute() addAnnouncementMessage " + e);
-			}
-			
-			//clean up db lock at the end
+			//clean up lock at the end
 			try
 			{
 				CandidateInfoEdit lock = DissertationService.editCandidateInfo(DissertationService.IS_LOADING_LOCK_REFERENCE);
@@ -301,15 +271,33 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			{
 				if(m_logger.isWarnEnabled())
 					m_logger.warn(this + ".execute() removeCandidateInfo(lock) " + e);
-
-				buf.append(getTime() + " JOB NAME: " + jobName + " exception removing lock " + e + NEWLINE);
+				collecting.add(getTime() + " JOB NAME: " + jobName + " exception removing lock " + e + NEWLINE);
 			}
+			
+			//send report of job execution to Announcements
+			String announce = null;
+			try
+			{
+				StringBuffer results = new StringBuffer();
+				for (int i = 0; i < collecting.size(); i++) {
+					results.append((String)collecting.get(i));
+				}
+				announce = new String(results.toString());
+				if(announce != null && !announce.equals(""))
+					announcement.addAnnouncementMessage(announce);
+			}
+			catch(Exception e)
+			{
+				if(m_logger.isWarnEnabled())
+					m_logger.warn(this + ".execute() addAnnouncementMessage " + e);
+			}
+			if(metric.isInfoEnabled())
+				metric.info(this + ".execute() finish");
 		}
-	}//execute
+	}
 	
-	protected boolean setJobExecutionParameters(JobExecutionContext context)
+	protected boolean setJobExecutionParameters(JobExecutionContext context, List collecting)
 	{
-		//m_schoolSite = DissertationService.getSchoolSite();
 		m_musicPerformanceSite = DissertationService.getMusicPerformanceSite();
 		
 		//get job execution parameters from job data map
@@ -319,19 +307,13 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		m_oardRecords = (String[])dataMap.get("OARD_RECORDS");
 		m_mpFileName = (String)dataMap.get("MP_FILE_NAME");
 		m_mpRecords = (String[])dataMap.get("MP_RECORDS");
-		//m_currentSite = (String)dataMap.get("CURRENT_SITE");
-		
-		//check that not-null parameters are not null
 		if(m_currentUser == null || m_schoolGroups == null)
 		{
-			if(m_logger.isWarnEnabled())
-				m_logger.warn(this + ".setJobExecutionParameters " + jobName +
-					" - one or more required job execution parameters null");
+			collecting.add("One or more of the required job execution parameters was null." + NEWLINE);
 			return false;
 		}
 		return true;
-		
-	}//setJobExecutionParameters
+	}
 	
 	/**
 	* Access the alphabetical candidate chooser letter for this student. 
@@ -363,7 +345,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		}
 		return retVal;
 		
-	}//getSortLetter
+	}
 	
 	protected String getTime()
 	{
@@ -428,30 +410,27 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			retVal = TimeService.newTimeLocal(tb);
 		}
 		return retVal;
-
-	}//parseTimeString
+	}
 	
 	/**
 	*
-	* Parse and validate a Rackham OARD data extract file
-	* @param String[] lns - lines read from the OARD extract data file
-	* @return rv - a Vector of String error messages
+	* Parse, validate, and create Office of Academic Records and Dissertations (OARD) records
+	* 
+	* @param String[] lns - lines read from the OARD data extract file
+	* @param List collecting parameter for collecting results
+	* @return boolean - true if validation errors, false otherwise
 	*/
-	private String createOARDRecords(String[] lns)
+	private boolean createOARDRecords(String[] lns, List collecting)
 	{
 		boolean replace = true;
 		String message = "";
 		String prefix = "";
 		int lineNumber = 0;
-		StringBuffer bufO = new StringBuffer();
+		boolean vErrors = false;
 		
-		//TODO REMOVE
-		m_logger.info(getTime() + " createOARDRecords data in: " + lns.toString());
-
+		//iterate though each line in the input file
 		for (int i = 0; i < lns.length; i++)
 		{
-			//TODO REMOVE
-			m_logger.info(getTime() + " createOARDRecords we're looping through lines");
 			try
 			{
 				//skip last line which contains a single hex value 0x1A
@@ -495,7 +474,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!matcher.matches())
 						{
 							vErrors = true;
-							bufO.append(prefix + "1  Explanation: umid = " + flds[0] + NEWLINE);
+							collecting.add(prefix + "1  Explanation: umid = " + flds[0] + NEWLINE);
 						}
 						else
 						{
@@ -508,7 +487,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!matcher.matches())
 						{
 							vErrors = true;
-							bufO.append(prefix + "2  Explanation:  fos = " + flds[1] + NEWLINE);
+							collecting.add(prefix + "2  Explanation:  fos = " + flds[1] + NEWLINE);
 						}
 						else
 						{
@@ -531,7 +510,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[4] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufO.append(prefix + "5  Explanation: degreeterm_trans = " + flds[4] + NEWLINE);
+							collecting.add(prefix + "5  Explanation: degreeterm_trans = " + flds[4] + NEWLINE);
 						}
 						else
 						{
@@ -544,7 +523,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[5] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufO.append(prefix + "6  Explanation: oral_exam_date_time = " + flds[5] + NEWLINE);
+							collecting.add(prefix + "6  Explanation: oral_exam_date_time = " + flds[5] + NEWLINE);
 						}
 						else
 						{
@@ -556,7 +535,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[6] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufO.append(prefix + "7  Explanation: oral_exam_time = " + flds[6] + NEWLINE);
+							collecting.add(prefix + "7  Explanation: oral_exam_time = " + flds[6] + NEWLINE);
 						}
 						else
 						{
@@ -569,7 +548,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[7] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufO.append(prefix + "8  Explanation: oral_exam_place = " + flds[7] + NEWLINE);
+							collecting.add(prefix + "8  Explanation: oral_exam_place = " + flds[7] + NEWLINE);
 						}
 						else
 						{
@@ -582,7 +561,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[8] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufO.append(prefix + "9  Explanation: first_format_date = " + flds[8] + NEWLINE);
+							collecting.add(prefix + "9  Explanation: first_format_date = " + flds[8] + NEWLINE);
 						}
 						else
 						{
@@ -594,7 +573,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[9] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufO.append(prefix + "10  Explanation: oral_report_return_date = " + flds[9] + NEWLINE);
+							collecting.add(prefix + "10  Explanation: oral_report_return_date = " + flds[9] + NEWLINE);
 						}
 						else
 						{
@@ -606,7 +585,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[10] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufO.append(prefix + "11  Explanation: degree_conferred_date = " + flds[10] + NEWLINE);
+							collecting.add(prefix + "11  Explanation: degree_conferred_date = " + flds[10] + NEWLINE);
 						}
 						else
 						{
@@ -618,7 +597,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[11] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufO.append(prefix + "12  Explanation: update_date = " + flds[11] + NEWLINE);
+							collecting.add(prefix + "12  Explanation: update_date = " + flds[11] + NEWLINE);
 						}
 						else
 						{
@@ -630,7 +609,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[12] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufO.append(prefix + "13  Explanation: comm_cert_date = " + flds[12] + NEWLINE);
+							collecting.add(prefix + "13  Explanation: comm_cert_date = " + flds[12] + NEWLINE);
 						}
 						else
 						{
@@ -643,7 +622,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[13] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufO.append(prefix + "14  Explanation: campus_id = " + flds[13] + NEWLINE);
+							collecting.add(prefix + "14  Explanation: campus_id = " + flds[13] + NEWLINE);
 						}
 						else
 						{
@@ -662,7 +641,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(rollup==null)
 						{
 							vErrors = true;
-							bufO.append(prefix + "1  Explanation: fos " + field_of_study + " does not match an existing group roll-up code." + NEWLINE);
+							collecting.add(prefix + "1  Explanation: fos " + field_of_study + " does not match an existing group roll-up code." + NEWLINE);
 						}
 						if(!vErrors)
 						{
@@ -681,7 +660,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 							+ flds.length + " fields: 14 expected.";
 						if(m_logger.isInfoEnabled())
 							m_logger.info(this + ".validateOARD: " + message);
-						bufO.append(message);
+						collecting.add(message);
 					}
 				}//contains a single hex value 0x1A
 			}
@@ -690,31 +669,33 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 				message = "Source: OARD File: Explanation: unexpected problem: "  + e.getMessage();
 				if(m_logger.isWarnEnabled())
 					m_logger.warn(this + ".validateOARD: " + message);
-				bufO.append(message);
+				collecting.add(message);
 				
 				//keep going
 				continue;
 			}
-		}//for each line
+		}//for each line in the input file
 	
-		return new String(bufO.toString());
+		return vErrors;
 		
-	}//validateOARD
+	}//create OARD records
 	
 	/**
 	*
-	* Parse and validate a Rackham MP data extract file
-	* @param String[] lns - lines read from the MP data extract file
-	* @return String - validation errors
+	* Parse, validate, and create MPathways (MP) records
+	* 
+	* @param String[] lns - lines read from the data extract file
+	* @param List collecting parameter for collecting results
+	* @return boolean - true if validation errors, false otherwise
 	*/
-	private String createMPRecords(String[] lns)
+	private boolean createMPRecords(String[] lns, List collecting)
 	{
 		boolean replace = true;
 		String field_of_study = "";
 		String message = "";
 		String prefix = "";
 		int lineNumber = 0;
-		StringBuffer bufM = new StringBuffer();
+		boolean vErrors = false;
 		
 		//for each line in the MPathways extract file
 		for (int i = 0; i < lns.length; i++)
@@ -762,7 +743,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!matcher.matches())
 						{
 							vErrors = true;
-							bufM.append(prefix + "1  Explanation: umid = " + flds[0] + NEWLINE);
+							collecting.add(prefix + "1  Explanation: umid = " + flds[0] + NEWLINE);
 						}
 						else
 						{
@@ -775,7 +756,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!matcher.matches())
 						{
 							vErrors = true;
-							bufM.append(prefix + "2  Explanation: acad_prog = " + flds[1] + NEWLINE);
+							collecting.add(prefix + "2  Explanation: acad_prog = " + flds[1] + NEWLINE);
 						}
 						else
 						{
@@ -788,7 +769,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[2] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufM.append(prefix + "3  Explanation: anticipate = " + flds[2] + NEWLINE);
+							collecting.add(prefix + "3  Explanation: anticipate = " + flds[2] + NEWLINE);
 						}
 						else
 						{
@@ -801,7 +782,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[3] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufM.append(prefix + "4  Explanation:  date_compl = " + flds[3] + NEWLINE);
+							collecting.add(prefix + "4  Explanation:  date_compl = " + flds[3] + NEWLINE);
 						}
 						else
 						{
@@ -814,7 +795,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[4] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufM.append(prefix + "5  Explanation: milestone = " + flds[4] + NEWLINE);
+							collecting.add(prefix + "5  Explanation: milestone = " + flds[4] + NEWLINE);
 						}
 						else
 						{
@@ -827,7 +808,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!matcher.matches())
 						{
 							vErrors = true;
-							bufM.append(prefix + "6  Explanation: academic_plan = " + flds[5] + NEWLINE);
+							collecting.add(prefix + "6  Explanation: academic_plan = " + flds[5] + NEWLINE);
 						}
 						else
 						{
@@ -845,7 +826,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 							if(!matcher.matches())
 							{
 								vErrors = true;
-								bufM.append(prefix + "7  Explanation: role = " + flds[6] + NEWLINE);
+								collecting.add(prefix + "7  Explanation: role = " + flds[6] + NEWLINE);
 							}
 							else
 							{
@@ -860,7 +841,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 							if(!matcher.matches())
 							{
 								vErrors = true;
-								bufM.append(prefix + "8  Explanation: member = " + flds[7] + NEWLINE);
+								collecting.add(prefix + "8  Explanation: member = " + flds[7] + NEWLINE);
 							}
 							else
 							{
@@ -875,7 +856,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 							if(!matcher.matches())
 							{
 								vErrors = true;
-								bufM.append(prefix + "9  Explanation: eval_date = " + flds[8] + NEWLINE);
+								collecting.add(prefix + "9  Explanation: eval_date = " + flds[8] + NEWLINE);
 							}
 							else
 							{
@@ -892,7 +873,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!matcher.matches())
 						{
 							vErrors = true;
-							bufM.append(prefix + "10  Explanation: campus_id = " + flds[9] + NEWLINE);
+							collecting.add(prefix + "10  Explanation: campus_id = " + flds[9] + NEWLINE);
 						}
 						else
 						{
@@ -904,7 +885,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						if(!(flds[10] == null || matcher.matches()))
 						{
 							vErrors = true;
-							bufM.append(prefix + "11  Explanation: committee_approved_date = " + flds[10] + NEWLINE);
+							collecting.add(prefix + "11  Explanation: committee_approved_date = " + flds[10] + NEWLINE);
 						}
 						else
 						{
@@ -922,7 +903,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 						//no matching group roll-up code
 						if(rollup == null)
 						{
-							bufM.append(prefix + "1  Explanation: field of study " + field_of_study + 
+							collecting.add(prefix + "1  Explanation: field of study " + field_of_study + 
 									" does not match an existing group roll-up code."  + NEWLINE);
 							vErrors = true;
 						}
@@ -944,7 +925,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 							+ flds.length + " fields: 10 expected." + NEWLINE;
 						if(m_logger.isInfoEnabled())
 							m_logger.info(this + ".validateMP: " + message);
-						bufM.append(message  + NEWLINE);
+						collecting.add(message  + NEWLINE);
 					}
 				}//not a line with a single hex 0x1A
 			}
@@ -953,26 +934,27 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 				message = "Source: MP File: Explanation: unexpected problem with data: "  + e;
 				if(m_logger.isWarnEnabled())
 						m_logger.warn(this + ".createMPRecord: " + message);
-				bufM.append(message + NEWLINE + e + NEWLINE);
+				collecting.add(message + NEWLINE);
 				
 				//keep going
 				continue;
 			}
 		}//for each line
 	
-		return new String(bufM.toString());
+		return vErrors;
 		
-	}//createMPRecord
+	}//create MP records
 	
 	/**
-	* Use Rackham data to initialize and update CandidateInfo.
-	* Based on DissertationDataListenerService.queryDatabase().
-	* @param OARDRecs - Vector of OARDRecords
-	* @param  MPRecs - Vector of MPRecords
+	* Use uploaded data to initialize and update CandidateInfo
+	* (based on DissertationDataListenerService.queryDatabase())
+	* 
+	* @param OARDRecs - Vector of OARDRecord type
+	* @param  MPRecs - Vector of MPRecord type
 	* @param  ids - Hashtable of umid keys and chefid elements
 	* @return rv - a Vector of error messages
 	*/
-	private String queryLists(List OARDRecords, List MPRecords, Hashtable ids)
+	private boolean queryLists(List OARDRecords, List MPRecords, Hashtable ids, List collecting)
 	{
 		Vector data = new Vector();
 		List OARDrecs = new Vector();
@@ -987,7 +969,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		boolean commitEdit = false, existsOARDrecs = false, existsMPrecs = false;
 		Map membersEvals = new TreeMap();
 		Collection requiredFrom = new Vector();
-		StringBuffer bufQ = new StringBuffer();
+		boolean lErrors = false;
 		
 		//get all the emplids in the upload
 		Enumeration emplids = ids.keys();
@@ -1006,36 +988,29 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 				OARDrecs.clear();
 				MPrecs.clear();
 				
-				//if there are MP records
+				//get all the MP recs for this student
 				if((MPRecords!=null) && (MPRecords.size() > 0))
 				{
 					for(ListIterator i = MPRecords.listIterator(); i.hasNext(); )
 					{
-						//get all the MP recs for this student
 						MPRecord rec = (MPRecord) i.next();
 						if(rec.m_umid.equals(oneEmplid)) 
 							MPrecs.add(rec);
 					}
-					
-					//set flag for MP recs for this student
 					if((MPrecs != null) && (MPrecs.size() > 0))
 						existsMPrecs = true;
 					else
 						existsMPrecs = false;
 				}
-				
-				//if there are OARD records
+				//get all the OARD recs for this student
 				if((OARDRecords != null) && (OARDRecords.size() > 0))
 				{
 					for(ListIterator i = OARDRecords.listIterator(); i.hasNext(); )
 					{
-						//get all the OARD recs for this student
 						OARDRecord rec = (OARDRecord) i.next();
 						if(rec.m_umid.equals(oneEmplid)) 
 							OARDrecs.add(rec);
 					}
-					
-					//set flag for OARD recs for this student
 					if((OARDrecs != null) && (OARDrecs.size() > 0)) 
 						existsOARDrecs = true;
 					else
@@ -1074,11 +1049,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 					}
 					catch(Exception e)
 					{
-						msg = "// CHECK FOR CHEF ID " + oneEmplid + NEWLINE + e.getMessage() + NEWLINE;
-						bufQ.append(msg + NEWLINE);
-						m_logger.warn(this + ".queryLists()  " + msg);
-						
-						//keep going
+						lErrors = true;
+						collecting.add("Skipping student, exception checking emplid '" + oneEmplid + "': " + e + NEWLINE);
 						continue;
 					}
 			
@@ -1125,10 +1097,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 								}
 								else
 								{
-									//TODO note exception
-									m_logger.warn(this + ".queryLists() no program found for " + infoEdit.getChefId());
-	
-									//continue with next student
+									lErrors = true;
+									collecting.add("Skipping student, student '" + oneEmplid + "' no program found" + NEWLINE);
 									continue;
 								}	
 							}
@@ -1140,11 +1110,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 					}//check for student's Field of Study
 					catch(Exception e)
 					{
-						msg = "// CHECK FOR PROGRAM " + oneEmplid + NEWLINE + e.getMessage() + NEWLINE;
-						bufQ.append(msg + NEWLINE);
-						m_logger.warn(this + ".queryLists() " + msg);
-						
-						//keep going
+						lErrors = true;
+						collecting.add("Skipping student, student '" + oneEmplid + "'  exception checking for Field of Study: " + e +
+								NEWLINE);
 						continue;
 					}
 					
@@ -1256,14 +1224,11 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 				}
 				catch(Exception e)
 				{
-					msg = "// GET CANDIDATE INFO FOR ID " + oneEmplid + NEWLINE + e.getMessage() + NEWLINE;
-					bufQ.append(msg + NEWLINE);
-					m_logger.warn(this + ".queryLists() " + msg);
+					lErrors = true;
+					collecting.add("Skipping student, emplid '" + oneEmplid + "' exception: " + e + NEWLINE);
 					
 					if(infoEdit != null && infoEdit.isActiveEdit())
 						DissertationService.cancelEdit(infoEdit);
-					
-					//keep going with next student
 					continue;
 				}
 				
@@ -1282,404 +1247,405 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 				//add this CandidateInfo to the collection
 				data.add(infoEdit);
 				
-			}//while(emplids.hasMoreElements())
+			}//for each emplid
 			
 			//on to apply business logic and data values to set step status
-			msg = dumpData(new String(bufQ.toString()), data);
-			
-		}//if(emplids != null)
-
-		//return a String of messages suitable for HTML display
-		return msg;
+			lErrors = dumpData(data, collecting);
+		}
+		//return status of loading
+		return lErrors;
 			
 	} //queryLists
 	
 	/** 
 	* Send in a load of data from Rackham upload.
 	* @param data Vector of CandidateInfo objects.
+	* @param List collecting parameter for collecting results
 	*/
-	public String dumpData(String errors, Vector data)
+	protected boolean dumpData(Vector data, List collecting)
 	{
 		CandidateInfoEdit info = null;
 		CandidatePath path = null;
-		CandidatePathEdit pathEdit = null;
 		Hashtable orderedStatus = null;
-		Collection statusRefs = null;
 		String statusRef = null;
-		String autoValidationId = null;
-		String oralExamText = null;
-		String degreeTerm = null;
-		String newDegreeTerm = null;
-		int autoValidNumber = 0;
-		StepStatus status = null;
-		StepStatusEdit statusEdit = null;
-		Time completionTime = null;
-		StringBuffer bufD = new StringBuffer();
-		Vector memberRole = new Vector();
 		String studentIdentifier = null;
+		boolean lErrors = false;
+		int processed = 0;
 		
-		//if there were errors creating CandidateInfos, note that
-		if(errors != null && !errors.equals(""))
-			bufD.append(errors);
-
+		if(data == null) 
+			throw new IllegalArgumentException("CandidateInfo data sent to dumpData() was null");
+		
+		if(m_logger.isWarnEnabled())
+			m_logger.warn("Metric: " + data.size() + " students in data from Rackham upload at START.");
+		
 		//for each CandidateInfo in data
 		for(int x = 0; x < data.size(); x++)
 		{
 			try
 			{
-				/** infoEdit was committed or cancelled in queryLists
-				 *  so no need to commit or cancel here */
-				
+				// Note: infoEdit was committed or canceled in queryLists so no need to commit or cancel here
 				info = (CandidateInfoEdit)data.get(x);
 				try
 				{
-					//a string to identify the student by external identification
+					//a string to identify the student by ids known to Rackham
 					studentIdentifier = null;
 					studentIdentifier = info.getEmplid() + " " + 
 						UserDirectoryService.getUserEid(info.getChefId() + " ");
+					if(studentIdentifier == null) {
+						lErrors = true;
+						collecting.add("Skipping student, emplid '" + info.getEmplid() + "' null studentIdentifier " + NEWLINE);
+						continue;
+					}
 				}
 				catch(Exception e)
 				{
-				}
-				
-				//get the candidate path for this student
-				path = DissertationService.getCandidatePathForCandidate(info.getChefId());
-				if(path == null)
-				{
-					//if there is no path, create one
-					
-					/** there is no student site id yet or we don't know it
-					 *  site attribute is set to user Sakai id initially */
-					
-					String currentSite = info.getChefId();
-					String parentSite = info.getParentSite();
-					Dissertation dissertation = DissertationService.getDissertationForSite(parentSite);
-					if(dissertation == null)
-					{
-						//if there is no dissertation for the student's parent site, use school's
-						
-						//set the dissertation type
-						String schoolSite = DissertationService.getSchoolSite();
-						if(parentSite.equals(m_musicPerformanceSite))
-							dissertation = DissertationService.getDissertationForSite(schoolSite, DissertationService.DISSERTATION_TYPE_MUSIC_PERFORMANCE);
-						else
-							dissertation = DissertationService.getDissertationForSite(schoolSite, DissertationService.DISSERTATION_TYPE_DISSERTATION_STEPS);
-						if(dissertation == null)
-						{
-							m_logger.warn(this + ". dumpData dissertation for school is null");
-							if(studentIdentifier != null)
-								bufD.append(NEWLINE + studentIdentifier + ": cannot create student's path, because dissertation for school is null" + NEWLINE);
-							
-							//note exception and continue with next student
-							continue;
-						}
-					}
-					try
-					{
-						//TODO %%% get through Dissertation Service get a new path based on this dissertation
-						//pathEdit = addCandidatePathFromListener(dissertation, currentSite);
-						pathEdit = DissertationService.addCandidatePath(dissertation, currentSite);
-						if(pathEdit == null)
-						{
-							m_logger.warn(this + ". dumpData pathEdit from addCandidatePath is null");
-							if(studentIdentifier != null)
-								bufD.append(NEWLINE + studentIdentifier + ": cannot create CandidatePath, because path from addCandidatePath was null" + NEWLINE);
-							
-							//continue with next student
-							continue;
-						}
-						
-						//set candidate to Sakai id
-						pathEdit.setCandidate(info.getChefId());
-						
-						//set alphabetical candidate chooser letter
-						pathEdit.setSortLetter(getSortLetter(info.getChefId()));
-						
-						//if sortletter can't be set, alphabetical candidate chooser
-						//won't show this student under a letter
-						if(pathEdit.getSortLetter().equals("") || !((String)pathEdit.getSortLetter()).matches("[A-Z]"))
-						{	
-							if(studentIdentifier != null)
-								bufD.append(NEWLINE + studentIdentifier + ": problem setting student's alphabetical letter, path was not created" + NEWLINE);
-							
-							//clean up by removing step statuses
-							statusRefs = pathEdit.getOrderedStatus().values();
-							Iterator i = statusRefs.iterator();
-							while(i.hasNext())
-							{
-								statusRef = (String)i.next();
-								statusEdit = DissertationService.editStepStatus(statusRef);
-								DissertationService.removeStepStatus(statusEdit);
-							}
-							statusRefs = null;
-							statusEdit = null;
-							statusRef = null;
-							
-							//clean up by removing the path
-							DissertationService.removeCandidatePath(pathEdit);
-							try
-							{
-								CandidateInfoEdit ci = DissertationService.getCandidateInfoEditForEmplid(info.getEmplid());
-								
-								//remove candidate info
-								DissertationService.removeCandidateInfo(ci);
-							}
-							catch(Exception e)
-							{
-								if(studentIdentifier != null)
-									bufD.append(NEWLINE + studentIdentifier + ": problem removing corresponding CandidateInfo - " + NEWLINE + e.toString() + NEWLINE);
-							}
-							
-							//continue with the next student
-							continue;
-						}
-						
-						//set parent department site id
-						pathEdit.setParentSite(info.getParentSite());
-						if(!(pathEdit.getParentSite().matches("^diss[0-9]*$")))
-						{
-							if(studentIdentifier != null)
-								bufD.append(NEWLINE + studentIdentifier + ": problem setting student's parent site" + NEWLINE);
-						}
-						
-						//set dissertation steps type
-						if(parentSite.equals(m_musicPerformanceSite))
-							pathEdit.setType(DissertationService.DISSERTATION_TYPE_MUSIC_PERFORMANCE);
-						else
-							pathEdit.setType(DissertationService.DISSERTATION_TYPE_DISSERTATION_STEPS);
-					}
-					catch(Exception e)
-					{
-						if(studentIdentifier != null)
-							bufD.append(NEWLINE + studentIdentifier + ": exception setting initial CandidatePath attributes: " 
-								+ NEWLINE + e.toString() + NEWLINE);
-						if(pathEdit != null && pathEdit.isActiveEdit())
-							DissertationService.cancelEdit(pathEdit);
-						
-						//continue with next student
-						continue;	
-					}
-					finally
-					{
-						//save path
-						if(pathEdit != null && pathEdit.isActiveEdit())
-							DissertationService.commitEdit(pathEdit);
-					}
-					
-				}//created path for student
-				
-				//get path for student
-				path = DissertationService.getCandidatePathForCandidate(info.getChefId());
-				if(path == null)
-				{
-					if(studentIdentifier != null)
-					{
-						m_logger.warn(this + ".dumpData path from getCandidatePathForCandidate for " + studentIdentifier + " is null");
-						bufD.append(NEWLINE + studentIdentifier + ":  the path from getCandidatePathForCandidate was null" + NEWLINE);
-					}
-					
-					//continue with next student
+					lErrors = true;
+					collecting.add("Skipping student, emplid '" + info.getEmplid() + "' could not get a CTools id: " + e + NEWLINE);
 					continue;
 				}
 				
-				/** Set the status of the steps in the path
-				 *  for those steps that have auto-validation numbers.
-				 *  See
-				 *  CandidateInfo.getExternalValidation(autoValidNumber)
-				 *  for business logic. */
-				
+				//get the candidate path for this student
+				try {
+					path = DissertationService.getCandidatePathForCandidate(info.getChefId());
+				}
+				catch(MultipleObjectsException m) {
+					lErrors = true;
+					collecting.add("Skipping student, emplid '" + info.getEmplid() + "' has more than one path: " + m + NEWLINE);
+					continue;
+				}
+				//if a path doesn't exist create one
+				boolean created = false;
+				if(path == null)
+					created = createPath(studentIdentifier, info, collecting);
+				if(created) {
+					//try to get the path from storage
+					path = DissertationService.getCandidatePathForCandidate(info.getChefId());
+					if(path == null)
+					{
+						lErrors = true;
+						collecting.add("Skipping student, '" + studentIdentifier + "' path is null." + NEWLINE);
+						continue;
+					}
+				}
+
 				//get the ordered step statuses
 				orderedStatus = path.getOrderedStatus();
 				
-				//for each ordered step status
+				//use the data to update step status for steps with an auto-validation number
 				for(int y = 1; y < (orderedStatus.size()+1); y++)
 				{
-					//try to get the auto-validation number
 					statusRef = (String)orderedStatus.get("" + y);
-					//statusId = statusId(statusRef);
-					//status = m_statusStorage.get(statusId);
-					status = DissertationService.getStepStatus(statusRef);
-					autoValidationId = status.getAutoValidationId();
-					
-					//if there is a used auto-validation number
-					if((!"".equals(autoValidationId)) && (!"None".equals(autoValidationId))
-							&& (!"9".equals(autoValidationId)) && (!"10".equals(autoValidationId)) 
-							&& (!"12".equals(autoValidationId)))
-					{
-						try
-						{
-							//get a status edit
-							//statusEdit = m_statusStorage.edit(statusId);
-							statusEdit = DissertationService.editStepStatus(statusRef);
-							
-							//get an integer
-							autoValidNumber = Integer.parseInt(autoValidationId);
-							
-							//remove prior auxiliary text so it can be changed
-							if(statusEdit.getAuxiliaryText() != null)
-								statusEdit.setAuxiliaryText(null);
-							
-							/** display committee member names/roles with step
-							 *  "Approve dissertation committee"
-							 */
-							if(autoValidNumber == 3 && ((Vector)info.getCommitteeEvalsCompleted()).size() > 0)
-							{
-								memberRole.clear();
-								memberRole.add(START_ITALIC + "Committee:" + END_ITALIC);
-								for(int i = 0; i < info.getCommitteeEvalsCompleted().size(); i++)
-								{
-									String temp = (String)info.getCommitteeEvalsCompleted().get(i);
-									if(temp.indexOf(", received on ")!= -1)
-										temp = temp.substring(0,temp.indexOf(", received on "));
-									memberRole.add(temp);
-								}
-								statusEdit.setAuxiliaryText(memberRole);
-							}
-							
-							/** display committee member names/dates with step
-							 *  "Submit completed evaluation forms to Rackham three days before defense"
-							 *  previously was with "Return Final Oral Examination report to Rackham" */
-							
-							//set auxiliary text to appear with step
-							if(autoValidNumber == 6 && ((Vector)info.getCommitteeEvalsCompleted()).size() > 0)
-							{
-								memberRole.clear();
-								memberRole.add(START_ITALIC + "Evaluations required from:"+ END_ITALIC);
-								memberRole.addAll(info.getCommitteeEvalsCompleted());
-								
-								//statusEdit.setAuxiliaryText(info.getCommitteeEvalsCompleted());
-								statusEdit.setAuxiliaryText(memberRole);
-							}
-							
-							//apply the business logic for step completion
-							completionTime = info.getExternalValidation(autoValidNumber);
-							if(completionTime != null)
-							{
-								//We want autovalidation #9 to set TimeCompleted to new Time() once
-								//if(autoValidNumber != 9)
-								//{
-									//statusEdit = m_statusStorage.edit(statusId);	
-									statusEdit.setCompleted(true);
-									statusEdit.setTimeCompleted(completionTime);
-									
-									//We want to display Advanced to Candidacy Term (e.g., 'Fall 2003') 
-									//with time 'Approve advance to candidacy' completed
-									if(autoValidNumber == 2)
-									{
-										degreeTerm = info.getAdvCandDesc();
-										
-										//translation of term for readability
-										if(degreeTerm != null && !degreeTerm.equals(""))
-										{
-											if(degreeTerm.startsWith("FA"))
-												newDegreeTerm = degreeTerm.replaceFirst("FA", "Fall ");
-											else if(degreeTerm.startsWith("WN"))
-												newDegreeTerm = degreeTerm.replaceFirst("WN", "Winter ");
-											else if(degreeTerm.startsWith("SP"))
-												newDegreeTerm = degreeTerm.replaceFirst("SP", "Spring ");
-											else if(degreeTerm.startsWith("SU"))
-												newDegreeTerm = degreeTerm.replaceFirst("SU", "Summer ");
-											else if(degreeTerm.startsWith("SS"))
-												newDegreeTerm = degreeTerm.replaceFirst("SS", "Spring-Summer ");
-											if(newDegreeTerm != null)
-												degreeTerm = newDegreeTerm;
-											statusEdit.setTimeCompletedText(degreeTerm);
-										}
-									}//autoValidation == 2
-									
-									//We want to display Oral Exam Date, Oral Exam Time, Oral Exam Place 
-									//with first format time 'Complete Rackham pre-defense meeting' completed
-									if(autoValidNumber == 4)
-									{
-										oralExamText = info.getOralExamTime().toString() + " " + info.getOralExamPlace();
-										statusEdit.setTimeCompletedText(oralExamText);
-									}
-									
-									//We want to display student's Degree Term with 
-									//date of approval of degree conferral
-									if(autoValidNumber == 11)
-									{
-										//more editing for readability
-										degreeTerm = info.getDegreeTermTrans();
-										if(degreeTerm != null && !degreeTerm.equals(""))
-										{
-											if(degreeTerm.startsWith("FA-"))
-												newDegreeTerm = degreeTerm.replaceFirst("FA-", "Fall ");
-											else if(degreeTerm.startsWith("WN-"))
-												newDegreeTerm = degreeTerm.replaceFirst("WN-", "Winter ");
-											else if(degreeTerm.startsWith("SP-"))
-												newDegreeTerm = degreeTerm.replaceFirst("SP-", "Spring ");
-											else if(degreeTerm.startsWith("SU-"))
-												newDegreeTerm = degreeTerm.replaceFirst("SU-", "Summer ");
-											else if(degreeTerm.startsWith("SS-"))
-												newDegreeTerm = degreeTerm.replaceFirst("SS-", "Spring-Summer ");
-											if(newDegreeTerm != null)
-												degreeTerm = newDegreeTerm;
-											statusEdit.setTimeCompletedText(degreeTerm);
-										}
-									}//autoValidation = 11
-									/*
-								}//autoValidation != 9
-								else
-								{
-									if(status.getTimeCompleted()==null || status.getTimeCompleted().equals(""))
-									{
-										statusEdit.setCompleted(true);
-										statusEdit.setTimeCompleted(completionTime);
-									}
-								}//autoValidation == 9
-								*/
-							}//completion time not null
-							else
-							{
-								/** Completion time is null
-								 * if null is because there is a record with 
-								 * date set to null, set status to null
-								 * if null is because the record is missing, 
-								 * do not change the existing status */
-								
-								if((((autoValidNumber == 1) || (autoValidNumber == 2)) && info.getMPRecInExtract()) ||
-								((autoValidNumber != 1) && (autoValidNumber != 2) && info.getOARDRecInExtract()))
-								{
-									statusEdit.setCompleted(false);
-									statusEdit.setTimeCompleted(completionTime);
-								}
-							}
-							
-							//save the changes to status
-							DissertationService.commitEdit(statusEdit);
-						}
-						catch(Exception nfe)
-						{
-							//note the exception
-							m_logger.warn("DISSERTATION : BASE SERVICE : DUMP DATA : EXCEPTION PROCESSING AUTOVALID NUMBER : " + autoValidationId + " " + nfe.toString());
-							if(studentIdentifier != null)
-								bufD.append(studentIdentifier + ": exception processing step with autovalidation number " + autoValidationId + ": " + NEWLINE + nfe.toString() + NEWLINE);
-							
-							if(statusEdit != null && statusEdit.isActiveEdit())
-								DissertationService.cancelEdit(statusEdit);
-						}
-					}//there is an auto-validation number
-				}//for each ordered step status
+					updateStepStatus(studentIdentifier, statusRef, info, collecting);
+				}
+				processed++;
+				if(processed % METRIC_INTERVAL == 0) {
+					if(m_logger.isWarnEnabled())
+						m_logger.warn("Metric: " + processed + " students' checklists updated.");
+				}
 			}
 			catch(Exception e)
 			{
-				if(studentIdentifier != null)
-				{
-					m_logger.warn("DISSERTATION : BASE SERVICE : DUMP DATA : EXCEPTION STORING DATA FOR : " + studentIdentifier + ": " + e.toString());
-					bufD.append(studentIdentifier + ": exception " + NEWLINE + e.toString() + NEWLINE);
-				}
-				if(pathEdit != null && pathEdit.isActiveEdit())
-					DissertationService.commitEdit(pathEdit);
-				
-				//keep going with next student
+				lErrors = true;
+				collecting.add("Skipping student, '" + studentIdentifier + "' " + e + NEWLINE);
 				continue;
 			}
-		}//for each CandidateInfo
+			
+		}//for each CandidateInfo 
 		
-		return new String(bufD.toString());
+		if(m_logger.isWarnEnabled())
+			m_logger.warn("Metric: " + processed + " students' checklists updated at END.");
 		
-	}//dumpData
+		return lErrors;
+	}
+	
+	/**
+	 * Set the status of the steps in the path  for those steps that have auto-validation numbers.
+	 * Note: See CandidateInfo.getExternalValidation(autoValidNumber) for business logic.
+	 * 
+	 * @param statusRef
+	 * @param info
+	 */
+	private void updateStepStatus(String studentIdentifier, String statusRef, 
+			CandidateInfoEdit info, List collecting) {
+		
+		String autoValidationId = null;
+		String oralExamText = null;
+		String degreeTerm = null;
+		Vector memberRole = new Vector();
+		String newDegreeTerm = null;
+		int autoValidNumber = 0;
+		StepStatus status = null;
+		StepStatusEdit statusEdit = null;
+		Time completionTime = null;
+		
+		if(studentIdentifier == null || statusRef == null || info == null
+				|| collecting == null) throw new IllegalArgumentException("a parameter in the call to updateStepStatus() was null");
+
+		try {
+			status = DissertationService.getStepStatus(statusRef);
+		}
+		catch(Exception e) {
+			collecting.add("Skipping step update for'" + studentIdentifier + "': status reference '" + statusRef + "'" + e + NEWLINE);
+			return;
+		}
+		
+		//check if there is an auto-validation number currently being used
+		autoValidationId = status.getAutoValidationId();
+		if((!"".equals(autoValidationId)) && (!"None".equals(autoValidationId))
+				&& (!"9".equals(autoValidationId)) && (!"10".equals(autoValidationId)) 
+				&& (!"12".equals(autoValidationId)))
+		{
+			try
+			{
+				statusEdit = DissertationService.editStepStatus(statusRef);
+				autoValidNumber = Integer.parseInt(autoValidationId);
+				
+				if(statusEdit.getAuxiliaryText() != null)
+					statusEdit.setAuxiliaryText(null);
+				
+				if(autoValidNumber == 3 && ((Vector)info.getCommitteeEvalsCompleted()).size() > 0)
+				{
+					memberRole.clear();
+					memberRole.add(START_ITALIC + "Committee:" + END_ITALIC);
+					for(int i = 0; i < info.getCommitteeEvalsCompleted().size(); i++)
+					{
+						String temp = (String)info.getCommitteeEvalsCompleted().get(i);
+						if(temp.indexOf(", received on ")!= -1)
+							temp = temp.substring(0,temp.indexOf(", received on "));
+						memberRole.add(temp);
+					}
+					statusEdit.setAuxiliaryText(memberRole);
+				}
+				if(autoValidNumber == 6 && ((Vector)info.getCommitteeEvalsCompleted()).size() > 0)
+				{
+					memberRole.clear();
+					memberRole.add(START_ITALIC + "Evaluations required from:"+ END_ITALIC);
+					memberRole.addAll(info.getCommitteeEvalsCompleted());
+					statusEdit.setAuxiliaryText(memberRole);
+				}
+				//business logic for step completion
+				completionTime = info.getExternalValidation(autoValidNumber);
+				if(completionTime != null)
+				{
+					statusEdit.setCompleted(true);
+					statusEdit.setTimeCompleted(completionTime);
+					if(autoValidNumber == 2)
+					{
+						degreeTerm = info.getAdvCandDesc();
+						if(degreeTerm != null && !degreeTerm.equals(""))
+						{
+							newDegreeTerm = translateDegreeTerm(degreeTerm,
+									newDegreeTerm, autoValidNumber);
+							if(newDegreeTerm != null)
+								degreeTerm = newDegreeTerm;
+							statusEdit.setTimeCompletedText(degreeTerm);
+						}
+					}
+					if(autoValidNumber == 4)
+					{
+						oralExamText = info.getOralExamTime().toString() + " " + info.getOralExamPlace();
+						statusEdit.setTimeCompletedText(oralExamText);
+					}
+					if(autoValidNumber == 11)
+					{
+						degreeTerm = info.getDegreeTermTrans();
+						if(degreeTerm != null && !degreeTerm.equals(""))
+						{
+							newDegreeTerm = translateDegreeTerm(degreeTerm,
+									newDegreeTerm, autoValidNumber);
+							if(newDegreeTerm != null)
+								degreeTerm = newDegreeTerm;
+							statusEdit.setTimeCompletedText(degreeTerm);
+						}
+					}
+				}
+				else
+				{
+					//Note: if completion time is null because 
+					//		there is a record with date set to null, set status to null
+					//		the record is missing, do not change the existing status
+					if((((autoValidNumber == 1) || (autoValidNumber == 2)) && info.getMPRecInExtract()) ||
+					((autoValidNumber != 1) && (autoValidNumber != 2) && info.getOARDRecInExtract()))
+					{
+						statusEdit.setCompleted(false);
+						statusEdit.setTimeCompleted(completionTime);
+					}
+				}
+				//save the changes to status
+				DissertationService.commitEdit(statusEdit);
+			}
+			catch(Exception e)
+			{
+				//cancel open edit
+				if(statusEdit != null && statusEdit.isActiveEdit())
+					DissertationService.cancelEdit(statusEdit);
+				collecting.add("Skipping step update for'" + studentIdentifier + "': status reference '" + statusRef + "'" + 
+						"processing step with autovalidation number '" + autoValidationId + "' " + e + NEWLINE);
+			}
+		}//has current auto-validation number
+	}
+
+	/**
+	 * Edit the degree term string for improved readability
+	 * 
+	 * @param degreeTerm
+	 * @param newDegreeTerm
+	 * @param autoValidationNumber for translation appropriate to the incoming data
+	 * @return translated degree term
+	 */
+	private String translateDegreeTerm(String degreeTerm, String newDegreeTerm, int autoValidationNumber) {
+		if(autoValidationNumber == 2) {
+			if(degreeTerm.startsWith("FA"))
+				newDegreeTerm = degreeTerm.replaceFirst("FA", "Fall ");
+			else if(degreeTerm.startsWith("WN"))
+				newDegreeTerm = degreeTerm.replaceFirst("WN", "Winter ");
+			else if(degreeTerm.startsWith("SP"))
+				newDegreeTerm = degreeTerm.replaceFirst("SP", "Spring ");
+			else if(degreeTerm.startsWith("SU"))
+				newDegreeTerm = degreeTerm.replaceFirst("SU", "Summer ");
+			else if(degreeTerm.startsWith("SS"))
+				newDegreeTerm = degreeTerm.replaceFirst("SS", "Spring-Summer ");
+		}
+		if(autoValidationNumber == 11) {
+			if(degreeTerm.startsWith("FA-"))
+				newDegreeTerm = degreeTerm.replaceFirst("FA-", "Fall ");
+			else if(degreeTerm.startsWith("WN-"))
+				newDegreeTerm = degreeTerm.replaceFirst("WN-", "Winter ");
+			else if(degreeTerm.startsWith("SP-"))
+				newDegreeTerm = degreeTerm.replaceFirst("SP-", "Spring ");
+			else if(degreeTerm.startsWith("SU-"))
+				newDegreeTerm = degreeTerm.replaceFirst("SU-", "Summer ");
+			else if(degreeTerm.startsWith("SS-"))
+				newDegreeTerm = degreeTerm.replaceFirst("SS-", "Spring-Summer ");
+		}
+		return newDegreeTerm;
+	}
+
+	/**
+	 * Create a new CandidatePath
+	 * 
+	 * @param studentIdentifier an identifier based on external ids
+	 * @param info
+	 * @param bufD
+	 */
+	private boolean createPath(String studentIdentifier, CandidateInfoEdit info, List collecting) {
+		// Note: there is no student site id yet (or we don't know it)
+		// site attribute is provisionally set to user Sakai id
+		CandidatePathEdit pathEdit = null;
+		String currentSite = info.getChefId();
+		String parentSite = info.getParentSite();
+		boolean created = false;
+		
+		if(studentIdentifier == null || info == null
+				|| collecting == null) throw new IllegalArgumentException("a parameter in the call to createPath() was null");
+		
+		try {
+			Dissertation dissertation = DissertationService.getDissertationForSite(parentSite);
+			//if there is no dissertation for the student's parent site, use school's
+			if(dissertation == null)
+			{
+				//set the dissertation type
+				String schoolSite = DissertationService.getSchoolSite();
+				if(parentSite.equals(m_musicPerformanceSite))
+					dissertation = DissertationService.getDissertationForSite(schoolSite, DissertationService.DISSERTATION_TYPE_MUSIC_PERFORMANCE);
+				else
+					dissertation = DissertationService.getDissertationForSite(schoolSite, DissertationService.DISSERTATION_TYPE_DISSERTATION_STEPS);
+				if(dissertation == null)
+				{
+					collecting.add("Could not create path for '" + studentIdentifier + "' because checklist for school is null." + NEWLINE);
+					return created;
+				}
+			}
+
+			//TODO get through Dissertation Service get a new path based on this dissertation
+			//pathEdit = addCandidatePathFromListener(dissertation, currentSite);
+			pathEdit = DissertationService.addCandidatePath(dissertation, currentSite);
+			if(pathEdit == null)
+			{
+				collecting.add("Could not create path for '" + studentIdentifier + "' because path returned by addCandidatePath was null." + NEWLINE);
+				return created;
+			}
+			//if sort letter is bad, path will be hidden from alphabetical candidate chooser
+			pathEdit.setCandidate(info.getChefId());
+			pathEdit.setSortLetter(getSortLetter(info.getChefId()));
+			if(pathEdit.getSortLetter().equals("") || !((String)pathEdit.getSortLetter()).matches("[A-Z]"))
+			{	
+				collecting.add("Could not create a sort letter for '" + studentIdentifier + "', removing path and step status objects." + NEWLINE);
+				//Note: if Sort Letter isn't set the alphabetical candidate chooser won't show this student under a letter
+				// so remove records for this student from the Grad Tools tables
+				cleanUp(studentIdentifier, info, collecting, pathEdit);
+				return created;
+			}
+			
+			//set parent department site id
+			pathEdit.setParentSite(info.getParentSite());
+			if(!(pathEdit.getParentSite().matches("^diss[0-9]*$")))
+			{
+				collecting.add("Parent site doesn't match dissBGG pattern for '" + studentIdentifier + "'.");
+				return created;
+			}
+			
+			//set dissertation steps type
+			if(parentSite.equals(m_musicPerformanceSite))
+				pathEdit.setType(DissertationService.DISSERTATION_TYPE_MUSIC_PERFORMANCE);
+			else
+				pathEdit.setType(DissertationService.DISSERTATION_TYPE_DISSERTATION_STEPS);
+			
+			//save and close the edit
+			if(pathEdit != null && pathEdit.isActiveEdit()) {
+				DissertationService.commitEdit(pathEdit);
+				created = true;
+			}
+		}
+		catch(Exception e)
+		{
+			collecting.add("Skipping student, '" + studentIdentifier + "' canceling creation of path: " + e + NEWLINE);
+			if(pathEdit != null && pathEdit.isActiveEdit())
+				DissertationService.cancelEdit(pathEdit);
+		}
+		return created;
+	}
+
+	/**
+	 * Remove records for this student from the Grad Tools tables
+	 * 
+	 * @param studentIdentifier an identifier based on external ids
+	 * @param info the CandidateInfo edit for this student
+	 * @param collecting a collecting parameter pattern use
+	 * @param pathEdit the CandidatePath edit for this student
+	 * @throws IdUnusedException
+	 * @throws InUseException
+	 * @throws PermissionException
+	 */
+	private void cleanUp(String studentIdentifier, CandidateInfoEdit info,
+			List collecting, CandidatePathEdit pathEdit)
+			throws IdUnusedException, InUseException, PermissionException {
+		StepStatusEdit statusEdit;
+		Collection statusRefs;
+		String statusRef;
+		try
+		{
+			statusRefs = pathEdit.getOrderedStatus().values();
+			Iterator i = statusRefs.iterator();
+			while(i.hasNext())
+			{
+				statusRef = (String)i.next();
+				statusEdit = DissertationService.editStepStatus(statusRef);
+				DissertationService.removeStepStatus(statusEdit);
+			}
+			statusRefs = null;
+			statusEdit = null;
+			statusRef = null;
+
+			DissertationService.removeCandidatePath(pathEdit);
+			CandidateInfoEdit ci = DissertationService.getCandidateInfoEditForEmplid(info.getEmplid());
+			DissertationService.removeCandidateInfo(ci);
+		}
+		catch(Exception e)
+		{
+			collecting.add("There was an exception removing table records for '" + studentIdentifier + "': " + e + NEWLINE);
+		}
+	}
 	
 	/*******************************************************************************
 	* OARDRecord implementation
@@ -1763,7 +1729,7 @@ STRUCT ¦         Field Name         ¦Field Type
 		public String getComm_cert_date(){ return m_comm_cert_date; }
 		public String getCampusId() { return m_campus_id; }
 		
-	} // OARDRecord
+	}
 	
 
 	
@@ -1819,7 +1785,7 @@ STRUCT ¦         Field Name         ¦Field Type
 		protected String getCampusId() { return m_campus_id; }
 		protected String getCommitteeApprovedDate() { return m_committee_approved_date;}
 		
-	}//MPRecord
+	}
 	
 	/** 
 	* Access the Rackham program id (Block Grant Group or BGG) 
@@ -1839,8 +1805,22 @@ STRUCT ¦         Field Name         ¦Field Type
 	 */
 	public void init() 
 	{
-		// TODO Auto-generated method stub
-		
+		jobName = null;
+		buf = new StringBuffer();
+		jobDetail = null;
+		dataMap = null;
+		announcement = null;
+		cal = Calendar.getInstance();
+		formatter = new SimpleDateFormat(DissertationService.STEP_JOB_DATE_FORMAT);
+		ids = new Hashtable();
+		OARDRecords = new Vector();
+		MPRecords = new Vector();
+		m_currentUser = null;
+		m_oardFileName = null;
+		m_mpFileName = null;
+		m_musicPerformanceSite = null;
+		m_schoolGroups = null;
+		matcher = null;
 	}
 
 	/* (non-Javadoc)

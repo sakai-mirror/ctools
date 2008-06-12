@@ -66,31 +66,33 @@ import org.sakaiproject.user.cover.UserDirectoryService;
 public class StepChangeJobImpl implements StepChangeJob 
 {
 	private static final Log m_logger = LogFactory.getLog(StepChangeJobImpl.class);
-	private String m_jobType = null;
-	private String jobName = null;
-	private StringBuffer buf = new StringBuffer();
-	private JobDetail jobDetail = null;
-	private JobDataMap dataMap = null;
-	private JobAnnouncement announcement = null;
-	private Calendar cal = Calendar.getInstance();
-	private SimpleDateFormat formatter = new SimpleDateFormat(DissertationService.STEP_JOB_DATE_FORMAT);
+	private static final Log metric = LogFactory.getLog("metrics." + StepChangeJobImpl.class.getName());
+	private final int METRIC_INTERVAL = 500;
 	private static final String NEWLINE = Web.escapeHtmlFormattedText("<br/>");
+	private String m_jobType;
+	private String jobName;
+	private StringBuffer buf;
+	private JobDetail jobDetail;
+	private JobDataMap dataMap;
+	private JobAnnouncement announcement;
+	private Calendar cal = Calendar.getInstance();
+	private SimpleDateFormat formatter;
 	
 	//execution parameters
-	private Boolean retroactive = null;
-	private boolean m_retro = false;
-	private String m_dissRef = null;
-	private String m_currentSite = null;
-	private String m_currentUser = null;
-	private String m_schoolSite = null;
-	private String m_location = null;
-	private String m_instructionsText = null;
-	private String m_validType = null;
-	private String m_autoValid = null;
-	private String m_section = null;
-	private String m_stepRef = null;
+	private Boolean retroactive;
+	private boolean m_retro;
+	private String m_dissRef;
+	private String m_currentSite;
+	private String m_currentUser;
+	private String m_schoolSite;
+	private String m_location;
+	private String m_instructionsText;
+	private String m_validType;
+	private String m_autoValid;
+	private String m_section;
+	private String m_stepRef;
 	private String[] m_stepRefs;
-	private DissertationStep m_before = null;
+	private DissertationStep m_before;
 	private List m_previousStepRefs;
 	
 	//counter
@@ -111,10 +113,12 @@ public class StepChangeJobImpl implements StepChangeJob
 		//execute() is the main method of a Quartz job
 		try
 		{
-			//Spring injection of Logger was getting lost when Quartz instantiated job
-			//m_logger = org.sakaiproject.service.framework.log.cover.Logger.getInstance();
 			if(m_logger == null)
 				System.out.println(this + ".execute() couldn't get a logger");
+			if(metric.isInfoEnabled())
+				metric.info(this + ".execute() start");
+			
+			init();
 			
 			//TODO set user to current user
 			Session s = SessionManager.getCurrentSession();
@@ -196,10 +200,7 @@ public class StepChangeJobImpl implements StepChangeJob
 		{
 			//note that job is done
 			buf.append(getTime() + " JOB NAME: " + jobName + " - DONE" + NEWLINE);
-			
-			if(m_logger.isInfoEnabled())
-				m_logger.info(getTime() + " " + jobName + " - DONE");
-			
+
 			//send report of job execution to Announcements
 			String announce = buf.toString();
 			try
@@ -227,6 +228,8 @@ public class StepChangeJobImpl implements StepChangeJob
 				
 				buf.append(getTime() + " JOB NAME: " + jobName + " exception removing lock " + e + NEWLINE);
 			}
+			if(metric.isInfoEnabled())
+				metric.info(this + ".execute() finish");
 		}
 	}//execute
 	
@@ -249,6 +252,8 @@ public class StepChangeJobImpl implements StepChangeJob
 			
 			//identify the step being added
 			buf.append(getTime() + " ADDED STEP: '" + stepEdit.getInstructionsText() + "'" + NEWLINE);
+			if(metric.isInfoEnabled())
+				metric.info(this + ".doNew() adding step '" + stepEdit.getInstructionsText() + "'");
 			
 			dissertation = DissertationService.getDissertation(m_dissRef);
 			
@@ -355,10 +360,10 @@ public class StepChangeJobImpl implements StepChangeJob
 							session.setActive();
 						}
 						
-						//log progress updating paths every 500 paths
-						if((numUpdated % 500) == 0)
-							if(m_logger.isInfoEnabled())
-								m_logger.info(this + ".doNew() " + numUpdated + " paths retroactively updated");
+						//log progress
+						if((numUpdated % METRIC_INTERVAL) == 0)
+							if(metric.isInfoEnabled())
+								metric.info(this + ".doNew() " + numUpdated + " paths retroactively updated");
 					}
 					catch (Exception e)
 					{	
@@ -380,9 +385,8 @@ public class StepChangeJobImpl implements StepChangeJob
 				
 				//note number of paths updated in job report
 				buf.append(getTime() + " AT END: " + "step added to  " + numUpdated + " candidate paths" + NEWLINE);
-				
-				if(m_logger.isInfoEnabled())
-					m_logger.info(this + ".doNew() step added to " + numUpdated + " candidate paths.");
+				if(metric.isInfoEnabled())
+					metric.info(this + ".doNew()  step added to " + numUpdated + " paths at finish");
 				
 			}//m_retro
 		
@@ -428,6 +432,8 @@ public class StepChangeJobImpl implements StepChangeJob
 				
 				//get the revised step from the service
 				stepEdit = DissertationService.editDissertationStep(m_stepRef);
+				if(metric.isInfoEnabled())
+					metric.info(this + ".doRevise() revising step '" + stepEdit.getInstructionsText() + "'");
 				
 				//identify the step being revised
 				buf.append(getTime() + " REVISED STEP: '" + stepEdit.getInstructionsText() + "'" + NEWLINE);
@@ -466,11 +472,11 @@ public class StepChangeJobImpl implements StepChangeJob
 							session.setActive();
 						}
 						
-						//log progress updating paths every 500 paths
-						if((numUpdated % 500) == 0)
-							if(m_logger.isInfoEnabled())
-								m_logger.info(this + ".doRevise() " + numUpdated + 
-										" paths updated so far");
+						//log progress
+						if((numUpdated % METRIC_INTERVAL) == 0)
+							if(metric.isInfoEnabled())
+								metric.info(this + ".doRevise() " + numUpdated + " paths updated");
+							
 					}
 					catch (Exception e)
 					{
@@ -492,6 +498,8 @@ public class StepChangeJobImpl implements StepChangeJob
 				
 				//note number of paths updated in job report
 				buf.append(getTime() + " AT END: " + "step revised in  " + numUpdated + " candidate paths" + NEWLINE);
+				if(metric.isInfoEnabled())
+					metric.info(this + ".doRevise() " + "step revised in  " + numUpdated + " paths at finish");
 			}
 		}
 		catch(Exception e)
@@ -530,6 +538,8 @@ public class StepChangeJobImpl implements StepChangeJob
 			
 			//identify the step
 			buf.append(getTime() + " MOVED STEP: '" + DissertationService.getDissertationStep(m_stepRef).getInstructionsText() + "'" + NEWLINE);
+			if(metric.isInfoEnabled())
+				metric.info(this + ".doMove() moving step '" + DissertationService.getDissertationStep(m_stepRef).getInstructionsText() + "'");
 			
 			//school steps have an m_section, department steps do not
 			if(school)
@@ -566,6 +576,9 @@ public class StepChangeJobImpl implements StepChangeJob
 				//remove current dissertation, which was changed earlier
 				if(allDissertations.contains(dissertation))
 					allDissertations.remove(dissertation);
+				
+				if(metric.isInfoEnabled())
+					metric.info(this + ".doMove() move step in " + allDissertations.size() + " dissertations");
 				
 				//for all others
 				for(int x = 0; x < allDissertations.size(); x++)
@@ -608,10 +621,8 @@ public class StepChangeJobImpl implements StepChangeJob
 				
 				//note number of paths being updated
 				buf.append(getTime() + " NUMBER: revising step in " + allPaths.size() + " paths"  + NEWLINE);
-				
-				if(m_logger.isInfoEnabled())
-					m_logger.info(this + ".doMove() applying Move Step retroactivley to " + 
-							allPaths.size() + " paths");
+				if(metric.isInfoEnabled())
+					metric.info(this + ".doMove() move step in " + allPaths.size() + " paths");
 				
 				numUpdated = 0;
 				
@@ -656,11 +667,10 @@ public class StepChangeJobImpl implements StepChangeJob
 							session.setActive();
 						}
 						
-						//log progress updating paths every 500 paths
-						if((numUpdated % 500) == 0)
-							if(m_logger.isInfoEnabled())
-								m_logger.info(this + ".doMove() " + numUpdated 
-										+ " paths updated so far");
+						//log progress
+						if((numUpdated % METRIC_INTERVAL) == 0)
+							if(metric.isInfoEnabled())
+								metric.info(this + ".doMove() " + numUpdated + " paths updated so far");
 					}
 					catch (Exception e)
 					{
@@ -682,9 +692,8 @@ public class StepChangeJobImpl implements StepChangeJob
 				
 				//note number of candidate paths updated in report job
 				buf.append(getTime() + " AT END: step moved in "+ numUpdated + " candidate paths." + NEWLINE);
-				
-				if(m_logger.isInfoEnabled())
-					m_logger.info(this + ".doMove() step moved in " + numUpdated + " candidate paths.");
+				if(metric.isInfoEnabled())
+					metric.info(this + ".doMove() step moved in " + numUpdated + " paths at end");
 				
 			}//m_retro
 		}
@@ -723,6 +732,8 @@ public class StepChangeJobImpl implements StepChangeJob
 			
 			//note job has started removing prerequisite references
 			buf.append(getTime() + " USER: " + m_currentUser + NEWLINE);
+			if(metric.isInfoEnabled())
+				metric.info(this + ".doDelete() deleting " + m_stepRefs.length + " steps from prerequisites of " + allSteps.size() + " steps");
 			
 			//for each step being deleted 
 			for(int counter = 0; counter < m_stepRefs.length; counter++)
@@ -769,6 +780,8 @@ public class StepChangeJobImpl implements StepChangeJob
 			}
 			
 			//delete from dissertations
+			if(metric.isInfoEnabled())
+				metric.info(this + ".doDelete() deleting " + m_stepRefs.length + " steps from dissertations");
 			
 			//for each step being deleted
 			for(int x = 0; x < m_stepRefs.length; x++)
@@ -849,9 +862,8 @@ public class StepChangeJobImpl implements StepChangeJob
 					{
 						//note that job is deleting step from paths
 						buf.append(getTime() + " NUMBER: deleting step from " + allPaths.size() + " candidate paths." + NEWLINE);
-						
-						if(m_logger.isInfoEnabled())
-							m_logger.info(this + ".doDelete() deleting step from " + allPaths.size() + " paths");
+						if(metric.isInfoEnabled())
+							metric.info(this + ".doDelete() deleting " + m_stepRefs.length + " steps from " + allPaths.size() + " paths");
 						
 						//for each path containing step to delete
 						for(int v = 0; v < allPaths.size(); v++)
@@ -901,12 +913,10 @@ public class StepChangeJobImpl implements StepChangeJob
 									session.setActive();
 								}
 								
-								//log progress periodically
-								if((numUpdated % 500) == 0)
-								{
-									if(m_logger.isInfoEnabled())
-										m_logger.info(this + ".doDelete() step(s) deleted from " + numUpdated + " candidate paths.");
-								}
+								//log progress
+								if((numUpdated % METRIC_INTERVAL) == 0)
+									if(metric.isInfoEnabled())
+										metric.info(this + ".doDelete() deleted from " + numUpdated + " paths");
 							}
 							catch(Exception e)
 							{
@@ -917,7 +927,6 @@ public class StepChangeJobImpl implements StepChangeJob
 								buf.append(getTime() + " JOB NAME: " + jobName + " - exception - path id " + NEWLINE + e + NEWLINE);
 								if(pathEdit != null)
 									buf.append("Path Edit Reference: " + pathEdit.getReference() + NEWLINE);
-								
 								if(m_logger.isWarnEnabled())
 									m_logger.warn(this + ".doDelete() exception - path id " + pathEdit.getId() + " " + e);
 								
@@ -927,9 +936,9 @@ public class StepChangeJobImpl implements StepChangeJob
 						}//for each path containing step to delete
 						
 						//note number of paths updated in report job
-						buf.append(getTime() + " AT END: step deleted from " + numUpdated + " candidate paths." + NEWLINE);
-						if(m_logger.isInfoEnabled())
-							m_logger.info(this + ".doDelete() step deleted from " + numUpdated + " candidate paths.");
+						buf.append(getTime() + " AT END: deleted from " + numUpdated + " paths at end" + NEWLINE);
+						if(metric.isInfoEnabled())
+							metric.info(this + ".doDelete() deleted from " + numUpdated + " paths at finish");
 					}//retro
 					
 					stepEdit = DissertationService.editDissertationStep(m_stepRefs[x]);
@@ -1097,8 +1106,27 @@ public class StepChangeJobImpl implements StepChangeJob
 	 */
 	public void init() 
 	{
-		// TODO Auto-generated method stub
-		
+		m_jobType = null;
+		jobName = null;
+		buf = new StringBuffer();
+		jobDetail = null;
+		dataMap = null;
+		announcement = null;
+		cal = Calendar.getInstance();
+		formatter = new SimpleDateFormat(DissertationService.STEP_JOB_DATE_FORMAT);
+		retroactive = null;
+		m_retro = false;
+		m_dissRef = null;
+		m_currentSite = null;
+		m_currentUser = null;
+		m_schoolSite = null;
+		m_location = null;
+		m_instructionsText = null;
+		m_validType = null;
+		m_autoValid = null;
+		m_section = null;
+		m_stepRef = null;
+		m_before = null;
 	}
 
 	/* (non-Javadoc)
