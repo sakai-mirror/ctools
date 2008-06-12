@@ -1,0 +1,90 @@
+Index: calendar/calendar-impl/impl/src/java/org/sakaiproject/calendar/impl/BaseCalendarService.java
+===================================================================
+--- calendar/calendar-impl/impl/src/java/org/sakaiproject/calendar/impl/BaseCalendarService.java	(revision 46831)
++++ calendar/calendar-impl/impl/src/java/org/sakaiproject/calendar/impl/BaseCalendarService.java	(working copy)
+@@ -30,6 +30,7 @@
+ import java.util.ArrayList;
+ import java.util.Collection;
+ import java.util.Collections;
++import java.util.Comparator;
+ import java.util.Enumeration;
+ import java.util.GregorianCalendar;
+ import java.util.HashMap;
+@@ -197,6 +198,8 @@
+ 		return this;
+ 	}
+ 
++	private GroupComparator groupComparator = new GroupComparator();
++	
+ 	/**
+ 	 * Construct a Storage object.
+ 	 * 
+@@ -3415,7 +3418,7 @@
+ 		 */
+ 		protected Collection getGroupsAllowFunction(String function)
+ 		{
+-			Collection rv = new Vector();
++			Vector rv = new Vector();
+ 
+ 			try
+ 			{
+@@ -3427,7 +3430,9 @@
+ 				if ((SecurityService.isSuperUser()) || (AuthzGroupService.isAllowed(SessionManager.getCurrentSessionUserId(), SECURE_ALL_GROUPS, SiteService.siteReference(m_context))
+ 						&& unlockCheck(function, getReference())))
+ 				{
+-					return groups;
++					rv.addAll( groups );
++					Collections.sort( rv, groupComparator );
++					return (Collection)rv;
+ 				}
+ 	
+ 				// otherwise, check the groups for function
+@@ -3455,7 +3460,8 @@
+ 			}
+ 			catch (IdUnusedException e) {}
+ 
+-			return rv;
++			Collections.sort( rv, groupComparator );
++			return (Collection)rv;
+ 			
+ 		} // getGroupsAllowFunction
+ 
+@@ -7161,5 +7167,14 @@
+ 	}
+ 
+ 
++	/** 
++	 ** Comparator for sorting Group objects
++	 **/
++	private class GroupComparator implements Comparator {
++		public int compare(Object o1, Object o2) {
++			return ((Group)o1).getTitle().compareToIgnoreCase( ((Group)o2).getTitle() );
++		}
++	}
++	
+ } // BaseCalendarService
+ 
+Index: calendar/calendar-tool/tool/src/java/org/sakaiproject/calendar/tool/CalendarAction.java
+===================================================================
+--- calendar/calendar-tool/tool/src/java/org/sakaiproject/calendar/tool/CalendarAction.java	(revision 46831)
++++ calendar/calendar-tool/tool/src/java/org/sakaiproject/calendar/tool/CalendarAction.java	(working copy)
+@@ -2169,19 +2169,6 @@
+ 			Collection groups = calendarObj.getGroupsAllowAddEvent();
+ 			if (groups.size() > 0)
+ 			{
+-				/*
+-				String sort = (String) sstate.getAttribute(STATE_CURRENT_SORTED_BY);
+-				boolean asc = sstate.getAttribute(STATE_CURRENT_SORT_ASC)!=null?((Boolean) sstate.getAttribute(STATE_CURRENT_SORT_ASC)).booleanValue():true;;
+-				if (sort == null || (!sort.equals(SORT_GROUPTITLE) && !sort.equals(SORT_GROUPDESCRIPTION)))
+-				{
+-					sort = SORT_GROUPTITLE;
+-					sstate.setAttribute(STATE_CURRENT_SORTED_BY, sort);
+-					state.setCurrentSortedBy(sort);
+-					state.setCurrentSortAsc(Boolean.TRUE.booleanValue());
+-				}
+-				context.put("groups", new SortedIterator(groups.iterator(), new AnnouncementComparator(sort, asc)));
+-				*/
+-				//TODO:render the group list better
+ 				context.put("groups", groups);
+ 			}
+ 		}
