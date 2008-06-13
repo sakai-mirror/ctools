@@ -9,10 +9,8 @@
 ############# Search Server #############
 # We want search.
 search.enable=true
-
-## These two set in security.properties
 #webservices.allowlogin=true
-#sharedKey@org.sakaiproject.search.api.SearchService=????
+#sharedKey@org.sakaiproject.search.api.SearchService=
 
 # Location of search server
 ## For the time being http://testctools.... points to venison and 
@@ -53,5 +51,4 @@ location@filesystemSearchStorageImpl=/afs/umich.edu/group/ctpitest/fs102/search/
 # files that will be indexed.
 
 #maxDigestSize@org.sakaiproject.search.component.adapter.contenthosting.DefaultContentDigester=30M
-#######################################################################
-# end
+### end ###
