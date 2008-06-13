@@ -12,26 +12,6 @@ Index: search/search-impl/pack/src/webapp/WEB-INF/coreSearchComponents.xml
      
      <property name="searchIndexBuilderWorker"><ref bean="org.sakaiproject.search.api.SearchIndexBuilderWorker" /></property>
  	<property name="searchIndexBuilder"><ref bean="org.sakaiproject.search.api.SearchIndexBuilder" /></property>
-@@ -83,7 +85,9 @@
- 	
- 	<property name="searchIndexBuilder"><ref bean="org.sakaiproject.search.api.SearchIndexBuilder" /></property>
-     <property name="searchService"><ref bean="org.sakaiproject.search.api.SearchService" /></property>
-+    <!--
-     <property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService" /></property>
-+    -->
-         
-     <property name="sleepTime"><value>30000</value></property>
-     <property name="dataSource">
-@@ -132,7 +136,9 @@
-     init-method="init" >
-     
- 	<property name="searchIndexBuilder"><ref bean="org.sakaiproject.search.api.SearchIndexBuilder" /></property>
-+	<!--
-     <property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService" /></property>
-+	-->
- 	<!--
- 	If you have an RDF service, you can uncomment this 
-     <property name="rdfSearchService"><ref bean="org.sakaiproject.search.api.rdf.RDFSearchService" /></property>
 Index: search/search-impl/pack/src/webapp/WEB-INF/components.xml
 ===================================================================
 --- search/search-impl/pack/src/webapp/WEB-INF/components.xml	(revision 46895)

@@ -1,0 +1,58 @@
+Update based on SAK-800
+Try to figure out how to resolve this conflict
+=svnm= https://source.sakaiproject.org/svn/content/trunk/content-impl/@45419 https://source.sakaiproject.org/svn/content/trunk/content-impl@45418 content/content-impl 
+=svnm= https://source.sakaiproject.org/svn/content/trunk/content-tool@45419 https://source.sakaiproject.org/svn/content/trunk/content-tool@45418 content/content-tool 
+=svnm= https://source.sakaiproject.org/svn/content/trunk/content-api@45419 https://source.sakaiproject.org/svn/content/trunk/content-api@45418 content/content-api 
+
+I have to patch the content-bundles because newlines caused conflicts
+
+=svnm= https://source.sakaiproject.org/svn/content/trunk/@45421 https://source.sakaiproject.org/svn/content/trunk/@45420 content/ 
+
+--- /dev/null
++++ SAK-800.tmp
+@@ -0,0 +1 @@
++ 
+
+Index: content/content-bundles/types_es.properties
+===================================================================
+--- content/content-bundles/types_es.properties	(revision 47444)
++++ content/content-bundles/types_es.properties	(working copy)
+@@ -37,6 +37,8 @@
+ action.replace		= Reemplazar contenido
+ action.revise		= Revisar contenido
+ action.select		= - Seleccione una acción - 
++action.compresszipfolder = Comprimir a archivo ZIP
++action.expandziparchive  = Descomprimir archivo ZIP 
+ alert.exists		= La carpeta {0} ya existe en esta carpeta.
+ alert.perm			= No tiene permiso para añadir elementos en esta carpeta.
+ alert.toolong		= El nombre {0} es demasiado largo
+Index: content/content-bundles/types.properties
+===================================================================
+--- content/content-bundles/types.properties	(revision 47444)
++++ content/content-bundles/types.properties	(working copy)
+@@ -40,7 +40,9 @@
+ action.reorder		 = Reorder
+ action.replace		 = Upload New Version
+ action.revise		 = Edit Content
+-action.select		 = - Select Action - 
++action.select		 = - Select Action -
++action.compresszipfolder = Compress to ZIP Archive
++action.expandziparchive  = Expand ZIP Archive
+ alert.exists		 = The folder ''{0}'' already exists in this folder.
+ alert.noperm		 = You do not have permission to change this item.
+ alert.nofldr		 = Please provide the folder name.
+Index: content/content-bundles/types_pt_BR.properties
+===================================================================
+--- content/content-bundles/types_pt_BR.properties	(revision 47444)
++++ content/content-bundles/types_pt_BR.properties	(working copy)
+@@ -58,7 +58,9 @@
+ action.reorder	=	Reordenar
+ action.replace	=	Fazer Upload de Nova vers\u00e3o 
+ action.revise	=	Alterar Conte\u00fado
+-action.select	=	- Selecionar A\u00e7\u00e3o - 
++action.select	=	- Selecionar A\u00e7\u00e3o -
++action.compresszipfolder = Compactar em Arquivo ZIP
++action.expandziparchive  = Expandir Arquivo ZIP 
+ alert.exists	=	A pasta \u201c{0}\u201d j\u00e1 existe nesta pasta
+ alert.perm	=	Voc\u00ea n\u00e3o tem permiss\u00e3o para adicionar itens nesta pasta.
+ alert.toolong	=	O nome \u201c{0}\u201d \u00e9 muito longo.

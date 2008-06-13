@@ -190,12 +190,34 @@ sub applyOneActionFile(%) {
 		$log.= "No target found for action\n";
 		return 3;
 	    }
-
 	    if ($action eq "copy") {
 		my ($srcFile,$destFile) = $target =~ m/(.*),(.*)/;
 		   $log.= "copy action $patchDir/$srcFile->$args{'builddir'}/$destFile\n";
 		if ($srcFile&&$destFile) {
 			$rc = $! unless copy("$patchDir/$srcFile","$args{'builddir'}/$destFile");
+		}
+	    }
+	    #Removes a file from the build, should check to make sure destination is still within build directory 
+	    if ($action eq "rm") {
+		print "rm action\n";
+		my ($srcFile) = $target =~ m/(.*)/;
+		$log.= "rm action $args{'builddir'}/$srcFile\n";
+
+		my ($rmFile) = "$args{'builddir'}/$srcFile"; 
+		my ($rmFileDir) = abs_path($rmFile);
+		if ($rmFileDir =~ m/\Q$args{'builddir'}\E/) {
+			#Don't fail if it doesn't exist for now
+			if (-f $rmFile) {
+			    $rc = $! unless unlink("$rmFile");
+		    	}
+			else {
+			    print "File $rmFile not found to remove\n";
+			    $log.="File $rmFile not found to remove\n";
+			}
+		}
+		else {
+			$log.="$rmFileDir is outside of build directory";
+			$rc = 3;
 		}
 	    }
 	    elsif ($action eq "svnm")  {
