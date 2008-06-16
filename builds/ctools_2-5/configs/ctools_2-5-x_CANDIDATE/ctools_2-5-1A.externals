@@ -106,14 +106,11 @@ reports             -r46887     https://source.sakaiproject.org/svn/reports/tags
 #  ctools-webservices -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-webservices
 #  ctools-libhelp -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-libhelp
 
-# ctools-assembly -r45716 https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
-# ctools-assembly -r45961 https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
  ctools-assembly     -r47259     https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
 
  ctools-apps         -r45502     https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
  ctools-providers    -r47308     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
-# ctools-reference -r45718 https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
- ctools-reference    -r47454    https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
+ ctools-reference    -r47482    https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
  ctools-webservices  -r45685     https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
  gradtools           -r47431     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
  ctools-libhelp      -r47309     https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
@@ -127,7 +124,7 @@ reports             -r46887     https://source.sakaiproject.org/svn/reports/tags
 #### Test Center ambrosia and mneme combined
  test-center         -r49194     https://source.sakaiproject.org/contrib/muse/test-center/tags/1.1.4-2.5.0
 ## Current version is being patched
- itunes              -r45577     https://source.sakaiproject.org/contrib/umctx/trunk/itunesu-tool/
+ itunes              -r50299     https://source.sakaiproject.org/contrib/umctx/trunk/itunesu-tool/
  config-viewer       -r48120     https://source.sakaiproject.org/contrib/config-viewer/trunk/ 
  #
   ## course evaluation tool
