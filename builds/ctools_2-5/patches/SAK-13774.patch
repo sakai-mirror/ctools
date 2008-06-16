@@ -1,0 +1,16 @@
+Index: osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/CellController.java
+===================================================================
+--- osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/CellController.java	(revision 47447)
++++ osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/CellController.java	(working copy)
+@@ -466,10 +466,9 @@
+ 			String strFormDefId = (String) iter.next();
+ 			StructuredArtifactDefinitionBean bean = getStructuredArtifactDefinitionManager()
+ 					.loadHome(strFormDefId);
+-			bean.getDescription();
+ 			// cwm use a different bean below, as the name has implications
+ 			retList.add(new CommonFormBean(strFormDefId, bean
+-					.getDecoratedDescription(), strFormDefId, bean.getOwner()
++					.getDescription(), strFormDefId, bean.getOwner()
+ 					.getName(), bean.getModified()));
+ 		}
+ 		return retList;

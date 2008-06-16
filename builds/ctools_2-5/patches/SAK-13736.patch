@@ -6720,10 +6720,10 @@ Index: msgcntr/messageforums-app/src/webapp/jsp/dfCompose.jsp
 +	</sakai:view>
  </f:view> 
  
-Index: messageforums-app/src/webapp/jsp/dfReviseTopicSettingsAttach.jsp
+Index: msgcntr/messageforums-app/src/webapp/jsp/dfReviseTopicSettingsAttach.jsp
 ===================================================================
---- messageforums-app/src/webapp/jsp/dfReviseTopicSettingsAttach.jsp	(revision 47396)
-+++ messageforums-app/src/webapp/jsp/dfReviseTopicSettingsAttach.jsp	(working copy)
+--- msgcntr/messageforums-app/src/webapp/jsp/dfReviseTopicSettingsAttach.jsp	(revision 47396)
++++ msgcntr/messageforums-app/src/webapp/jsp/dfReviseTopicSettingsAttach.jsp	(working copy)
 @@ -1,256 +1,279 @@
  <%@ page import="java.util.*, javax.faces.context.*, javax.faces.application.*,
 -                 javax.faces.el.*, org.sakaiproject.tool.messageforums.*"%>
