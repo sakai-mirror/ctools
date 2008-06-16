@@ -48,6 +48,8 @@ Put something like this in your patch file to make patch happy:
 use strict;
 use Cwd 'abs_path';
 use File::Basename 'dirname';
+use File::Basename;
+use File::Path;
 use IO::File;
 use File::Copy;
 use FindBin qw($Bin);
@@ -192,9 +194,16 @@ sub applyOneActionFile(%) {
 	    }
 	    if ($action eq "copy") {
 		my ($srcFile,$destFile) = $target =~ m/(.*),(.*)/;
-		   $log.= "copy action $patchDir/$srcFile->$args{'builddir'}/$destFile\n";
+		$log.= "copy action $patchDir/$srcFile->$args{'builddir'}/$destFile\n";
 		if ($srcFile&&$destFile) {
-			$rc = $! unless copy("$patchDir/$srcFile","$args{'builddir'}/$destFile");
+			#Might have to make the destination directory
+			my ($destLoc) = "$args{'builddir'}/$destFile";
+			my ($pFilename,$pDirectory) = fileparse($destLoc);
+			if (!-d $pDirectory) {
+			    print "$pFilename $pDirectory";
+			    mkpath($pDirectory);
+			}
+			$rc = $! unless copy("$patchDir/$srcFile",$destLoc);
 		}
 	    }
 	    #Removes a file from the build, should check to make sure destination is still within build directory 
