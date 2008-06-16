@@ -115,8 +115,8 @@ reports             -r46887     https://source.sakaiproject.org/svn/reports/tags
  gradtools           -r47431     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
  ctools-libhelp      -r47309     https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
 
- #CTools specific web
- web                 -r46655     https://source.sakaiproject.org/svn/ctools/trunk/web/
+ #CTools specific web for now
+ web                 -r47285     https://source.sakaiproject.org/svn/ctools/trunk/web/
 
 ########
 ######## Contrib tools
