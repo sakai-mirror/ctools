@@ -1,0 +1,119 @@
+Index: osp/matrix/api-impl/src/java/org/theospi/portfolio/matrix/HibernateMatrixManagerImpl.java
+===================================================================
+--- osp/matrix/api-impl/src/java/org/theospi/portfolio/matrix/HibernateMatrixManagerImpl.java	(revision 47447)
++++ osp/matrix/api-impl/src/java/org/theospi/portfolio/matrix/HibernateMatrixManagerImpl.java	(working copy)
+@@ -742,6 +742,35 @@
+       return scaffoldingCell;
+    }
+    
++   //FIXME: These queries should be externalized and possibly promoted to the API 
++   public int getFormCountByPageDef(Id pageDefId) {
++	   Object[] params = new Object[] { pageDefId };
++	   return (Integer) getHibernateTemplate().find(
++			   "select count(*) from WizardPage wp join wp.pageForms where wp.pageDefinition.id=?", params).get(0);	   
++   }
++   
++   //FIXME: This should be in the ReviewManager, but is special-cased here for now
++   //NOTE: This is a theta-join because Review.parent and WizardPage.id are not mapped
++   public int getReviewCountByPageDef(Id pageDefId) {
++	   Object[] params = new Object[] { pageDefId };
++	   return (Integer) getHibernateTemplate().find(
++			   "select count(*) from Review r, WizardPage wp where wp.id = r.parent and wp.pageDefinition.id=?", params).get(0);
++   }
++   
++   public int getAttachmentCountByPageDef(Id pageDefId) {
++	   Object[] params = new Object[] { pageDefId };
++	   return (Integer) getHibernateTemplate().find(
++			   "select count(*) from WizardPage wp join wp.attachments where wp.pageDefinition.id=?", params).get(0);
++   }
++   
++   public boolean isScaffoldingCellUsed(ScaffoldingCell cell) {
++	   Id pageDefId = cell.getWizardPageDefinition().getId();
++	   
++	   return  getFormCountByPageDef(pageDefId) > 0
++	   		|| getAttachmentCountByPageDef(pageDefId) > 0
++	   		|| getReviewCountByPageDef(pageDefId) > 0;
++   }
++   
+    /**
+     * {@inheritDoc}
+     */
+Index: osp/matrix/api/src/java/org/theospi/portfolio/matrix/MatrixManager.java
+===================================================================
+--- osp/matrix/api/src/java/org/theospi/portfolio/matrix/MatrixManager.java	(revision 47447)
++++ osp/matrix/api/src/java/org/theospi/portfolio/matrix/MatrixManager.java	(working copy)
+@@ -113,6 +113,12 @@
+    ScaffoldingCell getScaffoldingCell(Criterion criterion, Level level);
+    ScaffoldingCell getScaffoldingCell(Id id);
+    
++	/**
++	 * Determine if any matrix cell with the specified scaffoldingCell has
++	 * been 'used' (containing reflections and/or added form items)
++	 */
++   boolean isScaffoldingCellUsed(ScaffoldingCell cell);
++   
+    /**
+     * Get all scaffolding cells for a given scaffolding
+     * @param scaffoldingId
+Index: osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/EditScaffoldingCellController.java
+===================================================================
+--- osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/EditScaffoldingCellController.java	(revision 47447)
++++ osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/EditScaffoldingCellController.java	(working copy)
+@@ -141,7 +141,7 @@
+ 
+ 		if (sCell != null && sCell.getScaffolding() != null)
+ 			model.put("isCellUsed", sCell.getScaffolding().isPublished()
+-					&& isCellUsed(sCell));
++					&& getMatrixManager().isScaffoldingCellUsed(sCell));
+ 		else
+ 			model.put("isCellUsed", false);
+ 
+@@ -658,48 +658,6 @@
+ 		this.reviewManager = reviewManager;
+ 	}
+ 
+-	/**
+-	 * * Determine if any matrix cell with the specified scaffoldingCell has
+-	 * been 'used' * (containing reflections and/or added form items)
+-	 */
+-	private boolean isCellUsed(ScaffoldingCell scaffoldingCell) {
+-		Id scaffoldingId = scaffoldingCell.getScaffolding().getId();
+-		List matrices = getMatrixManager().getMatrices(scaffoldingId);
+-
+-		for (Iterator matrixIt = matrices.iterator(); matrixIt.hasNext();) {
+-			Matrix matrix = (Matrix) matrixIt.next();
+-			List cells = getMatrixManager().getCells(matrix);
+-
+-			for (Iterator cellIt = cells.iterator(); cellIt.hasNext();) {
+-				Cell cell = (Cell) cellIt.next();
+-
+-				if (cell.getScaffoldingCell().equals(scaffoldingCell)) {
+-					WizardPage wizardPage = cell.getWizardPage();
+-					String pageId = wizardPage.getId().getValue();
+-					if (wizardPage.getReflections() != null
+-							&& wizardPage.getReflections().size() > 0)
+-						return true;
+-					if (wizardPage.getPageForms() != null
+-							&& wizardPage.getPageForms().size() > 0)
+-						return true;
+-					if (wizardPage.getFeedback() != null
+-							&& wizardPage.getFeedback().size() > 0)
+-						return true;
+-					if (wizardPage.getAttachments() != null
+-							&& wizardPage.getAttachments().size() > 0)
+-						return true;
+-					if (reviewManager.getReviewsByParent(pageId) != null
+-							&& reviewManager.getReviewsByParent(pageId).size() > 0)
+-						return true;
+-					// note: wizardPage.[get|set]Feedback() does not appear to
+-					// be used
+-				}
+-			}
+-		}
+-
+-		return false;
+-	}
+-
+ 	protected List<TaggingHelperInfo> getHelperInfo(TaggableActivity activity) {
+ 		List<TaggingHelperInfo> infoList = new ArrayList<TaggingHelperInfo>();
+ 		if (getTaggingManager().isTaggable()) {
