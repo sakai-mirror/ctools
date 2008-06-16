@@ -156,8 +156,8 @@ if changes are needed.
 	<module>../test-center</module>
 	<!-- Currently removed for migration issues
 	<module>../hierarchy</module>
-	<module>../melete</module>
 	-->
+	<module>../melete</module>
 	<module>../discussion</module>
 
       </modules>
