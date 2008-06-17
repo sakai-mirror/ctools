@@ -73,6 +73,11 @@
     <mkdir dir="${image.dir}" />
     <mkdir dir="${instances.dir}" />
     <mkdir dir="${build.dir}/ctools-build"/>
+
+    <!-- Make a special file that has the current revision number on it -->
+    <echo file="${build.dir}/revision-${CANDIDATE.revision}-${sakai.tag}">
+        ${CANDIDATE.revision}-${sakai.tag}
+    </echo>
     <!--
     <mkdir dir="${install.test.dir}" />
     -->

@@ -62,6 +62,11 @@
   <import file="${scripts.dir}/build-type-util.xml" /> 
   <import file="${scripts.dir}/build-patch-util.xml" />
 
+  <!-- Make a special file that has the current revision number on it -->
+  <echo file="${work.dir}/revision-${CANDIDATE.revision}-${sakai.tag}">
+      ${CANDIDATE.revision}-${sakai.tag}
+  </echo>
+
   <target name="info" >
     <echo> Base ant script to build CTools releases.</echo>
   </target>

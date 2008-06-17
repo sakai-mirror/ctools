@@ -260,7 +260,7 @@ Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/util/Zip
 ===================================================================
 --- content/content-impl/impl/src/java/org/sakaiproject/content/impl/util/ZipContentUtil.java	(revision 0)
 +++ content/content-impl/impl/src/java/org/sakaiproject/content/impl/util/ZipContentUtil.java	(revision 45421)
-@@ -0,0 +1,220 @@
+@@ -0,0 +1,221 @@
 +package org.sakaiproject.content.impl.util;
 +
 +import java.io.BufferedOutputStream;
@@ -284,6 +284,7 @@ Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/util/Zip
 +import org.sakaiproject.entity.api.Entity;
 +import org.sakaiproject.entity.api.Reference;
 +import org.sakaiproject.entity.api.ResourcePropertiesEdit;
++import org.sakaiproject.event.api.NotificationService;
 +
 +public class ZipContentUtil {
 +	
@@ -316,7 +317,7 @@ Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/util/Zip
 +			resourceEdit.setContentType(mime.getContentType(resourceId));
 +			ResourcePropertiesEdit props = resourceEdit.getPropertiesEdit();
 +			props.addProperty(ResourcePropertiesEdit.PROP_DISPLAY_NAME, resourceName);
-+			ContentHostingService.commitResource(resourceEdit);								
++			ContentHostingService.commitResource(resourceEdit,NotificationService.NOTI_NONE);								
 +		} 
 +		catch (Exception e) {
 +			e.printStackTrace();
@@ -386,7 +387,7 @@ Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/util/Zip
 +		resourceEdit.setContentType(mime.getContentType(resourceName));
 +		ResourcePropertiesEdit props = resourceEdit.getPropertiesEdit();
 +		props.addProperty(ResourcePropertiesEdit.PROP_DISPLAY_NAME, resourceName);
-+		ContentHostingService.commitResource(resourceEdit);
++		ContentHostingService.commitResource(resourceEdit,NotificationService.NOTI_NONE);
 +	}
 +
 +	/**

@@ -232,15 +232,16 @@ sub applyOneActionFile(%) {
 	    elsif ($action eq "svnm")  {
 		print "svn action\n";
 		my ($svnSrc,$srcRev,$svnDest,$destRev,$wCopy);
-		#First form
+		#First form with 5 parameters
 		($svnSrc,$srcRev,$svnDest,$destRev,$wCopy) = $target =~ m/(.*?)\@(.*?)\s+(.*?)\@(.*?)\s+(.*)$/;
-		#Second Form
+		#Second Form with 3 parameters (cherry pick)
 		if (!$wCopy) {
 		    ($svnSrc,$srcRev,$wCopy) = $target =~ m/(.*?)\@(.*?)\s+(.*)$/;
 		}
 
 		my $cmd="";
 		my $svnDebugCmds = "";
+		my $svnopt = "";
 		if ($wCopy && $svnSrc && $srcRev) {
 		    #See if we need to add paths to the source or destination
 		    if ($svnSrc =~ m/http.*:\/\// || $svnSrc =~ m/^\//) {}
@@ -249,20 +250,21 @@ sub applyOneActionFile(%) {
 		    if ($wCopy =~ m/http:\/\// || $wCopy =~ m/^\//) {}
 		    else {$wCopy=$args{'builddir'}."/".$wCopy;}
 
-		    #Get information about the destination of the merge 
-		    #Get the revision and URL that this was checked out from so we can compare
-		    #Since I can't figure out the syntax to make it compare otherwise.
+		    #If theres no destination then cherrypick it;
 		    if (!$destRev) {
-			my %destInfo = svnInfo(repo=>$wCopy);
-			$destRev = $destInfo{'Revision'};
-			$svnDest = $destInfo{'URL'};
+			$svnopt = "-c $srcRev";
+			$svnDest = "";
+		    } else {
+			$svnDest = "$svnDest\@$destRev";
+			$svnSrc  = "$svnSrc\@$srcRev";
 		    }
 
 		    if ($dryrun == 1) {
 			 $svnDebugCmds = " --dry-run ";
 		    }
-		    if ($destRev && $svnDest) {
-			$cmd = "svn merge $svnDebugCmds $svnDest\@$destRev $svnSrc\@$srcRev $wCopy";
+
+		    if ($svnopt || $svnDest) {
+			$cmd = "svn merge $svnDebugCmds $svnopt $svnDest $svnSrc $wCopy";
 			print $cmd;
 			my $result = runShellCmdGetResult($cmd);
 			$rc = $?;

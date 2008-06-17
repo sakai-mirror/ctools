@@ -4,6 +4,9 @@ Update based on SAK-13736
 
 =svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/messageforums-app/src/webapp/images/@47427 https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/messageforums-app/src/webapp/images/@47426 msgcntr/messageforums-app/src/webapp/images/
 
+#JSF fix
+=svnm= https://source.sakaiproject.org/svn//jsf/trunk/widgets/src/META-INF/@42476 jsf/widgets/src/META-INF/
+
 --- /dev/null
 +++ SAK-13736.tmp
 @@ -0,0 +1 @@
