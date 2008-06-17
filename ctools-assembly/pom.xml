@@ -158,9 +158,9 @@
 		    <include name="**/webapp/tools/sakai.sitesetup.xml" />
 		    <include name="**/webapp/tools/sakai.siteinfo.xml" />
 		  </fileset>
-		  <regexp pattern="configuration name=&quot;siteTypes&quot; value=&quot;course,project&quot;" />
+		  <regexp pattern="name=&quot;siteTypes&quot; value=&quot;(.*)&quot;" />
 		  <substitution 
-		      expression="configuration name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
+		      expression="name=&quot;siteTypes&quot; value=&quot;course,project,GradToolsStudent&quot;" />
 		</replaceregexp>
 
 		<echo> edit file: deal with privateSiteType </echo>
