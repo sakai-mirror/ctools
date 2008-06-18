@@ -226,16 +226,18 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 		// only return those future academic sessions
 		List<AcademicSession> rv = new Vector<AcademicSession>();
 		
-		List aSessions = getAcademicSessions();
-		for (Iterator i = aSessions.iterator(); i.hasNext();)
+		List<AcademicSession> aSessions = getAcademicSessions();
+		if (aSessions != null)
 		{
-			AcademicSession aSession = (AcademicSession) i.next();
-			if (aSession.getEndDate().getTime()>(TimeService.newTime().getTime()))
+			for (Iterator<AcademicSession> i = aSessions.iterator(); i.hasNext();)
 			{
-				rv.add(aSession);
+				AcademicSession aSession = (AcademicSession) i.next();
+				if (aSession.getEndDate().getTime()>(TimeService.newTime().getTime()))
+				{
+					rv.add(aSession);
+				}
 			}
 		}
-		
 		return rv;
 	}
 	
@@ -755,42 +757,42 @@ public class CourseManagementServiceUnivOfMichImpl implements CourseManagementSe
 			// if a record with courseId exists
 			statement = "SELECT ACADEMIC_SESSION_ID, VERSION, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, CREATED_BY, CREATED_DATE, ENTERPRISE_ID, TITLE, DESCRIPTION, START_DATE	, END_DATE FROM CM_ACADEMIC_SESSION_T";
 			
-			List results = m_sqlService.dbRead(statement, null, new SqlReader()
-				{
-					public Object readSqlResultRecord(ResultSet result)
+			try
+			{
+				List results = m_sqlService.dbRead(statement, null, new SqlReader()
 					{
-						try
+						public Object readSqlResultRecord(ResultSet result)
 						{
-							// create the Resource from the db xml
-							
-							AcademicSessionCmImpl ac = packageAcademicSessionInformationFromDb(result);
-//							String academic_session_id = result.getString(1);
-//							String version = result.getString(2);
-//							String lastModifiedBy = result.getString(3);
-//							String lastModifiedDate = result.getString(4);
-//							String createdBy= result.getString(5);
-//							String createdDate= result.getString(6);
-//							String eid= result.getString(7);
-//							String title = result.getString(8);
-//							String description = result.getString(9);
-//							Date startDate = result.getDate(10);
-//							Date endDate = result.getDate(11);
-//							AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
-//							
-							return ac;
+							try
+							{
+								// create the Resource from the db xml
+								
+								AcademicSessionCmImpl ac = packageAcademicSessionInformationFromDb(result);
+	//							String academic_session_id = result.getString(1);
+	//							String version = result.getString(2);
+	//							String lastModifiedBy = result.getString(3);
+	//							String lastModifiedDate = result.getString(4);
+	//							String createdBy= result.getString(5);
+	//							String createdDate= result.getString(6);
+	//							String eid= result.getString(7);
+	//							String title = result.getString(8);
+	//							String description = result.getString(9);
+	//							Date startDate = result.getDate(10);
+	//							Date endDate = result.getDate(11);
+	//							AcademicSessionCmImpl ac = new AcademicSessionCmImpl(eid, title, description, startDate, endDate);
+	//							
+								return ac;
+							}
+							catch (Throwable ignore) { return null;}
 						}
-						catch (Throwable ignore) { return null;}
-					}
-				} );
-			
-			if (results != null && results.size()>0)
-			{
+					} );
 				return results;
-			}
-			else
+			} catch (Exception e)
 			{
-				return null;
+				log.warn(this + ":getAcademicSession " + e.getMessage());
 			}
+			
+			return null;
 		}
 
 		protected AcademicSessionCmImpl packageAcademicSessionInformationFromDb(ResultSet result) throws SQLException {
