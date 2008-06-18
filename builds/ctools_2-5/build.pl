@@ -20,6 +20,7 @@ use IO::File;
 #Config::Properties is not part of core perl so its installed after
 use lib "$Bin/lib";
 use Config::Properties;
+use Getopt::Std;
 
 #Define which type to build, this might be prompted later
 my $typevar = "prod";
@@ -34,6 +35,15 @@ $ENV{'MAVEN_OPTS'} = "-Xms256m -Xmx512m";
 #Find the minimum and maximum versions that this will work on
 #To add a new required software to this list follow the format, the cmd must return at least
 #A major.minor version somewhere in the text as the first number with a decimal.
+my ($cleanin, %opts);
+
+getopts('c',\%opts);
+
+#Accept clean from ARGV to make this a completely automated process.
+if ($opts{'c'}) {
+    $cleanin ='y';
+}
+
 my %requiredSoftware = (
 
 #This might work with ant 1.5, but that'd be the earliest, give it a try? 
@@ -111,7 +121,7 @@ sub checkVersions {
 
 #Check for required software
     for $required (keys %requiredSoftware) {
-	print "Checking program $required: ";
+  	print "Checking program $required: ";
 	$result=`$requiredSoftware{$required}{cmd} 2>&1`;
 	chop $result;
 	($minmajor,$minminor) = split(/\./,$requiredSoftware{$required}{min});
@@ -121,15 +131,15 @@ sub checkVersions {
 	    $minstatus = ($resultmajor >= $minmajor && $resultminor >= $minminor) ? "Ok" : "version installed lower than tested";
 	    $maxstatus = ($resultmajor <= $maxmajor && $resultminor <= $maxminor) ? "Ok" : "version installed higher than tested";
 
+	    print "$minstatus\n";
 	    if ($minstatus ne "Ok" || $maxstatus ne "Ok") {
 		$minorerror = 1;
+		print "\n  Version detected as: $resultmajor.$resultminor\n";
+		print "  Minimum Version tested: $minmajor.$minminor $minstatus\n";
+		print "  Maximum Version tested: $maxmajor.$maxminor $maxstatus\n";
 	    }
 
-	    print "\n  Version detected as: $resultmajor.$resultminor\n";
-	    print "  Minimum Version tested: $minmajor.$minminor $minstatus\n";
-	    print "  Maximum Version tested: $maxmajor.$maxminor $maxstatus\n";
-
-	}
+	}  
 	else {
 	    print "Not found, please install version $minmajor.$minminor - $maxmajor.$maxminor\n";
 	    $majorerror=1;
@@ -146,7 +156,7 @@ sub checkVersions {
 }
 
 checkVersions();
-print "Getting newest version of config files from svn:\n";
+print "Getting newest version of config files from svn.\n";
 my ($svninfo,$svnversion,$svnvar);
 $svninfo = `svn up`;
 if ($svninfo) {
@@ -168,7 +178,7 @@ if (!@builds) {
 
 print "Detected ".@builds." candidate(s) (You can create a new candidate by cp -r one of the configs in the configs directory and editing the sakai.tag property to match this new name.):\n";
 my ($buildcount,$build,$buildin)=0;
-my ($cleanin, $builddir);
+my ($builddir);
 
 if (@builds > 1) {
 
@@ -210,13 +220,15 @@ $sakaitag = $ctoolsproperties->getProperty('sakai.tag');
 print "NOTE: The resulting packages will be placed in:\n$Bin/artifacts/$sakaitag.$typevar\n";
 
 #Prompt if they want a clean install, parts of this are still being worked on in the scripts.
-do
-{
-    print "Do you want to do a clean install? (First time will always be clean) [y/n]";	# Ask for input
-    $cleanin = <STDIN>;	# Get input
-    chop $cleanin;	    # Chop off newline
+if (!$cleanin) {
+    do
+    {
+	print "Do you want to do a clean install? (First time will always be clean) [y/n]";	# Ask for input
+	$cleanin = <STDIN>;	# Get input
+	chop $cleanin;	    # Chop off newline
+    }
+    until ($cleanin eq "n" || $cleanin eq "y");	    # Redo while wrong input
 }
-until ($cleanin eq "n" || $cleanin eq "y");	    # Redo while wrong input
 
 #Get a log file started for further analysis
 my $nowstring = strftime "%m-%d-%y_%H-%M-%S", localtime;
