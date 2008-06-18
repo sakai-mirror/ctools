@@ -419,7 +419,15 @@ public class UmiacClientImpl
 		// check the cache - still use expired entries
 		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
-			return (Map<String, String>) m_callCache.getExpiredOrNot(command);
+			Map<String, String> map = (Map<String, String>) m_callCache.getExpiredOrNot(command);
+			if (map != null)
+			{
+				return map;
+			}
+			else
+			{
+				m_callCache.expire(command);
+			}
 		}
 
 		// make the call		
