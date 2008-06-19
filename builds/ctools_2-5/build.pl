@@ -37,11 +37,15 @@ $ENV{'MAVEN_OPTS'} = "-Xms256m -Xmx512m";
 #A major.minor version somewhere in the text as the first number with a decimal.
 my ($cleanin, %opts);
 
-getopts('c',\%opts);
+getopts('cd',\%opts);
 
 #Accept clean from ARGV to make this a completely automated process.
 if ($opts{'c'}) {
     $cleanin ='y';
+}
+
+if ($opts{'d'}) {
+    $cleanin ='n';
 }
 
 my %requiredSoftware = (

@@ -1,0 +1,93 @@
+Index: assignment/assignment-api/api/src/java/org/sakaiproject/assignment/api/AssignmentService.java
+===================================================================
+--- assignment/assignment-api/api/src/java/org/sakaiproject/assignment/api/AssignmentService.java	(revision 42377)
++++ assignment/assignment-api/api/src/java/org/sakaiproject/assignment/api/AssignmentService.java	(working copy)
+@@ -96,6 +96,9 @@
+ 	/** Security function giving the user permission to all groups, if granted to at the site level. */
+ 	public static final String SECURE_ALL_GROUPS = "asn.all.groups";
+ 
++	/** Security function giving the user permission to share drafts within his/her role for a given site */
++	public static final String SECURE_SHARE_DRAFTS = "asn.share.drafts";
++	
+ 	/** The Reference type for a site where site groups are to be considered in security computation. */
+ 	public static final String REF_TYPE_SITE_GROUPS = "site-groups";
+ 
+Index: assignment/assignment-api/api/src/java/org/sakaiproject/assignment/cover/AssignmentService.java
+===================================================================
+--- assignment/assignment-api/api/src/java/org/sakaiproject/assignment/cover/AssignmentService.java	(revision 42377)
++++ assignment/assignment-api/api/src/java/org/sakaiproject/assignment/cover/AssignmentService.java	(working copy)
+@@ -88,7 +88,7 @@
+ 	public static java.lang.String SECURE_UPDATE_ASSIGNMENT_SUBMISSION = org.sakaiproject.assignment.api.AssignmentService.SECURE_UPDATE_ASSIGNMENT_SUBMISSION;
+ 
+ 	public static java.lang.String SECURE_GRADE_ASSIGNMENT_SUBMISSION = org.sakaiproject.assignment.api.AssignmentService.SECURE_GRADE_ASSIGNMENT_SUBMISSION;
+-
++	
+ 	public static java.lang.String REF_TYPE_ASSIGNMENT = org.sakaiproject.assignment.api.AssignmentService.REF_TYPE_ASSIGNMENT;
+ 
+ 	public static java.lang.String REF_TYPE_SUBMISSION = org.sakaiproject.assignment.api.AssignmentService.REF_TYPE_SUBMISSION;
+Index: assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java
+===================================================================
+--- assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java	(revision 42377)
++++ assignment/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java	(working copy)
+@@ -69,6 +69,8 @@
+ import org.sakaiproject.authz.api.AuthzGroup;
+ import org.sakaiproject.authz.api.AuthzPermissionException;
+ import org.sakaiproject.authz.api.GroupNotDefinedException;
++import org.sakaiproject.authz.api.Member;
++import org.sakaiproject.authz.api.Role;
+ import org.sakaiproject.authz.cover.AuthzGroupService;
+ import org.sakaiproject.authz.cover.FunctionManager;
+ import org.sakaiproject.authz.cover.SecurityService;
+@@ -661,6 +663,7 @@
+ 		FunctionManager.registerFunction(SECURE_UPDATE_ASSIGNMENT);
+ 		FunctionManager.registerFunction(SECURE_GRADE_ASSIGNMENT_SUBMISSION);
+ 		FunctionManager.registerFunction(SECURE_ASSIGNMENT_RECEIVE_NOTIFICATIONS);
++		FunctionManager.registerFunction(SECURE_SHARE_DRAFTS);
+ 		
+  		//if no contentReviewService was set try discovering it
+  		if (contentReviewService == null)
+@@ -2571,8 +2574,7 @@
+ 						if (tempAssignment.getDraft())
+ 						{
+ 							// for draft assignment, only admin users or the creator can see it
+-							if (SecurityService.isSuperUser()
+-									|| tempAssignment.getCreator().equals(UserDirectoryService.getCurrentUser().getId()))
++							if (isDraftAssignmentVisible(tempAssignment, context))
+ 							{
+ 								retVal.add(tempAssignment);
+ 							}
+@@ -2590,6 +2592,34 @@
+ 
+ 	}
+ 	
++	private boolean isDraftAssignmentVisible(Assignment assignment, String context) {
++		return SecurityService.isSuperUser()
++			|| assignment.getCreator().equals(UserDirectoryService.getCurrentUser().getId())
++			|| (unlockCheck(SECURE_SHARE_DRAFTS, SiteService.siteReference(context))
++				&& isCurrentUserInSameRoleAsCreator(assignment, context));
++	}
++	
++	private boolean isCurrentUserInSameRoleAsCreator(Assignment assignment, String context) {
++		String creatorUserId = assignment.getCreator();
++		
++		try {
++			User currentUser = UserDirectoryService.getCurrentUser();
++			
++			AuthzGroup group = AuthzGroupService.getAuthzGroup(SiteService.siteReference(context));
++			
++			Member currentUserMember = group.getMember(currentUser.getId());
++			Member creatorMember = group.getMember(creatorUserId);
++			Role role = currentUserMember.getRole();
++		
++			return role != null && role.getId().equals(creatorMember.getRole().getId());
++		
++		} catch (GroupNotDefinedException gnde) {
++			M_log.warn("No group defined for this site " + context);
++		}
++		
++		return false;
++	}
++	
+ 	/**
+ 	 * Access a User's AssignmentSubmission to a particular Assignment.
+ 	 * 
