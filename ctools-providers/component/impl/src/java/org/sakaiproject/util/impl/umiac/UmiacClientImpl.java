@@ -212,6 +212,44 @@ public class UmiacClientImpl
 	public void setCacheDurationSeconds(int cacheDurationSeconds) {
 		this.cacheDurationSeconds = cacheDurationSeconds;
 	}
+	
+	/* NOTE: The 2.5.x deprecated methods are all unsafe! - botimer@umich.edu - 6/18/08
+	 * EHcache invalidates upon get() and returns null for non-existent, expired, or null-valued keys 
+	 * The MemCache implementation also invalidates upon containsKey() because it calls get()
+	 * Using containsKeyExpiredOrNot() is purely misleading since it is impossible to retrieve expired objects
+	 * We must cache sentinels or NullObjects for misses, since nulls, expired, and missing keys are indistinguishable
+	 * The fixes have been implemented as gets followed by null-checks instead of containsKey() calls since they call
+	 *    get() anyway and throw away the result.  This also makes room for an easy patch for miss checks via instanceof. 
+	 */
+	
+	//NOTE: This is a preliminary idea for implementing the missed searches.  It is not used yet.
+	//They could be checked with a conditional like this, though the type identification may be a cost penalty:
+	//Object cached = getCachedValue(command);
+	//if (cached instanceof MissedSearch)
+	//  ...handle...
+	//else if (cached != null)
+	//  return (CAST) cached;
+	
+	/*
+	protected class MissedSearch {
+		private String command;
+		
+		public MissedSearch() {
+			this.command = null;
+		}
+		
+		public MissedSearch(String command) {
+			this.command = command;
+		}
+	}
+	*/
+	
+	/*
+	 * Encapsulate the null-check on the cache itself and return the object
+	 */
+	protected Object getCachedValue(String command) {
+		return (m_callCache != null) ? m_callCache.get(command) : null;		
+	}
 
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#userExists(java.lang.String)
@@ -220,7 +258,7 @@ public class UmiacClientImpl
 	{
 		return (getUserName(eid) != null);
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#getUserName(java.lang.String)
 	 */
@@ -228,11 +266,9 @@ public class UmiacClientImpl
 	{
 		String command = "getSortName," + eid;
 
-		// check the cache - still use expired entries
-		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
-		{
-			return (String[]) m_callCache.getExpiredOrNot(command);
-		}
+		Object cached = getCachedValue(command);
+		if (cached != null)
+			return (String[]) cached;
 
 		Vector<String> result = makeRawCall(command);
 
@@ -257,7 +293,8 @@ public class UmiacClientImpl
 		{
 			// cache the miss for 60 minutes
 	//		if (m_callCache != null) m_callCache.put(command, null, 60 * 60);
-			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
+			//TODO: Cache sentinels or NullObjects to store misses if they are efficiency concerns
+			//if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			return null;
 		}
@@ -306,17 +343,10 @@ public class UmiacClientImpl
 	{
 		String command = "getClassInfo," + id;
 
-		// check the cache - still use expired entries
-		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
-		{
-			String rv = (String) m_callCache.getExpiredOrNot(command);
-			if (rv == null)
-			{
-				throw new IdUnusedException(id);
-			}
-			return rv;
-		}
-
+		Object cached = getCachedValue(command);
+		if (cached != null)
+			return (String) cached;
+		
 		Vector<String> result = makeRawCall(command);
 		
 		// if there are no results, or the one has no "|", then we don't know the user
@@ -324,8 +354,9 @@ public class UmiacClientImpl
 			||	(result.size() < 1)
 			||	(((String)result.elementAt(0)).indexOf("|") == -1))
 		{
+			//TODO: Cache sentinels or NullObjects to store misses if they are efficiency concerns
 			// cache the miss for a while.
-			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
+			//if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(id);
 		}
@@ -365,16 +396,14 @@ public class UmiacClientImpl
 	{
 		String command = "getClasslist," + id;
 
-		// check the cache - still use expired entries
-		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
-		{
-			Map<String, String> rv = (Map<String, String>) m_callCache.getExpiredOrNot(command);
-			if (rv == null)
-			{
-				throw new IdUnusedException(id);
-			}
-			return rv;
-		}
+		Object cached = getCachedValue(command);
+		//TODO: Catch sentinels or NullObjects to throw IdUnusedException
+		//if (cached instanceof MissedSearch)
+		//	throw new IdUnusedException(id);
+		//else
+		if (cached != null)
+			return (Map<String, String>) cached;
+		
 
 		Vector<String> result = makeRawCall(command);
 		
@@ -383,8 +412,9 @@ public class UmiacClientImpl
 			||	(result.size() < 1)
 			||	(((String)result.elementAt(0)).indexOf("|") == -1))
 		{
+			//TODO: Cache sentinels or NullObjects to store misses if they are efficiency concerns
 			// cache the miss for awhile.
-			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
+			//if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(id);
 		}
@@ -403,7 +433,7 @@ public class UmiacClientImpl
 		}
 		
 		// cache the result for a while.
-		if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
+		if (m_callCache != null) m_callCache.put(command, map, cacheDurationSeconds);
 
 		return map;
 
@@ -416,19 +446,13 @@ public class UmiacClientImpl
 	{
 		String command = "getUserSections," + eid;
 
-		// check the cache - still use expired entries
-		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
-		{
-			Map<String, String> map = (Map<String, String>) m_callCache.getExpiredOrNot(command);
-			if (map != null)
-			{
-				return map;
-			}
-			else
-			{
-				m_callCache.expire(command);
-			}
-		}
+		Object cached = getCachedValue(command);
+		//TODO: Catch sentinels or NullObjects to throw IdUnusedException
+		//if (cached instanceof MissedSearch)
+		//	throw new IdUnusedException(id);
+		//else		
+		if (cached != null)
+			return (Map<String, String>) cached;
 
 		// make the call		
 		Vector<String> result = makeRawCall(command);
@@ -506,16 +530,13 @@ public class UmiacClientImpl
 		}
 		String command = commandBuf.toString();
 
-		// check the cache - still use expired entries
-		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
-		{
-			Map<String, String> rv = (Map<String, String>) m_callCache.getExpiredOrNot(command);
-			if (rv == null)
-			{
-				throw new IdUnusedException(id[0]);
-			}
-			return rv;
-		}
+		Object cached = getCachedValue(command);
+		//TODO: Catch sentinels or NullObjects to throw IdUnusedException
+		//if (cached instanceof MissedSearch)
+		//	throw new IdUnusedException(id);
+		//else
+		if (cached != null)
+			return (Map<String, String>) cached;
 
 		Vector<String> result = makeRawCall(command);
 
@@ -524,8 +545,9 @@ public class UmiacClientImpl
 			||	(result.size() < 1)
 			||	(((String)result.elementAt(0)).indexOf("|") == -1))
 		{
+			//TODO: Cache sentinels or NullObjects to store misses if they are efficiency concerns
 			// cache this miss for awhile.
-			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
+			//if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(id[0]);
 		}
@@ -570,11 +592,9 @@ public class UmiacClientImpl
 	{
 		String command = "getClasslist," + year + "," + term + "," + campus + "," + subject + "," + course + "," + section + "\n\n";
 
-		// check the cache - still use expired entries
-		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
-		{
-			return (Vector<String[]>) m_callCache.getExpiredOrNot(command);
-		}
+		Object cached = getCachedValue(command);
+		if (cached != null)
+			return (Vector<String[]>) cached;
 
 		Vector<String> result = makeRawCall(command);
 		
@@ -610,10 +630,10 @@ public class UmiacClientImpl
 		String command = "getClassInfo," + year + "," + term + "," + campus + "," + subject + "," + course + "," + section + "\n\n";
 
 		Vector<String> results;
-		// check the cache - still use expired entries
-		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
-		{
-			results = (Vector<String>) m_callCache.getExpiredOrNot(command);
+		
+		Object cached = getCachedValue(command);
+		if (cached != null) {
+			results = (Vector<String>) cached;
 		}
 		else
 		{
@@ -644,11 +664,9 @@ public class UmiacClientImpl
 	{
 		String command = "getUserInfo," + eids + "\n\n";
 
-		// check the cache - still use expired entries
-		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
-		{
-			return (Vector<String[]>) m_callCache.getExpiredOrNot(command);
-		}
+		Object cached = getCachedValue(command);
+		if (cached != null)
+			return (Vector<String[]>) cached;
 
 		Vector<String> result = makeRawCall(command);
 		
@@ -684,6 +702,8 @@ public class UmiacClientImpl
 	{
 		String command = "getInstructorSections," + eid + "," + term_year + "," + term + "\n\n";
 
+		//TODO: Figure out if this should be cached
+		
 		/*if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
 		{
 			Vector rv = (Vector) m_callCache.getExpiredOrNot(command);
@@ -701,8 +721,9 @@ public class UmiacClientImpl
 		if (	(result == null)
 			||	(result.size() < 1))
 		{
+			//TODO: Cache sentinels or NullObjects to store misses if they are efficiency concerns
 			// cache the miss for awhile.
-			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
+			//if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(eid);
 		}
@@ -729,16 +750,13 @@ public class UmiacClientImpl
 	{
 		String command = "getInstructorClasses," + eid + "," + term_year + "," + term + "\n\n";
 
-		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
-		{
-			Vector<String[]> rv = (Vector<String[]>) m_callCache.getExpiredOrNot(command);
-			if (rv == null)
-			{
-				throw new IdUnusedException(eid);
-			}
-
-			return (Vector<String[]>) m_callCache.getExpiredOrNot(command);
-		}
+		Object cached = getCachedValue(command);
+		//TODO: Catch sentinels or NullObjects to throw IdUnusedException
+		//if (cached instanceof MissedSearch)
+		//	throw new IdUnusedException(eid);
+		//else
+		if (cached != null)
+			return (Vector<String[]>) cached;
 
 		Vector<String> result = makeRawCall(command);
 		
@@ -746,8 +764,9 @@ public class UmiacClientImpl
 		if (	(result == null)
 			||	(result.size() < 1))
 		{
+			//TODO: Cache sentinels or NullObjects to store misses if they are efficiency concerns
 			// cache the miss for awhile.
-			if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
+			//if (m_callCache != null) m_callCache.put(command, null, cacheDurationSeconds);
 
 			throw new IdUnusedException(eid);
 		}
@@ -901,10 +920,10 @@ public class UmiacClientImpl
 		String command = "getCourses,term_year=" + year + ",term_id=" + term + ",source=" + campus + ",subject=" + subject + ",catalog_nbr=" + course + "\n\n";
 		Set<String> rv = new HashSet<String>();
 		List<String> rv1 = new Vector<String>();
-		// check the cache - still use expired entries
-		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
-		{
-			rv1 = (Vector<String>) m_callCache.getExpiredOrNot(command);
+		
+		Object cached = getCachedValue(command);
+		if (cached != null) {
+			rv1 = (Vector<String>) cached;
 		}
 		else
 		{
@@ -964,11 +983,10 @@ public class UmiacClientImpl
 	{
 		String command = "getCrossListings," + year + "," + term + "," + campus + "," + subject + "," + course + "," + section + "\n\n";
 		
-		// check the cache - still use expired entries
 		Vector<String> result = null;
-		if ((m_callCache != null) && (m_callCache.containsKeyExpiredOrNot(command)))
-		{
-			result = (Vector<String>) m_callCache.getExpiredOrNot(command);
+		Object cached = getCachedValue(command);
+		if (cached != null) {
+			result = (Vector<String>) cached;
 		}
 		else
 		{
