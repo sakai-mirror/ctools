@@ -264,6 +264,10 @@ public class UmiacClientImpl
 	 */
 	public String[] getUserName(String eid)
 	{
+		//Null indicates a missed search for this method
+		if (eid == null)
+			return null;
+		
 		String command = "getSortName," + eid;
 
 		Object cached = getCachedValue(command);
@@ -444,6 +448,12 @@ public class UmiacClientImpl
 	 */
 	public Map<String, String> getUserSections(String eid)
 	{
+		Map<String, String> map = new HashMap<String, String>();
+		
+		//Null searches should fast-fail to an empty map
+		if (eid == null)
+			return map;
+		
 		String command = "getUserSections," + eid;
 
 		Object cached = getCachedValue(command);
@@ -457,9 +467,7 @@ public class UmiacClientImpl
 		// make the call		
 		Vector<String> result = makeRawCall(command);
 
-		// parse the results
-		Map<String, String> map = new HashMap<String, String>();
-	
+		// parse the results	
 		// if there are no results, or the one has no "|", then we have no class roles for the user
 		if (	!(	(result == null)
 				||	(result.size() < 1)
@@ -662,6 +670,9 @@ public class UmiacClientImpl
 	public Vector<String[]> getUserInformation (String eids)
 		throws Exception
 	{
+		if (eids == null)
+			throw new Exception("UMIAC: getUserInformation called with null list of EIDs"); 
+
 		String command = "getUserInfo," + eids + "\n\n";
 
 		Object cached = getCachedValue(command);
@@ -700,6 +711,9 @@ public class UmiacClientImpl
 	public Vector<String[]> getInstructorSections (String eid, String term_year, String term)
 		throws IdUnusedException
 	{
+		if (eid == null)
+			throw new IdUnusedException("<null>");
+		
 		String command = "getInstructorSections," + eid + "," + term_year + "," + term + "\n\n";
 
 		//TODO: Figure out if this should be cached
@@ -748,6 +762,9 @@ public class UmiacClientImpl
 	public Vector<String[]> getInstructorClasses (String eid, String term_year, String term)
 		throws IdUnusedException
 	{
+		if (eid == null)
+			throw new IdUnusedException("<null>");
+		
 		String command = "getInstructorClasses," + eid + "," + term_year + "," + term + "\n\n";
 
 		Object cached = getCachedValue(command);
