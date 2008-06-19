@@ -109,7 +109,7 @@ reports             -r46887     https://source.sakaiproject.org/svn/reports/tags
  ctools-assembly     -r47594     https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
 
  ctools-apps         -r45502     https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
- ctools-providers    -r47683     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
+ ctools-providers    -r47308     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
  ctools-reference    -r47530    https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
  ctools-webservices  -r45685     https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
  gradtools           -r47431     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
