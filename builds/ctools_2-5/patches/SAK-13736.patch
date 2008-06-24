@@ -7,6 +7,9 @@ Update based on SAK-13736
 #JSF fix
 =svnm= https://source.sakaiproject.org/svn//jsf/trunk/widgets/src/META-INF/@42476 jsf/widgets/src/META-INF/
 
+#fix LazyInitializationException when create new thread in Forums.
+=svnm= https://source.sakaiproject.org/svn/msgcntr/trunk@45224 msgcntr/
+
 --- /dev/null
 +++ SAK-13736.tmp
 @@ -0,0 +1 @@
