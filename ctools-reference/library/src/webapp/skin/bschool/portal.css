@@ -25,6 +25,28 @@ body{
 /*accessibility links wrapper */
 #skipNav{
 }
+/*site hierarchy breadcrumb*/
+#siteHierarchy{
+        clear:both;
+        float:none;
+        margin:0;
+        list-style: none;
+        padding:.5em;
+        font-size:.85em;
+        border-bottom:1px solid #ccc;
+        background: #ffe;
+}
+/*style the standard breadcrumbseparator
+can set display:none if needed because the list-style is taking care of it*/
+.breadSeparator{
+}
+#siteHierarchy li{
+        display:inline;
+}
+#siteHierarchy li a, #siteHierarchy li a:visited{
+        color:#07b;
+        text-decoration:none
+}
 
 /*wrapper for site content (includes as children #toolMenuWrap,#content and #footer)*/
 #container{
