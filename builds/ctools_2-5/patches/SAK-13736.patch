@@ -10,13 +10,15 @@ Update based on SAK-13736
 #fix LazyInitializationException when create new thread in Forums.
 =svnm= https://source.sakaiproject.org/svn/msgcntr/trunk@45224 msgcntr/
 
-#Updates!
+#Updates, keeping up-to-date on CT-589!
 
 =svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/@47579 msgcntr/
 
 =svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/@47733 msgcntr/
 
 =svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/@48013 msgcntr/
+
+=svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/@48103 msgcntr/
 
 --- /dev/null
 +++ SAK-13736.tmp
