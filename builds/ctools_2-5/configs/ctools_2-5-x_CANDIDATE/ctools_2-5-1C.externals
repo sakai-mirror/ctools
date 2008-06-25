@@ -14,7 +14,7 @@
 # Get just the top level files (license, maven files) from the sakai_2-5-1_rc01 externals directory. 
 # Yes that is a single period at the start of the line, so the files
 # get put at the top of the build directory.
-.                   -r46940     https://source.sakaiproject.org/svn/sakai/tags/sakai_2-5-1_rc01 | --ignore-externals
+.                   -r47906     https://source.sakaiproject.org/svn/sakai/tags/sakai_2-5-1_rc01 | --ignore-externals
 
 ####   Sakai 2.5.0 modules
  access              -r46820     https://source.sakaiproject.org/svn/access/tags/sakai_2-5-1_rc01
@@ -49,7 +49,7 @@
  login               -r46862     https://source.sakaiproject.org/svn/login/tags/sakai_2-5-1_rc01
  mailarchive         -r46863     https://source.sakaiproject.org/svn/mailarchive/tags/sakai_2-5-1_rc01
  mailtool            -r46911     https://source.sakaiproject.org/svn/mailtool/tags/sakai_2-5-1_rc01
- master              -r46865     https://source.sakaiproject.org/svn/master/tags/sakai_2-5-1_rc01
+ master              -r47731     https://source.sakaiproject.org/svn/master/tags/sakai_2-5-1_rc01
  memory              -r46866     https://source.sakaiproject.org/svn/memory/tags/sakai_2-5-1_rc01
  message             -r46867     https://source.sakaiproject.org/svn/message/tags/sakai_2-5-1_rc01
  metaobj             -r46868     https://source.sakaiproject.org/svn/metaobj/tags/sakai_2-5-1_rc01
@@ -106,11 +106,11 @@ reports             -r46887     https://source.sakaiproject.org/svn/reports/tags
 #  ctools-webservices -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-webservices
 #  ctools-libhelp -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-libhelp
 
- ctools-assembly     -r47594     https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
+ ctools-assembly     -r48107     https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
 
  ctools-apps         -r45502     https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
  ctools-providers    -r47734     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
- ctools-reference    -r47747    https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
+ ctools-reference    -r48074     https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
  ctools-webservices  -r45685     https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
  gradtools           -r47431     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
  ctools-libhelp      -r47309     https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
@@ -135,6 +135,6 @@ reports             -r46887     https://source.sakaiproject.org/svn/reports/tags
  # we really should not pull from trunk to production, but we were not given any choice for these
  # in the evaluation project.
  hierarchy           -r48884     https://source.sakaiproject.org/contrib/caret/hierarchy/tags/1.1.1/ 
- discussion          -r48503     https://source.sakaiproject.org/contrib/deprecated/discussion/trunk/
+ discussion          -r50392     https://source.sakaiproject.org/contrib/deprecated/discussion/trunk/
   #
 #end
