@@ -1,1 +1,27 @@
-CT-125 is handled by ctools-assembly now
+Index: assignment/assignment-tool/tool/src/webapp/tools/sakai.assignment.grades.xml
+===================================================================
+--- assignment/assignment-tool/tool/src/webapp/tools/sakai.assignment.grades.xml	(revision 46992)
++++ assignment/assignment-tool/tool/src/webapp/tools/sakai.assignment.grades.xml	(working copy)
+@@ -8,7 +8,8 @@
+ 			description="For posting, submitting and grading assignment(s) online.">
+ 		
+ 		<category name="course" />
+-		<category name="project" />
++               <!-- Per CT-125 don't show assignments in project sites -->
++               <!-- <category name="project" /> -->
+ 		<category name="portfolio" />
+ 		
+ 		<configuration name="pagesize" value="200" />
+Index: syllabus/syllabus-app/src/webapp/tools/sakai.syllabus.xml
+===================================================================
+--- syllabus/syllabus-app/src/webapp/tools/sakai.syllabus.xml	(revision 46993)
++++ syllabus/syllabus-app/src/webapp/tools/sakai.syllabus.xml	(working copy)
+@@ -7,6 +7,7 @@
+ 			description="For posting a summary outline and/or requirements for a site.">
+ 			
+ 		<category name="course" />
+-		<category name="project" />
++                <!-- per CT-125 don't show syllabus in project sites -->
++                <!-- <category name="project" /> -->
+ 	</tool>	
+ </registration>
