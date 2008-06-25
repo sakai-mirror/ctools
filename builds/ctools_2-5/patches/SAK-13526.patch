@@ -1,0 +1,22 @@
+Index: rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/impl/SiteEmailNotificationRWiki.java
+===================================================================
+--- rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/impl/SiteEmailNotificationRWiki.java	(revision 47100)
++++ rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/impl/SiteEmailNotificationRWiki.java	(working copy)
+@@ -157,7 +157,7 @@
+ 	/**
+ 	 * @inheritDoc
+ 	 */
+-	protected String getMessage(Event event)
++	protected String buildMessage(Event event)
+ 	{
+ 		// get the content & properties
+ 		Reference ref = entityManager.newReference(event.getResource());
+@@ -224,7 +224,7 @@
+ 	}
+ 	
+ 	protected String plainTextContent() {
+-		return getMessage(this.event);
++		return buildMessage(this.event);
+ 	}
+ 
+ 	/**

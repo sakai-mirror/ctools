@@ -1,0 +1,247 @@
+Index: melete/melete-app/src/webapp/WEB-INF/web.xml
+===================================================================
+--- melete/melete-app/src/webapp/WEB-INF/web.xml	(revision 48145)
++++ melete/melete-app/src/webapp/WEB-INF/web.xml	(working copy)
+@@ -25,11 +25,11 @@
+ 	</context-param>
+ 	<context-param>
+ 		<param-name>packagingdir</param-name>
+-		<param-value>/var/melete/packagefiles</param-value>
++		<param-value>/melete/packagefiles</param-value>
+ 	</context-param>
+ 	<context-param>
+ 		<param-name>packagingscormdir</param-name>
+-		<param-value>/var/melete/packagefiles/packagefilesscorm</param-value>
++		<param-value>/melete/packagefiles/packagefilesscorm</param-value>
+ 	</context-param>
+ 	<!--Need to keep this for the migrate program-->
+ 	<context-param>
+Index: melete/melete-impl/src/java/org/sakaiproject/component/app/melete/ModuleServiceImpl.java
+===================================================================
+--- melete/melete-impl/src/java/org/sakaiproject/component/app/melete/ModuleServiceImpl.java	(revision 48145)
++++ melete/melete-impl/src/java/org/sakaiproject/component/app/melete/ModuleServiceImpl.java	(working copy)
+@@ -578,20 +578,20 @@
+ 			List modList = null;
+ 			List colNames = null;
+ 			if (rs != null){
+-			  colNames = new ArrayList();
+-			  colNames.add(new String("melete_module_bkup.module_id"));
+-			  colNames.add(new String("melete_module_bkup.license_code"));
+-			  colNames.add(new String("melete_module_bkup.cc_license_url"));
+-			  colNames.add(new String("melete_module_bkup.req_attr"));
+-			  colNames.add(new String("melete_module_bkup.allow_cmrcl"));
+-			  colNames.add(new String("melete_module_bkup.allow_mod"));
+-			  colNames.add(new String("melete_module_bkup.created_by_fname"));
+-			  colNames.add(new String("melete_module_bkup.created_by_lname"));	
+-			  colNames.add(new String("melete_module_bkup.creation_date"));		
+-			  colNames.add(new String("melete_course_module.course_id"));
++                colNames = new ArrayList();
++                colNames.add(new String("module_id"));
++                colNames.add(new String("license_code"));
++                colNames.add(new String("cc_license_url"));
++                colNames.add(new String("req_attr"));
++                colNames.add(new String("allow_cmrcl"));
++                colNames.add(new String("allow_mod"));
++                colNames.add(new String("created_by_fname"));
++                colNames.add(new String("created_by_lname"));
++                colNames.add(new String("creation_date"));
++                colNames.add(new String("course_id"));
+ 
+-			  modList = toList(rs, colNames);
+-			}
++                modList = toList(rs, colNames);
++              }
+ 
+ 			rs.close();
+ 	    	stmt.close();
+@@ -602,10 +602,15 @@
+ 	    	{
+ 	    		logger.info("NUMBER OF MODULES IN THIS DATABASE IS "+modList.size());
+ 	    		for (ListIterator i = modList.listIterator(); i.hasNext(); ) {
+-	    			Map modMap = (LinkedHashMap)i.next();
+-	    		    modId = ((Integer)modMap.get("melete_module_bkup.module_id")).intValue();
+-	    		    courseId = (String)modMap.get("melete_course_module.course_id");
+-	    		 
++	    			//Map modMap = (LinkedHashMap)i.next();
++                    //Object obj =modMap.get("module_id");
++                    //Integer in =new Integer(obj.toString());
++                    //modId = in.intValue();
++					Map modMap = (LinkedHashMap)i.next();
++
++                    modId = ((java.math.BigDecimal)modMap.get("module_id")).intValue();
++                    
++					courseId = (String)modMap.get("course_id");
+                     SubSectionUtilImpl ssuImpl = new SubSectionUtilImpl();
+           	        stmt = dbConnection.createStatement();
+           	        
+@@ -640,7 +645,6 @@
+ 						    {
+ 							  if (contentType.equals("typeEditor"))
+ 							  {
+-								//processSection = meleteExportService.checkFileExists(rs.getString("content_path"));
+ 								processSection = meleteUtil.checkFileExists(rs.getString("content_path"));
+ 							  }
+ 							  if (contentType.equals("typeUpload"))
+@@ -814,28 +818,39 @@
+ 		return MIGRATE_FAILED;
+ 	}
+ 
++	
+ 	private MeleteResource processLicenseInformation(Map modMap, MeleteResource meleteSectionResource)
+ 	{
+ 		String[] result = new String[2];
+ 		GregorianCalendar cal = new GregorianCalendar();
+-		int licenseCodes = ((Integer)modMap.get("melete_module_bkup.license_code")).intValue();
+-		String copyrightOwner = (String)modMap.get("melete_module_bkup.created_by_fname")+" "+(String)modMap.get("melete_module_bkup.created_by_lname");
+-		cal.setTime((Date)modMap.get("melete_module_bkup.creation_date"));
++		int licenseCodes = ((java.math.BigDecimal)modMap.get("license_code")).intValue();
++		String copyrightOwner = (String)modMap.get("created_by_fname")+" "+(String)modMap.get("created_by_lname");
++		cal.setTime((Date)modMap.get("creation_date"));
+ 		String copyrightYear = String.valueOf(cal.get(Calendar.YEAR));
+ 		 if(licenseCodes == CC_CODE)
+ 		 	{
+-		 		meleteSectionResource.setCcLicenseUrl((String)modMap.get("melete_module_bkup.cc_license_url"));
++		 		meleteSectionResource.setCcLicenseUrl((String)modMap.get("cc_license_url"));
+ 		 		meleteSectionResource.setLicenseCode(licenseCodes);
+ 		 		meleteSectionResource.setReqAttr(true);
+-		 		meleteSectionResource.setAllowCmrcl(((Boolean)modMap.get("melete_module_bkup.allow_cmrcl")).booleanValue());
+-		 		meleteSectionResource.setAllowMod(((Integer)modMap.get("melete_module_bkup.allow_mod")).intValue());
++
++				if(modMap.get("allow_cmrcl").toString().equals("1")) {
++					meleteSectionResource.setAllowCmrcl(true);
++				} else {
++					meleteSectionResource.setAllowCmrcl(false);
++				}
++
++		 		//meleteSectionResource.setAllowCmrcl(((Boolean)modMap.get("allow_cmrcl")).booleanValue());
++
++		 		//meleteSectionResource.setAllowMod(((Integer)modMap.get("allow_mod")).intValue());
++				meleteSectionResource.setAllowMod(((java.math.BigDecimal)modMap.get("allow_mod")).intValue());
++
+ 		 		meleteSectionResource.setCopyrightOwner(copyrightOwner);
+ 		 		meleteSectionResource.setCopyrightYear(copyrightYear);
+ 		 	}
+ 		 else if(licenseCodes == PD_CODE)
+ 		 {
+ 
+-	 	  	meleteSectionResource.setCcLicenseUrl((String)modMap.get("melete_module_bkup.cc_license_url"));
++	 	  	meleteSectionResource.setCcLicenseUrl((String)modMap.get("cc_license_url"));
+ 	 	  	meleteSectionResource.setLicenseCode(licenseCodes);
+ 	 	  	meleteSectionResource.setReqAttr(false);
+ 	 	  	meleteSectionResource.setAllowCmrcl(false);
+Index: jsf/widgets/src/java/org/sakaiproject/jsf/renderer/InputRichTextRenderer.java
+===================================================================
+--- jsf/widgets/src/java/org/sakaiproject/jsf/renderer/InputRichTextRenderer.java	(revision 33285)
++++ jsf/widgets/src/java/org/sakaiproject/jsf/renderer/InputRichTextRenderer.java	(working copy)
+@@ -19,10 +19,11 @@
+ *
+ **********************************************************************************/
+ 
++package org.sakaiproject.jsf.renderer;
+ 
++import org.apache.commons.logging.Log;
++import org.apache.commons.logging.LogFactory;
+ 
+-package org.sakaiproject.jsf.renderer;
+-
+ import org.sakaiproject.component.cover.ServerConfigurationService;
+ import org.sakaiproject.content.cover.ContentHostingService;
+ import org.sakaiproject.jsf.model.InitObjectContainer;
+@@ -77,19 +78,18 @@
+   private static final String TOOLBAR_SCRIPT_SMALL;
+   private static final String TOOLBAR_SCRIPT_MEDIUM;
+   
+-  
+-  
+   private static final String TOOLBAR_SCRIPT_LARGE;
+   private static final int DEFAULT_WIDTH_PX;
+   private static final int DEFAULT_HEIGHT_PX;
+   private static final int DEFAULT_COLUMNS;
+   private static final int DEFAULT_ROWS;
+   private static final String INSERT_IMAGE_LOC;
+-   private static final MessageFormat LIST_ITEM_FORMAT_HTML =
++  private static final MessageFormat LIST_ITEM_FORMAT_HTML =
+      new MessageFormat("\"{0}\" : \"<a href=''{1}''>{0}</a>\"");
+-   private static final MessageFormat LIST_ITEM_FORMAT_FCK =
++  private static final MessageFormat LIST_ITEM_FORMAT_FCK =
+      new MessageFormat("[\"{0}\", \"{1}\"]");
+ 
++  private static final Log log = LogFactory.getLog(InputRichTextRenderer.class);
+ 
+   // we have static resources for our script path and built-in toolbars etc.
+   static {
+@@ -174,18 +174,20 @@
+       if (cols != null) textareaColumns = cols.intValue();
+       if (rows != null) textareaRows = rows.intValue();
+       
+-//    Width of the widget (in pixel units).
+-//    If this attribute is not specified, the width is controlled by the 'cols' attribute.
+-      String width = (String) RendererUtil.getAttribute(context, component, "width");
+-      if (width != null) widthPx = Integer.parseInt(width);
+-//    Height of the widget (in pixel units).
+-//    If this attribute is not specified, the width is controlled by the 'rows' attribute.
+-      String height = (String) RendererUtil.getAttribute(context, component, "height");
+-      if (height != null) heightPx = Integer.parseInt(height);
++      // Width of the widget (in pixel units).
++      // If this attribute is not specified, the width is controlled by the 'cols' attribute.
++      Integer width = (Integer) RendererUtil.getAttribute(context, component, "width");
++      if (width != null) widthPx = width.intValue();
++
++      // Height of the widget (in pixel units).
++      // If this attribute is not specified, the width is controlled by the 'rows' attribute.
++      Integer height = (Integer) RendererUtil.getAttribute(context, component, "height");
++      if (height != null) heightPx = height.intValue();
+     }
+     catch (Exception ex)
+     {
+       //default, whatever goes awry
++      if (log.isDebugEnabled()) log.debug(ex);  
+     }
+ 
+     if (widthPx == DEFAULT_WIDTH_PX && textareaColumns != DEFAULT_COLUMNS)
+Index: jsf/widgets/src/java/org/sakaiproject/jsf/tag/InputRichTextTag.java
+===================================================================
+--- jsf/widgets/src/java/org/sakaiproject/jsf/tag/InputRichTextTag.java	(revision 33285)
++++ jsf/widgets/src/java/org/sakaiproject/jsf/tag/InputRichTextTag.java	(working copy)
+@@ -56,7 +56,6 @@
+   extends UIComponentTag
+ {
+   private String value;
+-  private String columns;
+   private String rows;
+   private String justArea;
+   private String cols;
+@@ -96,16 +95,6 @@
+     return value;
+   }
+ 
+-  public void setColumns(String newC)
+-  {
+-    columns = newC;
+-  }
+-
+-  public String getColumns()
+-  {
+-    return columns;
+-  }
+-
+   public void setRows(String newRows)
+   {
+     rows = newRows;
+@@ -139,7 +128,7 @@
+   protected void setProperties(UIComponent component)
+   {
+     super.setProperties(component);
+-    TagUtil.setInteger(component, "columns", columns);
++    TagUtil.setInteger(component, "cols", cols);
+     TagUtil.setInteger(component, "rows", rows);
+     TagUtil.setInteger(component, "width", width);
+     TagUtil.setInteger(component, "height", height);
+@@ -175,7 +164,6 @@
+     super.release();
+ 
+     value = null;
+-    columns = null;
+     rows = null;
+     justArea = null;
+     cols = null;
