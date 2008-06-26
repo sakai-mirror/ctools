@@ -14,9 +14,9 @@ Index: rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/im
 @@ -224,7 +224,7 @@
  	}
  	
- 	protected String plainTextContent() {
--		return getMessage(this.event);
-+		return buildMessage(this.event);
+ 	protected String plainTextContent(Event event) {
+-		return getMessage(event);
++		return buildMessage(event);
  	}
  
  	/**
