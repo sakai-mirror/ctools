@@ -17,6 +17,7 @@ my ($log) = `date`;
 my ($startTime,$endTime);
 my ($svncmd) = "checkout";
 my ($destinationDir);
+my ($propertyrevision);
 
 my ($logFileName) = "./svnCheckout.log";
 
@@ -37,6 +38,11 @@ if (@ARGV > 0) {
 if (@ARGV > 0) {
   $svncmd = shift;
 }
+
+if (@ARGV > 0) {
+  $propertyrevision = shift;
+}
+
 
 print "logFileName: [$logFileName]  svncmd: [$svncmd]\n" if ($trace);
 
@@ -59,11 +65,13 @@ sub getSrcViaExternalsFile {
     next if (/^\s*#/);
     next if (/^\s*$/);
 
-    # Can this capture HEAD too?
-#    ($module,$revision,$path,$dummy,$svnOptions) = m/\s*(\S+)\s+-r(\d+)\s+([^|]*)\s*(\|\s*(.+))*$/;
     # modify so can use the HEAD revision also
-    ($module,$revision,$path,$dummy,$svnOptions) = m/\s*(\S+)\s+-r(HEAD|\d+)\s+([^|]*)\s*(\|\s*(.+))*$/;
+    ($module,$revision,$path,$dummy,$svnOptions) = m/\s*(\S+)\s+-r(HEAD|PROPERTY|\d+)\s+([^|]*)\s*(\|\s*(.+))*$/;
     next unless ($module);
+    #If they want the revision from the property file, set it!
+    if ($revision eq "PROPERTY") {
+	$revision=$propertyrevision;
+    }
   
     # Count the types of modules being checked out.
     $lines{USED}++;
@@ -131,8 +139,6 @@ sub makeSvnCmd {
 
 # can checkout or update.
 # Note that update won't catch top level modules that have been deleted.
-#$svncmd="update";
-#$svncmd="checkout";
 chdir $destinationDir;
 
 getSrcViaExternalsFile() if (@ARGV);

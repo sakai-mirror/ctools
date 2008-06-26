@@ -136,5 +136,8 @@ reports             -r46887     https://source.sakaiproject.org/svn/reports/tags
  # in the evaluation project.
  hierarchy           -r48884     https://source.sakaiproject.org/contrib/caret/hierarchy/tags/1.1.1/ 
  discussion          -r48503     https://source.sakaiproject.org/contrib/deprecated/discussion/trunk/
-  #
+
+#Important, location of patches, specify a specific revision or leave as PROPERTY which will be <= the candidate property version! :)
+ctools-patches      -rPROPERTY    https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/patches/ 
+
 #end

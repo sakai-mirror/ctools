@@ -16,6 +16,7 @@
 # get put at the top of the build directory.
 .                   -r46940     https://source.sakaiproject.org/svn/sakai/tags/sakai_2-5-1_rc01 | --ignore-externals
 
+
 ####   Sakai 2.5.0 modules
  access              -r46820     https://source.sakaiproject.org/svn/access/tags/sakai_2-5-1_rc01
  alias               -r46821     https://source.sakaiproject.org/svn/alias/tags/sakai_2-5-1_rc01
@@ -114,6 +115,7 @@ reports             -r46887     https://source.sakaiproject.org/svn/reports/tags
  ctools-webservices  -r45685     https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
  gradtools           -r47431     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
  ctools-libhelp      -r47309     https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
+ 
 
  #CTools specific web for now
  web                 -r47453     https://source.sakaiproject.org/svn/ctools/trunk/web/
@@ -136,5 +138,8 @@ reports             -r46887     https://source.sakaiproject.org/svn/reports/tags
  # in the evaluation project.
  hierarchy           -r48884     https://source.sakaiproject.org/contrib/caret/hierarchy/tags/1.1.1/ 
  discussion          -r48503     https://source.sakaiproject.org/contrib/deprecated/discussion/trunk/
-  #
+
+#Important, location of patches, specify a specific revision or leave as PROPERTY which will be <= the candidate property version! :)
+ctools-patches      -rPROPERTY    https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/patches/ 
+
 #end

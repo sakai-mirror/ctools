@@ -175,6 +175,34 @@ if changes are needed.
       </plugin>
     </plugins>
   </reporting>
-
+<repositories>
+    <repository>
+      <id>sakai-maven</id>
+      <name>Sakai Maven Repo</name>
+      <layout>default</layout>
+            <url>http://source.sakaiproject.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>sakai-ibiblio-mirror</id>
+      <name>Sakai Ibiblio Mirror Repo</name>
+      <layout>default</layout>
+            <url>http://source.sakaiproject.org/maven2-ibiblio</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>default</id>
+      <name>Maven Repository Switchboard</name>
+      <layout>default</layout>
+            <url>http://repo1.maven.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+</repositories>
 
 </project>
