@@ -127,7 +127,9 @@ sub checkVersions {
     for $required (keys %requiredSoftware) {
   	print "Checking program $required: ";
 	$result=`$requiredSoftware{$required}{cmd} 2>&1`;
-	chop $result;
+	if ($result) {
+	    chop $result;
+	}
 	($minmajor,$minminor) = split(/\./,$requiredSoftware{$required}{min});
 	($maxmajor,$maxminor) = split(/\./,$requiredSoftware{$required}{max});
 	if ($result) {
