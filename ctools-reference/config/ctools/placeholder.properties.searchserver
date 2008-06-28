@@ -29,7 +29,8 @@ onlyIndexSearchToolSites@org.sakaiproject.search.api.SearchIndexBuilder=true
 indexStorageName@org.sakaiproject.search.index.IndexStorage=filesystem
 localSegmentsOnly@org.sakaiproject.search.api.SearchService.SegmentStore=true
 
-location@org.sakaiproject.search.api.SearchService.SegmentStore=/afs/umich.edu/group/ctsearch/fs201/search/searchindex
+location@org.sakaiproject.search.api.SearchService.LocalIndexStorage=/afs/umich.edu/group/ctsearch/fs201/search/searchindex
+#location@org.sakaiproject.search.api.SearchService.SegmentStore=/afs/umich.edu/group/ctsearch/fs201/search/searchindex
 recoverCorruptedIndex@org.sakaiproject.search.index.IndexStorage=true
 #location@org.sakaiproject.search.index.IndexStorage=/afs/umich.edu/group/ctsearch/fs201/search/searchindex
 
