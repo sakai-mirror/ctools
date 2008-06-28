@@ -31,7 +31,7 @@ localSegmentsOnly@org.sakaiproject.search.api.SearchService.SegmentStore=true
 
 location@org.sakaiproject.search.api.SearchService.SegmentStore=/afs/umich.edu/group/ctsearch/fs201/search/searchindex
 recoverCorruptedIndex@org.sakaiproject.search.index.IndexStorage=true
-location@org.sakaiproject.search.index.IndexStorage=/afs/umich.edu/group/ctsearch/fs201/search/searchindex
+#location@org.sakaiproject.search.index.IndexStorage=/afs/umich.edu/group/ctsearch/fs201/search/searchindex
 
 ## Must override these directly for the time being.
 recoverCorruptedIndex@filesystemSearchStorageImpl=true
