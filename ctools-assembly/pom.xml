@@ -134,22 +134,23 @@
 		<echo> edit registrations under ${src.dir} to make sure the tool categories are as desired.</echo>
 
 		<!-- make the project category disappear for these (CT-125) -->
+		<!-- decision was made 06/30/2008 to have projects appear everywhere -->
 
-		<echo> make sure that edit the melete tool xml when necessary. </echo>
+		<!--
 		<echo> Removing project from certain sections. </echo>
-
 		<replaceregexp >
 		  <fileset dir="${src.dir}" >
-		    <!-- <include name="**/sakai.samigo.tool.xml"/> -->
-		    <!-- <include name="content/**/sakai.dropbox.xml" /> -->
-
-		    <include name="gradebook/**/sakai.gradebook.tool.xml" />
-		    <include name="content/**/sakai.syllabus.xml" />
-		    <include name="melete/**/sakai.melete.xml" /> 
+		     <include name="content/**/sakai.dropbox.xml" /> 
+		         <include name="gradebook/**/sakai.gradebook.tool.xml" />
+		         <include name="content/**/sakai.syllabus.xml" />
+		         <include name="melete/**/sakai.melete.xml" /> 
 		  </fileset>
 		  <regexp pattern="&lt;category.*name=&quot;project&quot;.*"/>
 		  <substitution  expression="" />
 		</replaceregexp>
+		-->
+		
+		<echo> make sure that edit the melete tool xml when necessary. </echo>
 
 		<!-- gradtools modifications -->
 		<echo> edit file: ${src.dir}/site-manage/**/tools/sakai.sitesetup.xml for gradtools.</echo>
