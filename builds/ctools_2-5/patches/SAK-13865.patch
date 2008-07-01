@@ -1,191 +1,191 @@
 Index: announcement/announcement-impl/impl/src/java/org/sakaiproject/announcement/impl/SiteEmailNotificationAnnc.java
 ===================================================================
---- announcement/announcement-impl/impl/src/java/org/sakaiproject/announcement/impl/SiteEmailNotificationAnnc.java  (revision 46865)
-+++ announcement/announcement-impl/impl/src/java/org/sakaiproject/announcement/impl/SiteEmailNotificationAnnc.java  (working copy)
+--- announcement/announcement-impl/impl/src/java/org/sakaiproject/announcement/impl/SiteEmailNotificationAnnc.java	(revision 46865)
++++ announcement/announcement-impl/impl/src/java/org/sakaiproject/announcement/impl/SiteEmailNotificationAnnc.java	(working copy)
 @@ -142,7 +142,7 @@
-    /**
-     * @inheritDoc
-     */
--   protected String htmlContent()
-+   protected String htmlContent(Event event)
-    {
-	StringBuilder buf = new StringBuilder();
-	String newline = "<br />\n";
+ 	/**
+ 	 * @inheritDoc
+ 	 */
+-	protected String htmlContent()
++	protected String htmlContent(Event event)
+ 	{
+ 		StringBuilder buf = new StringBuilder();
+ 		String newline = "<br />\n";
 @@ -393,8 +393,8 @@
-    }
+ 	}
  
-    @Override
--   protected String plainTextContent() {
--	String content = htmlContent();
-+   protected String plainTextContent(Event event) {
-+	String content = htmlContent(event);
-	content = FormattedText.convertFormattedTextToPlaintext(content);
-	return content;
-    }
+ 	@Override
+-	protected String plainTextContent() {
+-		String content = htmlContent();
++	protected String plainTextContent(Event event) {
++		String content = htmlContent(event);
+ 		content = FormattedText.convertFormattedTextToPlaintext(content);
+ 		return content;
+ 	}
 Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/SiteEmailNotificationContent.java
 ===================================================================
 --- content/content-impl/impl/src/java/org/sakaiproject/content/impl/SiteEmailNotificationContent.java	(revision 46865)
 +++ content/content-impl/impl/src/java/org/sakaiproject/content/impl/SiteEmailNotificationContent.java	(working copy)
 @@ -61,22 +61,22 @@
-    private static Log log = LogFactory.getLog(SiteEmailNotificationContent.class);
-    private static ResourceBundle rb = ResourceBundle.getBundle("siteemacon");
-    
--   protected String plainTextContent() {
--	return generateContentForType(false);
-+   protected String plainTextContent(Event event) {
-+	return generateContentForType(false, event);
-    }
-    
--   protected String htmlContent() {
--	return generateContentForType(true);
-+   protected String htmlContent(Event event) {
-+	return generateContentForType(true, event);
-    }
+ 	private static Log log = LogFactory.getLog(SiteEmailNotificationContent.class);
+ 	private static ResourceBundle rb = ResourceBundle.getBundle("siteemacon");
+ 	
+-	protected String plainTextContent() {
+-		return generateContentForType(false);
++	protected String plainTextContent(Event event) {
++		return generateContentForType(false, event);
+ 	}
+ 	
+-	protected String htmlContent() {
+-		return generateContentForType(true);
++	protected String htmlContent(Event event) {
++		return generateContentForType(true, event);
+ 	}
  
--   private String generateContentForType(boolean shouldProduceHtml) {
-+   private String generateContentForType(boolean shouldProduceHtml, Event event) {
-	// get the content & properties
--	Reference ref = EntityManager.newReference(this.event.getResource());
-+	Reference ref = EntityManager.newReference(event.getResource());
-	// TODO:  ResourceProperties props = ref.getProperties();
+-	private String generateContentForType(boolean shouldProduceHtml) {
++	private String generateContentForType(boolean shouldProduceHtml, Event event) {
+ 		// get the content & properties
+-		Reference ref = EntityManager.newReference(this.event.getResource());
++		Reference ref = EntityManager.newReference(event.getResource());
+ 		// TODO:  ResourceProperties props = ref.getProperties();
  
-	// get the function
--	String function = this.event.getEvent();
--	String subject = getSubject(this.event);
-+	String function = event.getEvent();
-+	String subject = getSubject(event);
+ 		// get the function
+-		String function = this.event.getEvent();
+-		String subject = getSubject(this.event);
++		String function = event.getEvent();
++		String subject = getSubject(event);
  
-	// use either the configured site, or if not configured, the site (context) of the resource
-	String siteId = (getSite() != null) ? getSite() : ref.getContext();
+ 		// use either the configured site, or if not configured, the site (context) of the resource
+ 		String siteId = (getSite() != null) ? getSite() : ref.getContext();
 Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/DropboxNotification.java
 ===================================================================
 --- content/content-impl/impl/src/java/org/sakaiproject/content/impl/DropboxNotification.java	(revision 46865)
 +++ content/content-impl/impl/src/java/org/sakaiproject/content/impl/DropboxNotification.java	(working copy)
 @@ -194,25 +194,25 @@
-	return "";
-    }
+ 		return "";
+ 	}
  
--   protected String plainTextContent() 
-+   protected String plainTextContent(Event event) 
-    {
--	return generateContentForType(false);
-+	return generateContentForType(false, event);
-    }
-    
--   protected String htmlContent() 
-+   protected String htmlContent(Event event) 
-    {
--	return generateContentForType(true);
-+	return generateContentForType(true, event);
-    }
+-	protected String plainTextContent() 
++	protected String plainTextContent(Event event) 
+ 	{
+-		return generateContentForType(false);
++		return generateContentForType(false, event);
+ 	}
+ 	
+-	protected String htmlContent() 
++	protected String htmlContent(Event event) 
+ 	{
+-		return generateContentForType(true);
++		return generateContentForType(true, event);
+ 	}
  
--   private String generateContentForType(boolean shouldProduceHtml) 
-+   private String generateContentForType(boolean shouldProduceHtml, Event event) 
-    {
-	// get the content & properties
--	Reference ref = EntityManager.newReference(this.event.getResource());
-+	Reference ref = EntityManager.newReference(event.getResource());
-	// TODO:  ResourceProperties props = ref.getProperties();
+-	private String generateContentForType(boolean shouldProduceHtml) 
++	private String generateContentForType(boolean shouldProduceHtml, Event event) 
+ 	{
+ 		// get the content & properties
+-		Reference ref = EntityManager.newReference(this.event.getResource());
++		Reference ref = EntityManager.newReference(event.getResource());
+ 		// TODO:  ResourceProperties props = ref.getProperties();
  
-	// get the function
--	String function = this.event.getEvent();
--	String subject = getSubject(this.event);
-+	String function = event.getEvent();
-+	String subject = getSubject(event);
+ 		// get the function
+-		String function = this.event.getEvent();
+-		String subject = getSubject(this.event);
++		String function = event.getEvent();
++		String subject = getSubject(event);
  
-	// use either the configured site, or if not configured, the site (context) of the resource
-	String siteId = (getSite() != null) ? getSite() : ref.getContext();
+ 		// use either the configured site, or if not configured, the site (context) of the resource
+ 		String siteId = (getSite() != null) ? getSite() : ref.getContext();
 Index: event/event-util/util/src/java/org/sakaiproject/util/EmailNotification.java
 ===================================================================
 --- event/event-util/util/src/java/org/sakaiproject/util/EmailNotification.java	(revision 46865)
 +++ event/event-util/util/src/java/org/sakaiproject/util/EmailNotification.java	(working copy)
 @@ -75,7 +75,6 @@
-    
-    /** The related site id. */
-    protected String m_siteId = null;
--   protected Event event = null;
+ 	
+ 	/** The related site id. */
+ 	protected String m_siteId = null;
+-	protected Event event = null;
  
-    /**
-     * Construct.
+ 	/**
+ 	 * Construct.
 @@ -156,7 +155,6 @@
-     */
-    public void notify(Notification notification, Event event)
-    {
--	this.event = event;
-	// ignore events marked for no notification
-	if (event.getPriority() == NotificationService.NOTI_NONE) return;
+ 	 */
+ 	public void notify(Notification notification, Event event)
+ 	{
+-		this.event = event;
+ 		// ignore events marked for no notification
+ 		if (event.getPriority() == NotificationService.NOTI_NONE) return;
  
 @@ -197,7 +195,7 @@
-	// for the digesters
-	if (digest.size() > 0)
-	{
--	    String message = plainTextContent();
-+	    String message = plainTextContent(event);
+ 		// for the digesters
+ 		if (digest.size() > 0)
+ 		{
+-			String message = plainTextContent();
++			String message = plainTextContent(event);
  
-	    // modify the message to add header lines (we don't add a tag for each message, the digest adds a single one when sent)
-	    StringBuilder messageForDigest = new StringBuilder();
+ 			// modify the message to add header lines (we don't add a tag for each message, the digest adds a single one when sent)
+ 			StringBuilder messageForDigest = new StringBuilder();
 @@ -261,13 +259,13 @@
-	
-	message.append(BOUNDARY_LINE);
-	message.append(plainTextHeaders());
--	message.append(plainTextContent());
-+	message.append(plainTextContent(event));
-	message.append( getTag(title, false) );
-	
-	message.append(BOUNDARY_LINE);
-	message.append(htmlHeaders());
--	message.append(htmlPreamble());
--	message.append(htmlContent());
-+	message.append(htmlPreamble(event));
-+	message.append(htmlContent(event));
-	message.append( getTag(title, true) );
-	message.append(htmlEnd());
-	
+ 		
+ 		message.append(BOUNDARY_LINE);
+ 		message.append(plainTextHeaders());
+-		message.append(plainTextContent());
++		message.append(plainTextContent(event));
+ 		message.append( getTag(title, false) );
+ 		
+ 		message.append(BOUNDARY_LINE);
+ 		message.append(htmlHeaders());
+-		message.append(htmlPreamble());
+-		message.append(htmlContent());
++		message.append(htmlPreamble(event));
++		message.append(htmlContent(event));
+ 		message.append( getTag(title, true) );
+ 		message.append(htmlEnd());
+ 		
 @@ -279,7 +277,7 @@
-	return "Content-Type: text/plain\n\n";
-    }
-    
--   protected String plainTextContent() {
-+   protected String plainTextContent(Event event) {
-	return null;
-    }
-    
+ 		return "Content-Type: text/plain\n\n";
+ 	}
+ 	
+-	protected String plainTextContent() {
++	protected String plainTextContent(Event event) {
+ 		return null;
+ 	}
+ 	
 @@ -287,20 +285,20 @@
-	return "Content-Type: text/html\n\n";
-    }
-    
--   protected String htmlPreamble() {
-+   protected String htmlPreamble(Event event) {
-	StringBuilder buf = new StringBuilder();
-	buf.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n");
-	buf.append("    \"http://www.w3.org/TR/html4/loose.dtd\">\n");
-	buf.append("<html>");
-	buf.append("  <head><title>");
--	buf.append(getSubject());
-+	buf.append(getSubject(event));
-	buf.append("</title></head>");
-	buf.append("  <body>");
-	return buf.toString();
-    }
-    
--   protected String htmlContent() {
--	return Web.encodeUrlsAsHtml(FormattedText.escapeHtml(plainTextContent(),true));
-+   protected String htmlContent(Event event) {
-+	return Web.encodeUrlsAsHtml(FormattedText.escapeHtml(plainTextContent(event),true));
-    }
-    
-    protected String htmlEnd() {
+ 		return "Content-Type: text/html\n\n";
+ 	}
+ 	
+-	protected String htmlPreamble() {
++	protected String htmlPreamble(Event event) {
+ 		StringBuilder buf = new StringBuilder();
+ 		buf.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n");
+ 		buf.append("    \"http://www.w3.org/TR/html4/loose.dtd\">\n");
+ 		buf.append("<html>");
+ 		buf.append("  <head><title>");
+-		buf.append(getSubject());
++		buf.append(getSubject(event));
+ 		buf.append("</title></head>");
+ 		buf.append("  <body>");
+ 		return buf.toString();
+ 	}
+ 	
+-	protected String htmlContent() {
+-		return Web.encodeUrlsAsHtml(FormattedText.escapeHtml(plainTextContent(),true));
++	protected String htmlContent(Event event) {
++		return Web.encodeUrlsAsHtml(FormattedText.escapeHtml(plainTextContent(event),true));
+ 	}
+ 	
+ 	protected String htmlEnd() {
 @@ -650,9 +648,9 @@
-     *        The event that matched criteria to cause the notification.
-     * @return the subject for the email.
-     */
--   protected String getSubject()
-+   protected String getSubject(Event event)
-    {
--	return findHeaderValue("Subject", getHeaders(this.event));
-+	return findHeaderValue("Subject", getHeaders(event));
-    }
-    
+ 	 *        The event that matched criteria to cause the notification.
+ 	 * @return the subject for the email.
+ 	 */
+-	protected String getSubject()
++	protected String getSubject(Event event)
+ 	{
+-		return findHeaderValue("Subject", getHeaders(this.event));
++		return findHeaderValue("Subject", getHeaders(event));
+ 	}
+ 	
  }
 Index: mailarchive/mailarchive-impl/impl/src/java/org/sakaiproject/mailarchive/impl/SiteEmailNotificationMail.java
 ===================================================================
@@ -193,55 +193,55 @@ Index: mailarchive/mailarchive-impl/impl/src/java/org/sakaiproject/mailarchive/i
 +++ mailarchive/mailarchive-impl/impl/src/java/org/sakaiproject/mailarchive/impl/SiteEmailNotificationMail.java	(working copy)
 @@ -134,7 +134,7 @@
  
-    
-    @Override
--   protected String htmlContent() {
-+   protected String htmlContent(Event event) {
-	StringBuilder buf = new StringBuilder();
+ 	
+ 	@Override
+-	protected String htmlContent() {
++	protected String htmlContent(Event event) {
+ 		StringBuilder buf = new StringBuilder();
  
-	// get the message
+ 		// get the message
 @@ -179,7 +179,7 @@
-    }
+ 	}
  
-    @Override
--   protected String plainTextContent() {
-+   protected String plainTextContent(Event event) {
-	StringBuilder buf = new StringBuilder();
+ 	@Override
+-	protected String plainTextContent() {
++	protected String plainTextContent(Event event) {
+ 		StringBuilder buf = new StringBuilder();
  
-	// get the message
+ 		// get the message
 Index: rwiki/rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/impl/SiteEmailNotificationRWiki.java
 ===================================================================
 --- rwiki/rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/impl/SiteEmailNotificationRWiki.java	(revision 46866)
 +++ rwiki/rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/service/impl/SiteEmailNotificationRWiki.java	(working copy)
 @@ -223,8 +223,8 @@
-	return message;
-    }
-    
--   protected String plainTextContent() {
--	return getMessage(this.event);
-+   protected String plainTextContent(Event event) {
-+	return getMessage(event);
-    }
+ 		return message;
+ 	}
+ 	
+-	protected String plainTextContent() {
+-		return getMessage(this.event);
++	protected String plainTextContent(Event event) {
++		return getMessage(event);
+ 	}
  
-    /**
+ 	/**
 Index: syllabus/syllabus-impl/src/java/org/sakaiproject/component/app/syllabus/SiteEmailNotificationSyllabus.java
 ===================================================================
 --- syllabus/syllabus-impl/src/java/org/sakaiproject/component/app/syllabus/SiteEmailNotificationSyllabus.java	(revision 46866)
 +++ syllabus/syllabus-impl/src/java/org/sakaiproject/component/app/syllabus/SiteEmailNotificationSyllabus.java	(working copy)
 @@ -120,13 +120,13 @@
-	return returnedString;
-    }
-    
--   protected String plainTextContent() {
--	String content = htmlContent();
-+   protected String plainTextContent(Event event) {
-+	String content = htmlContent(event);
-	content = FormattedText.convertFormattedTextToPlaintext(content);
-	return content;
-    }
-    
--   protected String htmlContent() {
-+   protected String htmlContent(Event event) {
-	StringBuilder buf = new StringBuilder();
-	
-	String newline = "<br />\n";
+ 		return returnedString;
+ 	}
+ 	
+-	protected String plainTextContent() {
+-		String content = htmlContent();
++	protected String plainTextContent(Event event) {
++		String content = htmlContent(event);
+ 		content = FormattedText.convertFormattedTextToPlaintext(content);
+ 		return content;
+ 	}
+ 	
+-	protected String htmlContent() {
++	protected String htmlContent(Event event) {
+ 		StringBuilder buf = new StringBuilder();
+ 		
+ 		String newline = "<br />\n";
