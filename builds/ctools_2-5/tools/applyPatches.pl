@@ -242,6 +242,7 @@ sub applyOneActionFile(%) {
 		my $cmd="";
 		my $svnDebugCmds = "";
 		my $svnopt = "";
+		my $result = "";
 		if ($wCopy && $svnSrc && $srcRev) {
 		    #See if we need to add paths to the source or destination
 		    if ($svnSrc =~ m/http.*:\/\// || $svnSrc =~ m/^\//) {}
@@ -265,10 +266,22 @@ sub applyOneActionFile(%) {
 
 		    if ($svnopt || $svnDest) {
 			$cmd = "svn merge $svnDebugCmds $svnopt $svnDest $svnSrc $wCopy";
-			print $cmd;
-			my $result = runShellCmdGetResult($cmd);
-			$rc = $?;
+			print "Running $cmd\n";
+			($rc,$result) = runShellCmdGetResult($cmd);
 			$log.=$result;
+			#Check for conflicts
+			$cmd = "svn status $wCopy";
+			print "Running $cmd\n";
+			($rc,$result) = runShellCmdGetResult($cmd);
+			my $line;
+			foreach $line (split(/\n/,$result)) {
+			    #Indicates a conflict in the merge :(
+			    if ($line =~ /^C(.*)/) {
+				    print "Conflict on: $1\n";
+				    $rc = 5;
+			    }
+			}
+
 		    }
 		    else {
 			$log.="info for working copy $wCopy not found!";

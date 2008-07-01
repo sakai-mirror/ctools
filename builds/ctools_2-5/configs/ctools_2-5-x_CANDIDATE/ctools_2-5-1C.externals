@@ -127,7 +127,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
 #### Test Center ambrosia and mneme combined
  test-center         -r49194     https://source.sakaiproject.org/contrib/muse/test-center/tags/1.1.4-2.5.0
 ## Current version is being patched
- itunes              -r50299     https://source.sakaiproject.org/contrib/umctx/trunk/itunesu-tool/
+ itunes              -r50687     https://source.sakaiproject.org/contrib/umctx/trunk/itunesu-tool/
  config-viewer       -r48120     https://source.sakaiproject.org/contrib/config-viewer/trunk/ 
  #
   ## course evaluation tool

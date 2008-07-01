@@ -1,8 +1,15 @@
-These are just examples
-=svnm= https://source.sakaiproject.org/svn/user/branches/SAK-12870_2-5-x/user-tool-prefs,46128,user/user-tool-prefs
+#These are just examples
+#Cherry Pick
+=svnm= https://source.sakaiproject.org/svn/user/branches/SAK-12870_2-5-x/user-tool-prefs@46128 user/user-tool-prefs
+
+#Specific version specified
+=svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/messageforums-app/src/webapp/images/@47427 https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/messageforums-app/src/webapp/images/@47426 msgcntr/messageforums-app/src/webapp/images/ 
+
+#Copy a file
 =copy= test.jpg,destinationtool
 
+#Fill in the SAK or something unique, leave it like this if theres no real patch
 --- /dev/null
-+++ tmp
++++ SAK-#####.patch 
 @@ -0,0 +1 @@
 + 
