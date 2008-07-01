@@ -1,0 +1,26 @@
+Index: site-manage/site-manage-tool/tool/src/webapp/vm/membership/chef_membership.vm
+===================================================================
+--- site-manage/site-manage-tool/tool/src/webapp/vm/membership/chef_membership.vm	(revision 47474)
++++ site-manage/site-manage-tool/tool/src/webapp/vm/membership/chef_membership.vm	(working copy)
+@@ -49,7 +49,7 @@
+ 							#end
+ 						</td>
+ 						<td headers="description">
+-							$!validator.escapeHtml($!site.Description)
++							$!site.Description
+ 						</td>
+ 					</tr>
+ 				#end
+Index: site-manage/site-manage-tool/tool/src/webapp/vm/membership/chef_membership_joinable.vm
+===================================================================
+--- site-manage/site-manage-tool/tool/src/webapp/vm/membership/chef_membership_joinable.vm	(revision 47474)
++++ site-manage/site-manage-tool/tool/src/webapp/vm/membership/chef_membership_joinable.vm	(working copy)
+@@ -123,7 +123,7 @@
+ 							<a href="#toolLinkParam("$action" "doJoin" "itemReference=$validator.escapeUrl($site.Id)")" title="$tlang.getString('mb.joinsite') $!validator.escapeHtml($!site.Title)">$tlang.getString('mb.join')</a>
+ 						</div>	
+ 						</td>
+-						<td headers="description">$!validator.escapeHtml($!site.Description)</td>
++						<td headers="description">$!site.Description</td>
+ 					</tr>
+ 				#end	
+ 			</table>

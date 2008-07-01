@@ -1,0 +1,951 @@
+Index: osp/common/api/src/java/org/theospi/portfolio/shared/model/WizardMatrixConstants.java
+===================================================================
+--- osp/common/api/src/java/org/theospi/portfolio/shared/model/WizardMatrixConstants.java	(revision 0)
++++ osp/common/api/src/java/org/theospi/portfolio/shared/model/WizardMatrixConstants.java	(revision 0)
+@@ -0,0 +1,42 @@
++
++/**********************************************************************************
++* $URL: $
++* $Id: $
++***********************************************************************************
++*
++* Copyright (c) 2008 The Sakai Foundation.
++*
++* Licensed under the Educational Community License, Version 1.0 (the "License");
++* you may not use this file except in compliance with the License.
++* You may obtain a copy of the License at
++*
++*      http://www.opensource.org/licenses/ecl1.php
++*
++* Unless required by applicable law or agreed to in writing, software
++* distributed under the License is distributed on an "AS IS" BASIS,
++* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++* See the License for the specific language governing permissions and
++* limitations under the License.
++*
++**********************************************************************************/
++package org.theospi.portfolio.shared.model;
++
++/**
++ * @author chmaurer
++ */
++public interface WizardMatrixConstants {
++
++	// Dependent on ordering in editWizard.jsp && addScaffolding.jsp
++   public static final int FEEDBACK_OPTION_OPEN    = 0;
++   public static final int FEEDBACK_OPTION_SINGLE  = 1;
++   public static final int FEEDBACK_OPTION_NONE    = 2;
++   
++	// Dependent on ordering of <c:forTokens> in addScaffolding.jsp
++   public static final int NORMAL_GROUP_ACCESS = 0;
++   public static final int UNRESTRICTED_GROUP_ACCESS = 1;
++
++	// sakai.properties (default is false)
++   public static final String PROP_GROUPS_ALLOW_ALL_GLOBAL = "osp.reviewer.groups.allowall.global";   
++   
++}
++
+Index: osp/sql/mysql/osp.sql
+===================================================================
+--- osp/sql/mysql/osp.sql	(revision 47447)
++++ osp/sql/mysql/osp.sql	(working copy)
+@@ -134,7 +134,7 @@
+ create table osp_reports_params (paramId varchar(36) not null, reportId varchar(36), reportDefParamIdMark varchar(255), value varchar(255), primary key (paramId));
+ create table osp_reports_results (resultId varchar(36) not null, reportId varchar(36), userId varchar(255), title varchar(255), keywords varchar(255), description varchar(255), creationDate datetime, xml text, primary key (resultId));
+ create table osp_review (id varchar(36) not null, review_content_id varchar(36), site_id varchar(36) not null, parent_id varchar(36), review_device_id varchar(36), review_item_id varchar(36), review_type integer not null, primary key (id));
+-create table osp_scaffolding (id varchar(36) not null, ownerId varchar(255) not null, title varchar(255), description text, worksiteId varchar(255), preview bit not null, published bit not null, publishedBy varchar(255), publishedDate datetime, columnLabel varchar(255) not null, rowLabel varchar(255) not null, readyColor varchar(7) not null, pendingColor varchar(7) not null, completedColor varchar(7) not null, lockedColor varchar(7) not null, workflowOption integer not null, reviewerGroupAccess integer not null, exposed_page_id varchar(36), style_id varchar(36), primary key (id));
++create table osp_scaffolding (id varchar(36) not null, ownerId varchar(255) not null, title varchar(255), description text, worksiteId varchar(255), preview bit not null, published bit not null, publishedBy varchar(255), publishedDate datetime, columnLabel varchar(255) not null, rowLabel varchar(255) not null, readyColor varchar(7) not null, pendingColor varchar(7) not null, completedColor varchar(7) not null, lockedColor varchar(7) not null, workflowOption integer not null, reviewerGroupAccess integer not null, generalFeedbackOption integer not null, itemFeedbackItem integer not null, exposed_page_id varchar(36), style_id varchar(36), primary key (id));
+ create table osp_scaffolding_cell (id varchar(36) not null, rootcriterion_id varchar(36), level_id varchar(36), scaffolding_id varchar(36) not null, wiz_page_def_id varchar(36) unique, primary key (id));
+ create table osp_scaffolding_cell_form_defs (wiz_page_def_id varchar(36) not null, form_def_id varchar(255), seq_num integer not null, primary key (wiz_page_def_id, seq_num));
+ create table osp_wiz_page_def_attachments  (wiz_page_def_id varchar(36) not null, artifact_id  varchar(255), seq_num integer not null, primary key (wiz_page_def_id, seq_num));
+@@ -145,7 +145,7 @@
+ create table osp_template_file_ref (id varchar(36) not null, file_id varchar(36), file_type_id varchar(36), usage_desc varchar(255), template_id varchar(36) not null, primary key (id));
+ create table osp_wiz_page_attachment (id varchar(36) not null, artifactId varchar(36), page_id varchar(36) not null, primary key (id));
+ create table osp_wiz_page_form (id varchar(36) not null, artifactId varchar(36), page_id varchar(36) not null, formType varchar(36), primary key (id));
+-create table osp_wizard (id varchar(36) not null, owner_id varchar(255) not null, name varchar(255), description text, keywords text, created datetime not null, modified datetime not null, site_id varchar(36) not null, guidance_id varchar(36), published bit, preview bit, wizard_type varchar(255), style_id varchar(36), exposed_page_id varchar(36), root_category varchar(36) unique, seq_num integer, primary key (id));
++create table osp_wizard (id varchar(36) not null, owner_id varchar(255) not null, name varchar(255), description text, keywords text, created datetime not null, modified datetime not null, site_id varchar(36) not null, guidance_id varchar(36), published bit, preview bit, wizard_type varchar(255), style_id varchar(36), exposed_page_id varchar(36), root_category varchar(36) unique, seq_num integer, generalFeedbackOption integer not null, itemFeedbackItem integer not null, primary key (id));
+ create table osp_wizard_category (id varchar(36) not null, name varchar(255), description varchar(255), keywords varchar(255), created datetime not null, modified datetime not null, wizard_id varchar(36), parent_category_id varchar(36), seq_num integer, primary key (id));
+ create table osp_wizard_page (id varchar(36) not null, owner varchar(255) not null, status varchar(255), wiz_page_def_id varchar(36), modified datetime, primary key (id));
+ create table osp_wizard_page_def (id varchar(36) not null, initialStatus varchar(255), name varchar(255), description text, site_id varchar(255), guidance_id varchar(255), style_id varchar(36), primary key (id));
+Index: osp/sql/oracle/osp.sql
+===================================================================
+--- osp/sql/oracle/osp.sql	(revision 47447)
++++ osp/sql/oracle/osp.sql	(working copy)
+@@ -79,7 +79,7 @@
+ create table osp_reports_params (paramId varchar2(36 char) not null, reportId varchar2(36 char), reportDefParamIdMark varchar2(255 char), value varchar2(255 char), primary key (paramId));
+ create table osp_reports_results (resultId varchar2(36 char) not null, reportId varchar2(36 char), userId varchar2(255 char), title varchar2(255 char), keywords varchar2(255 char), description varchar2(255 char), creationDate timestamp, xml clob, primary key (resultId));
+ create table osp_review (id varchar2(36 char) not null, review_content_id varchar2(36 char), site_id varchar2(36 char) not null, parent_id varchar2(36 char), review_device_id varchar2(36 char), review_item_id varchar2(36 char), review_type number(10,0) not null, primary key (id));
+-create table osp_scaffolding (id varchar2(36 char) not null, ownerId varchar2(255 char) not null, title varchar2(255 char), description clob, worksiteId varchar2(255 char), preview number(1,0) not null, published number(1,0), publishedBy varchar2(255 char), publishedDate timestamp, columnLabel varchar2(255 char) not null, rowLabel varchar2(255 char) not null, readyColor varchar2(7 char) not null, pendingColor varchar2(7 char) not null, completedColor varchar2(7 char) not null, lockedColor varchar2(7 char) not null, workflowOption number(10,0) not null, reviewerGroupAccess number(10,0) not null, exposed_page_id varchar2(36 char), style_id varchar2(36 char), primary key (id));
++create table osp_scaffolding (id varchar2(36 char) not null, ownerId varchar2(255 char) not null, title varchar2(255 char), description clob, worksiteId varchar2(255 char), preview number(1,0) not null, published number(1,0), publishedBy varchar2(255 char), publishedDate timestamp, columnLabel varchar2(255 char) not null, rowLabel varchar2(255 char) not null, readyColor varchar2(7 char) not null, pendingColor varchar2(7 char) not null, completedColor varchar2(7 char) not null, lockedColor varchar2(7 char) not null, workflowOption number(10,0) not null, reviewerGroupAccess number(10,0) not null, generalFeedbackOption number(10,0) not null, itemFeedbackItem number(10,0) not null, exposed_page_id varchar2(36 char), style_id varchar2(36 char), primary key (id));
+ create table osp_scaffolding_cell (id varchar2(36 char) not null, rootcriterion_id varchar2(36 char), level_id varchar2(36 char), scaffolding_id varchar2(36 char) not null, wiz_page_def_id varchar2(36 char) unique, primary key (id));
+ create table osp_scaffolding_cell_form_defs (wiz_page_def_id varchar2(36 char) not null, form_def_id varchar2(255 char), seq_num number(10,0) not null, primary key (wiz_page_def_id, seq_num));
+ create table osp_wiz_page_def_attachments  (wiz_page_def_id varchar2(36) not null, artifact_id  varchar2(255), seq_num number(10,0) not null, primary key (wiz_page_def_id, seq_num));
+@@ -90,7 +90,7 @@
+ create table osp_template_file_ref (id varchar2(36 char) not null, file_id varchar2(36 char), file_type_id varchar2(36 char), usage_desc varchar2(255 char), template_id varchar2(36 char) not null, primary key (id));
+ create table osp_wiz_page_attachment (id varchar2(36 char) not null, artifactId varchar2(36 char), page_id varchar2(36 char) not null, primary key (id));
+ create table osp_wiz_page_form (id varchar2(36 char) not null, artifactId varchar2(36 char), page_id varchar2(36 char) not null, formType varchar2(36 char), primary key (id));
+-create table osp_wizard (id varchar2(36 char) not null, owner_id varchar2(255 char) not null, name varchar2(255 char), description varchar2(1024 char), keywords varchar2(1024 char), created timestamp not null, modified timestamp not null, site_id varchar2(36 char) not null, guidance_id varchar2(36 char), published number(1,0), preview number (1,0) not null, wizard_type varchar2(255 char), style_id varchar2(36 char), exposed_page_id varchar2(36 char), root_category varchar2(36 char) unique, seq_num number(10,0), primary key (id));
++create table osp_wizard (id varchar2(36 char) not null, owner_id varchar2(255 char) not null, name varchar2(255 char), description varchar2(1024 char), keywords varchar2(1024 char), created timestamp not null, modified timestamp not null, site_id varchar2(36 char) not null, guidance_id varchar2(36 char), published number(1,0), preview number (1,0) not null, wizard_type varchar2(255 char), style_id varchar2(36 char), exposed_page_id varchar2(36 char), root_category varchar2(36 char) unique, seq_num number(10,0), generalFeedbackOption number(10,0) not null, itemFeedbackItem number(10,0) not null, primary key (id));
+ create table osp_wizard_category (id varchar2(36 char) not null, name varchar2(255 char), description varchar2(255 char), keywords varchar2(255 char), created timestamp not null, modified timestamp not null, wizard_id varchar2(36 char), parent_category_id varchar2(36 char), seq_num number(10,0), primary key (id));
+ create table osp_wizard_page (id varchar2(36 char) not null, owner varchar2(255 char) not null, status varchar2(255 char), wiz_page_def_id varchar2(36 char), modified timestamp, primary key (id));
+ create table osp_wizard_page_def (id varchar2(36 char) not null, initialStatus varchar2(255 char), name varchar2(255 char), description clob, site_id varchar2(255 char), guidance_id varchar2(255 char), style_id varchar2(36 char), primary key (id));
+Index: osp/wizard/api/src/java/org/theospi/portfolio/wizard/model/Wizard.java
+===================================================================
+--- osp/wizard/api/src/java/org/theospi/portfolio/wizard/model/Wizard.java	(revision 47447)
++++ osp/wizard/api/src/java/org/theospi/portfolio/wizard/model/Wizard.java	(working copy)
+@@ -28,6 +28,7 @@
+ import org.theospi.portfolio.shared.model.ObjectWithWorkflow;
+ import org.theospi.portfolio.style.model.Style;
+ import org.theospi.portfolio.wizard.WizardFunctionConstants;
++import org.theospi.portfolio.shared.model.WizardMatrixConstants;
+ 
+ /**
+  * The super class has the evaluation, reflection and review
+@@ -37,7 +38,7 @@
+ public class Wizard extends ObjectWithWorkflow {
+ 
+    public final static String ROOT_TITLE = "root";
+-   
++	
+    private String name;
+    private String description;
+    private String keywords;
+@@ -61,6 +62,9 @@
+    
+    private boolean newObject = false;
+    
++   private int generalFeedbackOption = WizardMatrixConstants.FEEDBACK_OPTION_OPEN;
++   private int itemFeedbackOption = WizardMatrixConstants.FEEDBACK_OPTION_OPEN;
++	
+    public Wizard() {
+    }
+ 
+@@ -208,4 +212,50 @@
+       this.styleId = styleId;
+    }
+ 
++   public String getGeneralFeedbackOptionString() {
++	   return String.valueOf(generalFeedbackOption);
++   }
++   public void setGeneralFeedbackOptionString(String feedbackOption) {
++	   this.generalFeedbackOption = Integer.valueOf(feedbackOption).intValue();
++   }
++   public int getGeneralFeedbackOption() {
++	   return generalFeedbackOption;
++   }
++   public void setGeneralFeedbackOption(int feedbackOption) {
++	   this.generalFeedbackOption = feedbackOption;
++   }
++
++   public boolean isGeneralFeedbackOpen() {
++	   return generalFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_OPEN;
++   }
++   public boolean isGeneralFeedbackSingle() {
++	   return generalFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_SINGLE;
++   }
++   public boolean isGeneralFeedbackNone() {
++	   return generalFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_NONE;
++   }
++   
++   public String getItemFeedbackOptionString() {
++	   return String.valueOf(itemFeedbackOption);
++   }
++   public void setItemFeedbackOptionString(String feedbackOption) {
++	   this.itemFeedbackOption = Integer.valueOf(feedbackOption).intValue();
++   }
++   public int getItemFeedbackOption() {
++	   return itemFeedbackOption;
++   }
++   public void setItemFeedbackOption(int feedbackOption) {
++	   this.itemFeedbackOption = feedbackOption;
++   }
++
++   public boolean isItemFeedbackOpen() {
++	   return itemFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_OPEN;
++   }
++   public boolean isItemFeedbackSingle() {
++	   return itemFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_SINGLE;
++   }
++   public boolean isItemFeedbackNone() {
++	   return itemFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_NONE;
++   }
++   
+ }
+Index: osp/wizard/api/src/java/org/theospi/portfolio/wizard/model/impl/WizardImpl.hbm.xml
+===================================================================
+--- osp/wizard/api/src/java/org/theospi/portfolio/wizard/model/impl/WizardImpl.hbm.xml	(revision 47447)
++++ osp/wizard/api/src/java/org/theospi/portfolio/wizard/model/impl/WizardImpl.hbm.xml	(working copy)
+@@ -28,6 +28,8 @@
+          class="org.theospi.portfolio.wizard.model.WizardCategory" column="root_category"
+          cascade="all" unique="true" />
+       <property name="sequence" type="int" column="seq_num" not-null="false"/>
++      <property name="generalFeedbackOption" type="int" column="generalFeedbackOption" not-null="true"/>
++      <property name="itemFeedbackOption" type="int" column="itemFeedbackOption" not-null="true"/>
+    </joined-subclass>
+ 
+    <class name="WizardPageSequence" table="osp_wizard_page_sequence">
+Index: osp/wizard/tool/src/java/org/theospi/portfolio/wizard/tool/DecoratedWizard.java
+===================================================================
+--- osp/wizard/tool/src/java/org/theospi/portfolio/wizard/tool/DecoratedWizard.java	(revision 47447)
++++ osp/wizard/tool/src/java/org/theospi/portfolio/wizard/tool/DecoratedWizard.java	(working copy)
+@@ -633,8 +633,6 @@
+ 			List reviews = parent.getReviewManager().getReviewsByParent( cw.getId().getValue() );
+ 			if ( reviews.size() > 0 )
+ 				return true;
+-			else
+-				return false;
+ 		}
+ 		return false;
+ 	}
+Index: osp/wizard/tool/src/java/org/theospi/portfolio/wizard/tool/WizardTool.java
+===================================================================
+--- osp/wizard/tool/src/java/org/theospi/portfolio/wizard/tool/WizardTool.java	(revision 47447)
++++ osp/wizard/tool/src/java/org/theospi/portfolio/wizard/tool/WizardTool.java	(working copy)
+@@ -457,7 +457,7 @@
+         	  }
+     	  }
+     	  catch(Exception e){
+-
++				logger.warn(this+".processActionSave: " + e.toString());
+     	  }
+       }
+       for(Iterator i=tempDeletedItems.iterator(); i.hasNext();){
+Index: osp/wizard/tool/src/bundle/org/theospi/portfolio/wizard/bundle/Messages.properties
+===================================================================
+--- osp/wizard/tool/src/bundle/org/theospi/portfolio/wizard/bundle/Messages.properties	(revision 47447)
++++ osp/wizard/tool/src/bundle/org/theospi/portfolio/wizard/bundle/Messages.properties	(working copy)
+@@ -234,3 +234,15 @@
+ status_warning=Status is {0} and cannot be altered
+ 
+ users_unavailable=There are no users that you may view at this time.
++
++# tbd: try adding this to common properties file (also in matrix tool)
++feedback_options=Feedback Options
++feedback_options_gen=General Feedback Options
++feedback_options_item=Item Feedback Options
++feedback_option_gen_open    = Unrestricted General Feedback (unlimited general feedback)
++feedback_option_gen_single  = Restricted General Feedback (one general feedback per page limit)
++feedback_option_gen_none    = No General Feedback (no option for general feedback)
++feedback_option_item_open   = Unrestricted Evidence Item Feedback (unlimited item feedback)
++feedback_option_item_single = Restricted Evidence Item Feedback (one feedback per item limit)
++feedback_option_item_none   = No Evidence Item Feedback (no option for item feedback)
++
+Index: osp/wizard/tool/src/webapp/wizard/editWizard.jsp
+===================================================================
+--- osp/wizard/tool/src/webapp/wizard/editWizard.jsp	(revision 47447)
++++ osp/wizard/tool/src/webapp/wizard/editWizard.jsp	(working copy)
+@@ -35,7 +35,7 @@
+ <%--   <sakai:instruction_message value=" Last saved: " />
+    <sakai:instruction_message value="#{wizard.lastSavedId}" /> --%>
+    <sakai:messages />
+-      <h:panelGrid columns="1"  styleClass="jsfFormTable" cellpadding="0" summary="layout">
++   <h:panelGrid columns="1"  styleClass="jsfFormTable" cellpadding="0" summary="layout">
+       <h:panelGroup styleClass="shorttext">
+          <h:outputText value="*" styleClass="reqStar"/>
+          <h:outputLabel for="name" id="nameLabel" value="#{msgs.wizard_name}" />
+@@ -70,7 +70,31 @@
+ 	   <h:selectBooleanCheckbox id="asTool" value="#{wizard.current.exposeAsTool}" />
+ 	   <h:outputLabel value="#{msgs.expose_as_tool}" for="asTool" />
+       </h:panelGroup> --%>
+-</h:panelGrid>
++
++      <!--  ********** Feedback Options Start ************-->
++   
++      <h:panelGroup styleClass="longtext" style="padding:0;display:block;margin:0">
++      <h:outputText value="#{msgs.feedback_options_gen}" />
++      </h:panelGroup>
++      <h:panelGroup styleClass="longtext" style="padding:0;display:block;margin:5">
++         <h:selectOneRadio id="feedback_option_gen" value="#{wizard.current.base.generalFeedbackOptionString}" layout="pageDirection" disabled="#{wizard.current.isWizardUsed}">
++            <f:selectItem itemLabel="#{msgs.feedback_option_gen_open}"   itemValue="0"/>
++            <f:selectItem itemLabel="#{msgs.feedback_option_gen_single}" itemValue="1"/>
++            <f:selectItem itemLabel="#{msgs.feedback_option_gen_none}"   itemValue="2"/>
++         </h:selectOneRadio>
++      </h:panelGroup>
++      <h:panelGroup styleClass="longtext" style="padding:0;display:block;margin:0">
++      <h:outputText value="#{msgs.feedback_options_item}" />
++      </h:panelGroup>
++      <h:panelGroup styleClass="longtext" style="padding:0;display:block;margin:5">
++         <h:selectOneRadio id="feedback_option_item" value="#{wizard.current.base.itemFeedbackOptionString}" layout="pageDirection" border="0" disabled="#{wizard.current.isWizardUsed}">
++            <f:selectItem itemLabel="#{msgs.feedback_option_item_open}"   itemValue="0"/>
++            <f:selectItem itemLabel="#{msgs.feedback_option_item_single}" itemValue="1"/>
++            <f:selectItem itemLabel="#{msgs.feedback_option_item_none}"   itemValue="2"/>
++         </h:selectOneRadio>
++      </h:panelGroup>
++   </h:panelGrid>
++
+    <%@include file="builderButtons.jspf"%>
+ </h:form>
+ </sakai:view>
+Index: osp/matrix/api/src/java/org/theospi/portfolio/matrix/model/Scaffolding.java
+===================================================================
+--- osp/matrix/api/src/java/org/theospi/portfolio/matrix/model/Scaffolding.java	(revision 47447)
++++ osp/matrix/api/src/java/org/theospi/portfolio/matrix/model/Scaffolding.java	(working copy)
+@@ -34,25 +34,9 @@
+ import org.sakaiproject.site.api.Site;
+ import org.sakaiproject.site.cover.SiteService;
+ import org.sakaiproject.exception.IdUnusedException;
++import org.theospi.portfolio.shared.model.WizardMatrixConstants;
+ 
+ /**
+- * I. Communication
+- * A. Writing
+- * B. Public Speaking
+- * II. Critical Thinking
+- * A. Logic
+- * B. Analysis
+- * III. Integration & Application of Knowledge
+- * IV. Values & Ethics
+- *
+-           <bean class="org.sakaiproject.warehouse.impl.BeanPropertyAccess">
+-              <property name="propertyName"><value>documentRoot</value></property>
+-           </bean>
+-           <bean class="org.sakaiproject.warehouse.impl.IdPropertyAccess">
+-              <property name="propertyName"><value>privacyXsdId</value></property>
+-           </bean> 
+-          
+- * @author apple
+  */
+ public class Scaffolding extends IdentifiableObject implements Serializable {
+    private Id id;
+@@ -86,17 +70,17 @@
+    
+    private int workflowOption;
+    private int reviewerGroupAccess;
++   private int generalFeedbackOption;
++   private int itemFeedbackOption;
+    private Set matrix = new HashSet();
+    
++	// Dependent on ordering of <c:forTokens> in addScaffolding.jsp
+    public static final int NO_PROGRESSION = 0;
+    public static final int HORIZONTAL_PROGRESSION = 1;
+    public static final int VERTICAL_PROGRESSION = 2;
+    public static final int OPEN_PROGRESSION = 3;
+    public static final int MANUAL_PROGRESSION = 4;
+    
+-   public static final int NORMAL_GROUP_ACCESS = 0;
+-   public static final int UNRESTRICTED_GROUP_ACCESS = 1;
+-
+    public Scaffolding() {}
+    
+    public Scaffolding (String columnLabel, String rowLabel) {
+@@ -368,11 +352,45 @@
+    public int getReviewerGroupAccess() {
+ 	   return reviewerGroupAccess;
+    }
+-   
++
+    public void setReviewerGroupAccess(int reviewerGroupAccess) {
+ 	   this.reviewerGroupAccess = reviewerGroupAccess;
+    }
+ 
++   public int getGeneralFeedbackOption() {
++	   return generalFeedbackOption;
++   }
++   public void setGeneralFeedbackOption(int feedbackOption) {
++	   this.generalFeedbackOption = feedbackOption;
++   }
++
++   public boolean isGeneralFeedbackOpen() {
++	   return generalFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_OPEN;
++   }
++   public boolean isGeneralFeedbackSingle() {
++	   return generalFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_SINGLE;
++   }
++   public boolean isGeneralFeedbackNone() {
++	   return generalFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_NONE;
++   }
++   
++   public int getItemFeedbackOption() {
++	   return itemFeedbackOption;
++   }
++   public void setItemFeedbackOption(int feedbackOption) {
++	   this.itemFeedbackOption = feedbackOption;
++   }
++
++   public boolean isItemFeedbackOpen() {
++	   return itemFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_OPEN;
++   }
++   public boolean isItemFeedbackSingle() {
++	   return itemFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_SINGLE;
++   }
++   public boolean isItemFeedbackNone() {
++	   return itemFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_NONE;
++   }
++   
+    public Set getMatrix() {
+       return matrix;
+    }
+Index: osp/matrix/api/src/java/org/theospi/portfolio/matrix/model/impl/MatrixImpl.hbm.xml
+===================================================================
+--- osp/matrix/api/src/java/org/theospi/portfolio/matrix/model/impl/MatrixImpl.hbm.xml	(revision 47447)
++++ osp/matrix/api/src/java/org/theospi/portfolio/matrix/model/impl/MatrixImpl.hbm.xml	(working copy)
+@@ -139,6 +139,8 @@
+             <one-to-many class="ScaffoldingCell" />
+         </set>
+         
++        <property name="generalFeedbackOption" type="int" not-null="true" />
++        <property name="itemFeedbackOption" type="int" not-null="true" />
+         <property name="preview" type="boolean" not-null="true" />
+         <property name="published" type="boolean" />
+         <property name="publishedBy" type="org.sakaiproject.metaobj.shared.mgt.AgentUserType" />
+Index: osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/CellFormPickerController.java
+===================================================================
+--- osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/CellFormPickerController.java	(revision 47447)
++++ osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/CellFormPickerController.java	(working copy)
+@@ -74,36 +74,6 @@
+    public static final String HELPER_CREATOR = "filepicker.helper.creator";
+    public static final String HELPER_PICKER = "filepicker.helper.picker";
+ 
+-   /*
+-   public Map referenceData(Map request, Object command, Errors errors) {
+-
+-
+-      ToolSession session = getSessionManager().getCurrentToolSession();
+-      String pageId = (String) request.get("page_id");
+-      if (pageId == null) {
+-         pageId = (String)session.getAttribute("page_id");
+-      }
+-      WizardPage page = getMatrixManager().getWizardPage(getIdManager().getId(pageId));
+-
+-      if (session.getAttribute(FilePickerHelper.FILE_PICKER_CANCEL) == null &&
+-            session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS) != null) {
+-         // here is where we setup the id
+-         List refs = (List)session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
+-         page.getPageForms().clear();
+-         for (Iterator iter = refs.iterator(); iter.hasNext();) {
+-            Reference ref = (Reference) iter.next();
+-            String strId = getMatrixManager().getNode(ref).getId().getValue();
+-            page.getPageForms().add(strId);
+-         }
+-         getMatrixManager().storePage(page);
+-
+-         session.removeAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
+-         session.removeAttribute(FilePickerHelper.FILE_PICKER_CANCEL);
+-      }
+-      return null;
+-   }
+-*/
+-
+    public Object fillBackingObject(Object incomingModel, Map request,
+                                    Map session, Map application) throws Exception {
+ 
+Index: osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/CellController.java
+===================================================================
+--- osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/CellController.java	(revision 47447)
++++ osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/CellController.java	(working copy)
+@@ -66,6 +66,7 @@
+ import org.theospi.portfolio.review.model.Review;
+ import org.theospi.portfolio.shared.model.Node;
+ import org.theospi.portfolio.shared.model.CommonFormBean;
++import org.theospi.portfolio.shared.model.WizardMatrixConstants;
+ import org.theospi.portfolio.style.model.Style;
+ import org.theospi.portfolio.style.mgt.StyleManager;
+ import org.theospi.portfolio.security.AuthorizationFacade;
+@@ -115,11 +116,12 @@
+ 
+ 	public Map referenceData(Map request, Object command, Errors errors) {
+ 		ToolSession session = getSessionManager().getCurrentToolSession();
+-
++		Boolean readOnly = new Boolean(false);
+ 		CellFormBean cell = (CellFormBean) command;
+ 		Map model = new HashMap();
+ 
+ 		model.put("isMatrix", "true");
++		model.put("isWizard", "false");
+ 		model.put("currentUser", getSessionManager().getCurrentSessionUserId());
+ 		model.put("CURRENT_GUIDANCE_ID_KEY", "session."
+ 				+ GuidanceManager.CURRENT_GUIDANCE_ID);
+@@ -143,37 +145,43 @@
+ 		}
+ 
+ 		String pageId = cell.getCell().getWizardPage().getId().getValue();
+-		String siteId = cell.getCell().getWizardPage().getPageDefinition()
+-				.getSiteId();
++		String siteId = cell.getCell().getWizardPage().getPageDefinition().getSiteId();
++		List reviews =	
++			getReviewManager().getReviewsByParentAndType( pageId, Review.FEEDBACK_TYPE, siteId, getEntityProducer() );
++		Set cellForms = getMatrixManager().getPageForms(cell.getCell().getWizardPage());
+ 
+ 		model.put("assignments", getUserAssignments(cell)); 
+-		model.put("reviews", getReviewManager().getReviewsByParentAndType(
+-				pageId, Review.FEEDBACK_TYPE, siteId, getEntityProducer()));
++		model.put("reviews", reviews ); // feedback
+ 		model.put("evaluations", getReviewManager().getReviewsByParentAndType(
+ 				pageId, Review.EVALUATION_TYPE, siteId, getEntityProducer()));
+ 		model.put("reflections", getReviewManager().getReviewsByParentAndType(
+ 				pageId, Review.REFLECTION_TYPE, siteId, getEntityProducer()));
+-
+ 		model.put("cellFormDefs", processAdditionalForms(cell.getCell()
+ 				.getScaffoldingCell().getAdditionalForms()));
+-
+-		model.put("cellForms", getMatrixManager().getPageForms(
+-				cell.getCell().getWizardPage()));
+-
+-		Boolean readOnly = new Boolean(false);
+-
++		model.put("cellForms", cellForms );
++				
++		// Matrix-only initializations
+ 		if (cell.getCell().getMatrix() != null) {
++			model.put("allowItemFeedback", 
++						 getAllowItemFeedback( cell.getCell().getScaffoldingCell().getScaffolding().getItemFeedbackOption(), reviews, cellForms) );
++			model.put("allowGeneralFeedback", 
++						 getAllowGeneralFeedback( cell.getCell().getScaffoldingCell().getScaffolding().getGeneralFeedbackOption(), reviews) );
++			model.put("generalFeedbackNone", cell.getCell().getScaffoldingCell().getScaffolding().isGeneralFeedbackNone());
++						 
+ 			Agent owner = cell.getCell().getMatrix().getOwner();
+ 			readOnly = isReadOnly(owner, cell.getCell().getMatrix()
+ 					.getScaffolding().getWorksiteId());
++					
++			Cell pageCell = getMatrixManager().getCellFromPage(getIdManager().getId(pageId));
++			Scaffolding scaffolding = pageCell.getMatrix().getScaffolding();
++				
++			model.put("objectId", scaffolding.getId().getValue());
++			model.put("objectTitle", scaffolding.getTitle());
++			model.put("objectDesc", scaffolding.getDescription());
+ 		}
++
+ 		model.put("readOnlyMatrix", readOnly);
+ 
+-		String[] objectMetadata = getObjectMetadata(pageId, request);
+-		model.put("objectId", objectMetadata[METADATA_ID_INDEX]);
+-		model.put("objectTitle", objectMetadata[METADATA_TITLE_INDEX]);
+-		model.put("objectDesc", objectMetadata[METADATA_DESC_INDEX]);
+-
+       model.put("styles",
+          createStylesList(getStyleManager().getStyles(getIdManager().getId(pageId))));
+ 
+@@ -196,8 +204,74 @@
+ 		clearSession(session);
+ 		return model;
+ 	}
++	
++	/**
++	 ** Return true if general feedback is allowed based on feedback options
++	 **/
++	protected Boolean getAllowGeneralFeedback( int feedbackOption, List reviews )
++	{
++		boolean allowGeneralFeedback = true;
++		
++		if ( feedbackOption==WizardMatrixConstants.FEEDBACK_OPTION_SINGLE )
++		{
++			for (Iterator it=reviews.iterator(); it.hasNext();)
++			{
++				if ( ((Review)it.next()).getItemId() == null )
++				{
++					allowGeneralFeedback = false;
++					break;
++				}
++			}
++		}
++		else if ( feedbackOption==WizardMatrixConstants.FEEDBACK_OPTION_NONE )
++		{
++			allowGeneralFeedback = false;
++		}
++		
++		return new Boolean(allowGeneralFeedback);
++	}
+ 
+ 	/**
++	 ** Return boolean array if item feedback is allowed based on feedback options
++	 **/
++	protected Boolean[] getAllowItemFeedback( int feedbackOption, List reviews, Set<Node> cellForms )
++	{
++		Boolean[] allowItemFeedback = new Boolean[cellForms.size()];
++		int index = -1;
++		
++		for (Iterator cIt=cellForms.iterator(); cIt.hasNext();)
++		{
++			index++;
++			Node   thisNode   = (Node)cIt.next();
++				
++			if ( feedbackOption==WizardMatrixConstants.FEEDBACK_OPTION_SINGLE )
++			{
++				allowItemFeedback[index] = true;
++				for (Iterator rIt=reviews.iterator(); rIt.hasNext();)
++				{
++					Review thisReview = (Review)rIt.next();
++					if ( thisReview.getItemId() != null &&
++						  thisReview.getItemId().equals(thisNode.getId().getValue()) )
++					{
++						allowItemFeedback[index] = false;
++						break;
++					}
++				}
++			}
++			else if ( feedbackOption==WizardMatrixConstants.FEEDBACK_OPTION_NONE )
++			{
++				allowItemFeedback[index] = false;
++			}
++			else
++			{
++				allowItemFeedback[index] = true;
++			}
++		}
++		
++		return allowItemFeedback;
++	}
++	
++	/**
+ 	 ** Return list of AssignmentSubmissions, associated with this cell
+ 	 ** for the current user
+ 	 **/
+@@ -242,27 +316,6 @@
+       return styleNode.getExternalUri();
+    }
+ 
+-   /**
+-	 * 
+-	 * @param pageId
+-	 *            String representation of the wizard page id
+-	 * @param request
+-	 *            Map containing all of the request variables
+-	 * @return String[] containing the id, title, and description of the object
+-	 *         (matrix or wizard)
+-	 */
+-	protected String[] getObjectMetadata(String pageId, Map request) {
+-		String[] objectMetadata = new String[3];
+-
+-		Cell cell = getMatrixManager().getCellFromPage(
+-				getIdManager().getId(pageId));
+-		Scaffolding scaffolding = cell.getMatrix().getScaffolding();
+-		objectMetadata[METADATA_ID_INDEX] = scaffolding.getId().getValue();
+-		objectMetadata[METADATA_TITLE_INDEX] = scaffolding.getTitle();
+-		objectMetadata[METADATA_DESC_INDEX] = scaffolding.getDescription();
+-		return objectMetadata;
+-	}
+-
+ 	public Object fillBackingObject(Object incomingModel, Map request,
+ 			Map session, Map application) throws Exception {
+ 		// coming from matrix cell, not helper
+Index: osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/WizardPageController.java
+===================================================================
+--- osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/WizardPageController.java	(revision 47447)
++++ osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/WizardPageController.java	(working copy)
+@@ -24,6 +24,7 @@
+ import java.util.ArrayList;
+ import java.util.List;
+ import java.util.Map;
++import java.util.Set;
+ 
+ import org.sakaiproject.metaobj.shared.model.Agent;
+ import org.sakaiproject.metaobj.shared.model.Id;
+@@ -59,10 +60,13 @@
+ 	 *      java.lang.Object, org.springframework.validation.Errors)
+ 	 */
+ 	public Map referenceData(Map request, Object command, Errors errors) {
++		// Call superclass first -- code below depends on this
++		Map model = super.referenceData(request, command, errors);
++		
+ 		ToolSession session = getSessionManager().getCurrentToolSession();
+-
+-		Map model = super.referenceData(request, command, errors);
+ 		Boolean wizardPreview = Boolean.valueOf( (String)request.get("wizardPreview") );
++		CellFormBean cell = (CellFormBean) command;
++		String pageId = cell.getCell().getWizardPage().getId().getValue();
+ 
+ 		Agent owner = (Agent) request.get(WizardPageHelper.WIZARD_OWNER);
+ 
+@@ -71,6 +75,20 @@
+ 
+ 		session.setAttribute(WizardPageHelper.WIZARD_OWNER, owner);
+ 
++		Wizard wizard = getWizard(pageId);
++		model.put("objectId", wizard.getId().getValue());
++		model.put("objectTitle", wizard.getName());
++		model.put("objectDesc", wizard.getDescription());
++
++		List reviews = (List)model.get("reviews");
++		Set cellForms = (Set)model.get("cellForms");
++		
++		model.put("allowItemFeedback", 
++					 getAllowItemFeedback( wizard.getItemFeedbackOption(), reviews, cellForms) );
++		model.put("allowGeneralFeedback", 
++					 getAllowGeneralFeedback( wizard.getGeneralFeedbackOption(), reviews) );
++		model.put("generalFeedbackNone", wizard.isGeneralFeedbackNone());
++		
+ 		model.put("readOnlyMatrix", super.isReadOnly(owner, null));
+ 		model.put("pageTitleKey", "view_wizardPage");
+ 		model.put("helperPage", "true");
+@@ -95,19 +113,13 @@
+ 	/**
+ 	 * {@inheritDoc}
+ 	 */
+-	protected String[] getObjectMetadata(String pageId, Map request) {
+-		String[] objectMetadata = new String[3];
+-
++	protected Wizard getWizard(String pageId) {
+ 		WizardPage page = getMatrixManager().getWizardPage(
+ 				getIdManager().getId(pageId));
+ 		WizardPageSequence seq = wizardManager.getWizardPageSeqByDef(page
+ 				.getPageDefinition().getId());
+ 		Wizard wizard = seq.getCategory().getWizard();
+-      
+-		objectMetadata[METADATA_ID_INDEX] = wizard.getId().getValue();
+-		objectMetadata[METADATA_TITLE_INDEX] = wizard.getName();
+-		objectMetadata[METADATA_DESC_INDEX] = wizard.getDescription();
+-		return objectMetadata;
++		return wizard;
+ 	}
+ 
+ 	/**
+Index: osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/ViewMatrixController.java
+===================================================================
+--- osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/ViewMatrixController.java	(revision 47447)
++++ osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/ViewMatrixController.java	(working copy)
+@@ -67,6 +67,8 @@
+ import org.theospi.portfolio.matrix.model.Scaffolding;
+ import org.theospi.portfolio.matrix.model.ScaffoldingCell;
+ import org.theospi.portfolio.matrix.model.WizardPage;
++import org.theospi.portfolio.shared.model.WizardMatrixConstants;
++import org.theospi.portfolio.style.mgt.StyleManager;
+ import org.theospi.portfolio.assignment.AssignmentHelper;
+ 
+ public class ViewMatrixController extends AbstractMatrixController implements FormController, LoadObjectController {
+@@ -220,7 +222,7 @@
+ 
+       String filteredGroup = (String) request.get(GROUP_FILTER);
+       boolean allowAllGroups = ServerConfigurationService.getBoolean(MatrixFunctionConstants.PROP_GROUPS_ALLOW_ALL_GLOBAL, false)
+-      			|| grid.getScaffolding().getReviewerGroupAccess() == Scaffolding.UNRESTRICTED_GROUP_ACCESS;
++      			|| grid.getScaffolding().getReviewerGroupAccess() == WizardMatrixConstants.UNRESTRICTED_GROUP_ACCESS;
+       List<Group> groupList = new ArrayList<Group>(getGroupList(worksiteId, allowAllGroups));
+       //Collections.sort(groupList);
+       //TODO: Figure out why ClassCastExceptions fire if we do this the obvious way...  The User list sorts fine
+Index: osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/WizardPageDefinitionController.java
+===================================================================
+--- osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/WizardPageDefinitionController.java	(revision 47447)
++++ osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/WizardPageDefinitionController.java	(working copy)
+@@ -36,6 +36,7 @@
+ import org.theospi.portfolio.matrix.model.WizardPageDefinition;
+ import org.theospi.portfolio.wizard.WizardFunctionConstants;
+ import org.theospi.portfolio.wizard.model.WizardPageSequence;
++import org.theospi.portfolio.wizard.model.Wizard;
+ 
+ /**
+  * Created by IntelliJ IDEA.
+@@ -59,12 +60,20 @@
+       boolean wizardPublished = false;
+       
+       if(sCell.getWizardPageDefinition() != null && getWizardManager() != null)
++      {
+          if(sCell.getWizardPageDefinition().getId() != null) {
+             WizardPageSequence wps = getWizardManager().getWizardPageSeqByDef(sCell.getWizardPageDefinition().getId());
+             if(wps.getCategory() != null)
++            {
+                if(wps.getCategory().getWizard() != null)
+-                  wizardPublished = wps.getCategory().getWizard().isPublished();
++               {
++                  Wizard wizard = wps.getCategory().getWizard();
++                  wizardPublished = wizard.isPublished();
++                  model.put("feedbackOpts", wizard );
++               }
++            }
+          }
++      }
+       
+       model.put("wizardPublished", new Boolean(wizardPublished));
+       model.put("isPageUsed", wizardPublished && isPageUsed(sCell.getWizardPageDefinition()));
+Index: osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/EditScaffoldingCellController.java
+===================================================================
+--- osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/EditScaffoldingCellController.java	(revision 47447)
++++ osp/matrix/tool/src/java/org/theospi/portfolio/matrix/control/EditScaffoldingCellController.java	(working copy)
+@@ -92,8 +92,6 @@
+ 
+ 	private static ResourceLoader myResources = new ResourceLoader("org.theospi.portfolio.matrix.bundle.Messages");
+    
+-	// TODO move this constant somewhere where I can get to them from here and
+-	// in WizardTool
+ 	public final static String FORM_TYPE = "form";
+ 
+ 	/*
+@@ -138,6 +136,7 @@
+ 		model.put("pageInstructionsKey", "instructions_cellSettings");
+ 		model.put("returnView", getReturnView());
+       model.put("enableAssignments", ServerConfigurationService.getBoolean("osp.experimental.assignments",false) );
++		model.put("feedbackOpts", sCell.getScaffolding());
+ 
+ 		if (sCell != null && sCell.getScaffolding() != null)
+ 			model.put("isCellUsed", sCell.getScaffolding().isPublished()
+Index: osp/matrix/tool/src/bundle/org/theospi/portfolio/matrix/bundle/Messages.properties
+===================================================================
+--- osp/matrix/tool/src/bundle/org/theospi/portfolio/matrix/bundle/Messages.properties	(revision 47447)
++++ osp/matrix/tool/src/bundle/org/theospi/portfolio/matrix/bundle/Messages.properties	(working copy)
+@@ -148,6 +148,16 @@
+ unrestricted_group_access_label=Unrestricted:
+ unrestricted_group_access_desc=Allow reviewers to interact with all members of the site, regardless of group membership.
+ 
++feedback_options=Feedback Options
++feedback_options_gen=General Feedback Options
++feedback_options_item=Item Feedback Options
++feedback_option_gen_open    = Unrestricted General Feedback (unlimited general feedback)
++feedback_option_gen_single  = Restricted General Feedback (one general feedback per page limit)
++feedback_option_gen_none    = No General Feedback (no option for general feedback)
++feedback_option_item_open   = Unrestricted Evidence Item Feedback (unlimited item feedback)
++feedback_option_item_single = Restricted Evidence Item Feedback (one feedback per item limit)
++feedback_option_item_none   = No Evidence Item Feedback (no option for item feedback)
++
+ title_matrixStatusColors=Matrix Status Colors
+ readyColor_label=Ready Color
+ pendingColor_label=Pending Color
+Index: osp/matrix/tool/src/webapp/WEB-INF/jsp/matrix/scaffolding/editScaffoldingCell.jsp
+===================================================================
+--- osp/matrix/tool/src/webapp/WEB-INF/jsp/matrix/scaffolding/editScaffoldingCell.jsp	(revision 47447)
++++ osp/matrix/tool/src/webapp/WEB-INF/jsp/matrix/scaffolding/editScaffoldingCell.jsp	(working copy)
+@@ -423,11 +423,18 @@
+ 		</spring:bind>
+ 	</fieldset>
+ 	<fieldset class="fieldsetVis">
+-		<legend><fmt:message key="legend_feed_eval"/></legend>
++		<c:if test="${feedbackOpts.itemFeedbackNone and feedbackOpts.generalFeedbackNone}">
++			<legend><fmt:message key="header_Evaluators"/></legend>
++		</c:if>
++		<c:if test="${not feedbackOpts.itemFeedbackNone or not feedbackOpts.generalFeedbackNone}">
++			<legend><fmt:message key="legend_feed_eval"/></legend>
++		</c:if>
+ 		<spring:bind path="scaffoldingCell.reviewDeviceType">  
+ 			<input type="hidden" name="<c:out value="${status.expression}"/>"
+ 			value="<c:out value="${status.value}"/>" />
+ 		</spring:bind>   
++		
++		<c:if test="${not feedbackOpts.itemFeedbackNone or not feedbackOpts.generalFeedbackNone}">
+ 		<spring:bind path="scaffoldingCell.reviewDevice">  
+ 			<c:if test="${status.error}">
+ 				<div class="validation"><c:out value="${status.errorMessage}"/></div>
+@@ -448,6 +455,7 @@
+ 				</select>
+ 			</p>
+ 		</spring:bind>
++		</c:if>
+ 		
+ 		<spring:bind path="scaffoldingCell.evaluationDeviceType">  
+ 			<input type="hidden" name="<c:out value="${status.expression}"/>"
+Index: osp/matrix/tool/src/webapp/WEB-INF/jsp/matrix/scaffolding/addScaffolding.jsp
+===================================================================
+--- osp/matrix/tool/src/webapp/WEB-INF/jsp/matrix/scaffolding/addScaffolding.jsp	(revision 47447)
++++ osp/matrix/tool/src/webapp/WEB-INF/jsp/matrix/scaffolding/addScaffolding.jsp	(working copy)
+@@ -414,6 +414,53 @@
+ 	</c:if>
+ 	<!--  ********** Reviewer Group Access End ************-->
+ 
++	<!--  ********** Feedback Options Start ************-->
++	<fieldset class="fieldsetVis">
++		<legend><osp:message key="feedback_options"/></legend>
++		<table cellspacing="0" border="0" summary="<fmt:message key="feedback_options"/>">
++		<thead>
++		<tr>
++		<th><h4><fmt:message key="feedback_options_gen"/></h4></th>
++		<th><h4><fmt:message key="feedback_options_item"/></h4></th>
++		</tr>
++		</thead>
++		<tbody><tr>
++		<td>
++		<spring:bind path="scaffolding.generalFeedbackOption">
++			<c:forTokens var="token" items="open,single,none" delims="," varStatus="loopCount">
++				<div class="checkbox indnt1">
++					<input type="radio" id="<c:out value="feedback_option_gen_${token}" />" 
++						name="<c:out value="${status.expression}"/>" value="<c:out value="${loopCount.index}" />"
++						<c:if test="${status.value == loopCount.index}"> checked="checked" </c:if>
++						<c:out value="${disabledText}"/>
++					/>
++					<label for="<c:out value="feedback_option_gen_${token}" />">
++						<osp:message key="feedback_option_gen_${token}" />
++					</label>
++				</div>
++			</c:forTokens>
++		</spring:bind>
++		</td><td>
++		<spring:bind path="scaffolding.itemFeedbackOption">
++			<c:forTokens var="token" items="open,single,none" delims="," varStatus="loopCount">
++				<div class="checkbox indnt1">
++					<input type="radio" id="<c:out value="feedback_option_item_${token}" />" 
++						name="<c:out value="${status.expression}"/>" value="<c:out value="${loopCount.index}" />"
++						<c:if test="${status.value == loopCount.index}"> checked="checked" </c:if>
++						<c:out value="${disabledText}"/>
++					/>
++					<label for="<c:out value="feedback_option_item_${token}" />">
++						<osp:message key="feedback_option_item_${token}" />
++					</label>
++				</div>
++			</c:forTokens>
++		</spring:bind>
++		</td>
++		</tr><tbody>
++		</table>
++	</fieldset>
++	<!--  ********** Feedback Options End ************-->
++
+ 	<c:if test="${not empty isInSession}">
+ 		<input type="hidden" name="<c:out value="${isInSession}"/>" value="true"/>
+ 	</c:if>
+Index: osp/matrix/tool/src/webapp/WEB-INF/jsp/matrix/viewCell.jsp
+===================================================================
+--- osp/matrix/tool/src/webapp/WEB-INF/jsp/matrix/viewCell.jsp	(revision 47447)
++++ osp/matrix/tool/src/webapp/WEB-INF/jsp/matrix/viewCell.jsp	(working copy)
+@@ -289,6 +289,7 @@
+ 			<c:if
+ 				test="${node.fileType == cellFormDef.id or allowedNodeType == ''}">
+ 				<c:set var="canReflect" value="true" />
++				<c:set var="showUserButtons" value="${cell.status == 'READY' and readOnlyMatrix != 'true' and not node.isLocked}" />
+ 
+ 				<tr>
+ 					<td>
+@@ -302,7 +303,7 @@
+                                       </td>
+                                       <td style="white-space: nowrap">
+-                                       <div class="itemAction"><c:if
+-                                               test="${cell.status == 'READY' and readOnlyMatrix != 'true'}">
++					<div class="itemAction">
++					<c:if	test="${showUserButtons}">
+ 
+ 						<a
+ 							href="<osp:url value="osp.wizard.page.contents.helper/cellFormPicker.osp">
+@@ -326,12 +327,11 @@
+ 							title="<fmt:message key="delete"/>"><img
+ 							src="/library/image/silk/application_form_delete.png"
+ 							alt="<fmt:message key="delete"/>" /></a>
+-						<c:if
+-							test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null}">
+-                        |
+-                        </c:if>
+-                                      </c:if> <c:if
+-						test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null}">
++					</c:if> 
++				
++					<c:if
++						test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null && allowItemFeedback[loopStatus.index]}">
++						<c:if test="${showUserButtons}"> | </c:if>
+ 						<a
+ 							href="<osp:url value="osp.review.processor.helper/reviewHelper.osp">
+                           <osp:param name="page_id" value="${cell.wizardPage.id}" />
+@@ -342,8 +342,9 @@
+                           <osp:param name="objectTitle" value="${objectTitle}" />
+                           <osp:param name="itemId" value="${node.id}" />
+                           <osp:param name="sakai_helperSessionId" value="${cell.uniqueId}" />
+-                          </osp:url>"><osp:message
+-							key="review" /></a>
++                          </osp:url>">
++								  <osp:message	key="review" />
++						</a>
+ 					</c:if></div>
+ 					</td>
+ 					<td><c:out value="${node.technicalMetadata.owner.displayName}" />
+@@ -671,7 +672,7 @@
+ <!-- ************* General Review (Feedback) Area Start ************* -->
+ 
+ <c:if
+-	test="${(((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null) || not empty reviews}">
++	test="${( ((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null && not generalFeedbackNone) || (not empty reviews && not generalFeedbackNone)}">
+ 	<table class="matrixCellList" cellpadding="0" cellspacing="0"
+ 		border="0" summary="">
+ 		<tr>
+@@ -685,8 +686,9 @@
+ 			<h5><osp:message key="reviews_section_header" /></h5>
+ 			</td>
+ 			<td>
++			
+ 			<div class="itemAction"><c:if
+-				test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null}">
++				test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null && allowGeneralFeedback}">
+ 				<a
+ 					href="<osp:url value="osp.review.processor.helper/reviewHelper.osp">
+ 						<osp:param name="page_id" value="${cell.wizardPage.id}" />
