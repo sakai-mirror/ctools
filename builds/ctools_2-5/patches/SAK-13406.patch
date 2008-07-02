@@ -889,16 +889,16 @@ Index: osp/matrix/tool/src/webapp/WEB-INF/jsp/matrix/viewCell.jsp
  
  				<tr>
  					<td>
-@@ -302,7 +303,7 @@
-                                       </td>
-                                       <td style="white-space: nowrap">
+@@ -301,7 +302,7 @@
+                                        </td>
+                                        <td style="white-space: nowrap">
 -                                       <div class="itemAction"><c:if
 -                                               test="${cell.status == 'READY' and readOnlyMatrix != 'true'}">
-+					<div class="itemAction">
-+					<c:if	test="${showUserButtons}">
++                                       <div class="itemAction">
++                                       <c:if   test="${showUserButtons}">
  
- 						<a
- 							href="<osp:url value="osp.wizard.page.contents.helper/cellFormPicker.osp">
+                                                <a
+                                                        href="<osp:url value="osp.wizard.page.contents.helper/cellFormPicker.osp">
 @@ -326,12 +327,11 @@
  							title="<fmt:message key="delete"/>"><img
  							src="/library/image/silk/application_form_delete.png"
