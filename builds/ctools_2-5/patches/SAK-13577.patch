@@ -1,0 +1,8 @@
+OSP fixes SAK-13577
+
+=svnm= https://source.sakaiproject.org/svn/osp/trunk@47414 osp
+
+--- /dev/null
++++ SAK-13577.tmp
+@@ -0,0 +1 @@
++ 

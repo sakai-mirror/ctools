@@ -1,0 +1,8 @@
+OSP fixes SAK-11545
+
+=svnm= https://source.sakaiproject.org/svn/osp/trunk@46425 osp
+
+--- /dev/null
++++ SAK-11545.tmp
+@@ -0,0 +1 @@
++ 
