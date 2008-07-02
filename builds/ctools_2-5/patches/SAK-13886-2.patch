@@ -1,7 +1,7 @@
-Index: db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
+Index: db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
 ===================================================================
---- db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(revision 47927)
-+++ db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(working copy)
+--- db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(revision 47927)
++++ db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(working copy)
 @@ -31,6 +31,8 @@
  import java.util.Map;
  import java.util.Properties;
