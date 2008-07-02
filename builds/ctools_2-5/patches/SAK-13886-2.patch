@@ -1,90 +1,19 @@
-Index: db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
-===================================================================
---- db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(revision 47927)
-+++ db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(working copy)
-@@ -31,6 +31,8 @@
- import java.util.Map;
+--- db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.original.java	2008-07-02 15:35:47.000000000 -0400
++++ db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	2008-07-02 15:40:19.000000000 -0400
+@@ -32,6 +32,9 @@
  import java.util.Properties;
  import java.util.Vector;
+ 
 +import java.io.StringWriter;
 +import java.io.PrintWriter;
- 
++
  import org.apache.commons.logging.Log;
  import org.apache.commons.logging.LogFactory;
-@@ -43,6 +45,10 @@
- import org.sakaiproject.event.cover.UsageSessionService;
- import org.sakaiproject.time.cover.TimeService;
- 
-+import net.sf.ehcache.CacheManager;
-+import net.sf.ehcache.Cache;
-+import net.sf.ehcache.Element;
-+
- /**
-  * <p>
-  * BaseDbFlatStorage is a class that stores Resources (of some type) in a database, provides (optional) locked access, <br />
-@@ -187,6 +193,30 @@
- 	}
- 
- 	/**
-+	 * Get the cache manager for this table
-+	 *
-+	 * @param table
-+	 */
-+	protected Cache getCache(String table)
-+	{
-+		if ( table == null ) return null;
-+		CacheManager singletonManager = CacheManager.getInstance();
-+
-+		String cacheName = "DB-Flat:"+table;
-+		Cache myCache = singletonManager.getCache(cacheName);
-+		if ( myCache == null ) 
-+		{
-+			singletonManager.addCache(cacheName);
-+			myCache = singletonManager.getCache(cacheName);
-+			if ( myCache != null )
-+			{
-+				M_log.info("Added Memory cache for "+cacheName);
-+			}
-+		}
-+		return myCache;
-+	}
-+
-+	/**
- 	 * Set the sort field to be something perhaps other than the default of the id field.
- 	 * 
- 	 * @param sortField1
-@@ -1024,6 +1054,46 @@
- 		// the properties to fill in
- 		final ResourcePropertiesEdit props = p;
- 
-+		Cache myCache = getCache(table);
-+		String cacheKey = table + ":" + idField + ":" + id;
-+
-+		if ( myCache != null )
-+		{
-+			//System.out.println("CHECKING CACHE cacheKey="+cacheKey);
-+			Element elem = myCache.get(cacheKey);
-+			if ( elem != null )
-+			{
-+				Object obj = elem.getObjectValue();
-+				if ( obj != null && obj instanceof ResourcePropertiesEdit ) 
-+				{
-+					// Clone the properties - do not return the real value
-+					ResourcePropertiesEdit re = (ResourcePropertiesEdit) obj;
-+// Addall
-+					props.addAll(re);
-+/*
-+					Iterator iter = re.getPropertyNames();
-+					for (Iterator it=re.getPropertyNames(); it.hasNext(); ) 
-+					{
-+						String name = (String) it.next();
-+						String value = re.getProperty(name);
-+						if ((name != null) && (value != null))
-+						{
-+							props.addProperty(name, value);
-+						}
-+					}
-+*/
+ import org.sakaiproject.db.api.SqlReader;
+@@ -1080,10 +1083,14 @@
+ 						}
+ 					}
+ */
 +					if (M_log.isDebugEnabled()) {
 +					    M_log.debug("CACHE HIT cacheKey="+cacheKey+" props="+props);
 +					    Throwable t = new Throwable();
@@ -92,41 +21,30 @@ Index: db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
 +					    t.printStackTrace(new PrintWriter(stsw));
 +					    M_log.debug(stsw.toString());
 +					}
-+					return;
-+				}
-+			}
-+		}
-+
- 		// get the properties from the db
- 		// ASSUME: NAME, VALUE for fields
- 		String sql = flatStorageSql.getSelectNameValueSql(table, idField);
-@@ -1055,6 +1125,13 @@
+ 
+-System.out.println("CACHE HIT cacheKey="+cacheKey+" props="+props);
+-Throwable t = new Throwable();
+-t.printStackTrace();
+ 					return;
  				}
  			}
- 		});
-+
-+		if ( myCache != null )
-+		{
-+		    if (M_log.isDebugEnabled())
-+			M_log.debug("CACHE PUT cacheKey="+cacheKey+" props="+props);
-+		    myCache.put(new Element(cacheKey,props));
-+		}
- 	}
+@@ -1123,7 +1130,8 @@
  
- 	/**
-@@ -1162,6 +1239,15 @@
- 		if (table == null) return;
- 		if (props == null) return;
- 
-+		Cache myCache = getCache(table);
-+		String cacheKey = table + ":" + idField + ":" + id;
-+		if (M_log.isDebugEnabled())
-+		  M_log.debug("CACHE REMOVE cacheKey="+cacheKey+" cache="+myCache);
-+		if ( myCache != null )
-+		{
-+			myCache.remove(cacheKey);
-+		}
-+
- 		// do this in a transaction
- 		m_sql.transact(new Runnable()
+ 		if ( myCache != null )
  		{
+-System.out.println("CACHE PUT cacheKey="+cacheKey+" props="+props);
++		    if (M_log.isDebugEnabled()) 
++			M_log.debug("CACHE PUT cacheKey="+cacheKey+" props="+props);
+ 			myCache.put(new Element(cacheKey,props));
+ 		}
+ 	}
+@@ -1235,7 +1243,8 @@
+ 
+ 		Cache myCache = getCache(table);
+ 		String cacheKey = table + ":" + idField + ":" + id;
+-System.out.println("CACHE REMOVE cacheKey="+cacheKey+" cache="+myCache);
++		if (M_log.isDebugEnabled()) 
++		    M_log.debug("CACHE REMOVE cacheKey="+cacheKey+" cache="+myCache);
+ 		if ( myCache != null )
+ 		{
+ 			myCache.remove(cacheKey);
