@@ -170,12 +170,36 @@
        the svn specific syntax.
   -->
 
+  <!-- Backup and revert the source, don't need to do this on a clean build as it's gone anyway. -->
+  <target name="revertSrc" unless="clean">
+      <echo>${build.dir} reverted before patching, modified source saved to tgz in work directory (Deleted if you clean)</echo>
+    <!-- Backup the changed sources -->
 
-  <target name="revertSrc">
-    <exec command="bash -c 'cd ${build.dir}; /usr/local/bin/svn revert -R * ;'"
+      <exec executable="/bin/bash"
+           failonerror="true"
+           output="${logs.dir}/${ant.project.name}.patches.log"
+           append="true" >
+       <arg value="-c" />
+       <arg value="svn status ${build.dir} | grep -E '^[M|\?]' | awk '{print $2}' | xargs tar -zcvf ${work.dir}/backup-`date '+%m_%d_%H%M%S'`.tgz" />
+       </exec>
+
+    <echo>Reverting the sources</echo>
+    <exec executable="/bin/bash"
 	  failonerror="true"
 	  output="${logs.dir}/${ant.project.name}.patches.log"
-	  append="true" />
+	  append="true" >
+	  <arg value="-c"/>
+	  <arg value="svn revert -R ${build.dir}/*"/>
+      </exec>
+      <echo>Cleaning up the newly created 'files' TODO:Make it detect files</echo>
+    <exec executable="/bin/bash"
+	  failonerror="false"
+	  output="${logs.dir}/${ant.project.name}.patches.log"
+	  append="true" >
+	  <arg value="-c"/>
+	  <arg value="svn status ${build.dir} | grep -E '^[\?]' | awk '{print $2}' | xargs rm" />
+  </exec>
+
   </target>
 
   <macrodef name="execSvnCmd">

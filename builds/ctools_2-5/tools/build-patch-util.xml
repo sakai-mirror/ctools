@@ -32,9 +32,9 @@
   -->
 
  <!-- 
- Don't reapply patches to a non clean target
+ Target is reverted when not-clean now.
  -->
- <target name="applyPatches3" unless="noclean">
+ <target name="applyPatches3">
     <echo> applying patches aP3 [${patchFileNames}]</echo>
     <echo file="${logs.dir}/${ant.project.name}.patches.log" append="true" >
      ********************************************************** 
