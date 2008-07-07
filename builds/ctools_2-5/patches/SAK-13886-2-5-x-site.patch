@@ -1,7 +1,7 @@
-Index: site-impl/impl/src/java/org/sakaiproject/site/impl/BaseSiteService.java
+Index: site/site-impl/impl/src/java/org/sakaiproject/site/impl/BaseSiteService.java
 ===================================================================
---- site-impl/impl/src/java/org/sakaiproject/site/impl/BaseSiteService.java	(revision 48427)
-+++ site-impl/impl/src/java/org/sakaiproject/site/impl/BaseSiteService.java	(working copy)
+--- site/site-impl/impl/src/java/org/sakaiproject/site/impl/BaseSiteService.java	(revision 48427)
++++ site/site-impl/impl/src/java/org/sakaiproject/site/impl/BaseSiteService.java	(working copy)
 @@ -507,22 +507,20 @@
  		return rv;
  	}
@@ -72,10 +72,10 @@ Index: site-impl/impl/src/java/org/sakaiproject/site/impl/BaseSiteService.java
  			Site copy = new BaseSite(rv, true);
  			m_siteCache.put(ref, copy, m_cacheSeconds);
  		}
-Index: site-impl/impl/src/java/org/sakaiproject/site/impl/DbSiteService.java
+Index: site/site-impl/impl/src/java/org/sakaiproject/site/impl/DbSiteService.java
 ===================================================================
---- site-impl/impl/src/java/org/sakaiproject/site/impl/DbSiteService.java	(revision 48427)
-+++ site-impl/impl/src/java/org/sakaiproject/site/impl/DbSiteService.java	(working copy)
+--- site/site-impl/impl/src/java/org/sakaiproject/site/impl/DbSiteService.java	(revision 48427)
++++ site/site-impl/impl/src/java/org/sakaiproject/site/impl/DbSiteService.java	(working copy)
 @@ -31,6 +31,7 @@
  import java.util.Map;
  import java.util.Properties;

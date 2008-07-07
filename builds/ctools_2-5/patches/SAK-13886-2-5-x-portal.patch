@@ -1,7 +1,7 @@
-Index: portal-util/util/src/java/org/sakaiproject/portal/util/PortalSiteHelper.java
+Index: portal/portal-util/util/src/java/org/sakaiproject/portal/util/PortalSiteHelper.java
 ===================================================================
---- portal-util/util/src/java/org/sakaiproject/portal/util/PortalSiteHelper.java	(revision 48427)
-+++ portal-util/util/src/java/org/sakaiproject/portal/util/PortalSiteHelper.java	(working copy)
+--- portal/portal-util/util/src/java/org/sakaiproject/portal/util/PortalSiteHelper.java	(revision 48427)
++++ portal/portal-util/util/src/java/org/sakaiproject/portal/util/PortalSiteHelper.java	(working copy)
 @@ -77,6 +77,8 @@
  	// 2.3 back port
  	// private final String PROP_PARENT_ID = "sakai:parent-id";
