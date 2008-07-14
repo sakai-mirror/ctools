@@ -1,64 +1,42 @@
-Index: tool/messageforums/DiscussionForumTool.java
-===================================================================
---- tool/messageforums/DiscussionForumTool.java	(revisão 41162)
-+++ tool/messageforums/DiscussionForumTool.java	(cópia de trabalho)
-@@ -80,6 +80,7 @@
- import org.sakaiproject.site.api.Group;
- import org.sakaiproject.site.api.Site;
- import org.sakaiproject.site.cover.SiteService;
-+import org.sakaiproject.tool.api.Placement;
- import org.sakaiproject.tool.api.ToolSession;
- import org.sakaiproject.tool.cover.SessionManager;
- import org.sakaiproject.tool.cover.ToolManager;
-@@ -3731,22 +3732,29 @@
+--- msgcntr/trunk/messageforums-app/src/java/org/sakaiproject/tool/messageforums/DiscussionForumTool.java   2008/06/23 13:38:45	48009
++++ msgcntr/trunk/messageforums-app/src/java/org/sakaiproject/tool/messageforums/DiscussionForumTool.java   2008/06/23 13:46:07	48010
+@@ -3758,19 +3758,25 @@
      return deleteMsg;
    }
  
 -  private String getEventReference(Message message) {
--	  String eventRef;
--	  
--	  if (isForumsTool()) {
--		  eventRef = "/forums/";
--	  }
--	  else {
--		  eventRef="/messages&Forums/";
--	  }
--	  
--	  eventRef += message.getId() + "/del by/" + getUserNameOrEid();
--	  
--	  return eventRef;
+-     String eventRef;
+-     
+-     if (isForumsTool()) {
+-	  eventRef = "/forums/";
+-     }
+-     else {
+-	  eventRef="/messages&Forums/";
+-     }
+-     
+-     eventRef += message.getId() + "/del by/" + getUserNameOrEid();
+-     
+-     return eventRef;
++  /**
++   * Construct the proper String reference for an Event
++   * 
++   * @param message
++   * @return
++   */
 +  private String getEventReference(Message message) 
 +  {
-+	String eventMessagePrefix = "";
-+  	final String toolId = ToolManager.getCurrentTool().getId();
-+  	
-+  		if (toolId.equals(DiscussionForumService.MESSAGE_CENTER_ID))
-+  			eventMessagePrefix = "/messagesAndForums/site/";
-+  		else if (toolId.equals(DiscussionForumService.MESSAGES_TOOL_ID))
-+  			eventMessagePrefix = "/messages/site/";
-+  		else
-+  			eventMessagePrefix = "/forums/site/";
-+  	
-+  	return eventMessagePrefix + getContextId() + "/" + message.toString() + "/" + SessionManager.getCurrentSessionUserId();
++     String eventMessagePrefix = "";
++     final String toolId = ToolManager.getCurrentTool().getId();
++   
++     if (toolId.equals(DiscussionForumService.MESSAGE_CENTER_ID))
++	  eventMessagePrefix = "/messagesAndForums";
++     else if (toolId.equals(DiscussionForumService.MESSAGES_TOOL_ID))
++	  eventMessagePrefix = "/messages";
++     else
++	  eventMessagePrefix = "/forums";
++   
++     return eventMessagePrefix + getContextSiteId() + "/" + message.toString() + "/" + SessionManager.getCurrentSessionUserId();
    }
    
--  /**
-+  private String getContextId() 
-+  {
-+      Placement placement = ToolManager.getCurrentPlacement();
-+      String presentSiteId = placement.getContext();
-+      return presentSiteId;
-+  }
-+  
-+/**
-    * Deletes the message by setting boolean deleted switch to TRUE.
-    */
-   public String processDfMsgDeleteConfirmYes()
-@@ -3777,7 +3785,6 @@
- 
- 	  // does the actual save to 'delete' this message
- 	  forumManager.saveMessage(message, false);
--
- 	  // reload the topic, forum and reset the topic's base forum
- 	  selectedTopic = getDecoratedTopic(selectedTopic.getTopic());
- 	  setSelectedForumForCurrentTopic((DiscussionTopic) forumManager
+   /**
+
