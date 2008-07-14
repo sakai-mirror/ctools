@@ -1,151 +1,34 @@
 Index: melete/melete-app/src/webapp/WEB-INF/web.xml
 ===================================================================
---- melete/melete-app/src/webapp/WEB-INF/web.xml        (revision 48145)
-+++ melete/melete-app/src/webapp/WEB-INF/web.xml        (working copy)
-@@ -21,20 +21,20 @@
-        </context-param>
-        <context-param>
-                <param-name>uploadDir</param-name>
--               <param-value>/var/uploads</param-value>
-+               <param-value>/melete/uploads</param-value>
-        </context-param>
-        <context-param>
-                <param-name>packagingdir</param-name>
--               <param-value>/var/melete/packagefiles</param-value>
-+               <param-value>/melete/packagefiles</param-value>
-        </context-param>
-        <context-param>
-                <param-name>packagingscormdir</param-name>
--               <param-value>/var/melete/packagefiles/packagefilesscorm</param-value>
-+               <param-value>/melete/packagefiles/packagefilesscorm</param-value>
-        </context-param>
-        <!--Need to keep this for the migrate program-->
-        <context-param>
-                <param-name>meleteDocsDir</param-name>
--               <param-value>/var/meleteDocs</param-value>
-+               <param-value>/melete/meleteDocs</param-value>
-        </context-param>
-        <!-- Sakai request filter -->
-        <filter>
-@@ -47,7 +47,7 @@
-                <filter-class>com.oreilly.servlet.MultipartFilter</filter-class>
-                <init-param>
-                        <param-name>uploadDir</param-name>
--                       <param-value>/var/uploads</param-value>
-+                       <param-value>/melete/uploads</param-value>
-                </init-param>
-        </filter>
-        <filter-mapping>
-Index: melete/melete-impl/src/java/org/sakaiproject/component/app/melete/ModuleServiceImpl.java
-===================================================================
---- melete/melete-impl/src/java/org/sakaiproject/component/app/melete/ModuleServiceImpl.java	(revision 48145)
-+++ melete/melete-impl/src/java/org/sakaiproject/component/app/melete/ModuleServiceImpl.java	(working copy)
-@@ -578,20 +578,20 @@
- 			List modList = null;
- 			List colNames = null;
- 			if (rs != null){
--			  colNames = new ArrayList();
--			  colNames.add(new String("melete_module_bkup.module_id"));
--			  colNames.add(new String("melete_module_bkup.license_code"));
--			  colNames.add(new String("melete_module_bkup.cc_license_url"));
--			  colNames.add(new String("melete_module_bkup.req_attr"));
--			  colNames.add(new String("melete_module_bkup.allow_cmrcl"));
--			  colNames.add(new String("melete_module_bkup.allow_mod"));
--			  colNames.add(new String("melete_module_bkup.created_by_fname"));
--			  colNames.add(new String("melete_module_bkup.created_by_lname"));	
--			  colNames.add(new String("melete_module_bkup.creation_date"));		
--			  colNames.add(new String("melete_course_module.course_id"));
-+                colNames = new ArrayList();
-+                colNames.add(new String("module_id"));
-+                colNames.add(new String("license_code"));
-+                colNames.add(new String("cc_license_url"));
-+                colNames.add(new String("req_attr"));
-+                colNames.add(new String("allow_cmrcl"));
-+                colNames.add(new String("allow_mod"));
-+                colNames.add(new String("created_by_fname"));
-+                colNames.add(new String("created_by_lname"));
-+                colNames.add(new String("creation_date"));
-+                colNames.add(new String("course_id"));
+--- melete/melete-app/src/webapp/WEB-INF/web.xml	(revision 50986)
++++ melete/melete-app/src/webapp/WEB-INF/web.xml	(working copy)
+@@ -21,17 +21,17 @@
+ 	</context-param>
+ 	<context-param>
+ 		<param-name>uploadDir</param-name>
+-		<param-value>/var/uploads</param-value>
++		<param-value>/melete/uploads</param-value>
+ 	</context-param>
+ 	<context-param>
+ 		<param-name>packagingdir</param-name>
+-		<param-value>/var/melete/packagefiles</param-value>
++		<param-value>/melete/packagefiles</param-value>
+ 	</context-param>
  
--			  modList = toList(rs, colNames);
--			}
-+                modList = toList(rs, colNames);
-+              }
- 
- 			rs.close();
- 	    	stmt.close();
-@@ -602,10 +602,15 @@
- 	    	{
- 	    		logger.info("NUMBER OF MODULES IN THIS DATABASE IS "+modList.size());
- 	    		for (ListIterator i = modList.listIterator(); i.hasNext(); ) {
--	    			Map modMap = (LinkedHashMap)i.next();
--	    		    modId = ((Integer)modMap.get("melete_module_bkup.module_id")).intValue();
--	    		    courseId = (String)modMap.get("melete_course_module.course_id");
--	    		 
-+	    			//Map modMap = (LinkedHashMap)i.next();
-+                    //Object obj =modMap.get("module_id");
-+                    //Integer in =new Integer(obj.toString());
-+                    //modId = in.intValue();
-+					Map modMap = (LinkedHashMap)i.next();
-+
-+                    modId = ((java.math.BigDecimal)modMap.get("module_id")).intValue();
-+                    
-+					courseId = (String)modMap.get("course_id");
-                     SubSectionUtilImpl ssuImpl = new SubSectionUtilImpl();
-           	        stmt = dbConnection.createStatement();
-           	        
-@@ -640,7 +645,6 @@
- 						    {
- 							  if (contentType.equals("typeEditor"))
- 							  {
--								//processSection = meleteExportService.checkFileExists(rs.getString("content_path"));
- 								processSection = meleteUtil.checkFileExists(rs.getString("content_path"));
- 							  }
- 							  if (contentType.equals("typeUpload"))
-@@ -814,28 +818,39 @@
- 		return MIGRATE_FAILED;
- 	}
- 
-+	
- 	private MeleteResource processLicenseInformation(Map modMap, MeleteResource meleteSectionResource)
- 	{
- 		String[] result = new String[2];
- 		GregorianCalendar cal = new GregorianCalendar();
--		int licenseCodes = ((Integer)modMap.get("melete_module_bkup.license_code")).intValue();
--		String copyrightOwner = (String)modMap.get("melete_module_bkup.created_by_fname")+" "+(String)modMap.get("melete_module_bkup.created_by_lname");
--		cal.setTime((Date)modMap.get("melete_module_bkup.creation_date"));
-+		int licenseCodes = ((java.math.BigDecimal)modMap.get("license_code")).intValue();
-+		String copyrightOwner = (String)modMap.get("created_by_fname")+" "+(String)modMap.get("created_by_lname");
-+		cal.setTime((Date)modMap.get("creation_date"));
- 		String copyrightYear = String.valueOf(cal.get(Calendar.YEAR));
- 		 if(licenseCodes == CC_CODE)
- 		 	{
--		 		meleteSectionResource.setCcLicenseUrl((String)modMap.get("melete_module_bkup.cc_license_url"));
-+		 		meleteSectionResource.setCcLicenseUrl((String)modMap.get("cc_license_url"));
- 		 		meleteSectionResource.setLicenseCode(licenseCodes);
- 		 		meleteSectionResource.setReqAttr(true);
--		 		meleteSectionResource.setAllowCmrcl(((Boolean)modMap.get("melete_module_bkup.allow_cmrcl")).booleanValue());
--		 		meleteSectionResource.setAllowMod(((Integer)modMap.get("melete_module_bkup.allow_mod")).intValue());
-+
-+				if(modMap.get("allow_cmrcl").toString().equals("1")) {
-+					meleteSectionResource.setAllowCmrcl(true);
-+				} else {
-+					meleteSectionResource.setAllowCmrcl(false);
-+				}
-+
-+		 		//meleteSectionResource.setAllowCmrcl(((Boolean)modMap.get("allow_cmrcl")).booleanValue());
-+
-+		 		//meleteSectionResource.setAllowMod(((Integer)modMap.get("allow_mod")).intValue());
-+				meleteSectionResource.setAllowMod(((java.math.BigDecimal)modMap.get("allow_mod")).intValue());
-+
- 		 		meleteSectionResource.setCopyrightOwner(copyrightOwner);
- 		 		meleteSectionResource.setCopyrightYear(copyrightYear);
- 		 	}
- 		 else if(licenseCodes == PD_CODE)
- 		 {
- 
--	 	  	meleteSectionResource.setCcLicenseUrl((String)modMap.get("melete_module_bkup.cc_license_url"));
-+	 	  	meleteSectionResource.setCcLicenseUrl((String)modMap.get("cc_license_url"));
- 	 	  	meleteSectionResource.setLicenseCode(licenseCodes);
- 	 	  	meleteSectionResource.setReqAttr(false);
- 	 	  	meleteSectionResource.setAllowCmrcl(false);
+ 	<!--Need to keep this for the migrate program-->
+ 	<context-param>
+ 		<param-name>meleteDocsDir</param-name>
+-		<param-value>/var/meleteDocs</param-value>
++		<param-value>/melete/meleteDocs</param-value>
+ 	</context-param>
+ 	<!-- Sakai request filter -->
+ 	<filter>
+@@ -44,7 +44,7 @@
+ 		<filter-class>com.oreilly.servlet.MultipartFilter</filter-class>
+ 		<init-param>
+ 			<param-name>uploadDir</param-name>
+-			<param-value>/var/uploads</param-value>
++			<param-value>/melete/uploads</param-value>
+ 		</init-param>
+ 	</filter>
+ 	<filter-mapping>

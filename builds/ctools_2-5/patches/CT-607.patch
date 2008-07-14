@@ -1,0 +1,13 @@
+Index: test-center/mneme/mneme-tool/tool/src/webapp/tools/sakai.mneme.xml
+===================================================================
+--- test-center/mneme/mneme-tool/tool/src/webapp/tools/sakai.mneme.xml	(revision 51045)
++++ test-center/mneme/mneme-tool/tool/src/webapp/tools/sakai.mneme.xml	(working copy)
+@@ -4,7 +4,7 @@
+ 
+ 	<tool
+ 			id="sakai.mneme"
+-			title="Tasks, Tests and Surveys"
++			title="Test Center"
+ 			description="For authoring, publishing, delivering and grading assessments."
+ 	>
+ 
