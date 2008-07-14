@@ -125,7 +125,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
 ######## Contrib tools
 ########
 #### Test Center ambrosia and mneme combined
- test-center         -r49194     https://source.sakaiproject.org/contrib/muse/test-center/tags/1.1.4-2.5.0
+ test-center         -r50881     https://source.sakaiproject.org/contrib/muse/test-center/tags/1.1.8-2.5.0
 ## Current version is being patched
  itunes              -r50994     https://source.sakaiproject.org/contrib/umctx/trunk/itunesu-tool/
  config-viewer       -r48120     https://source.sakaiproject.org/contrib/config-viewer/trunk/ 
@@ -134,7 +134,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
   ## The trunk builds but the umich branch is currently missing some files for mvn2
  evaluation          -r45234     https://source.sakaiproject.org/contrib/evaluation/branches/umich
  #Melete
- melete              -r48145     https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-4-5_sak-2-5-0
+ melete              -r50986     https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-5_sak-2-5-0
  # we really should not pull from trunk to production, but we were not given any choice for these
  # in the evaluation project.
  hierarchy           -r48884     https://source.sakaiproject.org/contrib/caret/hierarchy/tags/1.1.1/ 
