@@ -1,9 +1,9 @@
 svn diff https://source.sakaiproject.org/svn/ctools/trunk/user/user-tool-prefs/@47451 https://source.sakaiproject.org/svn/ctools/trunk/user/user-tool-prefs/@48619 >| CT-608.patch
 
-Index: tool/src/java/org/sakaiproject/user/tool/UserPrefsTool.java
+Index: user/user-tool-prefs/tool/src/java/org/sakaiproject/user/tool/UserPrefsTool.java
 ===================================================================
---- tool/src/java/org/sakaiproject/user/tool/UserPrefsTool.java	(revision 47451)
-+++ tool/src/java/org/sakaiproject/user/tool/UserPrefsTool.java	(revision 48619)
+--- user/user-tool-prefs/tool/src/java/org/sakaiproject/user/tool/UserPrefsTool.java	(revision 47451)
++++ user/user-tool-prefs/tool/src/java/org/sakaiproject/user/tool/UserPrefsTool.java	(revision 48619)
 @@ -231,6 +231,8 @@
  	private String CustomTab="prefs_tab_title";
  	private String Timezone="prefs_timezone_title";

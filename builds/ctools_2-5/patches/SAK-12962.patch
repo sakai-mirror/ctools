@@ -1,5 +1,5 @@
---- msgcntr/trunk/messageforums-app/src/java/org/sakaiproject/tool/messageforums/DiscussionForumTool.java   2008/06/23 13:38:45	48009
-+++ msgcntr/trunk/messageforums-app/src/java/org/sakaiproject/tool/messageforums/DiscussionForumTool.java   2008/06/23 13:46:07	48010
+--- msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/DiscussionForumTool.java 
++++ msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/DiscussionForumTool.java
 @@ -3758,19 +3758,25 @@
      return deleteMsg;
    }
@@ -39,4 +39,3 @@
    }
    
    /**
-
