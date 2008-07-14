@@ -25,6 +25,12 @@
 		<artifactId>sakai-db-api</artifactId>
 		<version>${sakai.version}</version>
 	</dependency>
+
+    <dependency>
+		<groupId>org.sakaiproject</groupId>
+		<artifactId>sakai-ctools-providers-api</artifactId>
+		<version>${sakai.version}</version>
+	</dependency>
 	
 	<dependency>
 		<groupId>commons-logging</groupId>
