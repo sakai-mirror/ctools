@@ -143,5 +143,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
 #Important, location of patches, specify a specific revision or leave as PROPERTY which will be <= the candidate property version! :)
 ctools-patches      -rPROPERTY    https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/patches/ 
 
-  #
+sakai-portlets	    -r50496	  https://source.sakaiproject.org/contrib/sakai-portlets/trunk/
+
+#
 #end
