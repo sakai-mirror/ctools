@@ -1,8 +1,8 @@
 Index: melete/melete-app/src/webapp/WEB-INF/web.xml
 ===================================================================
---- melete/melete-app/src/webapp/WEB-INF/web.xml	(revision 50986)
+--- melete/melete-app/src/webapp/WEB-INF/web.xml	(revision 48145)
 +++ melete/melete-app/src/webapp/WEB-INF/web.xml	(working copy)
-@@ -21,17 +21,17 @@
+@@ -21,20 +21,20 @@
  	</context-param>
  	<context-param>
  		<param-name>uploadDir</param-name>
@@ -14,7 +14,11 @@ Index: melete/melete-app/src/webapp/WEB-INF/web.xml
 -		<param-value>/var/melete/packagefiles</param-value>
 +		<param-value>/melete/packagefiles</param-value>
  	</context-param>
- 
+ 	<context-param>
+ 		<param-name>packagingscormdir</param-name>
+-		<param-value>/var/melete/packagefiles/packagefilesscorm</param-value>
++		<param-value>/melete/packagefiles/packagefilesscorm</param-value>
+ 	</context-param>
  	<!--Need to keep this for the migrate program-->
  	<context-param>
  		<param-name>meleteDocsDir</param-name>
@@ -23,7 +27,7 @@ Index: melete/melete-app/src/webapp/WEB-INF/web.xml
  	</context-param>
  	<!-- Sakai request filter -->
  	<filter>
-@@ -44,7 +44,7 @@
+@@ -47,7 +47,7 @@
  		<filter-class>com.oreilly.servlet.MultipartFilter</filter-class>
  		<init-param>
  			<param-name>uploadDir</param-name>
