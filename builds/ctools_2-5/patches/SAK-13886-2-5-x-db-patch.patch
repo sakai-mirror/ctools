@@ -1,0 +1,161 @@
+Index: db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
+===================================================================
+--- db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(revision 48427)
++++ db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(working copy)
+@@ -42,7 +42,12 @@
+ import org.sakaiproject.entity.api.ResourcePropertiesEdit;
+ import org.sakaiproject.event.cover.UsageSessionService;
+ import org.sakaiproject.time.cover.TimeService;
++import org.sakaiproject.component.cover.ServerConfigurationService;
+ 
++import net.sf.ehcache.CacheManager;
++import net.sf.ehcache.Cache;
++import net.sf.ehcache.Element;
++
+ /**
+  * <p>
+  * BaseDbFlatStorage is a class that stores Resources (of some type) in a database, provides (optional) locked access, <br />
+@@ -187,6 +192,39 @@
+ 	}
+ 
+ 	/**
++	 * Get the cache manager for this table
++	 *
++	 * @param table
++	 */
++	protected Cache getCache(String table)
++	{
++		if ( table == null ) return null;
++		String config =  ServerConfigurationService.getString("DbFlatPropertiesCache");
++		if ( config == null ) return null;
++		if ( config.indexOf(":none:") >= 0 ) return null;
++		if ( config.indexOf(":all:") < 0 )
++		{
++			if ( config.indexOf(":"+table+":") < 0 ) return null;
++		}
++
++		// We are allowed to cache for this table
++		CacheManager singletonManager = CacheManager.getInstance();
++
++		String cacheName = "DB-Flat:"+table;
++		Cache myCache = singletonManager.getCache(cacheName);
++		if ( myCache == null ) 
++		{
++			singletonManager.addCache(cacheName);
++			myCache = singletonManager.getCache(cacheName);
++			if ( myCache != null )
++			{
++				M_log.info("Added Memory cache for "+cacheName);
++			}
++		}
++		return myCache;
++	}
++
++	/**
+ 	 * Set the sort field to be something perhaps other than the default of the id field.
+ 	 * 
+ 	 * @param sortField1
+@@ -365,11 +403,8 @@
+ 		{
+ 			sql = flatStorageSql.getSelectFieldsSql1(m_resourceTableName, fieldList(m_resourceTableReadFields, null), m_resourceTableIdField,
+ 					m_resourceTableSortField1, m_resourceTableSortField2, 0, 0);
+-			String realTablename = m_resourceTableName;
+-			m_resourceTableName = "TEMP_QUERY";
+ 			sql += flatStorageSql.getSelectFieldsSql2(m_resourceTableName, fieldList(m_resourceTableReadFields, null), m_resourceTableIdField,
+ 					m_resourceTableSortField1, m_resourceTableSortField2, 0, 0);
+-			m_resourceTableName = realTablename;
+ 			fields = flatStorageSql.getSelectFieldsFields(first, last);
+ 		}
+ 		else
+@@ -576,13 +611,10 @@
+ 
+ 			sql = flatStorageSql.getSelectFieldsSql3(m_resourceTableName, fieldList(m_resourceTableReadFields, null), m_resourceTableIdField,
+ 					m_resourceTableSortField1, m_resourceTableSortField2, (first - 1), (last - first + 1), join, where, order);
+-			String realTablename = m_resourceTableName;
+-			m_resourceTableName = "TEMP_QUERY";
+ 			sql += flatStorageSql.getSelectFieldsSql4(m_resourceTableName, fieldList(m_resourceTableReadFields, null), m_resourceTableIdField,
+ 					m_resourceTableSortField1, m_resourceTableSortField2, (first - 1), (last - first + 1), join, where, order);
+ 			fields[fields.length - 2] = new Long(first);
+ 			fields[fields.length - 1] = new Long(last);
+-			m_resourceTableName = realTablename;
+ 		}
+ 		else
+ 		{
+@@ -1024,6 +1056,28 @@
+ 		// the properties to fill in
+ 		final ResourcePropertiesEdit props = p;
+ 
++		Cache myCache = getCache(table);
++		String cacheKey = table + ":" + idField + ":" + id;
++
++		if ( myCache != null )
++		{
++			// System.out.println("CHECKING CACHE cacheKey="+cacheKey);
++			Element elem = myCache.get(cacheKey);
++			if ( elem != null )
++			{
++				Object obj = elem.getObjectValue();
++				if ( obj != null && obj instanceof ResourcePropertiesEdit ) 
++				{
++					// Clone the properties - do not return the real value
++					ResourcePropertiesEdit re = (ResourcePropertiesEdit) obj;
++					props.addAll(re);
++					// System.out.println("CACHE HIT cacheKey="+cacheKey);
++					M_log.debug("CACHE HIT cacheKey="+cacheKey);
++					return;
++				}
++			}
++		}
++
+ 		// get the properties from the db
+ 		// ASSUME: NAME, VALUE for fields
+ 		String sql = flatStorageSql.getSelectNameValueSql(table, idField);
+@@ -1055,6 +1109,12 @@
+ 				}
+ 			}
+ 		});
++
++		if ( myCache != null )
++		{
++			// System.out.println("CACHE PUT cacheKey="+cacheKey+" props="+props);
++			myCache.put(new Element(cacheKey,props));
++		}
+ 	}
+ 
+ 	/**
+@@ -1162,6 +1222,14 @@
+ 		if (table == null) return;
+ 		if (props == null) return;
+ 
++		Cache myCache = getCache(table);
++		String cacheKey = table + ":" + idField + ":" + id;
++		if ( myCache != null )
++		{
++			// System.out.println("CACHE REMOVE cacheKey="+cacheKey+" cache="+myCache);
++			myCache.remove(cacheKey);
++		}
++
+ 		// do this in a transaction
+ 		m_sql.transact(new Runnable()
+ 		{
+Index: db/db-util/storage/pom.xml
+===================================================================
+--- db/db-util/storage/pom.xml	(revision 48427)
++++ db/db-util/storage/pom.xml	(working copy)
+@@ -50,6 +50,16 @@
+       <artifactId>sakai-event-api</artifactId>
+       <version>${sakai.version}</version>
+     </dependency>
++    <dependency>
++      <groupId>org.sakaiproject</groupId>
++      <artifactId>sakai-component-api</artifactId>
++      <version>${sakai.version}</version>
++    </dependency>
++    <dependency>
++      <groupId>net.sf.ehcache</groupId>
++      <artifactId>ehcache</artifactId>
++      <version>1.3.0</version>
++    </dependency>
+   </dependencies>
+   <build>
+     <resources/>
