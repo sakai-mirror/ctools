@@ -180,16 +180,16 @@
            output="${logs.dir}/${ant.project.name}.patches.log"
            append="true" >
        <arg value="-c" />
-       <arg value="svn status ${build.dir} | grep -E '^[M|\?]' | awk '{print $2}' | xargs tar -zcvf ${work.dir}/backup-`date '+%m_%d_%H%M%S'`.tgz" />
+       <arg value="find ${build.dir} -maxdepth 1 -type d -print0 | xargs -0 svn status | grep -E '^[M|\?]' | awk '{print $2}' | xargs tar -zcvf ${work.dir}/backup-`date '+%m_%d_%H%M%S'`.tgz" />
        </exec>
 
     <echo>Reverting the sources</echo>
     <exec executable="/bin/bash"
-	  failonerror="true"
+	  failonerror="false"
 	  output="${logs.dir}/${ant.project.name}.patches.log"
 	  append="true" >
 	  <arg value="-c"/>
-	  <arg value="svn revert -R ${build.dir}/*"/>
+	  <arg value="find ${build.dir} -maxdepth 1 -type d -print0 | xargs -0 svn status | grep -E '^[M]' | awk '{print $2}' | xargs svn revert"/>
       </exec>
       <echo>Cleaning up the newly created 'files' TODO:Make it detect files</echo>
     <exec executable="/bin/bash"
@@ -197,7 +197,7 @@
 	  output="${logs.dir}/${ant.project.name}.patches.log"
 	  append="true" >
 	  <arg value="-c"/>
-	  <arg value="svn status ${build.dir} | grep -E '^[\?]' | awk '{print $2}' | xargs rm" />
+	  <arg value="find ${build.dir} -maxdepth 1 -type d -print0 | xargs -0 svn status | grep -E '^[\?]' | awk '{print $2}' | xargs rm" />
   </exec>
 
   </target>
