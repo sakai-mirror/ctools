@@ -3,11 +3,23 @@
 
 <beans>
 
-  <bean id="org.sakaiproject.util.api.umiac.Umiac"
+	<!--  Umiac split into 2 parts , the connector and the client -->
+ <bean id="org.sakaiproject.util.api.umiac.UmiacConnector"
+	class="org.sakaiproject.util.impl.umiac.UmiacConnectorImpl"
+	init-method="init"
+	destroy-method="destroy"
+	singleton="true">
+	<property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property> 
+  </bean>
+
+  <bean id="org.sakaiproject.util.api.umiac.UmiacClient"
 	class="org.sakaiproject.util.impl.umiac.UmiacClientImpl"
 	init-method="init"
 	destroy-method="destroy"
 	singleton="true">
+	 <!--  <lookup-method name="memoryService" bean="org.sakaiproject.memory.api.MemoryService" /> -->
+	<property name="memoryService"><ref bean="org.sakaiproject.memory.api.MemoryService"/></property>
+   <property name="umiacConnector"><ref bean="org.sakaiproject.util.api.umiac.UmiacConnector"/></property> 
   </bean>
   
   <bean id="org.sakaiproject.user.api.UserDirectoryProvider"
@@ -17,7 +29,7 @@
 	singleton="true">
     <property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property> 
     <property name="method"><value>cosign</value></property>
-    <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
+    <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.UmiacClient"/></property>
     
   </bean>
 
@@ -26,12 +38,15 @@
 	init-method="init"
 	destroy-method="destroy"
 	singleton="true">
-    <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
+    <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.UmiacClient"/></property>
   </bean>
   
   
-  <bean id="org.sakaiproject.coursemanagement.api.CourseManagementService" class="org.sakaiproject.coursemanagement.impl.CourseManagementServiceUnivOfMichImpl" init-method="init" destroy-method="destroy">
-    <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
+  <bean id="org.sakaiproject.coursemanagement.api.CourseManagementService" 
+  	class="org.sakaiproject.coursemanagement.impl.CourseManagementServiceUnivOfMichImpl" 
+		init-method="init" 
+  		destroy-method="destroy">
+    <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.UmiacClient"/></property>
     <property name="sqlService"><ref bean="org.sakaiproject.db.api.SqlService"/></property>
   </bean>
 
@@ -42,7 +57,7 @@
 	singleton="true">
     <!--		<property name="eventTrackingService"><ref bean="org.sakaiproject.service.legacy.event.EventTrackingService"/></property> -->
     <property name="eventTrackingService"><ref bean="org.sakaiproject.event.api.EventTrackingService"/></property>
-    <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
+    <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.UmiacClient"/></property>
   </bean>
 
   <!-- add for the local provider implementation of section field manager -->
@@ -52,7 +67,7 @@
 	init-method="init"
 	destroy-method="destroy"
 	singleton="true">
-	<property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
+	<property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.UmiacClient"/></property>
 	<property name="courseManagementService"><ref bean="org.sakaiproject.coursemanagement.api.CourseManagementService"/></property>
   </bean>
   

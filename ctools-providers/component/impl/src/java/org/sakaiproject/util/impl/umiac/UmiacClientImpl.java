@@ -25,7 +25,7 @@
 // package
 package org.sakaiproject.util.impl.umiac;
 
-// imports
+//imports
 //import java.io.BufferedReader;
 //import java.io.InputStreamReader;
 //import java.io.InterruptedIOException;
@@ -42,6 +42,8 @@ import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+//import org.sakaiproject.alias.impl.BaseAliasService.Storage;
+//import org.sakaiproject.alias.impl.DbAliasService.DbStorage;
 import org.sakaiproject.exception.IdUnusedException;
 //import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.event.api.Event;
@@ -49,7 +51,8 @@ import org.sakaiproject.event.api.Event;
 //import org.sakaiproject.service.framework.log.cover.Logger;
 import org.sakaiproject.memory.api.Cache;
 import org.sakaiproject.memory.api.CacheRefresher;
-import org.sakaiproject.memory.cover.MemoryServiceLocator;
+import org.sakaiproject.memory.api.MemoryService;
+//import org.sakaiproject.memory.cover.MemoryServiceLocator;
 import org.sakaiproject.user.api.UserEdit;
 import org.sakaiproject.util.api.umiac.UmiacClient;
 import org.sakaiproject.util.StringUtil;
@@ -76,14 +79,8 @@ public class UmiacClientImpl
 	protected Cache m_callCache = null;
 
 	/** The one and only Umiac client. */
-	protected static UmiacClient M_instance = null;
-	
-	/** Socket timeout for Umiac response. This is the time 
-	 * to wait before a failure for Umiac to respond is considered an error.
-	 * This can be large since it won't have any effect during normal usage. */
-	
-	//protected int m_umiacSocketTimeout = 3000;
-	
+	protected static UmiacClient m_instance = null;
+
 	private static Log log = LogFactory.getLog(UmiacClientImpl.class);
 
 	/* default cache duration to 1 hour */
@@ -91,45 +88,48 @@ public class UmiacClientImpl
 	
 	private UmiacConnectorImpl m_uci = null;
 
+ /*
+	 * This used to have a constructor that called the MemoryService cover in
+	 * the constructor. Per suggestions from Ray Davis and Josh Holtsman, the
+	 * initialization has been moved to an init method and plain setter
+	 * injection will now work under Spring.
+	 */
+	
+	private MemoryService m_memory = null;	
+	
+	public MemoryService getMemoryService() {
+		return m_memory;
+	}
+
+	public void setMemoryService(MemoryService ms) {
+		this.m_memory = ms;
+	}
+
 	/**
-	* Construct, using the default production UMIAC instance.
+	* Default constructor, using the getMemory lookup method provided by Spring.
 	*/
-	protected UmiacClientImpl()
-	{
-//		// get the umiac address and port from the configuration service
-//		m_host = ServerConfigurationService.getString("umiac.address", null);
-//		try
-//		{
-//			m_port = Integer.parseInt(ServerConfigurationService.getString("umiac.port", "-1"));
-//		}
-//		catch (Exception ignore) {}
-//
-//		if (m_host == null)
-//		{
-//			log.warn(this + " - no 'umiac.address' in configuration");
-//		}
-//		if (m_port == -1)
-//		{
-//			log.warn(this + " - no 'umiac.port' in configuration (or invalid integer)");
-//		}
-
-		// build a synchronized map for the call cache, automatically checking for expiration every 15 mins.
-		m_callCache = MemoryServiceLocator.getInstance().newHardCache(this, 15 * 60);
-
-		if (M_instance == null)
-		{
-			M_instance = this;
-		}
-
-	}	// UmiacClient
+	
+//	protected UmiacClientImpl()
+//	{
+//	}	// 
 
 	/**
 	 * Final initialization, once all dependencies are set.
 	 */
 	public void init()
 	{
+		// build a synchronized map for the call cache, automatically checking for expiration every 15 mins.
+		//	m_callCache = MemoryServiceLocator.getInstance().newHardCache(this, 15 * 60);
+
 		try
 		{
+			m_callCache = m_memory.newHardCache(this, 15 * 60);
+
+			if (m_instance == null)
+			{
+				m_instance = this;
+			}
+
 			if (log.isDebugEnabled())
 			{
 				log.debug(this +".init()");
@@ -137,10 +137,7 @@ public class UmiacClientImpl
 		}
 		catch (Throwable t)
 		{
-			if (log.isDebugEnabled())
-			{
-				log.debug(this +".init(): ", t);
-			}
+			log.warn("init(): ", t);		
 		}
 	}
 
@@ -156,46 +153,6 @@ public class UmiacClientImpl
 	}
 
 	
-//	/* (non-Javadoc)
-//	 * @see org.sakaiproject.util.IUmiacClient#setPort(int)
-//	 */
-//	public void setPort(int port)
-//	{
-//		m_port = port;
-//
-//	}	// setPort
-//	
-//	/* (non-Javadoc)
-//	 * @see org.sakaiproject.util.IUmiacClient#getPort()
-//	 */
-//	public int getPort()
-//	{
-//		return m_port;
-//
-//	}	// getPort
-//	
-//	/* (non-Javadoc)
-//	 * @see org.sakaiproject.util.IUmiacClient#setHost(java.lang.String)
-//	 */
-//	public void setHost(String host)
-//	{
-//		m_host = host;
-//
-//	}	// setHost
-//	
-//	/* (non-Javadoc)
-//	 * @see org.sakaiproject.util.IUmiacClient#getHost()
-//	 */
-//	public String getHost()
-//	{
-//		return m_host;
-//
-//	}	// getHost
-//
-//	public void setUmiacSocketTimeout(int umiacSocketTimeout) {
-//		m_umiacSocketTimeout = umiacSocketTimeout;
-//	}
-
 	public int getCacheDurationSeconds() {
 		return cacheDurationSeconds;
 	}
@@ -235,11 +192,11 @@ public class UmiacClientImpl
 	}
 	*/
 	
-	public void setUci(UmiacConnectorImpl uci) {
+	public void setUmiacConnector(UmiacConnectorImpl uci) {
 		this.m_uci = uci;
 	}
 
-	public UmiacConnectorImpl getUci() {
+	public UmiacConnectorImpl getUmiacConnector() {
 		return m_uci;
 	}
 
@@ -248,6 +205,140 @@ public class UmiacClientImpl
 	 */
 	protected Object getCachedValue(String command) {
 		return (m_callCache != null) ? m_callCache.get(command) : null;		
+	}
+
+	/**
+	 * @inherit
+	 */
+	public String packId(String[] ids)
+	{
+		if(ids == null || ids.length == 0)
+		{
+			return null;
+		}
+		
+		if(ids.length == 1)
+		{
+			return ids[0];
+		}
+		
+		StringBuffer sb = new StringBuffer();
+		for(int i=0; i<ids.length; i++)
+		{
+			sb.append(ids[i]);
+			if(i < ids.length - 1)
+			{
+				sb.append("+");
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Unpack a multiple id that may contain many full ids connected with "+", each
+	 * of which may have multiple sections enclosed in []
+	 * @param id The multiple group id.
+	 * @return An array of strings of real umiac group ids, one for each in the multiple.
+	 */
+	public String[] unpackId(String id)
+	{
+		if (id == null) return null;
+	
+		Vector<String> returnVector = new Vector<String>();
+	
+		// first unpack the full ids
+		String[] first = unpackIdFull(id);
+	
+		// then, for each, unpack the sections
+		for (int i = 0; i < first.length; i++)
+		{
+			String[] second = unpackIdSections(first[i]);
+			for (int s = 0; s < second.length; s++)
+			{
+				returnVector.add(second[s]);
+			}
+		}
+	
+		String[] rv = (String[]) returnVector.toArray(new String[returnVector.size()]);
+	
+		return rv;
+	}
+
+	/**
+	 * Unpack a crosslisted multiple groupId into a set of individual group ids.
+	 * 2002,2,A,EDUC,504,[001,002,003,004,006]+2002,2,A,LSA,101,[002,003]+etc
+	 * @param id The crosslisted multiple group id.
+	 * @return An array of strings of real umiac group ids, one for each in the multiple.
+	 */
+	protected String[] unpackIdFull(String id)
+	{
+		String[] rv = null;
+	
+		// if there is not a '+' return just the id
+		int pos = id.indexOf('+');
+		if (pos == -1)
+		{
+			rv = new String[1];
+			rv[0] = id;
+		}
+		else
+		{
+			// split by the "+" separators
+			rv = StringUtil.split(id, "+");
+		}
+	
+		return rv;
+	}
+
+	/**
+	 * Unpack a multiple section groupId into a set of individual group ids.
+	 * 2002,2,A,EDUC,504,[001,002,003,004,006]
+	 * @param id The multiple section group id.
+	 * @return An array of strings of real umiac group ids, one for each section in the multiple.
+	 */
+	protected String[] unpackIdSections(String id)
+	{
+		String[] rv = null;
+	
+		// if there is not a '[' and a ']', or they are inverted or enclose an empty string,
+		// return just the id
+		int leftPos = id.indexOf('[');
+		int rightPos = id.indexOf(']');
+		if (!((leftPos != -1) && (rightPos != -1)) || (rightPos - leftPos <= 1))
+		{
+			rv = new String[1];
+			rv[0] = id;
+		}
+		else
+		{
+			// isolate the root
+			String root = id.substring(0, leftPos);
+	
+			// isolate the sections
+			String sectionString = id.substring(leftPos + 1, rightPos);
+	
+			// separate these
+			String sections[] = StringUtil.split(sectionString, ",");
+	
+			// handle misformed strings
+			if ((sections == null) || (sections.length == 0))
+			{
+				rv = new String[1];
+				rv[0] = id;
+			}
+	
+			else
+			{
+				// build a return for each section
+				rv = new String[sections.length];
+				for (int i = 0; i < sections.length; i++)
+				{
+					rv[i] = root + sections[i];
+				}
+			}
+		}
+	
+		return rv;
 	}
 
 	/* (non-Javadoc)
@@ -315,7 +406,7 @@ public class UmiacClientImpl
 	 * @param result
 	 * @return
 	 */
-	private String[] parseGetUserNameFromUmiacResult(Vector<String> result) {
+	protected String[] parseGetUserNameFromUmiacResult(Vector<String> result) {
 		String[] rv = new String[4];
 
 		// get the result string for the sort name [0]
@@ -386,7 +477,7 @@ public class UmiacClientImpl
 	 * @param id
 	 * @return
 	 */
-	private String parseGetGroupNameFromUmiacResult(String id) {
+	protected String parseGetGroupNameFromUmiacResult(String id) {
 		// parse the result string for the name
 		// 0: 1410|32220|Teach with Tech|https://chefproject.org/chef/portal/group/ED504|SEM|2002-09-03|2002-12-11|405000|School Of Education|EDU|Education
 //		String[] res = StringUtil.split((String)result.elementAt(0),"|");
@@ -453,7 +544,7 @@ public class UmiacClientImpl
 	 * @param result
 	 * @return
 	 */
-	private HashMap<String, String> parseGetGroupRolesFromUmiacResult(
+	protected HashMap<String, String> parseGetGroupRolesFromUmiacResult(
 			Vector<String> result) {
 		// store user id key to role value in return table
 		HashMap<String, String> map = new HashMap<String, String>();
@@ -514,7 +605,7 @@ public class UmiacClientImpl
 	 * @param map
 	 * @param result
 	 */
-	private void parseGetUserSectionFromUmiacResult(Map<String, String> map,
+	protected void parseGetUserSectionFromUmiacResult(Map<String, String> map,
 			Vector<String> result) {
 		// parse each line of the result
 		// ex: 2004,2,A,SI,653,001|Instructor|Primary
@@ -594,7 +685,7 @@ public class UmiacClientImpl
 	 * @param result
 	 * @return
 	 */
-	private HashMap<String, String> parseGetGroupRolesArrayFromUmiacResult(
+	protected HashMap<String, String> parseGetGroupRolesArrayFromUmiacResult(
 			Vector<String> result) {
 		// store user id key to role value in return table
 		HashMap<String, String> map = new HashMap<String, String>();
@@ -628,7 +719,7 @@ public class UmiacClientImpl
 	 * @param id
 	 * @return
 	 */
-	private String generateGetGroupRolesCommand(String[] id) {
+	protected String generateGetGroupRolesCommand(String[] id) {
 		StringBuffer commandBuf = new StringBuffer();
 		commandBuf.append("getGroupMemberships");
 		for (int i = 0; i < id.length; i++)
@@ -684,7 +775,7 @@ public class UmiacClientImpl
 	 * @param result
 	 * @return
 	 */
-	private Vector<String[]> splitUmiacResultString(Vector<String> result) {
+	protected Vector<String[]> splitUmiacResultString(Vector<String> result) {
 		Vector<String[]> rv = new Vector<String[]>();
 		for (int i = 0; i < result.size(); i++)
 		{
@@ -729,7 +820,7 @@ public class UmiacClientImpl
 	 * @param results
 	 * @return
 	 */
-	private String parseGetClassCategoryFromUmiacResult(Vector<String> results) {
+	protected String parseGetClassCategoryFromUmiacResult(Vector<String> results) {
 		String[] classInfos = StringUtil.split((String)results.get(0),"|");
 		// look up the category definition
 		Hashtable<String, String> categoryTable = getClassCategoryTable();
@@ -896,7 +987,7 @@ public class UmiacClientImpl
 	 * @param result
 	 * @return
 	 */
-	private Vector<String> parseGetUrlSectionsFromUmiac(Vector<String> result) {
+	protected Vector<String> parseGetUrlSectionsFromUmiac(Vector<String> result) {
 		Vector<String> rv = new Vector<String>();
 		for (int i = 0; i < result.size(); i++)
 		{
@@ -963,7 +1054,7 @@ public class UmiacClientImpl
 	 * @param rv
 	 * @param rv1
 	 */
-	private void parseGetCrossListingsByCourseOfferings(String year,
+	protected void parseGetCrossListingsByCourseOfferings(String year,
 			String term, String campus, String subject, String course,
 			Set<String> rv, List<String> rv1) {
 		for(Iterator<String> i = rv1.iterator(); i.hasNext();)
@@ -995,7 +1086,7 @@ public class UmiacClientImpl
 	/**
 	 * set up the class category look up table
 	 */
-	private Hashtable<String, String> getClassCategoryTable()
+	protected Hashtable<String, String> getClassCategoryTable()
 	{
 		Hashtable<String, String> rv = new Hashtable<String, String>();
 		rv.put("ACL", "Ambulatory Clinical");
@@ -1063,7 +1154,7 @@ public class UmiacClientImpl
 			result = m_uci.makeRawCall(command);
 		}
 		
-		Vector<String> rv = parseGetCrossListsingFromUmiac(result);
+		Vector<String> rv = parseGetCrossListingsFromUmiac(result);
 
 		// cache the results for awhile.
 		if (m_callCache != null) m_callCache.put(command, rv, cacheDurationSeconds);
@@ -1075,7 +1166,7 @@ public class UmiacClientImpl
 	 * @param result
 	 * @return
 	 */
-	private Vector<String> parseGetCrossListsingFromUmiac(Vector<String> result) {
+	protected Vector<String> parseGetCrossListingsFromUmiac(Vector<String> result) {
 		Vector<String> rv = new Vector<String>();
 		if (result != null && result.size() > 0)
 		{

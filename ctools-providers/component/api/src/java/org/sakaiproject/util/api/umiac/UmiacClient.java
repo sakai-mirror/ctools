@@ -12,29 +12,6 @@ import org.sakaiproject.user.api.UserEdit;
 
 public interface UmiacClient {
 
-//	/**
-//	 * Sets the port for the target UMIAC server.
-//	 * @param port The UMIAC port.
-//	 */
-//	public abstract void setPort(int port); // setPort
-//
-//	/**
-//	 * Gets the port for the target UMIAC server.
-//	 * @return The UMIAC port
-//	 */
-//	public abstract int getPort(); // getPort
-//
-//	/**
-//	 * Sets the host name for the target UMIAC server.
-//	 * @param host The UMIAC host name.
-//	 */
-//	public abstract void setHost(String host); // setHost
-//
-//	/**
-//	 * Gets the host name for the target UMIAC server.
-//	 * @return The host name for UMIAC.
-//	 */
-//	public abstract String getHost(); // getHost
 
 	/**
 	 * Get a name for a user by id, setting a first name and last name into the UserEdit.
@@ -42,6 +19,7 @@ public interface UmiacClient {
 	 * @exception IdUnusedException If there is no user by this id.
 	 */
 	public abstract void setUserNames(UserEdit edit) throws IdUnusedException; // setUserNames
+
 
 	/**
 	 * See if a user by this id exists.
@@ -187,24 +165,26 @@ public interface UmiacClient {
 	 */
 	public Set<String> getCrossListingsByCourseOffering(String year, String term, String campus, String subject, String course);
 	
-//	/**
-//	 * 
-//	 * @param ids
-//	 * @return
-//	 */
-//	public String packId(String[] ids);
-//	
-//	/**
-//	 * Unpack a multiple id that may contain many full ids connected with "+", each
-//	 * of which may have multiple sections enclosed in []
-//	 * @param id The multiple group id.
-//	 * @return An array of strings of real umiac group ids, one for each in the multiple.
-//	 */
-//	public String[] unpackId(String id);	// unpackId
-//	
 	/**
 	 * get the term index table
 	 */
 	public Hashtable<String, String> getTermIndexTable();
+	
+	/**
+	 * 
+	 * @param ids
+	 * @return
+	 */
+	public String packId(String[] ids);
+	
+	/**
+	 * Unpack a multiple id that may contain many full ids connected with "+", each
+	 * of which may have multiple sections enclosed in []
+	 * @param id The multiple group id.
+	 * @return An array of strings of real umiac group ids, one for each in the multiple.
+	 */
+	public String[] unpackId(String id);	// unpackId
+	
+
 	
 }

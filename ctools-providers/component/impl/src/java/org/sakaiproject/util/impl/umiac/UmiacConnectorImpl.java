@@ -31,28 +31,30 @@ import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Vector;
-import java.util.Set;
-import java.util.HashSet;
+//import java.util.HashMap;
+//import java.util.Hashtable;
+//import java.util.List;
+//import java.util.Iterator;
+//import java.util.Map;
+//
+//import java.util.Set;
+//import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.exception.IdUnusedException;
-import org.sakaiproject.component.cover.ServerConfigurationService;
-import org.sakaiproject.event.api.Event;
-//import org.sakaiproject.service.framework.log.cover.Log;
-//import org.sakaiproject.service.framework.log.cover.Logger;
-import org.sakaiproject.memory.api.Cache;
-import org.sakaiproject.memory.api.CacheRefresher;
-import org.sakaiproject.memory.cover.MemoryServiceLocator;
-import org.sakaiproject.user.api.UserEdit;
-import org.sakaiproject.util.api.umiac.UmiacClient;
-import org.sakaiproject.util.StringUtil;
+//import org.sakaiproject.exception.IdUnusedException;
+//import org.sakaiproject.component.cover.ServerConfigurationService;
+//import org.sakaiproject.event.api.Event;
+////import org.sakaiproject.service.framework.log.cover.Log;
+////import org.sakaiproject.service.framework.log.cover.Logger;
+//import org.sakaiproject.memory.api.Cache;
+//import org.sakaiproject.memory.api.CacheRefresher;
+//import org.sakaiproject.memory.cover.MemoryServiceLocator;
+//import org.sakaiproject.user.api.UserEdit;
+//import org.sakaiproject.util.api.umiac.UmiacClient;
+//import org.sakaiproject.component.api.ServerConfigurationService;
+import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.util.api.umiac.UmiacConnector;
 
 /**
@@ -76,7 +78,10 @@ public class UmiacConnectorImpl
 //	protected Cache m_callCache = null;
 
 	/** The one and only Umiac client. */
-	protected static UmiacClient M_instance = null;
+	//protected static UmiacClient M_instance = null;
+	
+	// server configuration
+	protected ServerConfigurationService serverConfigurationService = null;
 	
 	/** Socket timeout for Umiac response. This is the time 
 	 * to wait before a failure for Umiac to respond is considered an error.
@@ -86,8 +91,16 @@ public class UmiacConnectorImpl
 	
 	private static Log log = LogFactory.getLog(UmiacConnectorImpl.class);
 
-	/* default cache duration to 1 hour */
-	private int cacheDurationSeconds = 60 * 60;
+	// server configuration
+	
+	public ServerConfigurationService getServerConfigurationService() {
+		return serverConfigurationService;
+	}
+
+	public void setServerConfigurationService(
+			ServerConfigurationService serverConfigurationService) {
+		this.serverConfigurationService = serverConfigurationService;
+	}
 
 	/**
 	* Construct, using the default production UMIAC instance.
@@ -95,10 +108,12 @@ public class UmiacConnectorImpl
 	protected UmiacConnectorImpl()
 	{
 		// get the umiac address and port from the configuration service
-		m_host = ServerConfigurationService.getString("umiac.address", null);
+	//	m_host = ServerConfigurationService.getString("umiac.address", null);
+		m_host = serverConfigurationService.getString("umiac.address", null);
 		try
 		{
-			m_port = Integer.parseInt(ServerConfigurationService.getString("umiac.port", "-1"));
+//			m_port = Integer.parseInt(ServerConfigurationService.getString("umiac.port", "-1"));
+			m_port = Integer.parseInt(serverConfigurationService.getString("umiac.port", "-1"));
 		}
 		catch (Exception ignore) {}
 
@@ -110,14 +125,6 @@ public class UmiacConnectorImpl
 		{
 			log.warn(this + " - no 'umiac.port' in configuration (or invalid integer)");
 		}
-
-//		// build a synchronized map for the call cache, automatically checking for expiration every 15 mins.
-//		m_callCache = MemoryServiceLocator.getInstance().newHardCache(this, 15 * 60);
-//
-//		if (M_instance == null)
-//		{
-//			M_instance = this;
-//		}
 
 	}	// UmiacClient
 
@@ -152,19 +159,6 @@ public class UmiacConnectorImpl
 			log.debug(this +".destroy()");
 		}
 	}
-
-	
-	/**
-	* finalize
-	*/
-	protected void finalize()
-	{
-		if (this == M_instance)
-		{
-			M_instance = null;
-		}
-
-	}	// finalize
 
 	/* (non-Javadoc)
 	 * @see org.sakaiproject.util.IUmiacClient#setPort(int)
@@ -279,157 +273,7 @@ public class UmiacConnectorImpl
 		return v;
 	
 	}	// makeRawCall
-
-	/**
-	 * @inherit
-	 */
-	public String packId(String[] ids)
-	{
-		if(ids == null || ids.length == 0)
-		{
-			return null;
-		}
-		
-		if(ids.length == 1)
-		{
-			return ids[0];
-		}
-		
-		StringBuffer sb = new StringBuffer();
-		for(int i=0; i<ids.length; i++)
-		{
-			sb.append(ids[i]);
-			if(i < ids.length - 1)
-			{
-				sb.append("+");
-			}
-		}
-		return sb.toString();
-	}
 	
-	/**
-	 * Unpack a multiple id that may contain many full ids connected with "+", each
-	 * of which may have multiple sections enclosed in []
-	 * @param id The multiple group id.
-	 * @return An array of strings of real umiac group ids, one for each in the multiple.
-	 */
-	public String[] unpackId(String id)
-	{
-		if (id == null) return null;
-
-		Vector<String> returnVector = new Vector<String>();
-
-		// first unpack the full ids
-		String[] first = unpackIdFull(id);
-
-		// then, for each, unpack the sections
-		for (int i = 0; i < first.length; i++)
-		{
-			String[] second = unpackIdSections(first[i]);
-			for (int s = 0; s < second.length; s++)
-			{
-				returnVector.add(second[s]);
-			}
-		}
-
-		String[] rv = (String[]) returnVector.toArray(new String[returnVector.size()]);
-
-		return rv;
-	}
-
-	/**
-	 * Unpack a crosslisted multiple groupId into a set of individual group ids.
-	 * 2002,2,A,EDUC,504,[001,002,003,004,006]+2002,2,A,LSA,101,[002,003]+etc
-	 * @param id The crosslisted multiple group id.
-	 * @return An array of strings of real umiac group ids, one for each in the multiple.
-	 */
-	protected String[] unpackIdFull(String id)
-	{
-		String[] rv = null;
-
-		// if there is not a '+' return just the id
-		int pos = id.indexOf('+');
-		if (pos == -1)
-		{
-			rv = new String[1];
-			rv[0] = id;
-		}
-		else
-		{
-			// split by the "+" separators
-			rv = StringUtil.split(id, "+");
-		}
-
-		return rv;
-	}
-
-	/**
-	 * Unpack a multiple section groupId into a set of individual group ids.
-	 * 2002,2,A,EDUC,504,[001,002,003,004,006]
-	 * @param id The multiple section group id.
-	 * @return An array of strings of real umiac group ids, one for each section in the multiple.
-	 */
-	protected String[] unpackIdSections(String id)
-	{
-		String[] rv = null;
-
-		// if there is not a '[' and a ']', or they are inverted or enclose an empty string,
-		// return just the id
-		int leftPos = id.indexOf('[');
-		int rightPos = id.indexOf(']');
-		if (!((leftPos != -1) && (rightPos != -1)) || (rightPos - leftPos <= 1))
-		{
-			rv = new String[1];
-			rv[0] = id;
-		}
-		else
-		{
-			// isolate the root
-			String root = id.substring(0, leftPos);
-
-			// isolate the sections
-			String sectionString = id.substring(leftPos + 1, rightPos);
-
-			// separate these
-			String sections[] = StringUtil.split(sectionString, ",");
-
-			// handle misformed strings
-			if ((sections == null) || (sections.length == 0))
-			{
-				rv = new String[1];
-				rv[0] = id;
-			}
-
-			else
-			{
-				// build a return for each section
-				rv = new String[sections.length];
-				for (int i = 0; i < sections.length; i++)
-				{
-					rv[i] = root + sections[i];
-				}
-			}
-		}
-
-		return rv;
-	}
-	
-	/**
-	* Get a new value for this key whose value has already expired in the cache.
-	* @param key The key whose value has expired and needs to be refreshed.
-	* @param oldValue The old expired value of the key.
-	* @param event The event which triggered this refresh.
-	* @return a new value for use in the cache for this key; if null, the entry will be removed.
-	*/
-//	public Object refresh(Object key, Object oldValue, Event event)
-//	{
-//		// instead of refreshing when an entry expires, let it go and we'll get it again if needed -ggolden
-//		// return makeRawCall((String)key);
-//
-//		return null;
-//
-//	}	// refresh
-
 }	// class UmiacClient
 
 /**********************************************************************************/
