@@ -21,20 +21,22 @@
 
 package org.sakaiproject.metaobj.shared.mgt.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ContentResource;
+import org.sakaiproject.content.api.ResourceType;
+import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.metaobj.shared.mgt.AgentManager;
 import org.sakaiproject.metaobj.shared.mgt.IdManager;
-import org.sakaiproject.metaobj.shared.model.Id;
 import org.sakaiproject.metaobj.shared.model.Agent;
 import org.sakaiproject.metaobj.shared.model.ContentResourceArtifact;
+import org.sakaiproject.metaobj.shared.model.Id;
 import org.sakaiproject.metaobj.shared.model.MimeType;
-import org.sakaiproject.entity.api.ResourceProperties;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Created by IntelliJ IDEA.
@@ -49,20 +51,22 @@ public class WrappedStructuredArtifactFinder  extends FileArtifactFinder {
    private AgentManager agentManager;
    private IdManager idManager;
    private int finderPageSize = 1000;
+   
+   private static Log log = LogFactory.getLog(WrappedStructuredArtifactFinder.class);
 
    public Collection findByOwnerAndType(Id owner, String type) {
-      List artifacts = getContentHostingService().findResources(type,
-            null, null);
+      Collection<ContentResource> artifacts = findArtifacts(type);
+      ArrayList<ContentResourceArtifact> returned = new ArrayList<ContentResourceArtifact>();
 
-      Collection returned = new ArrayList();
-
-      for (Iterator i = artifacts.iterator(); i.hasNext();) {
-         ContentResource resource = (ContentResource) i.next();
+      if (owner == null)
+    	  log.info("Null owner passed to findByOwnerAndType -- returning all users' forms");
+      
+      for (Iterator<ContentResource> i = artifacts.iterator(); i.hasNext();) {
+         ContentResource resource = i.next();
          Agent resourceOwner = getAgentManager().getAgent(resource.getProperties().getProperty(ResourceProperties.PROP_CREATOR));
          Id resourceId = getIdManager().getId(getContentHostingService().getUuid(resource.getId()));
          returned.add(new ContentResourceArtifact(resource, resourceId, resourceOwner));
       }
-
       return returned;
    }
 
@@ -131,4 +135,54 @@ public class WrappedStructuredArtifactFinder  extends FileArtifactFinder {
    public void setFinderPageSize(int finderPageSize) {
       this.finderPageSize = finderPageSize;
    }
+  
+	/**
+	 * Find artifacts of a specific type; may be null to find all.
+	 * 
+	 * @deprecated This is a temporary method to avoid code duplication - it is
+	 *             called by findByOwnerAndType here and findByType in
+	 *             StructuredArtifactFinder
+	 * @param type
+	 *            The Form type to retrieve; may be null to get all types
+	 * @return A filtered collection of ContentResource objects for readable Forms of the specific type
+	 */
+	@Deprecated
+	protected Collection<ContentResource> findArtifacts(String type) {
+		//FIXME: Document exactly why WrappedStructuredArtifactFinder.findByType() returns null
+		//TODO: Refactor Wrapped vs. Structured
+		ArrayList<ContentResource> artifacts = new ArrayList<ContentResource>();
+		int page = 0;
+		Collection<ContentResource> rawResources = getContentHostingService()
+				.getResourcesOfType(ResourceType.TYPE_METAOBJ, getFinderPageSize(), page);
+		while (rawResources != null && rawResources.size() > 0) {
+			artifacts.addAll(filterArtifacts(rawResources, type));
+			page++;
+			rawResources = getContentHostingService().getResourcesOfType(
+					ResourceType.TYPE_METAOBJ, getFinderPageSize(), page);
+		}
+		return artifacts;
+	}
+   
+   /**
+	 * Filter a collection of artifacts down to a specific Structured Object/Form type, in place.
+	 * 
+	 * @param artifacts
+	 *            The Collection<ContentResource> to filter - should contain only resources for Forms
+	 * @param type
+	 *            The Form type filter on; may be null to get all Form types
+	 * @return The original collection of artifacts, with non-matching Forms
+	 *         removed
+	 */
+	protected Collection<ContentResource> filterArtifacts(Collection<ContentResource> artifacts, String type) {
+		for (Iterator<ContentResource> i = artifacts.iterator(); i.hasNext();) {
+			ContentResource resource = i.next();
+			String currentType = resource.getProperties().getProperty(ResourceProperties.PROP_STRUCTOBJ_TYPE);
+			if (currentType == null)
+				log.warn("Unexpected null form type on resource: " + resource.getReference());
+		   
+			if (type != null && !type.equals(currentType))
+				i.remove();
+		}
+		return artifacts;
+	}
 }
