@@ -251,16 +251,16 @@
 										<osp:param name="objectTitle" value="${objectTitle}" />
                               <osp:param name="sakai_helperSessionId" value="${cell.uniqueId}" />
 										</osp:url>"
-						onclick="javascript:stopEvents(event)"> <fmt:message
-						key="action_createForm" /> <c:out value="${cellFormDef.name}" />
-					</a> | <a
+						onclick="javascript:stopEvents(event)"><fmt:message
+						key="action_createForm" /><c:out value="${cellFormDef.name}" /></a>
+					| <a
 						href="<osp:url value="osp.wizard.page.contents.helper/cellFormPicker.osp">
 										<osp:param name="page_id" value="${cell.wizardPage.id}" />
 										<osp:param name="attachFormAction" value="${cellFormDef.id}" />
                               <osp:param name="sakai_helperSessionId" value="${cell.uniqueId}" />
 										</osp:url>"
-						onclick="javascript:stopEvents(event)"> <fmt:message
-						key="action_chooseForms" /> <c:out value="${cellFormDef.name}" /></a>
+						onclick="javascript:stopEvents(event)"><fmt:message
+						key="action_chooseForms" /><c:out value="${cellFormDef.name}" /></a>
 					</div>
 				</c:when>
 				<c:otherwise>
@@ -311,9 +311,8 @@
                             <osp:param name="current_form_id" value="${node.resource.id}" />
                             <osp:param name="sakai_helperSessionId" value="${cell.uniqueId}" />
                             </osp:url>"
-							title="<fmt:message key="edit"/>"> <img
-							src="/library/image/silk/application_form_edit.png"
-							alt="<fmt:message key="edit"/>" /> </a>
+							title="<fmt:message key="edit"/>">
+							<fmt:message key="edit"/></a>
                         |
                         <a
 							href="<osp:url value="osp.wizard.page.contents.helper/formDelete.osp">
@@ -322,13 +321,12 @@
                             <osp:param name="current_form_id" value="${node.id}" />
                             <osp:param name="submit" value="delete" />
                             </osp:url>"
-							title="<fmt:message key="delete"/>"><img
-							src="/library/image/silk/application_form_delete.png"
-							alt="<fmt:message key="delete"/>" /></a>
+							title="<fmt:message key="remove"/>">
+							<fmt:message key="remove"/></a>
 					</c:if> 
 				
 					<c:if
-						test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null && allowItemFeedback[loopStatus.index]}">
+						test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null && allowItemFeedback[loopStatus.index] && cell.status != 'COMPLETE'}">
 						<c:if test="${showUserButtons}"> | </c:if>
 						<a
 							href="<osp:url value="osp.review.processor.helper/reviewHelper.osp">
@@ -340,9 +338,8 @@
                           <osp:param name="objectTitle" value="${objectTitle}" />
                           <osp:param name="itemId" value="${node.id}" />
                           <osp:param name="sakai_helperSessionId" value="${cell.uniqueId}" />
-                          </osp:url>">
-								  <osp:message	key="review" />
-						</a>
+                          </osp:url>"
+							title="<fmt:message key="review"/>"> <fmt:message key="review"/></a>
 					</c:if></div>
 					</td>
 					<td><c:out value="${node.technicalMetadata.owner.displayName}" />
@@ -366,7 +363,36 @@
 									value="${object.reviewContentNode.displayName}" /></a>
 							</c:if> </span></h6>
 							</td>
-							<td></td>
+							<td>
+								<!-- Allow Reviewers to edit/delete feedback -->
+								<c:if
+									test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.status != 'COMPLETE' }">
+									<a
+										href="<osp:url value="osp.review.processor.helper/reviewHelper.osp">
+												<osp:param name="page_id" value="${cell.wizardPage.id}" />
+												<osp:param name="org_theospi_portfolio_review_type" value="2" />
+												<osp:param name="current_review_id" value="${object.reviewContentNode.resource.id}" />
+												<osp:param name="review_id" value="${object.id}"/>
+												<osp:param name="process_type_key" value="page_id" />
+												<osp:param name="sakai_helperSessionId" value="${cell.uniqueId}" />
+											  </osp:url>"
+										title="<fmt:message key="edit"/>"> 
+												<fmt:message key="edit"/>
+									</a>
+											|
+									<a
+										href="<osp:url value="osp.wizard.page.contents.helper/formDelete.osp">
+												 <osp:param name="page_id" value="${cell.wizardPage.id}" />
+												 <osp:param name="formDefId" value="${cell.scaffoldingCell.reviewDevice}" />
+												 <osp:param name="current_form_id" value="${object.reviewContentNode.resource.id}" />
+												 <osp:param name="review_id" value="${object.id}"/>
+												 <osp:param name="submit" value="deleteReview" />
+												 </osp:url>"
+										title="<fmt:message key="delete"/>">
+												<fmt:message key="remove"/>
+									</a>
+								</c:if>
+							</td>
 							<td><c:out
 								value="${object.reviewContentNode.technicalMetadata.owner.displayName}" />
 							</td>
@@ -470,11 +496,10 @@
 						   <osp:param name="submit" value="delete"/>
 						   </osp:url>"
 					onclick="javascript:stopEvents(event)"
-					title="<fmt:message key="delete"/>"> <img
-					src="/library/image/silk/page_white_delete.png"
-					alt="<fmt:message key="delete"/>" /> </a>
+					title="<fmt:message key="remove"/>"> 
+					<fmt:message key="remove"/></a>
 			</c:if> <c:if
-				test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null}">
+				test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null  && cell.status != 'COMPLETE'}">
 				<a
 					href="<osp:url value="osp.review.processor.helper/reviewHelper.osp">
                           <osp:param name="page_id" value="${cell.wizardPage.id}" />
@@ -509,7 +534,36 @@
 						target="_blank"> <c:out
 						value="${object.reviewContentNode.displayName}" /></a> </span></h6>
 					</td>
-					<td></td>
+					<td>
+						<!-- Allow Reviewers to edit/delete feedback -->
+						<c:if
+							test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.status != 'COMPLETE' }">
+							<a
+								href="<osp:url value="osp.review.processor.helper/reviewHelper.osp">
+										<osp:param name="page_id" value="${cell.wizardPage.id}" />
+										<osp:param name="org_theospi_portfolio_review_type" value="2" />
+										<osp:param name="current_review_id" value="${object.reviewContentNode.resource.id}" />
+										<osp:param name="review_id" value="${object.id}"/>
+										<osp:param name="process_type_key" value="page_id" />
+										<osp:param name="sakai_helperSessionId" value="${cell.uniqueId}" />
+										</osp:url>"
+								title="<fmt:message key="edit"/>"> 
+										<fmt:message key="edit"/>
+								 </a>
+										 |
+								 <a
+								href="<osp:url value="osp.wizard.page.contents.helper/formDelete.osp">
+										<osp:param name="page_id" value="${cell.wizardPage.id}" />
+										<osp:param name="formDefId" value="${cell.scaffoldingCell.reviewDevice}" />
+										<osp:param name="current_form_id" value="${object.reviewContentNode.resource.id}" />
+										<osp:param name="review_id" value="${object.id}"/>
+										<osp:param name="submit" value="deleteReview" />
+										</osp:url>"
+								title="<fmt:message key="delete"/>">
+										<fmt:message key="remove"/>
+								 </a>
+							 </c:if>
+					</td>
 					<td><c:out
 						value="${object.reviewContentNode.technicalMetadata.owner.displayName}" />
 					</td>
@@ -602,9 +656,8 @@
 				target="_blank"> <c:out
 				value="${reflections[0].reviewContentNode.displayName}" /> </a>
 		<c:if test="${cell.status == 'READY' and readOnlyMatrix != 'true'}">
-			<span class="itemAction"> <img
-				src="/library/image/silk/application_form_edit.png"
-				alt="<fmt:message key="edit"/>" /> <a
+			<span class="itemAction"> 
+				<a
 				href="<osp:url value="osp.review.processor.helper/reviewHelper.osp">
 						   <osp:param name="page_id" value="${cell.wizardPage.id}" />
 						   <osp:param name="org_theospi_portfolio_review_type" value="0" />
@@ -682,7 +735,7 @@
 			<td>
 			
 			<div class="itemAction"><c:if
-				test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null && allowGeneralFeedback}">
+				test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null && allowGeneralFeedback && cell.status != 'COMPLETE'}">
 				<a
 					href="<osp:url value="osp.review.processor.helper/reviewHelper.osp">
 						<osp:param name="page_id" value="${cell.wizardPage.id}" />
@@ -711,12 +764,41 @@
 			<c:if test="${empty object.itemId}">
 				<tr>
 
-					<td colspan="2">
+					<td>
 					<h5><span class="indnt2"> <img
 						src='/library/image/silk/comment.gif' border='0' hspace='0' alt="" />
 					<a href='<c:out value="${object.reviewContentNode.externalUri}"/>'
 						target="_blank"> <c:out
 						value="${object.reviewContentNode.displayName}" /></a> </span></h5>
+					</td>
+					<td>
+						<!-- Allow Reviewers to edit/delete feedback -->
+						<c:if
+							test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.status != 'COMPLETE'}">
+							<a
+								href="<osp:url value="osp.review.processor.helper/reviewHelper.osp">
+										<osp:param name="page_id" value="${cell.wizardPage.id}" />
+										<osp:param name="org_theospi_portfolio_review_type" value="2" />
+										<osp:param name="current_review_id" value="${object.reviewContentNode.resource.id}" />
+										<osp:param name="process_type_key" value="page_id" />
+										<osp:param name="sakai_helperSessionId" value="${cell.uniqueId}" />
+									  </osp:url>"
+								title="<fmt:message key="edit"/>"> 
+										<fmt:message key="edit"/>
+							</a>
+									|
+							<a
+								href="<osp:url value="osp.wizard.page.contents.helper/formDelete.osp">
+										<osp:param name="page_id" value="${cell.wizardPage.id}" />
+										<osp:param name="formDefId" value="${cell.scaffoldingCell.reviewDevice}" />
+										<osp:param name="current_form_id" value="${object.reviewContentNode.resource.id}" />
+										<osp:param name="review_id" value="${object.id}"/>
+										<osp:param name="submit" value="deleteReview" />
+										</osp:url>"
+								title="<fmt:message key="delete"/>">
+										<fmt:message key="remove"/>
+							</a>
+						</c:if>
 					</td>
 					<td><c:out
 						value="${object.reviewContentNode.technicalMetadata.owner.displayName}" />
@@ -783,13 +865,44 @@
 		</tr>
 		<c:forEach var="object" items="${evaluations}" varStatus="loopStatus">
 			<tr>
-				<td colspan="2">
+				<td>
 				<h5><span class="indnt2"> <img
 					src='/library/image/silk/comments.gif' border='0' hspace='0' alt="" />
 				<a href='<c:out value="${object.reviewContentNode.externalUri}"/>'
 					target="_blank"> <c:out
 					value="${object.reviewContentNode.displayName}" /></a> </span></h5>
 				</td>
+            
+				<td>
+					<!-- Allow Reviewers to edit/delete Evaluations -->
+					<c:if
+						test="${((isWizard != 'true' && matrixCan.evaluate) || (isWizard == 'true' && wizardCan.evaluate)) && cell.status == 'PENDING'}">
+						<a
+							href="<osp:url value="osp.review.processor.helper/reviewHelper.osp">
+									<osp:param name="page_id" value="${cell.wizardPage.id}" />
+									<osp:param name="org_theospi_portfolio_review_type" value="1" />
+									<osp:param name="current_review_id" value="${object.reviewContentNode.resource.id}" />
+									<osp:param name="process_type_key" value="page_id" />
+									<osp:param name="sakai_helperSessionId" value="${cell.uniqueId}" />
+								  </osp:url>"
+							title="<fmt:message key="edit"/>"> 
+									<fmt:message key="edit"/>
+						</a>
+								|
+						<a
+							href="<osp:url value="osp.wizard.page.contents.helper/formDelete.osp">
+									 <osp:param name="page_id" value="${cell.wizardPage.id}" />
+									 <osp:param name="formDefId" value="${cell.scaffoldingCell.reviewDevice}" />
+									 <osp:param name="current_form_id" value="${object.reviewContentNode.resource.id}" />
+									 <osp:param name="review_id" value="${object.id}"/>
+									 <osp:param name="submit" value="deleteReview" />
+									 </osp:url>"
+							title="<fmt:message key="delete"/>">
+									<fmt:message key="remove"/>
+						</a>
+					</c:if>
+				</td>
+         
 				<td><c:out
 					value="${object.reviewContentNode.technicalMetadata.owner.displayName}" />
 				</td>
