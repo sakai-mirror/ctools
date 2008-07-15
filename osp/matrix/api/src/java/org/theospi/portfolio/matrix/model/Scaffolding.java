@@ -34,25 +34,9 @@ import org.theospi.portfolio.style.model.Style;
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.cover.SiteService;
 import org.sakaiproject.exception.IdUnusedException;
+import org.theospi.portfolio.shared.model.WizardMatrixConstants;
 
 /**
- * I. Communication
- * A. Writing
- * B. Public Speaking
- * II. Critical Thinking
- * A. Logic
- * B. Analysis
- * III. Integration & Application of Knowledge
- * IV. Values & Ethics
- *
-           <bean class="org.sakaiproject.warehouse.impl.BeanPropertyAccess">
-              <property name="propertyName"><value>documentRoot</value></property>
-           </bean>
-           <bean class="org.sakaiproject.warehouse.impl.IdPropertyAccess">
-              <property name="propertyName"><value>privacyXsdId</value></property>
-           </bean> 
-          
- * @author apple
  */
 public class Scaffolding extends IdentifiableObject implements Serializable {
    private Id id;
@@ -86,17 +70,17 @@ public class Scaffolding extends IdentifiableObject implements Serializable {
    
    private int workflowOption;
    private int reviewerGroupAccess;
+   private int generalFeedbackOption;
+   private int itemFeedbackOption;
    private Set matrix = new HashSet();
    
+	// Dependent on ordering of <c:forTokens> in addScaffolding.jsp
    public static final int NO_PROGRESSION = 0;
    public static final int HORIZONTAL_PROGRESSION = 1;
    public static final int VERTICAL_PROGRESSION = 2;
    public static final int OPEN_PROGRESSION = 3;
    public static final int MANUAL_PROGRESSION = 4;
    
-   public static final int NORMAL_GROUP_ACCESS = 0;
-   public static final int UNRESTRICTED_GROUP_ACCESS = 1;
-
    public Scaffolding() {}
    
    public Scaffolding (String columnLabel, String rowLabel) {
@@ -368,11 +352,45 @@ public class Scaffolding extends IdentifiableObject implements Serializable {
    public int getReviewerGroupAccess() {
 	   return reviewerGroupAccess;
    }
-   
+
    public void setReviewerGroupAccess(int reviewerGroupAccess) {
 	   this.reviewerGroupAccess = reviewerGroupAccess;
    }
 
+   public int getGeneralFeedbackOption() {
+	   return generalFeedbackOption;
+   }
+   public void setGeneralFeedbackOption(int feedbackOption) {
+	   this.generalFeedbackOption = feedbackOption;
+   }
+
+   public boolean isGeneralFeedbackOpen() {
+	   return generalFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_OPEN;
+   }
+   public boolean isGeneralFeedbackSingle() {
+	   return generalFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_SINGLE;
+   }
+   public boolean isGeneralFeedbackNone() {
+	   return generalFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_NONE;
+   }
+   
+   public int getItemFeedbackOption() {
+	   return itemFeedbackOption;
+   }
+   public void setItemFeedbackOption(int feedbackOption) {
+	   this.itemFeedbackOption = feedbackOption;
+   }
+
+   public boolean isItemFeedbackOpen() {
+	   return itemFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_OPEN;
+   }
+   public boolean isItemFeedbackSingle() {
+	   return itemFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_SINGLE;
+   }
+   public boolean isItemFeedbackNone() {
+	   return itemFeedbackOption == WizardMatrixConstants.FEEDBACK_OPTION_NONE;
+   }
+   
    public Set getMatrix() {
       return matrix;
    }

@@ -289,6 +289,7 @@
 			<c:if
 				test="${node.fileType == cellFormDef.id or allowedNodeType == ''}">
 				<c:set var="canReflect" value="true" />
+				<c:set var="showUserButtons" value="${cell.status == 'READY' and readOnlyMatrix != 'true' and not node.isLocked}" />
 
 				<tr>
 					<td>
@@ -301,7 +302,7 @@
 					</td>
 					<td style="white-space: nowrap">
 					<div class="itemAction">
-					<c:if	test="${cell.status == 'READY' and readOnlyMatrix != 'true'}">
+					<c:if	test="${showUserButtons}">
 
 						<a
 							href="<osp:url value="osp.wizard.page.contents.helper/cellFormPicker.osp">
@@ -324,13 +325,11 @@
 							title="<fmt:message key="delete"/>"><img
 							src="/library/image/silk/application_form_delete.png"
 							alt="<fmt:message key="delete"/>" /></a>
-						<c:if
-							test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null}">
-                        |
-                  </c:if>
 					</c:if> 
+				
 					<c:if
-						test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null}">
+						test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null && allowItemFeedback[loopStatus.index]}">
+						<c:if test="${showUserButtons}"> | </c:if>
 						<a
 							href="<osp:url value="osp.review.processor.helper/reviewHelper.osp">
                           <osp:param name="page_id" value="${cell.wizardPage.id}" />
@@ -341,8 +340,9 @@
                           <osp:param name="objectTitle" value="${objectTitle}" />
                           <osp:param name="itemId" value="${node.id}" />
                           <osp:param name="sakai_helperSessionId" value="${cell.uniqueId}" />
-                          </osp:url>"><osp:message
-							key="review" /></a>
+                          </osp:url>">
+								  <osp:message	key="review" />
+						</a>
 					</c:if></div>
 					</td>
 					<td><c:out value="${node.technicalMetadata.owner.displayName}" />
@@ -666,7 +666,7 @@
 <!-- ************* General Review (Feedback) Area Start ************* -->
 
 <c:if
-	test="${(((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null) || not empty reviews}">
+	test="${( ((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null && not generalFeedbackNone) || (not empty reviews && not generalFeedbackNone)}">
 	<table class="matrixCellList" cellpadding="0" cellspacing="0"
 		border="0" summary="">
 		<tr>
@@ -680,8 +680,9 @@
 			<h5><osp:message key="reviews_section_header" /></h5>
 			</td>
 			<td>
+			
 			<div class="itemAction"><c:if
-				test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null}">
+				test="${((isWizard != 'true' && matrixCan.review) || (isWizard == 'true' && wizardCan.review)) && cell.scaffoldingCell.reviewDevice != null && allowGeneralFeedback}">
 				<a
 					href="<osp:url value="osp.review.processor.helper/reviewHelper.osp">
 						<osp:param name="page_id" value="${cell.wizardPage.id}" />

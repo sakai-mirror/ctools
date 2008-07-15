@@ -66,6 +66,7 @@ import org.theospi.portfolio.review.mgt.ReviewManager;
 import org.theospi.portfolio.review.model.Review;
 import org.theospi.portfolio.shared.model.Node;
 import org.theospi.portfolio.shared.model.CommonFormBean;
+import org.theospi.portfolio.shared.model.WizardMatrixConstants;
 import org.theospi.portfolio.style.model.Style;
 import org.theospi.portfolio.style.mgt.StyleManager;
 import org.theospi.portfolio.security.AuthorizationFacade;
@@ -115,11 +116,12 @@ public class CellController implements FormController, LoadObjectController {
 
 	public Map referenceData(Map request, Object command, Errors errors) {
 		ToolSession session = getSessionManager().getCurrentToolSession();
-
+		Boolean readOnly = new Boolean(false);
 		CellFormBean cell = (CellFormBean) command;
 		Map model = new HashMap();
 
 		model.put("isMatrix", "true");
+		model.put("isWizard", "false");
 		model.put("currentUser", getSessionManager().getCurrentSessionUserId());
 		model.put("CURRENT_GUIDANCE_ID_KEY", "session."
 				+ GuidanceManager.CURRENT_GUIDANCE_ID);
@@ -143,36 +145,42 @@ public class CellController implements FormController, LoadObjectController {
 		}
 
 		String pageId = cell.getCell().getWizardPage().getId().getValue();
-		String siteId = cell.getCell().getWizardPage().getPageDefinition()
-				.getSiteId();
+		String siteId = cell.getCell().getWizardPage().getPageDefinition().getSiteId();
+		List reviews =	
+			getReviewManager().getReviewsByParentAndType( pageId, Review.FEEDBACK_TYPE, siteId, getEntityProducer() );
+		Set cellForms = getMatrixManager().getPageForms(cell.getCell().getWizardPage());
 
 		model.put("assignments", getUserAssignments(cell)); 
-		model.put("reviews", getReviewManager().getReviewsByParentAndType(
-				pageId, Review.FEEDBACK_TYPE, siteId, getEntityProducer()));
+		model.put("reviews", reviews ); // feedback
 		model.put("evaluations", getReviewManager().getReviewsByParentAndType(
 				pageId, Review.EVALUATION_TYPE, siteId, getEntityProducer()));
 		model.put("reflections", getReviewManager().getReviewsByParentAndType(
 				pageId, Review.REFLECTION_TYPE, siteId, getEntityProducer()));
-
 		model.put("cellFormDefs", processAdditionalForms(cell.getCell()
 				.getScaffoldingCell().getAdditionalForms()));
-
-		model.put("cellForms", getMatrixManager().getPageForms(
-				cell.getCell().getWizardPage()));
-
-		Boolean readOnly = new Boolean(false);
-
+		model.put("cellForms", cellForms );
+				
+		// Matrix-only initializations
 		if (cell.getCell().getMatrix() != null) {
+			model.put("allowItemFeedback", 
+						 getAllowItemFeedback( cell.getCell().getScaffoldingCell().getScaffolding().getItemFeedbackOption(), reviews, cellForms) );
+			model.put("allowGeneralFeedback", 
+						 getAllowGeneralFeedback( cell.getCell().getScaffoldingCell().getScaffolding().getGeneralFeedbackOption(), reviews) );
+			model.put("generalFeedbackNone", cell.getCell().getScaffoldingCell().getScaffolding().isGeneralFeedbackNone());
+						 
 			Agent owner = cell.getCell().getMatrix().getOwner();
 			readOnly = isReadOnly(owner, cell.getCell().getMatrix()
 					.getScaffolding().getWorksiteId());
+					
+			Cell pageCell = getMatrixManager().getCellFromPage(getIdManager().getId(pageId));
+			Scaffolding scaffolding = pageCell.getMatrix().getScaffolding();
+				
+			model.put("objectId", scaffolding.getId().getValue());
+			model.put("objectTitle", scaffolding.getTitle());
+			model.put("objectDesc", scaffolding.getDescription());
 		}
-		model.put("readOnlyMatrix", readOnly);
 
-		String[] objectMetadata = getObjectMetadata(pageId, request);
-		model.put("objectId", objectMetadata[METADATA_ID_INDEX]);
-		model.put("objectTitle", objectMetadata[METADATA_TITLE_INDEX]);
-		model.put("objectDesc", objectMetadata[METADATA_DESC_INDEX]);
+		model.put("readOnlyMatrix", readOnly);
 
       model.put("styles",
          createStylesList(getStyleManager().getStyles(getIdManager().getId(pageId))));
@@ -196,7 +204,73 @@ public class CellController implements FormController, LoadObjectController {
 		clearSession(session);
 		return model;
 	}
+	
+	/**
+	 ** Return true if general feedback is allowed based on feedback options
+	 **/
+	protected Boolean getAllowGeneralFeedback( int feedbackOption, List reviews )
+	{
+		boolean allowGeneralFeedback = true;
+		
+		if ( feedbackOption==WizardMatrixConstants.FEEDBACK_OPTION_SINGLE )
+		{
+			for (Iterator it=reviews.iterator(); it.hasNext();)
+			{
+				if ( ((Review)it.next()).getItemId() == null )
+				{
+					allowGeneralFeedback = false;
+					break;
+				}
+			}
+		}
+		else if ( feedbackOption==WizardMatrixConstants.FEEDBACK_OPTION_NONE )
+		{
+			allowGeneralFeedback = false;
+		}
+		
+		return new Boolean(allowGeneralFeedback);
+	}
 
+	/**
+	 ** Return boolean array if item feedback is allowed based on feedback options
+	 **/
+	protected Boolean[] getAllowItemFeedback( int feedbackOption, List reviews, Set<Node> cellForms )
+	{
+		Boolean[] allowItemFeedback = new Boolean[cellForms.size()];
+		int index = -1;
+		
+		for (Iterator cIt=cellForms.iterator(); cIt.hasNext();)
+		{
+			index++;
+			Node   thisNode   = (Node)cIt.next();
+				
+			if ( feedbackOption==WizardMatrixConstants.FEEDBACK_OPTION_SINGLE )
+			{
+				allowItemFeedback[index] = true;
+				for (Iterator rIt=reviews.iterator(); rIt.hasNext();)
+				{
+					Review thisReview = (Review)rIt.next();
+					if ( thisReview.getItemId() != null &&
+						  thisReview.getItemId().equals(thisNode.getId().getValue()) )
+					{
+						allowItemFeedback[index] = false;
+						break;
+					}
+				}
+			}
+			else if ( feedbackOption==WizardMatrixConstants.FEEDBACK_OPTION_NONE )
+			{
+				allowItemFeedback[index] = false;
+			}
+			else
+			{
+				allowItemFeedback[index] = true;
+			}
+		}
+		
+		return allowItemFeedback;
+	}
+	
 	/**
 	 ** Return list of AssignmentSubmissions, associated with this cell
 	 ** for the current user
@@ -241,27 +315,6 @@ public class CellController implements FormController, LoadObjectController {
       Node styleNode = getMatrixManager().getNode(style.getStyleFile());
       return styleNode.getExternalUri();
    }
-
-   /**
-	 * 
-	 * @param pageId
-	 *            String representation of the wizard page id
-	 * @param request
-	 *            Map containing all of the request variables
-	 * @return String[] containing the id, title, and description of the object
-	 *         (matrix or wizard)
-	 */
-	protected String[] getObjectMetadata(String pageId, Map request) {
-		String[] objectMetadata = new String[3];
-
-		Cell cell = getMatrixManager().getCellFromPage(
-				getIdManager().getId(pageId));
-		Scaffolding scaffolding = cell.getMatrix().getScaffolding();
-		objectMetadata[METADATA_ID_INDEX] = scaffolding.getId().getValue();
-		objectMetadata[METADATA_TITLE_INDEX] = scaffolding.getTitle();
-		objectMetadata[METADATA_DESC_INDEX] = scaffolding.getDescription();
-		return objectMetadata;
-	}
 
 	public Object fillBackingObject(Object incomingModel, Map request,
 			Map session, Map application) throws Exception {
