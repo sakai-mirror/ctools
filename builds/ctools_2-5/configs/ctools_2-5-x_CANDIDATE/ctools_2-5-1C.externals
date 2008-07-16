@@ -52,10 +52,12 @@
  master              -r47941     https://source.sakaiproject.org/svn/master/tags/sakai_2-5-1_rc02
  memory              -r47942     https://source.sakaiproject.org/svn/memory/tags/sakai_2-5-1_rc02
  message             -r47943     https://source.sakaiproject.org/svn/message/tags/sakai_2-5-1_rc02
- metaobj             -r47944     https://source.sakaiproject.org/svn/metaobj/tags/sakai_2-5-1_rc02
+# OSP and metaobj are coming from our locally modified branch now 
+# metaobj             -r47944     https://source.sakaiproject.org/svn/metaobj/tags/sakai_2-5-1_rc02
  msgcntr             -r47945     https://source.sakaiproject.org/svn/msgcntr/tags/sakai_2-5-1_rc02
 # osid -rHEAD https://source.sakaiproject.org/svn/osid/tags/sakai_2-5-1_rc02
- osp                 -r47946     https://source.sakaiproject.org/svn/osp/tags/sakai_2-5-1_rc02
+# osp                 -r47946     https://source.sakaiproject.org/svn/osp/tags/sakai_2-5-1_rc02
+ 
  podcasts            -r47947     https://source.sakaiproject.org/svn/podcasts/tags/sakai_2-5-1_rc02
  polls               -r47948     https://source.sakaiproject.org/svn/polls/tags/sakai_2-5-1_rc02
  portal              -r47949     https://source.sakaiproject.org/svn/portal/tags/sakai_2-5-1_rc02
@@ -144,6 +146,13 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  # in the evaluation project.
  hierarchy           -r48884     https://source.sakaiproject.org/contrib/caret/hierarchy/tags/1.1.1/ 
  discussion          -r50392     https://source.sakaiproject.org/contrib/deprecated/discussion/trunk/
+
+ #Locally maintained osp until 2.6
+ extraction          -r51108 https://source.sakaiproject.org/contrib/reporting/extraction/tags/ctools-2.5.1C
+ extraction-umich    -r51112 https://source.sakaiproject.org/contrib/reporting/extraction-umich/tags/ctools-2.5.1C
+
+ metaobj	     -r48722     https://source.sakaiproject.org/svn/ctools/trunk/metaobj/ 
+ osp		     -r48723     https://source.sakaiproject.org/svn/ctools/trunk/osp/
 
 #Important, location of patches, specify a specific revision or leave as PROPERTY which will be <= the candidate property version! :)
 ctools-patches      -rPROPERTY    https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/patches/ 

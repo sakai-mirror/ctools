@@ -159,6 +159,8 @@ if changes are needed.
 	-->
 	<module>../melete</module>
 	<module>../discussion</module>
+	<module>../extraction</module>
+	<module>../extraction-umich</module>
 
       </modules>
     </profile>
