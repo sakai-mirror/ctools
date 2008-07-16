@@ -8,9 +8,14 @@ import org.sakaiproject.memory.api.MemoryService;
 /*
  * Unit tests of UmiacClient implementation.  Only a few methods are tested as yet and those could be tested more fully.
  * Please add tests as you change the code or chase bugs.
+ * 
+ * Since UmiacClient is large if you are adding new methods you probably want to copy this class and 
+ * edit it to be specific to your new methods.  No point in making this huge and testing everything 
+ * every time you want to work on the new methods.
+ *  
  */
 
-public class UmiacClientImplTest extends MockObjectTestCase {
+public class UmiacClientImplUtilTest extends MockObjectTestCase {
 
 	// Note that very likely to want to call uci.init(), but will want to have
 	// the proper things injected first. 
