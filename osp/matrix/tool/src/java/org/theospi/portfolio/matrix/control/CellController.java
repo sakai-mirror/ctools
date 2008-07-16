@@ -121,6 +121,8 @@ public class CellController implements FormController, LoadObjectController {
 	private static final String PROP_EXTRACTION_JOB = "extraction.job";
 	private static final String PROP_EXTRACTION_JS_REVIEWER = "extraction.js.reviewer";
 	private static final String PROP_EXTRACTION_JS_LEARNER = "extraction.js.learner";	
+	
+	protected boolean enableReviewEdit = true;
 
 	public Map referenceData(Map request, Object command, Errors errors) {
 		ToolSession session = getSessionManager().getCurrentToolSession();
@@ -130,6 +132,7 @@ public class CellController implements FormController, LoadObjectController {
 
 		model.put("isMatrix", "true");
 		model.put("isWizard", "false");
+		model.put("enableReviewEdit", getEnableReviewEdit());
 		model.put("currentUser", getSessionManager().getCurrentSessionUserId());
 		model.put("CURRENT_GUIDANCE_ID_KEY", "session."
 				+ GuidanceManager.CURRENT_GUIDANCE_ID);
@@ -578,6 +581,20 @@ public class CellController implements FormController, LoadObjectController {
 		return providers;
 	}
 
+	
+	/**
+	 ** If enabled, users may edit/delete reviews (feedback, evaluation, reflection) according to these rules:
+	 **    Feedback -- edit/delete option (even after status COMPLETE)
+	 **    Evaluations - edit/delete option (but not allowed when status COMPLETE)
+	 **    Relections - edit/delete option, prior to submitting (status READY)
+	 */
+	public boolean getEnableReviewEdit() {
+		return enableReviewEdit;
+	}
+	public void setEnableReviewEdit( boolean enableReviewEdit ) {
+		this.enableReviewEdit = enableReviewEdit;
+	}
+	
 	/**
 	 * @return
 	 */
