@@ -659,7 +659,7 @@
 				href='<c:out value="${reflections[0].reviewContentNode.externalUri}"/>'
 				target="_blank"> <c:out
 				value="${reflections[0].reviewContentNode.displayName}" /> </a>
-		<c:if test="${cell.status == 'READY' and readOnlyMatrix != 'true'}">
+		<c:if test="${cell.status == 'READY' and readOnlyMatrix != 'true' and not reflections[0].reviewContentNode.isLocked}">
 			<span class="itemAction"> 
 				<a
 				href="<osp:url value="osp.review.processor.helper/reviewHelper.osp">

@@ -893,7 +893,7 @@ public class HibernateMatrixManagerImpl extends HibernateDaoSupport
       ContentResource wrapped = new ContentEntityWrapper(node.getResource(),
             buildRef(siteId, page.getId().getValue(), node.getResource()));
 
-      return new Node(artifactId, wrapped, node.getTechnicalMetadata().getOwner());
+      return new Node(artifactId, wrapped, node.getTechnicalMetadata().getOwner(), node.getIsLocked());
    }
 
    private boolean isNodeHidden( Id artifactId ) {
@@ -926,8 +926,9 @@ public class HibernateMatrixManagerImpl extends HibernateDaoSupport
          ContentResource resource = getContentHosting().getResource(id);
          String ownerId = resource.getProperties().getProperty(resource.getProperties().getNamePropCreator());
          Agent owner = getAgentFromId(getIdManager().getId(ownerId));
+         boolean locked = getLockManager().isLocked(artifactId.getValue());
 
-         return new Node(artifactId, resource, owner);
+         return new Node(artifactId, resource, owner, locked);
       }
       catch (PermissionException e) {
          logger.warn(this+".getNode "+e.toString());
@@ -944,36 +945,13 @@ public class HibernateMatrixManagerImpl extends HibernateDaoSupport
 
       return getNode(getIdManager().getId(nodeId));
    }
-   /*
-   public List getPageArtifacts(WizardPage page)
-   {
-      List nodeList = new ArrayList();
-      Set attachments = page.getAttachments();
-      
-      for (Iterator attachmentIterator = attachments.iterator(); attachmentIterator.hasNext();) {
-         Attachment att = (Attachment)attachmentIterator.next();
-         //TODO is it okay to clear the whole thing here?
-         getHibernateTemplate().clear();
-         
-         Node node = getNode(att.getArtifactId(), page);
-         if (node != null) {
-        	 nodeList.add(node);
-         } else
-             logger.warn("Cell contains stale artifact references (null node encountered) for Cell: " + page.getId());
-         
-      } 
-      return nodeList;
-   }
-*/
+
    public List getCellsByArtifact(Id artifactId) {
-      //return this.getHibernateTemplate().find("select distinct attachment.cell from Attachment attachment where attachment.artifactId=?", artifactId.getValue());
-      //this.getHibernateTemplate().find
       Criteria c = null;
       try {
          c = this.getSession().createCriteria(Cell.class);
          c.setFetchMode("scaffoldingCell", FetchMode.JOIN);
          c.setFetchMode("scaffoldingCell.scaffolding", FetchMode.JOIN);
-         //c.add(Expression.eq("artifactId", artifactId));
          Criteria att = c.createCriteria("attachments");
          att.add(Expression.eq("artifactId", artifactId));
          
@@ -989,14 +967,11 @@ public class HibernateMatrixManagerImpl extends HibernateDaoSupport
    }
 
    public List getCellsByForm(Id formId) {
-      //return this.getHibernateTemplate().find("select distinct attachment.cell from Attachment attachment where attachment.artifactId=?", artifactId.getValue());
-      //this.getHibernateTemplate().find
       Criteria c = null;
       try {
          c = this.getSession().createCriteria(Cell.class);
          c.setFetchMode("scaffoldingCell", FetchMode.JOIN);
          c.setFetchMode("scaffoldingCell.scaffolding", FetchMode.JOIN);
-         //c.add(Expression.eq("artifactId", artifactId));
          Criteria att = c.createCriteria("pageForms");
          att.add(Expression.eq("artifactId", formId));
          
@@ -1471,20 +1446,6 @@ public class HibernateMatrixManagerImpl extends HibernateDaoSupport
       zos.closeEntry();
       in.close();
    }
-   /*
-   public Scaffolding uploadScaffolding(String scaffoldingFileName,
-         String siteId, InputStream zipFileStream) throws IOException {
-      try {
-         return uploadScaffolding(scaffoldingFileName, SiteService.findTool(toolId).getId(), zipFileStream);
-      }
-      catch (InvalidUploadException exp) {
-         throw exp;
-      }
-      catch (Exception exp) {
-         throw new InvalidUploadException("Invalid scaffolding file.", exp, "uploadedScaffolding");
-      }
-   }
-   */
    
    /**
     * This unpacks a zipped scaffolding and places it into the siteId. It saves the guidance, styles,
@@ -1788,8 +1749,6 @@ public class HibernateMatrixManagerImpl extends HibernateDaoSupport
 
       Id oldId = getIdManager().getId(file.getParentFile().getName());
 
-      //Node newNode = fileParent.persistent().createFile(contentType, file.getName(), zis,
-      //getFileHome().getType());
       ByteArrayOutputStream bos = new ByteArrayOutputStream();
       int c = zis.read();
 
@@ -1903,10 +1862,8 @@ public class HibernateMatrixManagerImpl extends HibernateDaoSupport
             newWorkflows.add(w);
          }
          
-         //scaffoldingCell.getCells().clear();
          scaffoldingCell.setCells(new HashSet());
          sCells.add(scaffoldingCell);
-         //scaffoldingCell.setScaffolding(scaffolding);
       }   
       scaffolding.setScaffoldingCells(sCells);
    }
@@ -2026,7 +1983,6 @@ public class HibernateMatrixManagerImpl extends HibernateDaoSupport
     */
    public org.sakaiproject.metaobj.shared.model.Type getType() {
       return new org.sakaiproject.metaobj.shared.model.Type(idManager.getId("matrix"), "Matrix");
-      //return getMatrices(null, null);
    }
 
    public String getExternalType() {
@@ -2107,7 +2063,6 @@ public class HibernateMatrixManagerImpl extends HibernateDaoSupport
     */
    public void prepareInstance(Artifact object) {
       object.setHome(this);
-      //((Matrix) object).setAgentManager(getAgentManager());
 
    }
 
@@ -2324,14 +2279,11 @@ public class HibernateMatrixManagerImpl extends HibernateDaoSupport
    
    public void processWorkflow(Id workflowId, Id pageId) {
       Workflow workflow = getWorkflowManager().getWorkflow(workflowId);
-      //Cell cell = getCellFromPage(pageId);
       WizardPage page = getWizardPage(pageId);
       
       Collection items = workflow.getItems();
       for (Iterator i = items.iterator(); i.hasNext();) {
          WorkflowItem wi = (WorkflowItem)i.next();
-         //Cell actionCell = this.getMatrixCellByWizardPageDef(cell.getMatrix(), 
-         //      wi.getActionObjectId());
          switch (wi.getActionType()) {
             // complete / return part 2
             case(WorkflowItem.STATUS_CHANGE_WORKFLOW):
