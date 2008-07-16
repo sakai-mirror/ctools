@@ -73,7 +73,7 @@ public class StructuredArtifactHome extends XmlElementHome
    private IdManager idManager;
    private String siteId;
    private ArtifactFinder artifactFinder;
-   private ResourceLoader rl = new ResourceLoader();
+   private ResourceLoader rl = new ResourceLoader("org.sakaiproject.metaobj.messages");
 
    private static final MessageFormat format =
          new MessageFormat("<META HTTP-EQUIV=\"Refresh\" CONTENT=\"0;URL={0}/member/viewArtifact.osp?artifactId={1}&artifactType={2}&pid={3}\">");
@@ -99,22 +99,22 @@ public class StructuredArtifactHome extends XmlElementHome
             ResourceProperties.PROP_DISPLAY_NAME, object.getDisplayName());
          ContentHostingService.commitResource(resourceEdit);
       } catch (PermissionException e) {
-         throw new PersistenceException(e, "Unknown file error",
+         throw new PersistenceException(e, rl.getString("perm_file_err"),
             null, null);
       } catch (IdUnusedException e) {
-         throw new PersistenceException(e, "Unknown file error",
+         throw new PersistenceException(e, rl.getString("unknown_file_err"),
             null, null);
       } catch (TypeException e) {
-         throw new PersistenceException(e, "Unknown file error",
+         throw new PersistenceException(e, rl.getString("unknown_file_err"),
             null, null);
       } catch (InUseException e) {
-         throw new PersistenceException(e, "Unknown file error",
+         throw new PersistenceException(e, rl.getString("unknown_file_err"),
             null, null);
       } catch (ServerOverloadException e) {
-         throw new PersistenceException(e, "Unknown file error",
+         throw new PersistenceException(e, rl.getString("unknown_file_err"),
             null, null);
       } catch (OverQuotaException e) {
-         throw new PersistenceException(e, "Over quota",
+         throw new PersistenceException(e, rl.getString("quota_file_err"),
             null, null);
       }
 
