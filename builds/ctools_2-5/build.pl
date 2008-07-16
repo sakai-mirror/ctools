@@ -35,9 +35,9 @@ $ENV{'MAVEN_OPTS'} = "-Xms256m -Xmx512m";
 #Find the minimum and maximum versions that this will work on
 #To add a new required software to this list follow the format, the cmd must return at least
 #A major.minor version somewhere in the text as the first number with a decimal.
-my ($cleanin, %opts);
+my ($cleanin, %opts, $patchtype);
 
-getopts('cd',\%opts);
+getopts('cdg',\%opts);
 
 #Accept clean from ARGV to make this a completely automated process.
 if ($opts{'c'}) {
@@ -46,6 +46,14 @@ if ($opts{'c'}) {
 
 if ($opts{'d'}) {
     $cleanin ='n';
+}
+
+#By default this build will pick up local patch changes 
+if ($opts{'g'}) {
+    $patchtype ='global';
+}
+else {
+    $patchtype = 'local';
 }
 
 my %requiredSoftware = (
@@ -258,7 +266,7 @@ else {
 
 #Change directory to the builds directory
 chdir($builddir);
-my $cmd = "ant -s build.xml -Dtype=$typevar -DtargetJdk=1.5 $cleanvar 2>&1";
+my $cmd = "ant -s build.xml -Dpatchtype=$patchtype -Dtype=$typevar -DtargetJdk=1.5 $cleanvar 2>&1";
 system $cmd; 
 
 0;

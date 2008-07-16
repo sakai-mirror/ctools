@@ -56,6 +56,14 @@
   <!-- group the build directories. -->
   <property name="work.dir" value="${basedir}/work/${sakai.tag}/work.${type}" /> 
   <!-- Change to version control patches -->
+  <!-- If the patchtype is set, don't -->
+  <condition property="patches.dir" value="${basedir}/patches" else="${work.dir}/build/ctools-patches" >
+      <and>
+	  <isset property="patchtype"/>
+	  <contains string="${patchtype}" substring="local" />
+      </and>
+  </condition>
+  <echo>Pulling patches from: ${patches.dir}</echo>
   <property name="patches.dir" value="${work.dir}/build/ctools-patches" />
 
   <property name="artifacts.dir" value="${basedir}/artifacts/${sakai.tag}.${type}" />
