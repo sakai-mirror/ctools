@@ -82,6 +82,7 @@ public class ViewMatrixController extends AbstractMatrixController implements Fo
    public static final String GROUP_FILTER_BUTTON = "filter";
       
    private ToolManager toolManager;
+   private StyleManager styleManager;
 
    public Object fillBackingObject(Object incomingModel, Map request, Map session, Map application) throws Exception {
 
@@ -214,7 +215,7 @@ public class ViewMatrixController extends AbstractMatrixController implements Fo
     * @see org.theospi.utils.mvc.intf.FormController#referenceData(java.util.Map, java.lang.Object, org.springframework.validation.Errors)
     */
    public Map referenceData(Map request, Object command, Errors errors) {
-      Map model = new HashMap();
+      Map<String, Object> model = new HashMap<String, Object>();
       MatrixGridBean grid = (MatrixGridBean) command;      
       Agent owner = grid.getMatrixOwner();
       Boolean readOnly = Boolean.valueOf(false);
@@ -259,8 +260,16 @@ public class ViewMatrixController extends AbstractMatrixController implements Fo
          model.put("isExposedPage", Boolean.valueOf(true));
       }
       
+      model.put("styles",
+    	         getStyleManager().createStyleUrlList(getStyleManager().getStyles(grid.getScaffolding().getId())));
+      
+      
+      
+      
       return model;
    }
+   
+   
    
 	/**
 	 ** Return true if matrix owner has submitted assignments associated with this cell
@@ -410,4 +419,12 @@ public class ViewMatrixController extends AbstractMatrixController implements Fo
    public void setToolManager(ToolManager toolManager) {
       this.toolManager = toolManager;
    }
+
+public StyleManager getStyleManager() {
+	return styleManager;
+}
+
+public void setStyleManager(StyleManager styleManager) {
+	this.styleManager = styleManager;
+}
 }

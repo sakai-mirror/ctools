@@ -60,7 +60,6 @@ import org.sakaiproject.metaobj.security.AllowMapSecurityAdvisor;
 import org.sakaiproject.id.cover.IdManager;
 import org.theospi.portfolio.shared.model.Node;
 import org.theospi.portfolio.shared.tool.BaseFormResourceFilter;
-import org.theospi.portfolio.style.model.Style;
 
 public class CellFormPickerController extends CellController implements FormController, LoadObjectController {
 
@@ -212,7 +211,7 @@ public class CellFormPickerController extends CellController implements FormCont
                                      String pageId, String pageTitle, String formTypeId) {
       String retView = "formCreator";
       session.put("page_id", pageId);
-      session.put(FormHelper.FORM_STYLES, createStylesList(getStyleManager().getStyles(getIdManager().getId(pageId))));
+      session.put(FormHelper.FORM_STYLES, getStyleManager().createStyleUrlList(getStyleManager().getStyles(getIdManager().getId(pageId))));
 
       if (request.get("current_form_id") == null) {
          session.remove(ResourceEditingHelper.ATTACHMENT_ID);

@@ -5,6 +5,11 @@
 <fmt:setLocale value="${locale}"/>
 <fmt:setBundle basename = "org.theospi.portfolio.matrix.bundle.Messages"/>
 
+<c:forEach var="style" items="${styles}">
+   <link href="<c:out value='${style}'/>" type="text/css" rel="stylesheet"
+      media="all" />
+</c:forEach>
+
 <script type="text/javaScript">
 
 	function hrefViewCell(pageId) {
@@ -116,13 +121,13 @@
 	<c:set var="columnHeading" value="${matrixContents.columnLabels}" />
         <table cellspacing="0" width="100%" summary="<fmt:message key="table_summary_matrixScaffolding"/>">
             <tr>
-                <th class="matrix-row-heading" width="10%" scope="col">
+                <th class="matrix-row-heading" scope="col">
                     <osp-h:glossary link="true" hover="true">
                        <c:out value="${matrixContents.scaffolding.title}"/>
                     </osp-h:glossary>
                 </th>
                 <c:forEach var="head" items="${columnHeading}">
-                    <th class="matrix-column-heading matrixColumnDefault" width="10%" 
+                    <th class="matrix-column-heading matrixColumnDefault" 
                         bgcolor="<c:out value="${head.color}"/>"
                         style="color: <c:if test="${not empty head.textColor}" ><c:out value="${head.textColor}"/></c:if>"  scope="col">
                         <osp-h:glossary link="true" hover="true">
