@@ -114,7 +114,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  ctools-providers    -r47734     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
 # For search server properties
 # ctools-reference    -r48453    https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
- ctools-reference    -r48562    https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
+ ctools-reference    -r48751    https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
 
  ctools-webservices  -r45685     https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
  gradtools           -r47431     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
