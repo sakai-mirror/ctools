@@ -1,7 +1,22 @@
 Update based on SAK-13906
-=svnm= https://source.sakaiproject.org/svn/assignment/trunk/@48410 assignment
+
+For some resason the merge couldn't merge the properties, so thats done as the diff.
+=svnm= https://source.sakaiproject.org/svn/assignment/trunk/assignment-tool/@48410 assignment/assignment-tool
 
 --- /dev/null
 +++ SAK-13906.tmp
 @@ -0,0 +1 @@
 + 
+
+--- assignment/assignment-bundles/assignment.properties	2008/07/03 17:10:18 48409
++++ assignment/assignment-bundles/assignment.properties	2008/07/03 17:39:32 48410
+@@ -776,3 +776,8 @@
+ noti.submit.text=Submitted Text:
+ noti.submit.attachments=Attachments:
+ noti.submit.time=Submitted on:
++
++## navigation labels
++nav.prev=< Previous
++nav.list=Return to List
++nav.next=Next >
+
