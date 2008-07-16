@@ -1,0 +1,17 @@
+Index: mailarchive/mailarchive-tool/tool/src/java/org/sakaiproject/mailarchive/tool/MailboxAction.java
+===================================================================
+--- mailarchive/mailarchive-tool/tool/src/java/org/sakaiproject/mailarchive/tool/MailboxAction.java	(revision 47939)
++++ mailarchive/mailarchive-tool/tool/src/java/org/sakaiproject/mailarchive/tool/MailboxAction.java	(working copy)
+@@ -931,6 +931,12 @@
+ 			addAlert(state, rb.getString("thimeshas"));
+ 		}
+ 
++		// invalidate count since removed a message and invalidate
++		// messages held in state, since that isn't right.
++		state.removeAttribute(STATE_COUNT);				
++		state.removeAttribute(STATE_ALL_MESSAGES);
++		state.removeAttribute(STATE_ALL_MESSAGES_SEARCH);
++		
+ 		// go to list mode
+ 		doList(data, context);
+ 
