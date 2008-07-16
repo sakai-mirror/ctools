@@ -65,6 +65,12 @@ import org.sakaiproject.util.api.umiac.UmiacConnector;
  * @author University of Michigan, CHEF Software Development Team
  * @version $Revision$
  */
+
+/*
+ * TTD: Things to do:
+ * - Good to do, but not critical unless there is a relevant bug.
+ * -- mock socket for testing makeRawCall
+ */
 public class UmiacConnectorImpl
 	implements  UmiacConnector
 {
@@ -73,12 +79,6 @@ public class UmiacConnectorImpl
 
 	/** Umiac's network host address. */
 	protected String m_host = null;
-	
-//	/** A cache of calls to umiac and the results. */
-//	protected Cache m_callCache = null;
-
-	/** The one and only Umiac client. */
-	//protected static UmiacClient M_instance = null;
 	
 	// server configuration
 	protected ServerConfigurationService serverConfigurationService = null;
@@ -107,30 +107,29 @@ public class UmiacConnectorImpl
 	*/
 	protected UmiacConnectorImpl()
 	{
-		// get the umiac address and port from the configuration service
-	//	m_host = ServerConfigurationService.getString("umiac.address", null);
-		m_host = serverConfigurationService.getString("umiac.address", null);
-		try
-		{
-//			m_port = Integer.parseInt(ServerConfigurationService.getString("umiac.port", "-1"));
-			m_port = Integer.parseInt(serverConfigurationService.getString("umiac.port", "-1"));
-		}
-		catch (Exception ignore) {}
-
-		if (m_host == null)
-		{
-			log.warn(this + " - no 'umiac.address' in configuration");
-		}
-		if (m_port == -1)
-		{
-			log.warn(this + " - no 'umiac.port' in configuration (or invalid integer)");
-		}
+//		// get the umiac address and port from the configuration service
+//		m_host = serverConfigurationService.getString("umiac.address", null);
+//		try
+//		{
+//			m_port = Integer.parseInt(serverConfigurationService.getString("umiac.port", "-1"));
+//		}
+//		catch (Exception ignore) {}
+//
+//		if (m_host == null)
+//		{
+//			log.warn(this + " - no 'umiac.address' in configuration");
+//		}
+//		if (m_port == -1)
+//		{
+//			log.warn(this + " - no 'umiac.port' in configuration (or invalid integer)");
+//		}
 
 	}	// UmiacClient
 
 	/**
 	 * Final initialization, once all dependencies are set.
 	 */
+	
 	public void init()
 	{
 		try
@@ -139,13 +138,34 @@ public class UmiacConnectorImpl
 			{
 				log.debug(this +".init()");
 			}
+			
+			// get the umiac address and port from the configuration service
+			m_host = serverConfigurationService.getString("umiac.address", null);
+			try
+			{
+				m_port = Integer.parseInt(serverConfigurationService.getString("umiac.port", "-1"));
+			}
+			catch (Exception e) {
+				log.error("error reading umiac port from server configuration service",e);
+			}
+
+			if (m_host == null)
+			{
+				log.warn(this + " - no 'umiac.address' in configuration");
+			}
+			if (m_port == -1)
+			{
+				log.warn(this + " - no 'umiac.port' in configuration (or invalid integer)");
+			}
+			
 		}
 		catch (Throwable t)
 		{
-			if (log.isDebugEnabled())
-			{
-				log.debug(this +".init(): ", t);
-			}
+			log.warn(this +".init(): ", t);
+//			if (log.isDebugEnabled())
+//			{
+//				log.warn(this +".init(): ", t);
+//			}
 		}
 	}
 
@@ -262,7 +282,9 @@ public class UmiacConnectorImpl
 				if (out != null) out.close();
 				if (socket != null) socket.close();
 			}
-			catch (Exception ignore){log.warn("UMIAC: " + ignore);}
+			catch (Exception e){
+					log.warn("UMIAC: " + e);
+					}
 		}
 		
 		if (log.isDebugEnabled())
@@ -274,6 +296,6 @@ public class UmiacConnectorImpl
 	
 	}	// makeRawCall
 	
-}	// class UmiacClient
+}	// class UmiacConnector
 
 /**********************************************************************************/

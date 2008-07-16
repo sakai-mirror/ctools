@@ -22,15 +22,8 @@
 *
 **********************************************************************************/
 
-// package
 package org.sakaiproject.util.impl.umiac;
 
-//imports
-//import java.io.BufferedReader;
-//import java.io.InputStreamReader;
-//import java.io.InterruptedIOException;
-//import java.io.PrintWriter;
-//import java.net.Socket;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -42,17 +35,11 @@ import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-//import org.sakaiproject.alias.impl.BaseAliasService.Storage;
-//import org.sakaiproject.alias.impl.DbAliasService.DbStorage;
 import org.sakaiproject.exception.IdUnusedException;
-//import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.event.api.Event;
-//import org.sakaiproject.service.framework.log.cover.Log;
-//import org.sakaiproject.service.framework.log.cover.Logger;
 import org.sakaiproject.memory.api.Cache;
 import org.sakaiproject.memory.api.CacheRefresher;
 import org.sakaiproject.memory.api.MemoryService;
-//import org.sakaiproject.memory.cover.MemoryServiceLocator;
 import org.sakaiproject.user.api.UserEdit;
 import org.sakaiproject.util.api.umiac.UmiacClient;
 import org.sakaiproject.util.StringUtil;
@@ -69,12 +56,7 @@ import org.sakaiproject.util.impl.umiac.UmiacConnectorImpl;
 public class UmiacClientImpl
 	implements CacheRefresher, UmiacClient
 {
-//	/** Umiac's network port address. */
-//	protected int m_port = -1;
-//
-//	/** Umiac's network host address. */
-//	protected String m_host = null;
-//	
+
 	/** A cache of calls to umiac and the results. */
 	protected Cache m_callCache = null;
 
@@ -85,6 +67,15 @@ public class UmiacClientImpl
 
 	/* default cache duration to 1 hour */
 	private int cacheDurationSeconds = 60 * 60;
+	
+	
+	public int getCacheDurationSeconds() {
+		return cacheDurationSeconds;
+	}
+
+	public void setCacheDurationSeconds(int cacheDurationSeconds) {
+		this.cacheDurationSeconds = cacheDurationSeconds;
+	}
 	
 	private UmiacConnectorImpl m_uci = null;
 
@@ -104,14 +95,6 @@ public class UmiacClientImpl
 	public void setMemoryService(MemoryService ms) {
 		this.m_memory = ms;
 	}
-
-	/**
-	* Default constructor, using the getMemory lookup method provided by Spring.
-	*/
-	
-//	protected UmiacClientImpl()
-//	{
-//	}	// 
 
 	/**
 	 * Final initialization, once all dependencies are set.
@@ -152,14 +135,7 @@ public class UmiacClientImpl
 		}
 	}
 
-	
-	public int getCacheDurationSeconds() {
-		return cacheDurationSeconds;
-	}
 
-	public void setCacheDurationSeconds(int cacheDurationSeconds) {
-		this.cacheDurationSeconds = cacheDurationSeconds;
-	}
 	
 	/* NOTE: The 2.5.x deprecated methods are all unsafe! - botimer@umich.edu - 6/18/08
 	 * EHcache invalidates upon get() and returns null for non-existent, expired, or null-valued keys 
