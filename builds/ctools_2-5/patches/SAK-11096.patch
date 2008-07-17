@@ -1,3 +1,7 @@
+#Revision made to patch
+
+=svnm= https://source.sakaiproject.org/svn/assignment/trunk/assignment-impl/@48654 assignment/assignment-impl
+
 Index: assignment/assignment-api/api/src/java/org/sakaiproject/assignment/api/AssignmentService.java
 ===================================================================
 --- assignment/assignment-api/api/src/java/org/sakaiproject/assignment/api/AssignmentService.java	(revision 42377)

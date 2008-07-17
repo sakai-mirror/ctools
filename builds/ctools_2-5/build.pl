@@ -50,7 +50,7 @@ if ($opts{'d'}) {
 
 #By default this build will pick up local patch changes 
 if ($opts{'g'}) {
-    $patchtype ='global';
+    $patchtype ='';
 }
 else {
     $patchtype = 'local';
