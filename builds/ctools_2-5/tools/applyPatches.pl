@@ -60,13 +60,51 @@ my ($log,$patchDir);
 my $applyPatchesTrace = 0;
 #Add when testing to not actually apply the patches
 my $dryrun = 0;
-
+my $baseDir = abs_path("$Bin/../");
+    
 print "ap: args:",join("|",@ARGV),"\n" if ($applyPatchesTrace);
 
 if (@ARGV == 0) {
-    print "Usage: $0 <log file> <patches directory> <build directory> <comma separated patch files>\n";
-    print "Example: $0 out.log ../patches ../work/ctools_2-5-x_CANDIDATE/work.prod/build SAK-12868.patch\n";
+    print "Usage: $0 <log file> <patches directory> <build directory> <single or comma separated patch files>\n";
+    print "Example: $0 patchlog.txt ../patches ../work/ctools_2-5-x_CANDIDATE/work.prod/build SAK-12868.patch\n";
+    print "- You may also run it with only a patch file name and it will attempt to detect the other args!\n";
     exit;
+}
+
+if (@ARGV == 1) {
+    print "Apply patches called with a single argument, detecting default locations!\n";
+    #Log file goes in the current directory
+    my ($logfilename) = abs_path()."/patchlog.txt";
+    #Patch file name is on the command line as an arg
+    my $patchfilename = $ARGV[0];
+    #Patch directory should be one directory up in patches by default
+    my $patchdir = abs_path ("$baseDir/patches");
+
+    my (@dirs, @files,$file,$workdir);
+
+    #Search the work directory for a directory to use
+    @files = <$baseDir/work/*>;
+
+#    print "Number of files=".$#files."\n";
+    foreach $file (@files) {
+	if (-d $file)  {
+	    push(@dirs,$file);
+	}
+    } 
+    #Found 1 directory, good
+    if ($#dirs == 0) {
+	$workdir = abs_path($dirs[0]."/work.prod/build");
+    }
+    elsif ($#dirs > 0) {
+	die "Multiple directories found in $baseDir/work, could not determine default location\n";
+    }
+    
+    if (!$workdir) {
+	die "Could not automatically determine work directory default location\n";
+    }
+    print "Log file:$logfilename\nPatch directory:$patchdir\nWork directory:$workdir\n";
+    #Set the new arguments
+    @ARGV = ($logfilename,$patchdir,$workdir,$patchfilename);
 }
 
 #Trims whitespace from beginning and end of string
@@ -157,7 +195,7 @@ sub applyPatchFileList {
   }
   print "aPFL: maxRc: [$maxRc]\n" if ($applyPatchesTrace);
   if ($maxRc !=0 ) {
-	print "One or more patches failed, results saved to a log file.\n";
+	print "One or more patches failed, results saved to file $logFileName.\n";
   }
   exit ($maxRc == 0 ? 0 : 1);
 }
