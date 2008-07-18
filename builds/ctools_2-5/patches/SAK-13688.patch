@@ -1,6 +1,6 @@
 #Changing how Tool Registration happens with JSR-168
 
-=svnm= https://source.sakaiproject.org/svn/portal/trunk//@45587 portal
+=svnm= https://source.sakaiproject.org/svn/portal/trunk/@47206 portal
 
 #Fill in the SAK or something unique, leave it like this if theres no real patch
 --- /dev/null
