@@ -617,6 +617,11 @@ below they are contextually defined depending on the column as an example,as you
 	background: url(images/help_h.gif) center right no-repeat;
 }
 
+.portletTitle .action a#jsr-edit{
+        padding:2px;
+        background: url(images/page_edit.gif) center right no-repeat;
+}
+
 /*iframe for portlet content*/
 
 .portletMainIframe{
