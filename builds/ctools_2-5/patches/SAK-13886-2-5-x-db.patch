@@ -1,7 +1,7 @@
-Index: db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
+Index: db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
 ===================================================================
---- db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(revision 48427)
-+++ db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(working copy)
+--- db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(revision 49022)
++++ db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(working copy)
 @@ -42,7 +42,12 @@
  import org.sakaiproject.entity.api.ResourcePropertiesEdit;
  import org.sakaiproject.event.cover.UsageSessionService;
@@ -15,7 +15,7 @@ Index: db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
  /**
   * <p>
   * BaseDbFlatStorage is a class that stores Resources (of some type) in a database, provides (optional) locked access, <br />
-@@ -187,6 +192,39 @@
+@@ -187,6 +192,42 @@
  	}
  
  	/**
@@ -27,7 +27,10 @@ Index: db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
 +	{
 +		if ( table == null ) return null;
 +		String config =  ServerConfigurationService.getString("DbFlatPropertiesCache");
-+		if ( config == null ) return null;
++
++		// Default is :all:
++		if ( config == null || config.trim().length() <= 0 ) config = ":all:";
++
 +		if ( config.indexOf(":none:") >= 0 ) return null;
 +		if ( config.indexOf(":all:") < 0 )
 +		{
@@ -55,33 +58,7 @@ Index: db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
  	 * Set the sort field to be something perhaps other than the default of the id field.
  	 * 
  	 * @param sortField1
-@@ -365,11 +403,8 @@
- 		{
- 			sql = flatStorageSql.getSelectFieldsSql1(m_resourceTableName, fieldList(m_resourceTableReadFields, null), m_resourceTableIdField,
- 					m_resourceTableSortField1, m_resourceTableSortField2, 0, 0);
--			String realTablename = m_resourceTableName;
--			m_resourceTableName = "TEMP_QUERY";
- 			sql += flatStorageSql.getSelectFieldsSql2(m_resourceTableName, fieldList(m_resourceTableReadFields, null), m_resourceTableIdField,
- 					m_resourceTableSortField1, m_resourceTableSortField2, 0, 0);
--			m_resourceTableName = realTablename;
- 			fields = flatStorageSql.getSelectFieldsFields(first, last);
- 		}
- 		else
-@@ -576,13 +611,10 @@
- 
- 			sql = flatStorageSql.getSelectFieldsSql3(m_resourceTableName, fieldList(m_resourceTableReadFields, null), m_resourceTableIdField,
- 					m_resourceTableSortField1, m_resourceTableSortField2, (first - 1), (last - first + 1), join, where, order);
--			String realTablename = m_resourceTableName;
--			m_resourceTableName = "TEMP_QUERY";
- 			sql += flatStorageSql.getSelectFieldsSql4(m_resourceTableName, fieldList(m_resourceTableReadFields, null), m_resourceTableIdField,
- 					m_resourceTableSortField1, m_resourceTableSortField2, (first - 1), (last - first + 1), join, where, order);
- 			fields[fields.length - 2] = new Long(first);
- 			fields[fields.length - 1] = new Long(last);
--			m_resourceTableName = realTablename;
- 		}
- 		else
- 		{
-@@ -1024,6 +1056,28 @@
+@@ -1018,6 +1059,28 @@
  		// the properties to fill in
  		final ResourcePropertiesEdit props = p;
  
@@ -110,7 +87,7 @@ Index: db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
  		// get the properties from the db
  		// ASSUME: NAME, VALUE for fields
  		String sql = flatStorageSql.getSelectNameValueSql(table, idField);
-@@ -1055,6 +1109,12 @@
+@@ -1049,6 +1112,12 @@
  				}
  			}
  		});
@@ -123,7 +100,7 @@ Index: db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
  	}
  
  	/**
-@@ -1162,6 +1222,14 @@
+@@ -1156,6 +1225,14 @@
  		if (table == null) return;
  		if (props == null) return;
  
@@ -138,10 +115,10 @@ Index: db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
  		// do this in a transaction
  		m_sql.transact(new Runnable()
  		{
-Index: db/db-util/storage/pom.xml
+Index: db-util/storage/pom.xml
 ===================================================================
---- db/db-util/storage/pom.xml	(revision 48427)
-+++ db/db-util/storage/pom.xml	(working copy)
+--- db-util/storage/pom.xml	(revision 49022)
++++ db-util/storage/pom.xml	(working copy)
 @@ -50,6 +50,16 @@
        <artifactId>sakai-event-api</artifactId>
        <version>${sakai.version}</version>
