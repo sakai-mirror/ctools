@@ -267,6 +267,7 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 	public void init()
 	{
 		logger.info("init()");
+		this.logic.registerProvider(this);
 	}
 
 }

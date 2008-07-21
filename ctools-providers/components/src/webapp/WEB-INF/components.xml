@@ -81,6 +81,15 @@
 			destroy-method="destroy"
 			singleton="true">
 	</bean>
+	
+	<bean id="org.sakaiproject.tbook.provider.TextbookProvider" 
+			class="org.sakaiproject.tbook.provider.impl.UnivOfMichTextbookProvider"
+			init-method="init">
+		<property name="logic"
+			ref="org.sakaiproject.tbook.logic.TextbookLogic" />
+	</bean>
+	
+	
   <!-- 
   This section illustrates how to use Spring AOP to trace calls to our provider.  A custom trace class may be more convenient
   in the longer run.
