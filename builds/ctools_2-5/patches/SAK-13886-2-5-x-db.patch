@@ -1,7 +1,7 @@
-Index: db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
+Index: db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
 ===================================================================
---- db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(revision 49022)
-+++ db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(working copy)
+--- db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(revision 49022)
++++ db/db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java	(working copy)
 @@ -42,7 +42,12 @@
  import org.sakaiproject.entity.api.ResourcePropertiesEdit;
  import org.sakaiproject.event.cover.UsageSessionService;
@@ -115,10 +115,10 @@ Index: db-util/storage/src/java/org/sakaiproject/util/BaseDbFlatStorage.java
  		// do this in a transaction
  		m_sql.transact(new Runnable()
  		{
-Index: db-util/storage/pom.xml
+Index: db/db-util/storage/pom.xml
 ===================================================================
---- db-util/storage/pom.xml	(revision 49022)
-+++ db-util/storage/pom.xml	(working copy)
+--- db/db-util/storage/pom.xml	(revision 49022)
++++ db/db-util/storage/pom.xml	(working copy)
 @@ -50,6 +50,16 @@
        <artifactId>sakai-event-api</artifactId>
        <version>${sakai.version}</version>
