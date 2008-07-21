@@ -184,7 +184,39 @@ public interface UmiacClient {
 	 * @return An array of strings of real umiac group ids, one for each in the multiple.
 	 */
 	public String[] unpackId(String id);	// unpackId
+
+
+	/**
+	 * @param year
+	 * @param term_code
+	 * @param campus_code
+	 * @param subject
+	 * @param course_nbr
+	 * @param section_nbr
+	 * @return A string containing valid JSON, or null
+	 */
+	public String getClassTextbookInfo(String year, String term_code,
+			String campus_code, String subject, String course_nbr,
+			String section_nbr);
 	
+	/**
+	 * Sends a getUserTextbookInfo command to UMIAC and returns the resulting
+	 * output as a List of String objects (one String per class instance for
+	 * the user for the specified term).  Each String represents a JSON object
+	 * describing the class requirements for textbooks and other materials. 
+	 * @param user_id is the user's uniqname
+	 * @param year is expressed in four-digit numbers: 2003
+	 * @param term_code is expressed as a single-digit number:
+	 * 1 - SUMMER
+	 * 2 - FALL
+	 * 3 - WINTER
+	 * 4 - SPRING
+	 * 5 - SPRING/SUMMER
+	 * @return
+	 * @throws IdUnusedException if the user_id is not a valid uniqname.
+	 */
+	public List<String> getUserTextbookInfo(String user_id, String year,
+			String term_code) throws IdUnusedException; 
 
 	
 }

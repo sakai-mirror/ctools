@@ -421,5 +421,14 @@ public class CourseManagementAdministrationUnivOfMichImpl implements CourseManag
 		return new HashSet();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.coursemanagement.api.CourseManagementAdministration#setCurrentAcademicSessions(java.util.List)
+	 */
+	public void setCurrentAcademicSessions(List<String> academicSessionEids) 
+	{
+		// TODO method stub for setCurrentAcademicSessions
+		
+	}
+
 
 }

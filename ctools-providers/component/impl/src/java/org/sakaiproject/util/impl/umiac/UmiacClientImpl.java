@@ -24,6 +24,7 @@
 
 package org.sakaiproject.util.impl.umiac;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -32,6 +33,8 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.Set;
 import java.util.HashSet;
+
+import net.sf.json.JSONObject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1183,6 +1186,91 @@ public class UmiacClientImpl implements CacheRefresher, UmiacClient {
 		return null;
 
 	} // refresh
+
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.api.umiac.UmiacClient#getClassTextbookInfo(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+	public String getClassTextbookInfo(String year, String term_code,
+			String campus_code, String subject, String course_nbr,
+			String section_nbr) 
+	{
+		String query = "getClassTextbookInfo," + year + "," + term_code + "," + campus_code + "," + subject + "," + course_nbr + "," + section_nbr + "\n\n";
+	
+		List<String> rawResults = null;
+		Object cached = getCachedValue(query);
+		if (cached != null) 
+		{
+			rawResults = (List<String>) cached;
+		} 
+		else 
+		{
+			rawResults = m_uci.makeRawCall(query);
+		}
+		
+		List<String> results = extractJsonStringsFromList(rawResults);
+		
+		String result = null;
+		if(results.size() > 0)
+		{
+			result = results.get(0);
+			if(results.size() > 1)
+			{
+				log.info("getClassTextbookInfo() returning: " + result); 
+				for(int i = 1; i < results.size(); i++)
+				{
+					log.info("getClassTextbookInfo() discarding: " + results.get(i));
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.util.api.umiac.UmiacClient#getUserTextbookInfo(java.lang.String, java.lang.String, java.lang.String)
+	 */
+	public List<String> getUserTextbookInfo(String user_id, String year,
+			String term_code) throws IdUnusedException 
+	{
+		String query = "getUserTextbookInfo," + user_id + "," + year + "," + term_code + "\n\n";
+		
+		List<String> rawResults = null;
+		Object cached = getCachedValue(query);
+		if (cached != null) 
+		{
+			rawResults = (List<String>) cached;
+		} 
+		else 
+		{
+			rawResults = m_uci.makeRawCall(query);
+		}
+		
+		List<String> results = extractJsonStringsFromList(rawResults);
+		
+		return results;
+		
+	}
+
+	protected List<String> extractJsonStringsFromList(List<String> rawResults) 
+	{
+		List<String> results = new ArrayList<String>();
+		for(String rawResult : rawResults)
+		{
+			if(rawResult != null && ! rawResult.trim().equals("") && ! rawResult.trim().toUpperCase().equals("EOT"))
+			{
+				try
+				{
+					JSONObject jsonObject = JSONObject.fromObject(rawResult);
+					results.add(jsonObject.toString());
+				}
+				catch(Exception e)
+				{
+					// ignore -- this indicates invalid JSON
+				}
+			}
+		}
+		return results;
+	}
 
 } // class UmiacClient
 

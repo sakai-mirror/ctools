@@ -8,7 +8,7 @@
   <parent>
     <artifactId>sakai-ctools-providers-base</artifactId>
     <groupId>org.sakaiproject</groupId>
-    <version>M2</version>
+    <version>SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <name>Sakai CTools Providers Project</name>
@@ -53,9 +53,9 @@
       <version>${sakai.spring.mock.version}</version>
     </dependency>
     <dependency>
-      <groupId>servletapi</groupId>
-      <artifactId>servletapi</artifactId>
-      <version>2.4</version>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>${sakai.servletapi.version}</version>
     </dependency>
     <dependency>
       <groupId>org.sakaiproject</groupId>

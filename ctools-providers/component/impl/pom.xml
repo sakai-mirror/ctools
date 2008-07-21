@@ -4,7 +4,7 @@
   <parent>
     <artifactId>sakai-ctools-providers-base</artifactId>
     <groupId>org.sakaiproject</groupId>
-    <version>M2</version>
+    <version>SNAPSHOT</version>
     <relativePath>../../../pom.xml</relativePath>
   </parent>
   <name>sakai-ctools-providers-impl</name>
@@ -145,6 +145,20 @@
 		<version>${sakai.version}</version>
 	</dependency>
 
+	<dependency>
+		<groupId>org.sakaiproject.tbook</groupId>
+		<artifactId>tbook-api</artifactId>
+		<version>${sakai.version}</version>
+	</dependency>
+
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <version>2.2</version>
+      <classifier>jdk15</classifier>
+      <type>jar</type>
+    </dependency>
+    
 	<dependency>
 		 <groupId>jmock</groupId>
 		<artifactId>jmock</artifactId>
