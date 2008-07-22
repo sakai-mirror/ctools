@@ -150,8 +150,8 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  extraction          -r51108 https://source.sakaiproject.org/contrib/reporting/extraction/tags/ctools-2.5.1C
  extraction-umich    -r51192 https://source.sakaiproject.org/contrib/reporting/extraction-umich/tags/ctools-2.5.1C
 
- metaobj	     -r48722     https://source.sakaiproject.org/svn/ctools/trunk/metaobj/ 
- osp		     -r48723     https://source.sakaiproject.org/svn/ctools/trunk/osp/
+ metaobj	     -r49116     https://source.sakaiproject.org/svn/ctools/trunk/metaobj/ 
+ osp		     -r49117     https://source.sakaiproject.org/svn/ctools/trunk/osp/
 
 #Important, location of patches, specify a specific revision or leave as PROPERTY which will be <= the candidate property version! :)
 ctools-patches      -rPROPERTY    https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/patches/ 
