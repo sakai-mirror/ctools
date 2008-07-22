@@ -37,7 +37,6 @@ import org.sakaiproject.metaobj.shared.mgt.StructuredArtifactDefinitionManager;
 import org.sakaiproject.metaobj.shared.model.Artifact;
 import org.sakaiproject.metaobj.shared.model.ElementBean;
 import org.sakaiproject.metaobj.shared.FormHelper;
-import org.sakaiproject.metaobj.shared.Helper;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.tool.api.ToolSession;
 import org.sakaiproject.tool.cover.SessionManager;
@@ -227,9 +226,6 @@ public class XsltArtifactView extends AbstractXsltView {
          params.put("panelId", Web.escapeJavascript("Main" + ToolManager.getCurrentPlacement().getId()));
       }
 
-      if (request.getParameter(Helper.HELPER_SESSION_ID) != null) { 
-         params.put(Helper.HELPER_SESSION_ID, request.getParameter(Helper.HELPER_SESSION_ID));
-      }
       params.putAll((Map) request.getAttribute(STYLESHEET_PARAMS));
 
       params.put(STYLESHEET_LOCATION, request.getAttribute(STYLESHEET_LOCATION));

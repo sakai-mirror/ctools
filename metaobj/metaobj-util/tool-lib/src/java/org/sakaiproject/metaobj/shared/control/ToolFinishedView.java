@@ -30,7 +30,6 @@ import org.sakaiproject.tool.api.ToolSession;
 import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.metaobj.shared.control.HelperView;
-import org.sakaiproject.metaobj.shared.Helper;
 import org.sakaiproject.spring.util.SpringTool;
 
 /**
@@ -78,10 +77,6 @@ public class ToolFinishedView extends HelperView {
          }
 
          toolSession.removeAttribute(tool.getId() + ALTERNATE_DONE_URL);
-      }
-      
-      if (request.getParameter(Helper.HELPER_SESSION_ID) != null) {
-         model.put(Helper.HELPER_SESSION_ID, request.getParameter(Helper.HELPER_SESSION_ID));
       }
 
       setUrl(url);
