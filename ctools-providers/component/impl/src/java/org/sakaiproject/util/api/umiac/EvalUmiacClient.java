@@ -8,7 +8,7 @@ import java.util.Vector;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.user.api.UserEdit;
 
-public interface UmiacClient {
+public interface EvalUmiacClient {
 
 	/**
 	 * Sets the port for the target UMIAC server.

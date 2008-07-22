@@ -51,19 +51,18 @@ import org.sakaiproject.memory.api.Cache;
 import org.sakaiproject.memory.api.CacheRefresher;
 import org.sakaiproject.memory.cover.MemoryServiceLocator;
 import org.sakaiproject.user.api.UserEdit;
-import org.sakaiproject.util.api.umiac.UmiacClient;
+import org.sakaiproject.util.api.umiac.EvalUmiacClient;
 import org.sakaiproject.util.StringUtil;
 
+
 /**
- * <p>UmiacClient is the Interface to the UMIAC service (classlist directory services).
- * This class translates calls from UmiacResponse to the UMIAC protocol and sends the protocol
- * via a TCP m_socket to a UMIAC server.</p>
+ * EvalUmiacClientImpl implements calls to Umiac for Evaluation data.
+ * 
+ * @author rwellis
  *
- * @author University of Michigan, CHEF Software Development Team
- * @version $Revision$
  */
-public class UmiacClientImpl
-	implements CacheRefresher, UmiacClient
+public class EvalUmiacClientImpl
+	implements CacheRefresher, EvalUmiacClient
 {
 	/** Umiac's network port address. */
 	protected int m_port = -1;
@@ -75,7 +74,7 @@ public class UmiacClientImpl
 	protected Cache m_callCache = null;
 
 	/** The one and only Umiac client. */
-	protected static UmiacClient M_instance = null;
+	protected static EvalUmiacClient M_instance = null;
 	
 	/** Socket timeout for Umiac response. This is the time 
 	 * to wait before a failure for Umiac to respond is considered an error.
@@ -91,7 +90,7 @@ public class UmiacClientImpl
 	/**
 	* Construct, using the default production UMIAC instance.
 	*/
-	protected UmiacClientImpl()
+	protected EvalUmiacClientImpl()
 	{
 		// get the umiac address and port from the configuration service
 		m_host = ServerConfigurationService.getString("umiac.address", null);

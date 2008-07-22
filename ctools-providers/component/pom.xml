@@ -15,7 +15,7 @@
   <groupId>org.sakaiproject</groupId>
   <artifactId>sakai-ctools-providers</artifactId>
   <packaging>jar</packaging>
-  <!--
+  <!--  
       <modules>
       <module>component/impl</module>
       <module>components</module>

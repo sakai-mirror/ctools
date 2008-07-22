@@ -10,6 +10,13 @@
 	singleton="true">
   </bean>
   
+  <bean id="org.sakaiproject.util.api.umiac.EvalUmiacClient"
+	class="org.sakaiproject.util.impl.umiac.EvalUmiacClientImpl"
+	init-method="init"
+	destroy-method="destroy"
+	singleton="true">
+  </bean>
+  
   <bean id="org.sakaiproject.user.api.UserDirectoryProvider"
 	class="org.sakaiproject.provider.user.UnivOfMichUserDirectoryProvider"
 	init-method="init"
@@ -20,7 +27,7 @@
     <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
     
   </bean>
-
+  
   <bean id="org.sakaiproject.authz.api.GroupProvider"
 	class="org.sakaiproject.component.legacy.realm.UnivOfMichRealmProvider"
 	init-method="init"
@@ -29,6 +36,13 @@
     <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
   </bean>
   
+    <bean id="org.sakaiproject.component.legacy.realm.EvalUmiacProvider"
+		class="org.sakaiproject.component.legacy.realm.EvalUmiacProvider"
+		init-method="init"
+		destroy-method="destroy"
+		singleton="true">
+    <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.EvalUmiacClient"/></property>
+  </bean>
   
   <bean id="org.sakaiproject.coursemanagement.api.CourseManagementService" class="org.sakaiproject.coursemanagement.impl.CourseManagementServiceUnivOfMichImpl" init-method="init" destroy-method="destroy">
     <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
