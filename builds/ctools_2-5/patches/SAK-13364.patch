@@ -1,0 +1,21 @@
+--- message/message-impl/impl/src/java/org/sakaiproject/message/impl/BaseMessageService.java	  2008/04/11 17:16:53	45348
++++ message/message-impl/impl/src/java/org/sakaiproject/message/impl/BaseMessageService.java	  2008/04/11 17:32:58	45349
+@@ -2032,11 +2032,15 @@
+	    // transfer the synoptic tool options
+	    Site fromSite = m_siteService.getSite(fromContext);
+	    ToolConfiguration fromSynTool = fromSite.getToolForCommonId("sakai.synoptic." + getLabel());
+-	    Properties fromSynProp = fromSynTool.getPlacementConfig();
++	    Properties fromSynProp = null;
++	    if (fromSynTool != null) 
++		fromSynProp = fromSynTool.getPlacementConfig();
+ 
+	    Site toSite = m_siteService.getSite(toContext);
+	    ToolConfiguration toSynTool = toSite.getToolForCommonId("sakai.synoptic." + getLabel());
+-	    Properties toSynProp = toSynTool.getPlacementConfig();
++	    Properties toSynProp = null;
++	    if (toSynTool != null)
++		toSynProp = toSynTool.getPlacementConfig();
+ 
+	    if (fromSynProp != null && !fromSynProp.isEmpty()) 
+	    {
+
