@@ -1,0 +1,69 @@
+Index: user/user-tool-prefs/tool/src/java/org/sakaiproject/user/tool/UserPrefsTool.java
+===================================================================
+--- user/user-tool-prefs/tool/src/java/org/sakaiproject/user/tool/UserPrefsTool.java	(revision 47973)
++++ user/user-tool-prefs/tool/src/java/org/sakaiproject/user/tool/UserPrefsTool.java	(working copy)
+@@ -980,8 +980,7 @@
+ 		// add property name and value for saving
+ 		m_stuff.add(new KeyNameValue(CHARON_PREFS, "exclude", eparts, true));
+ 		m_stuff.add(new KeyNameValue(CHARON_PREFS, "order", oparts, true));
+-		// TODO tab size is set to 4 by default. i can't set null , not "" as in portal code "" will be number to display on tab
+-		// m_stuff.add(new KeyNameValue(CHARON_PREFS, "tabs", "4", false));
++		m_stuff.add(new KeyNameValue(CHARON_PREFS, "tabs", "4", false));
+ 
+ 		// save
+ 		saveEdit();
+@@ -1007,6 +1006,8 @@
+ 	{
+ 		LOG.debug("processActionCancel()");
+ 
++		prefTabCount = null; // reset to retrieve original prefs
++
+ 		// remove session variables
+ 		cancelEdit();
+ 		// To stay on the same page - load the page data
+Index: user/user-tool-prefs/tool/src/bundle/user-tool-prefs.properties
+===================================================================
+--- user/user-tool-prefs/tool/src/bundle/user-tool-prefs.properties	(revision 47973)
++++ user/user-tool-prefs/tool/src/bundle/user-tool-prefs.properties	(working copy)
+@@ -45,6 +45,7 @@
+  
+ tab_inst_1=To hide a site, select the site from Sites Visible in Tabs and use the left arrow to move the site to Sites Not Visible in Tabs.  To display a site, select the site from Sites Not Visible in Tabs and use the right arrow to move the site to Sites Visible in Tabs.  Then click Update Preferences to make the changes.
+ tab_inst_2=To change the order of your sites in your tabs, select a site from Sites Visible in Tabs and use the up or down arrows to change the order of the site in your tabs.  Then click Update Preferences to make the changes.
++tab_inst_3=To change the number of your sites prominently displayed in the worksite navigation, update the Display number. Then click Update Preferences to make the changes.
+ tab_not_vis_inst=Sites not visible in Tabs
+ tab_vis_inst=Sites visible in Tabs
+ tab_move_inst=Move selected
+@@ -58,6 +59,8 @@
+ tab_move_rall=>>
+ tab_move_lall=<<
+ 
++tab_count = Display
++
+ time_inst_1=Please select your local time zone for selected Sakai tools, such as Schedule. You are currently in the 
+ time_inst_2=time zone
+ 				
+Index: user/user-tool-prefs/tool/src/webapp/prefs/tab.jsp
+===================================================================
+--- user/user-tool-prefs/tool/src/webapp/prefs/tab.jsp	(revision 47973)
++++ user/user-tool-prefs/tool/src/webapp/prefs/tab.jsp	(working copy)
+@@ -28,7 +28,7 @@
+ 			
+ 
+ 			
+-				<p class="instruction"><h:outputText value="#{msgs.tab_inst_1}"/><br /><br /><h:outputText value="#{msgs.tab_inst_2}"/></p>
++				<p class="instruction"><h:outputText value="#{msgs.tab_inst_1}"/><br/><br/><h:outputText value="#{msgs.tab_inst_2}"/><br/><br/><h:outputText value="#{msgs.tab_inst_3}"/></p>
+ 				
+ 	<%-- (gsilver) 2 issues 
+ 	1.  if there are no sites to populate both selects a message should put in the response to the effect that there are no memberships, hence cannot move things onto tabs group or off it. The table and all its children should then be excluded  from the response.
+@@ -51,7 +51,10 @@
+ 				 	</td>
+ 				 	
+ 				 	<td>
+-				 	  <b><h:outputText value="#{msgs.tab_vis_inst}"/></b>
++					  <b><h:outputText value="#{msgs.tab_vis_inst}"/></b>
++					  &nbsp;&nbsp;&nbsp;
++					  <b><h:outputText value="#{msgs.tab_count}"/></b>
++					  <h:inputText size="2" value="#{UserPrefsTool.tabCount}" />
+     			      <br/>
+ 				 	  <h:selectManyListbox value="#{UserPrefsTool.selectedOrderItems}" size="10">
+ 				        <f:selectItems value="#{UserPrefsTool.prefOrderItems}" />
