@@ -319,7 +319,7 @@ public class EventWatcher implements Observer
 				Collection<String> affiliateSubjects = getAffiliateSubjects(user.getEid());
 				List<String> providerIdSubjectListClone = providerIdSubjectList;
 				// remove all subject that does not have the affiliate eid
-				if (!providerIdSubjectListClone.removeAll(affiliateSubjects))
+				if (affiliateSubjects.size() != 0 && !providerIdSubjectListClone.removeAll(affiliateSubjects))
 				{
 					// if the list is unchanged, this means none of the associated subject is in the provider, the affiliate needs to be removed
 					if (AuthzGroupService.allowUpdate(realmId))
