@@ -1,0 +1,70 @@
+Index: dav/dav/src/java/org/sakaiproject/dav/DavServlet.java
+===================================================================
+--- dav/dav/src/java/org/sakaiproject/dav/DavServlet.java	(revision 47926)
++++ dav/dav/src/java/org/sakaiproject/dav/DavServlet.java	(working copy)
+@@ -2461,20 +2461,34 @@
+ 		InputStream inputStream = req.getInputStream();
+ 		contentType = req.getContentType();
+ 		int contentLength = req.getContentLength();
++		String transferCoding = req.getHeader("Transfer-Encoding");
++		boolean chunked = transferCoding != null && transferCoding.equalsIgnoreCase("chunked");
++
+ 		if (M_log.isDebugEnabled()) M_log.debug("  req.contentType() =" + contentType + " len=" + contentLength);
+ 
+-		if (contentLength < 0)
++		// System.out.println ("chunked " + chunked);
++		if (!chunked && contentLength < 0)
+ 		{
+ 			M_log.warn("SAKAIDavServlet.doPut() content length (" + contentLength + ") less than zero " + path);
+-			resp.sendError(HttpServletResponse.SC_CONFLICT);
++			resp.sendError(HttpServletResponse.SC_LENGTH_REQUIRED);
+ 			return;
+ 		}
+ 
+-		// Convert to byte array for the content service
+-		byte[] byteContent = new byte[contentLength];
++		// If we have content length, read into byte array.
++		// otherwise just pass the inputstream to contenthosting
++		// Clearly it's more efficient to pass the stream. However
++		// RFC 2068 says applications should use the count. So I
++		// do. However for chunked mode there is no count. All I
++		// can do is read to EOF and assume that Tomcat is doing
++		// the right thing. I strongly recommend using the input
++		// stream in all cases, but I'm not quite ready to do that now.
+ 
+-		if (contentLength > 0)
+-		{
++		byte[] byteContent = null;
++		
++		if (!chunked) {
++		    byteContent = new byte[contentLength];
++
++		    if (contentLength > 0) {
+ 			try
+ 			{
+ 				int lenRead = 0;
+@@ -2491,8 +2505,10 @@
+ 				resp.sendError(HttpServletResponse.SC_CONFLICT);
+ 				return;
+ 			}
+-		}
++		    }
+ 
++		}  // if not chunked
++
+ 		if (contentType == null)
+ 		{
+ 			contentType = getServletContext().getMimeType(path);
+@@ -2517,7 +2533,11 @@
+ 			// to match, and I'd just as soon be able to create items with no extension anyway
+ 			ContentResourceEdit edit = ContentHostingService.addResource(adjustId(path));
+ 			edit.setContentType(contentType);
+-			edit.setContent(byteContent);
++
++			if (chunked)
++			    edit.setContent(inputStream);
++			else
++			    edit.setContent(byteContent);
+ 			ResourcePropertiesEdit p = edit.getPropertiesEdit();
+ 
+ 			// copy old props, if any
