@@ -154,9 +154,10 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  osp		     -r49117     https://source.sakaiproject.org/svn/ctools/trunk/osp/
 
 #Important, location of patches, specify a specific revision or leave as PROPERTY which will be <= the candidate property version! :)
-ctools-patches      -rPROPERTY    https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/patches/ 
+ ctools-patches      -rPROPERTY    https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/patches/ 
 
-sakai-portlets	    -r51190	  https://source.sakaiproject.org/contrib/sakai-portlets/trunk/
+ sakai-portlets	    -r51236	  https://source.sakaiproject.org/contrib/sakai-portlets/trunk/
+ sitemaker	    -r51372       https://source.sakaiproject.org/contrib/sakai-portlets/branches/sitemaker/
 
 #
 #end
