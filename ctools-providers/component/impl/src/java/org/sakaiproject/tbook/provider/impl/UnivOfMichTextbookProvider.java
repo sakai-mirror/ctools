@@ -22,17 +22,26 @@
 package org.sakaiproject.tbook.provider.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.exception.IdUnusedException;
+import org.sakaiproject.tbook.logic.ExternalLogic;
 import org.sakaiproject.tbook.logic.TextbookLogic;
 import org.sakaiproject.tbook.model.Book;
 import org.sakaiproject.tbook.model.Course;
+import org.sakaiproject.tbook.model.CourseBook;
 import org.sakaiproject.tbook.model.CourseBookStatus;
+import org.sakaiproject.tbook.model.CourseItem;
+import org.sakaiproject.tbook.model.CourseMaterials;
 import org.sakaiproject.tbook.provider.TextbookProvider;
 import org.sakaiproject.util.api.umiac.UmiacClient;
 
@@ -44,10 +53,16 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 {
 	private static Log logger = LogFactory.getLog(UnivOfMichTextbookProvider.class);
 
-	private TextbookLogic logic;
+	protected TextbookLogic logic;
 	public void setLogic(TextbookLogic logic) 
 	{
 		this.logic = logic;
+	}
+	
+	protected ExternalLogic externalLogic;
+	public void setExternalLogic(ExternalLogic externalLogic)
+	{
+		this.externalLogic = externalLogic;
 	}
 	
 	protected UmiacClient umiacClient;
@@ -61,7 +76,14 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 	 */
 	public Course getCourse(String courseId) 
 	{
-		Course course = loadCourseFromFile(courseId);
+		Course course = null;
+		
+		JSONObject jsonObject = getJsonObject(courseId);
+		if(jsonObject != null)
+		{
+			course = getCourseFromJsonObject(jsonObject);
+		}
+
 		return course;
 	}
 
@@ -72,20 +94,76 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 	{
 		return true;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.tbook.provider.TextbookProvider#getCourses(java.lang.String, java.lang.String)
+	 */
+	public List<Course> getCourses(String userEid, String term) 
+	{
+		logger.debug("term == " + term);
+		List<Course> courses = null;
+		try 
+		{
+			Map termIndex = this.umiacClient.getTermIndexTable();
+			String year = null;
+			String term_code = null;
+			String parts[] = term.split("\\s+");
+			if(parts != null && parts.length > 1)
+			{
+				year = parts[1];
+				term_code = (String) termIndex.get(parts[0].toUpperCase());
+				List<String> jsonStrings = this.umiacClient.getUserTextbookInfo(userEid, year, term_code);
+				if(jsonStrings != null)
+				{
+					for(String jsonString : jsonStrings)
+					{
+						JSONObject jsonObject = JSONObject.fromObject(jsonString);
+						if(jsonObject != null)
+						{
+							Course course = this.getCourseFromJsonObject(jsonObject);
+							if(course != null)
+							{
+								if(courses == null)
+								{
+									courses = new ArrayList<Course>();
+								}
+								courses.add(course);
+							}
+						}
+					}
+				}
+			} 
+		}	
+		catch (IdUnusedException e) 
+		{
+			logger.warn("UnivOfMichTextbookProvider.getCourses --> IdUnusedException ", e);
+		}
+		return courses;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.tbook.provider.TextbookProvider#getCoursesFromProviderFirst(java.lang.String, java.lang.String)
+	 */
+	public boolean getCoursesFromProviderFirst(String userEid, String term) 
+	{
+		// TODO method stub for getCoursesFromProviderFirst
+		return true;
+	}
+
 
 	/**
 	 * @param courseId
 	 * @return
 	 */
-	protected Course loadCourseFromFile(String courseId) 
+	protected JSONObject getJsonObject(String courseId) 
 	{
-		Course course = null;
+		JSONObject jsonObject = null;
 		if(courseId != null && ! courseId.trim().equals(""))
 		{
 			String parts[] = courseId.split(",");
 			if(parts.length < 5)
 			{
-				return course;
+				return jsonObject;
 			}
 			String year = parts[0];
 			String term = parts[1];
@@ -97,16 +175,14 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 			{
 				String jsonString = this.umiacClient.getClassTextbookInfo(year,term,campus,subject,catalog_nbr,class_section);
 				
-				JSONObject jsonObject = JSONObject.fromObject(jsonString);
+				jsonObject = JSONObject.fromObject(jsonString);
 				if(jsonObject == null)
 				{
 					logger.warn("UnivOfMichTextbookProvider.loadCourseFromFile --> Error reading json object from string:\n" + jsonString);
 				}
 				else
 				{
-					logger.info("UnivOfMichTextbookProvider.loadCourseFromFile --> successfully read a jsonObject:\n" + jsonObject.toString());
-					
-					course = getCourseFromJSON(jsonObject);
+					logger.debug("UnivOfMichTextbookProvider.loadCourseFromFile --> successfully read a jsonObject:\n" + jsonObject.toString());
 				}
 			} 
 			catch(Exception e)
@@ -115,14 +191,14 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 				
 			}
 		}
-		return course;
+		return jsonObject;
 	}
 	
 	/**
 	 * @param jsonObject
 	 * @return
 	 */
-	protected Course getCourseFromJSON(JSONObject jsonObject) 
+	protected Course getCourseFromJsonObject(JSONObject jsonObject) 
 	{
 		Course course = new Course();
 		
@@ -174,9 +250,76 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 		}
 		else
 		{
+			SortedMap<String,CourseItem> itemMap = new TreeMap<String, CourseItem>();
 			for(int i = 0; i < required_items.size(); i++)
 			{
+				CourseItem newItem = null;
+				String sortStr = "";
 				JSONObject item = required_items.getJSONObject(i);
+				
+				String item_type = item.getString("item_type");
+				if(item_type != null && item_type.trim().toLowerCase().equals("book"))
+				{
+					sortStr += "0";
+				}
+				else
+				{
+					sortStr += "1";
+				}
+
+				String item_comment = null;
+				try
+				{
+					item_comment = item.getString("comments");
+				}
+				catch(Exception e)
+				{
+					// ignore -- let comments remain null
+				}
+				CourseBookStatus status = CourseBookStatus.REQUIRED;
+				if(item.has("required"))
+				{
+					try
+					{
+						String statusStr = item.getString("required");
+						if(statusStr == null)
+						{
+							// ignore -- assume it's required
+							sortStr += "0";
+						}
+						else if(statusStr.trim().toLowerCase().equals("rec"))
+						{
+							status = CourseBookStatus.RECOMMENDED;
+							sortStr += "1";
+						}
+						else if(statusStr.trim().toLowerCase().equals("opt"))
+						{
+							status = CourseBookStatus.OPTIONAL;
+							sortStr += "2";
+						}
+						else if(statusStr.trim().toLowerCase().equals("avd"))
+						{
+							status = CourseBookStatus.AVOID;
+							sortStr += "3";
+						}
+						else
+						{
+							// ignore -- assume it's required
+							sortStr += "0";
+						}
+					}
+					catch (Exception e)
+					{
+						// ignore -- assume it's required
+						sortStr += "0";
+					}
+				}
+				else
+				{
+					// ignore -- assume it's required
+					sortStr += "0";
+					
+				}
 				
 				boolean late_use = false;
 				try
@@ -187,18 +330,15 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 				{
 					// ignore -- let "late_use" remain false 
 				}
-				
-				String item_comment = null;
-				try
+				if(late_use)
 				{
-					item_comment = item.getString("comments");
+					sortStr += "1";
 				}
-				catch(Exception e)
+				else
 				{
-					// ignore -- let comments remain null
+					sortStr += "0";
 				}
 
-				String item_type = item.getString("item_type");
 				if(item_type != null && item_type.trim().toLowerCase().equals("book"))
 				{
 					String isbn = item.getString("isbn");
@@ -207,10 +347,15 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 					{
 						// need to log this as an invalid book?
 						logger.warn("Could not find book (ISBN: " + isbn + ") for course: ");
+						continue;
 					}
 					else
 					{
+						newItem = new CourseBook();
+						CourseBook newBook = (CourseBook) newItem;
+						
 						Book book = bookmatches.get(0);
+						newBook.setIsbn(book.getIsbn());
 						
 						boolean reserve_requested = false;
 						try
@@ -221,6 +366,7 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 						{
 							// ignore -- let reserve_requested remain false
 						}
+						newBook.setLibraryReserveRequested(reserve_requested);
 						
 						String preferredBookseller = null;
 						try
@@ -235,6 +381,7 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 						{
 							// ignore -- let preferredBookseller remain null
 						}
+						newBook.setPreferredBookseller(preferredBookseller);
 						
 						BigDecimal retailPrice = null;
 						String val = null;
@@ -246,17 +393,51 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 						catch(Exception e)
 						{
 							// ignore -- let price remain null
-							logger.warn("Problem reading price: " + val + " --> " + e);
+							logger.debug("Problem reading price: " + val + " --> " + e);
 						}
-						
-						course.addBook(book, item_comment, CourseBookStatus.REQUIRED, late_use, reserve_requested, preferredBookseller, retailPrice);
+						newBook.setRetailPrice(retailPrice);
+						//course.addBook(book, item_comment, status, late_use, reserve_requested, preferredBookseller, retailPrice);
 					}
 				}
 				else
 				{
-					String description = item.getString("description");
+					newItem = new CourseMaterials();
+					CourseMaterials newMaterials = (CourseMaterials) newItem;
 					
-					course.addMaterials(description, item_comment, CourseBookStatus.REQUIRED, late_use);
+					String description = item.getString("description");
+					newMaterials.setDescription(description);
+					
+					//course.addMaterials(description, item_comment, status, late_use);
+				}
+				if(newItem == null)
+				{
+					continue;
+				}
+				newItem.setLateUse(late_use);
+				newItem.setNotes(item_comment);
+				newItem.setStatus(status);
+				newItem.setCourse(course);
+				
+				if(item.has("seqnum"))
+				{
+					String seqnum = item.getString("seqnum");
+					if(seqnum != null)
+					{
+						sortStr += seqnum.trim();
+					}
+				}
+				itemMap.put(sortStr, newItem);
+			}
+			for(String key : itemMap.keySet())
+			{
+				CourseItem newItem = itemMap.get(key);
+				if(newItem instanceof CourseBook)
+				{
+					course.addBook((CourseBook) newItem);
+				}
+				else // if(newItem instanceof CourseMaterials)
+				{
+					course.addMaterials((CourseMaterials) newItem);
 				}
 			}
 		}

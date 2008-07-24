@@ -9,7 +9,7 @@
 	init-method="init"
 	destroy-method="destroy"
 	singleton="true">
-	<property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property> 
+	<property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property>
   </bean>
 
   <bean id="org.sakaiproject.util.api.umiac.UmiacClient"
@@ -87,6 +87,8 @@
 			init-method="init">
 		<property name="logic"
 			ref="org.sakaiproject.tbook.logic.TextbookLogic" />
+		<property name="umiacClient" 
+			ref="org.sakaiproject.util.api.umiac.UmiacClient" />
 	</bean>
 	
 	
