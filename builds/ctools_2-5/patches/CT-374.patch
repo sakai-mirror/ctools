@@ -1,0 +1,43 @@
+Index: tool/tool-util/servlet/src/java/org/sakaiproject/util/RequestFilter.java
+===================================================================
+--- tool/tool-util/servlet/src/java/org/sakaiproject/util/RequestFilter.java	(revision 47972)
++++ tool/tool-util/servlet/src/java/org/sakaiproject/util/RequestFilter.java	(working copy)
+@@ -272,6 +272,13 @@
+ 			return super.getRemoteUser();
+ 		}
+ 
++		public String getUnwrappedRemoteUser()
++		{
++			// for debugging to be able to compare.
++			return super.getRemoteUser();
++		}
++		
++	
+ 		public HttpSession getSession()
+ 		{
+ 			return getSession(true);
+@@ -1045,8 +1052,23 @@
+ 			s = SessionManager.getSession(sessionId);
+ 		}
+ 
++		// REFACTORED:
++		// The "no cookie" section below was an else clause before.  It is broken out here
++		// as the change is harmless and allows a point where we can check if
++		// we have an existing session and can see if we have real RemoteUser.
++		
++		if (M_log.isDebugEnabled()) {
++			M_log.debug("sessionId: ["+sessionId+"]");
++			M_log.debug("current value of RemoteUser: "+req.getRemoteUser());
++			M_log.debug("current value of UnwrappedRemoteUser: "+((WrappedRequest)req).getUnwrappedRemoteUser());
++		}
++		
++		
++		// Separate check for non-cookie session, so can add test to see
++		// if still logged in.
++		
+ 		// if no cookie, try finding a non-cookie session based on the remote user / principal
+-		else
++		// else
+ 		{
+ 			// Note: use principal instead of remote user to avoid any possible confusion with the remote user set by single-signon
+ 			// auth.
