@@ -1,0 +1,163 @@
+# Definition of modules to be included in a ctools build.
+# $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/configs/ctools_2-5-0_CANDIDATE/ctools_2-5-TRIAL.externals $
+# $Id: ctools_2-5-TRIAL.externals 46530 2008-05-19 16:58:58Z jonespm@umich.edu $
+
+# Most of the files will be take from the same release.  By convention
+# anything that departs for this is at the end of the file, so you
+# don't have to look though the whole file and wonder.  
+
+# The version numbers here are not identical even if they all
+# date from the same time.  This way we know exactly what 
+# is being included.
+
+#################
+# Get just the top level files (license, maven files) from the sakai_2-5-1_rc02 externals directory. 
+# Yes that is a single period at the start of the line, so the files
+# get put at the top of the build directory.
+.                   -r47980     https://source.sakaiproject.org/svn/sakai/tags/sakai_2-5-1_rc02 | --ignore-externals
+
+####   Sakai 2.5.0 modules
+ access              -r47910     https://source.sakaiproject.org/svn/access/tags/sakai_2-5-1_rc02
+ alias               -r47911     https://source.sakaiproject.org/svn/alias/tags/sakai_2-5-1_rc02
+ announcement        -r47912     https://source.sakaiproject.org/svn/announcement/tags/sakai_2-5-1_rc02
+ assignment          -r47914     https://source.sakaiproject.org/svn/assignment/tags/sakai_2-5-1_rc02
+ archive             -r47913     https://source.sakaiproject.org/svn/archive/tags/sakai_2-5-1_rc02
+ authz               -r47915     https://source.sakaiproject.org/svn/authz/tags/sakai_2-5-1_rc02
+# blog -rHEAD https://source.sakaiproject.org/svn/blog/tags/sakai_2-5-1_rc02
+ calendar            -r47917     https://source.sakaiproject.org/svn/calendar/tags/sakai_2-5-1_rc02
+ chat                -r47918     https://source.sakaiproject.org/svn/chat/tags/sakai_2-5-1_rc02
+ cluster             -r47920     https://source.sakaiproject.org/svn/cluster/tags/sakai_2-5-1_rc02
+ citations           -r47919     https://source.sakaiproject.org/svn/citations/tags/sakai_2-5-1_rc02
+ component           -r47921     https://source.sakaiproject.org/svn/component/tags/sakai_2-5-1_rc02
+ content             -r47922     https://source.sakaiproject.org/svn/content/tags/sakai_2-5-1_rc02
+ content-review      -r47923     https://source.sakaiproject.org/svn/content-review/tags/sakai_2-5-1_rc02
+ courier             -r47924     https://source.sakaiproject.org/svn/courier/tags/sakai_2-5-1_rc02
+ course-management   -r47925     https://source.sakaiproject.org/svn/course-management/tags/sakai_2-5-1_rc02
+ dav                 -r47926     https://source.sakaiproject.org/svn/dav/tags/sakai_2-5-1_rc02
+ db                  -r47927     https://source.sakaiproject.org/svn/db/tags/sakai_2-5-1_rc02
+ # Discussion is now pulled from contrib, so it is configured below.
+ email               -r47928     https://source.sakaiproject.org/svn/email/tags/sakai_2-5-1_rc02
+ entity              -r47929     https://source.sakaiproject.org/svn/entity/tags/sakai_2-5-1_rc02
+ entitybroker        -r47930     https://source.sakaiproject.org/svn/entitybroker/tags/sakai_2-5-1_rc02
+ event               -r47931     https://source.sakaiproject.org/svn/event/tags/sakai_2-5-1_rc02
+ gradebook           -r47932     https://source.sakaiproject.org/svn/gradebook/tags/sakai_2-5-1_rc02
+ help                -r47933     https://source.sakaiproject.org/svn/help/tags/sakai_2-5-1_rc02
+ jcr                 -r47934     https://source.sakaiproject.org/svn/jcr/tags/sakai_2-5-1_rc02
+ jobscheduler        -r47935     https://source.sakaiproject.org/svn/jobscheduler/tags/sakai_2-5-1_rc02
+ jsf                 -r47936     https://source.sakaiproject.org/svn/jsf/tags/sakai_2-5-1_rc02
+ linktool            -r47937     https://source.sakaiproject.org/svn/linktool/tags/sakai_2-5-1_rc02
+ login               -r47938     https://source.sakaiproject.org/svn/login/tags/sakai_2-5-1_rc02
+ mailarchive         -r47939     https://source.sakaiproject.org/svn/mailarchive/tags/sakai_2-5-1_rc02
+ mailtool            -r47940     https://source.sakaiproject.org/svn/mailtool/tags/sakai_2-5-1_rc02
+ master              -r47941     https://source.sakaiproject.org/svn/master/tags/sakai_2-5-1_rc02
+ memory              -r47942     https://source.sakaiproject.org/svn/memory/tags/sakai_2-5-1_rc02
+ message             -r47943     https://source.sakaiproject.org/svn/message/tags/sakai_2-5-1_rc02
+# OSP and metaobj are coming from our locally modified branch now 
+# metaobj             -r47944     https://source.sakaiproject.org/svn/metaobj/tags/sakai_2-5-1_rc02
+ msgcntr             -r47945     https://source.sakaiproject.org/svn/msgcntr/tags/sakai_2-5-1_rc02
+# osid -rHEAD https://source.sakaiproject.org/svn/osid/tags/sakai_2-5-1_rc02
+# osp                 -r47946     https://source.sakaiproject.org/svn/osp/tags/sakai_2-5-1_rc02
+ 
+ podcasts            -r47947     https://source.sakaiproject.org/svn/podcasts/tags/sakai_2-5-1_rc02
+ polls               -r47948     https://source.sakaiproject.org/svn/polls/tags/sakai_2-5-1_rc02
+ portal              -r47949     https://source.sakaiproject.org/svn/portal/tags/sakai_2-5-1_rc02
+ postem              -r47950     https://source.sakaiproject.org/svn/postem/tags/sakai_2-5-1_rc02
+ presence            -r47951     https://source.sakaiproject.org/svn/presence/tags/sakai_2-5-1_rc02
+ presentation        -r47952     https://source.sakaiproject.org/svn/presentation/tags/sakai_2-5-1_rc02
+ privacy             -r47953     https://source.sakaiproject.org/svn/privacy/tags/sakai_2-5-1_rc02
+ profile             -r47954     https://source.sakaiproject.org/svn/profile/tags/sakai_2-5-1_rc02
+ providers           -r47955     https://source.sakaiproject.org/svn/providers/tags/sakai_2-5-1_rc02
+ reference           -r47956     https://source.sakaiproject.org/svn/reference/tags/sakai_2-5-1_rc02
+ rights              -r47959     https://source.sakaiproject.org/svn/rights/tags/sakai_2-5-1_rc02
+ roster              -r47960     https://source.sakaiproject.org/svn/roster/tags/sakai_2-5-1_rc02
+ rwiki               -r47961     https://source.sakaiproject.org/svn/rwiki/tags/sakai_2-5-1_rc02
+# sam -rHEAD https://source.sakaiproject.org/svn/sam/tags/sakai_2-5-1_rc02
+ samples             -r47964     https://source.sakaiproject.org/svn/samples/tags/sakai_2-5-1_rc02
+ search              -r47965     https://source.sakaiproject.org/svn/search/tags/sakai_2-5-1_rc02
+ sections            -r47966     https://source.sakaiproject.org/svn/sections/tags/sakai_2-5-1_rc02
+ site                -r47967     https://source.sakaiproject.org/svn/site/tags/sakai_2-5-1_rc02
+ site-manage         -r47968     https://source.sakaiproject.org/svn/site-manage/tags/sakai_2-5-1_rc02
+ syllabus            -r47969     https://source.sakaiproject.org/svn/syllabus/tags/sakai_2-5-1_rc02
+ test-harness        -r47970     https://source.sakaiproject.org/svn/test-harness/tags/sakai_2-5-1_rc02
+ textarea            -r47971     https://source.sakaiproject.org/svn/textarea/tags/sakai_2-5-1_rc02
+ tool                -r47972     https://source.sakaiproject.org/svn/tool/tags/sakai_2-5-1_rc02
+ user                -r47973     https://source.sakaiproject.org/svn/user/tags/sakai_2-5-1_rc02
+ usermembership      -r47974     https://source.sakaiproject.org/svn/usermembership/tags/sakai_2-5-1_rc02
+ util                -r47975     https://source.sakaiproject.org/svn/util/tags/sakai_2-5-1_rc02
+ velocity            -r47976     https://source.sakaiproject.org/svn/velocity/tags/sakai_2-5-1_rc02
+# web -rHEAD https://source.sakaiproject.org/svn/web/tags/sakai_2-5-1_rc02
+ webservices         -r47979     https://source.sakaiproject.org/svn/webservices/tags/sakai_2-5-1_rc02
+
+warehouse           -r47977     https://source.sakaiproject.org/svn/warehouse/tags/sakai_2-5-1_rc02
+reports             -r47957     https://source.sakaiproject.org/svn/reports/tags/sakai_2-5-1_rc02
+
+########
+######## DEVIANT BRANCHES
+########
+
+# gmt/gmt -rHEAD https://source.sakaiproject.org/contrib/syracuse/gmt/tags/2.5.x
+
+
+
+#####
+##### Michigan specific code.
+#####
+#  ctools-apps -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-apps
+#  ctools-providers -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-providers
+#  ctools-reference -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-reference
+#  ctools-webservices -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-webservices
+#  ctools-libhelp -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-libhelp
+
+ ctools-assembly     -r48355     https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
+
+ ctools-apps         -r45502     https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
+# Any providers above 47734 need a newer version of evaluation, hold back for now.
+# ctools-providers    -r49139     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
+ ctools-providers    -r47734     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
+# For search server properties
+ ctools-reference    -r49342    https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
+
+ ctools-webservices  -r45685     https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
+ gradtools           -r47431     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
+ ctools-libhelp      -r47309     https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
+
+ #CTools specific web for now
+ web                 -r47453     https://source.sakaiproject.org/svn/ctools/trunk/web/
+
+########
+######## Contrib tools
+########
+#### Test Center ambrosia and mneme combined
+#
+ test-center         -r50881     https://source.sakaiproject.org/contrib/muse/test-center/tags/1.1.8-2.5.0
+
+## Current version is being patched
+ itunes              -r51165     https://source.sakaiproject.org/contrib/umctx/trunk/itunesu-tool/
+ config-viewer       -r48120     https://source.sakaiproject.org/contrib/config-viewer/trunk/ 
+ #
+  ## course evaluation tool
+  ## The trunk builds but the umich branch is currently missing some files for mvn2
+ evaluation          -r51291     https://source.sakaiproject.org/contrib/evaluation/branches/CT-623
+ #Melete
+ melete              -r50986     https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-5_sak-2-5-0
+
+ # we really should not pull from trunk to production, but we were not given any choice for these
+ # in the evaluation project.
+ hierarchy           -r48884     https://source.sakaiproject.org/contrib/caret/hierarchy/tags/1.1.1/ 
+ discussion          -r50392     https://source.sakaiproject.org/contrib/deprecated/discussion/trunk/
+
+ #Locally maintained osp until 2.6
+ extraction          -r51108 https://source.sakaiproject.org/contrib/reporting/extraction/tags/ctools-2.5.1C
+ extraction-umich    -r51192 https://source.sakaiproject.org/contrib/reporting/extraction-umich/tags/ctools-2.5.1C
+
+ metaobj	     -r49116     https://source.sakaiproject.org/svn/ctools/trunk/metaobj/ 
+ osp		     -r49117     https://source.sakaiproject.org/svn/ctools/trunk/osp/
+
+#Important, location of patches, specify a specific revision or leave as PROPERTY which will be <= the candidate property version! :)
+ ctools-patches      -rPROPERTY    https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/patches/ 
+
+ sakai-portlets	    -r51236	  https://source.sakaiproject.org/contrib/sakai-portlets/trunk/
+ sitemaker	    -r51372       https://source.sakaiproject.org/contrib/sakai-portlets/branches/sitemaker/
+
+#
+#end
