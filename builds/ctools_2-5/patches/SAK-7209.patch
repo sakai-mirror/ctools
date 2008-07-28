@@ -1,7 +1,59 @@
-Update based on SAK-7209
-=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@40482 site-manage/ 
+#Update based on SAK-7209
+ 
+#SAK-12523 dependency for sitesetupgeneric.properties
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@39500 site-manage/
+=svnm= https://source.sakaiproject.org/svn/site-manage-trunk/@39713 site-manage/
+
+#SAK-12524 dependency for chef_site-modifyENW.vm and chef_site-newSiteConfirm.vm??
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@39501 site-manage/
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@39502 site-manage/
+ 
+#These are the actual patches for the SAK-7209
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@40482 site-manage/
+=svnm= https://source.sakaiproject.org/svn/site-manage/web/@40483 web/
+
+#Repatching in the reversion to chef_site-addParticipant.vm
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-addParticipant.vm/@39603 site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-addParticipant.vm
 
 --- /dev/null
 +++ SAK-7209.tmp
 @@ -0,0 +1 @@
 + 
+
+#Reverted part of SAK-12547 in 39603 that is in 2.5.1, conflicts with 39501, will repatch in.
+Index: site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-addParticipant.vm
+===================================================================
+--- site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-addParticipant.vm	(revision 47968)
++++ site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-addParticipant.vm	(working copy)
+@@ -8,20 +8,17 @@
+ 		<div class="alertMessage">$tlang.getString("gen.alert") $validator.escapeHtml($alertMessage)</div>
+ 		<div class="clear"></div>
+ 	#end
+-	#if ($!isCourseSite)
+-		<div class="instruction">
+-			<h4>$tlang.getString("add.official")</h4>
+-		</div>
+-		<div class="indnt1">
+-			<p class="instruction">
+-				$tlang.getString("add.official1")
+-			</p>
+-			<p class="instruction">
+-				$tlang.getString("add.official.instruction")
+-			</p>
+-		</div>
+-	#end
+-	<p/>
++	<div class="instruction">
++		<h4>$tlang.getString("add.official")</h4>
++	</div>
++	<div class="indnt1">
++		<p class="instruction">
++			$tlang.getString("add.official1")
++		</p>
++		<p class="instruction">
++			$tlang.getString("add.official.instruction")
++		</p>
++	</div>
+ 	<form action="#toolForm("SiteAction")" method="post">
+ 		<p class="instruction">
+ 			<h4>$!officialAccountSectionTitle</h4>
