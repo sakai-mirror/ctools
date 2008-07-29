@@ -1,0 +1,7 @@
+#Upgrade FCK to 2.5.1
+=svnm= https://source.sakaiproject.org/svn/reference/trunk/@40104 reference
+
+--- /dev/null
++++ SAK-12542.patch 
+@@ -0,0 +1 @@
++ 

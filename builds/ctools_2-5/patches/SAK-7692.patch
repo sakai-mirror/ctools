@@ -1,0 +1,7 @@
+#Looks like all other changes were already made
+=svnm= https://source.sakaiproject.org/svn/assignment/trunk@48386 assignment
+
+--- /dev/null
++++ SAK-7692.patch 
+@@ -0,0 +1 @@
++ 
