@@ -111,6 +111,8 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  ctools-assembly     -r48355     https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
 
  ctools-apps         -r45502     https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
+# Any providers above 47734 need a newer version of evaluation, hold back for now.
+# ctools-providers    -r49139     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
  ctools-providers    -r47734     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
 # For search server properties
  ctools-reference    -r49656    https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
@@ -127,8 +129,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
 ########
 #### Test Center ambrosia and mneme combined
 #
- test-center         -r49194     https://source.sakaiproject.org/contrib/muse/test-center/tags/1.1.4-2.5.0
-# test-center         -r50881     https://source.sakaiproject.org/contrib/muse/test-center/tags/1.1.8-2.5.0
+ test-center         -r50881     https://source.sakaiproject.org/contrib/muse/test-center/tags/1.1.8-2.5.0
 
 ## Current version is being patched
  itunes              -r51165     https://source.sakaiproject.org/contrib/umctx/trunk/itunesu-tool/
@@ -136,10 +137,9 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  #
   ## course evaluation tool
   ## The trunk builds but the umich branch is currently missing some files for mvn2
- evaluation          -r45234     https://source.sakaiproject.org/contrib/evaluation/branches/umich
+ evaluation          -r51291     https://source.sakaiproject.org/contrib/evaluation/branches/CT-623
  #Melete
- #melete              -r50986     https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-5_sak-2-5-0
- melete              -r48145     https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-4-5_sak-2-5-0
+ melete              -r50986     https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-5_sak-2-5-0
 
  # we really should not pull from trunk to production, but we were not given any choice for these
  # in the evaluation project.
@@ -150,13 +150,14 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  extraction          -r51108 https://source.sakaiproject.org/contrib/reporting/extraction/tags/ctools-2.5.1C
  extraction-umich    -r51192 https://source.sakaiproject.org/contrib/reporting/extraction-umich/tags/ctools-2.5.1C
 
- metaobj	     -r49694     https://source.sakaiproject.org/svn/ctools/trunk/metaobj/ 
+ metaobj	     -r49116     https://source.sakaiproject.org/svn/ctools/trunk/metaobj/ 
  osp		     -r49350     https://source.sakaiproject.org/svn/ctools/trunk/osp/
 
 #Important, location of patches, specify a specific revision or leave as PROPERTY which will be <= the candidate property version! :)
-ctools-patches      -rPROPERTY    https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/patches/ 
+ ctools-patches      -rPROPERTY    https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/patches/ 
 
-sakai-portlets	    -r51190	  https://source.sakaiproject.org/contrib/sakai-portlets/trunk/
+ sakai-portlets	    -r51236	  https://source.sakaiproject.org/contrib/sakai-portlets/trunk/
+ sitemaker	    -r51372       https://source.sakaiproject.org/contrib/sakai-portlets/branches/sitemaker/
 
 #
 #end
