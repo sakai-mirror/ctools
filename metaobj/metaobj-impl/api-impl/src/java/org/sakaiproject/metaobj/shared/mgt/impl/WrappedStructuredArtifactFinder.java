@@ -64,8 +64,10 @@ public class WrappedStructuredArtifactFinder  extends FileArtifactFinder {
       for (Iterator<ContentResource> i = artifacts.iterator(); i.hasNext();) {
          ContentResource resource = i.next();
          Agent resourceOwner = getAgentManager().getAgent(resource.getProperties().getProperty(ResourceProperties.PROP_CREATOR));
-         Id resourceId = getIdManager().getId(getContentHostingService().getUuid(resource.getId()));
-         returned.add(new ContentResourceArtifact(resource, resourceId, resourceOwner));
+         if (owner == null || owner.equals(resourceOwner.getId())) {         
+        	 Id resourceId = getIdManager().getId(getContentHostingService().getUuid(resource.getId()));
+        	 returned.add(new ContentResourceArtifact(resource, resourceId, resourceOwner));
+         }
       }
       return returned;
    }

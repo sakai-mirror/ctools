@@ -76,8 +76,12 @@ public class FileArtifactFinder implements ArtifactFinder {
 
       for (Iterator i = artifacts.iterator(); i.hasNext();) {
          ContentResource resource = (ContentResource) i.next();
-         Artifact resourceArtifact = createArtifact(resource);
-         returned.add(resourceArtifact);
+         //FIXME: Refactor to avoid double trips to AgentManager on every artifact -- Agent user type gives performance hits
+         Agent resourceOwner = getAgentManager().getAgent(resource.getProperties().getProperty(ResourceProperties.PROP_CREATOR));
+         if (owner == null || owner.equals(resourceOwner.getId())) {
+             Artifact resourceArtifact = createArtifact(resource);
+             returned.add(resourceArtifact);
+         }
       }
 
       return returned;
