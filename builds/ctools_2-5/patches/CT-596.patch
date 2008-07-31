@@ -1,0 +1,9 @@
+#These are just examples
+#Cherry Pick
+=svnm= https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers@49139 ctools-providers
+
+#Fill in the SAK or something unique, leave it like this if theres no real patch
+--- /dev/null
++++ CT-596.patch 
+@@ -0,0 +1 @@
++ 
