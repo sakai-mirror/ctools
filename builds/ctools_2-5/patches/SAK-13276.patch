@@ -1,0 +1,13 @@
+#announcement / delayed email notification does not work 
+
+#Pick up dependency on SAK-11457
+=svnm= https://source.sakaiproject.org/svn/announcement/trunk@37830 announcement
+
+#SAK-13276
+=svnm= https://source.sakaiproject.org/svn/announcement/trunk@45207 announcement
+
+#Fill in the SAK or something unique, leave it like this if theres no real patch
+--- /dev/null
++++ SAK-13276.patch 
+@@ -0,0 +1 @@
++ 

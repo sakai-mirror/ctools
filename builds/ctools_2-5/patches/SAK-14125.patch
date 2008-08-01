@@ -1,0 +1,9 @@
+#These are just examples
+#Cherry Pick
+=svnm= https://source.sakaiproject.org/svn/assignment/trunk@49903 assignment
+
+#Fill in the SAK or something unique, leave it like this if theres no real patch
+--- /dev/null
++++ SAK-14125.patch 
+@@ -0,0 +1 @@
++ 

@@ -112,10 +112,10 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
 
  ctools-apps         -r45502     https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
 # Any providers above 47734 need a newer version of evaluation, hold back for now.
- ctools-providers    -r49139     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
-# ctools-providers    -r47734     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
+# ctools-providers    -r49139     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
+ ctools-providers    -r47734     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
 # For search server properties
- ctools-reference    -r49656    https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
+ ctools-reference    -r49962     https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
 
  ctools-webservices  -r45685     https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
  gradtools           -r47431     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
