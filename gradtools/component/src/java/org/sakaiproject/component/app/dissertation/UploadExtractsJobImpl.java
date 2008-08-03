@@ -129,7 +129,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 	private static final Pattern m_patternMilestone = Pattern.compile("(^\"[A-Za-z]*\"$|^\"\"$)");
 	private static final Pattern m_patternAcademicPlan = Pattern.compile("(^\"[0-9]{4}[A-Z0-9]*\"|^\"[0-9]{4}[A-Z0-9]*\"\r?$|^\"\"$|^\"\"\r?$)");
 	private static final Pattern m_patternRole = Pattern.compile("(^\".*\"$|^\"\"$|^\"#EMPTY\"$)"); //not restrictive
-	private static final Pattern m_patternMember = Pattern.compile("(^\"[A-Z]([- A-Za-z])+,[A-Z]([- A-Za-z])+\"$|^\"\"$|^\"#EMPTY\"$)");
+	//private static final Pattern m_patternMember = Pattern.compile("(^\"[A-Z]([- A-Za-z])+,[A-Z]([- A-Za-z])+\"$|^\"\"$|^\"#EMPTY\"$)");
+	private static final Pattern m_patternMember = Pattern.compile("(^\".*\"$|^\"\"$|^\"#EMPTY\"$)"); //not restrictive
 	private static final Pattern m_patternEvalDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"#EMPTY\"$|^\"\"$|)");
 	private static final Pattern m_patternCommitteeApprovedDate = Pattern.compile("(^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"$|^\"([0-9]|[0-9][0-9])/([0-9]|[0-9][0-9])/([0-9]{4}).*\"\r$|^\"#EMPTY\"\r$|^\"\"\r$|)");
 		
@@ -1151,9 +1152,14 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 								//Add Committee Members and their Role and Evaluation Dates
 								if(rec.m_member != null && !rec.m_member.equals(""))
 								{
-									//reverse name parts for display
-									String[] parts = rec.m_member.split(",");
-									name = parts[1] + " " + parts[0];
+									//CT-603 if possible reverse name parts for display, otherwise pass through as is
+									if(rec.m_member.indexOf(",") != -1) {
+										String[] parts = rec.m_member.split(",");
+										name = parts[1] + " " + parts[0];
+									}
+									else {
+										name = rec.m_member;
+									}
 										
 									//if report has been received, add the date received
 									if(rec.m_eval_date != null && !rec.m_eval_date.equals(""))
@@ -1171,7 +1177,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 									//sorted according to the key's natural order
 									membersEvals.put(rec.m_member, committeeEvalCompleted);
 									
-								}//if(rec.m_member != null && !rec.m_member.equals(""))
+								}
 								committeeEvalCompleted = "";
 			
 								//if there are committee evaluations
