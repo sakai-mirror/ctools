@@ -159,7 +159,10 @@ sub applyPatchFiles {
 
 sub cleanTmpFiles($) {
     my $buildDir = shift;
-    unlink(glob("$buildDir/*.tmp"));
+    print "Removing old patch files from $buildDir\n";
+    if (-d $buildDir) {
+       unlink(glob("$buildDir/*.patch"));
+    }   
 }
 
 
@@ -352,7 +355,6 @@ sub applyPatchFile(%) {
   my $cmd = makePatchCmd(patchfile=>$args{'patchfile'},builddir=>$args{'builddir'});
   return runShellCmdGetResult($cmd);
 }
-
 
 # Apply a single patch file, log the output and 
 # return the return code.
