@@ -108,7 +108,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
 #  ctools-webservices -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-webservices
 #  ctools-libhelp -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-libhelp
 
- ctools-assembly     -r48355     https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
+ ctools-assembly     -r49999     https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
 
  ctools-apps         -r45502     https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
 # Any providers above 47734 need a newer version of evaluation, hold back for now.
