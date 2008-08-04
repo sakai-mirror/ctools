@@ -22,7 +22,7 @@
 	init-method="init"
 	destroy-method="destroy"
 	singleton="true">
-    <property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property> 
+    <property name="serverConfigurationService">  <ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property> 
     <property name="method"><value>cosign</value></property>
     <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
     
@@ -36,15 +36,16 @@
     <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
   </bean>
   
-    <bean id="org.sakaiproject.component.legacy.realm.EvalUmiacProvider"
-		class="org.sakaiproject.component.legacy.realm.EvalUmiacProvider"
-		init-method="init"
-		destroy-method="destroy"
-		singleton="true">
+  <bean id="org.sakaiproject.component.legacy.realm.EvalUmiacProvider"
+	class="org.sakaiproject.component.legacy.realm.EvalUmiacProvider"
+	init-method="init"
+	destroy-method="destroy"
+	singleton="true">
     <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.EvalUmiacClient"/></property>
   </bean>
   
-  <bean id="org.sakaiproject.coursemanagement.api.CourseManagementService" class="org.sakaiproject.coursemanagement.impl.CourseManagementServiceUnivOfMichImpl" init-method="init" destroy-method="destroy">
+  <bean id="org.sakaiproject.coursemanagement.api.CourseManagementService" 
+	class="org.sakaiproject.coursemanagement.impl.CourseManagementServiceUnivOfMichImpl" init-method="init" destroy-method="destroy">
     <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
     <property name="sqlService"><ref bean="org.sakaiproject.db.api.SqlService"/></property>
   </bean>
@@ -66,49 +67,75 @@
 	init-method="init"
 	destroy-method="destroy"
 	singleton="true">
-	<property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
-	<property name="courseManagementService"><ref bean="org.sakaiproject.coursemanagement.api.CourseManagementService"/></property>
+    <property name="umiac"><ref bean="org.sakaiproject.util.api.umiac.Umiac"/></property>
+    <property name="courseManagementService"><ref bean="org.sakaiproject.coursemanagement.api.CourseManagementService"/></property>
   </bean>
   
-  	<!--  New in site-mangage in 2.5.
-   		Our implmentation is null, but some implimentation is required since we 
-  		delete all of site-manage. -->
-  	
-	<bean id="org.sakaiproject.sitemanage.api.AffiliatedSectionProvider"
-			class="org.sakaiproject.sitemanage.impl.AffiliatedSectionProviderImpl"
-			init-method="init"
-			destroy-method="destroy"
-			singleton="true">
-	</bean>
-  <!-- 
-  This section illustrates how to use Spring AOP to trace calls to our provider.  A custom trace class may be more convenient
-  in the longer run.
-  1) change the id above of the real umiac bean.  In this case we append Target to the name (see target property below).
-  2) configure a provided Spring trace interceptor
-  3) setup a proxy class with the original umiac bean id.
-
-  \<\!\-\- configure the Spring custom trace interceptor.  Note that logging level needs to be 
-         debug or trace.
-
-	<bean id="customizableTraceInterceptor"
-		class="org.springframework.aop.interceptor.CustomizableTraceInterceptor" >
-	  <property name="exitMessage">
-	    <value>"umiac: $[targetClassShortName].$[methodName]: args: [$[arguments]] return: [$[returnValue]] ms:$[invocationTime]"</value>
-	  </property>
-	</bean>
-
-	<!\-\- Proxy the Umiac class directly.  \-\->
-	<bean id="org.sakaiproject.util.api.umiac.Umiac"
-	      class="org.springframework.aop.framework.ProxyFactoryBean">
-	  <property name="proxyTargetClass"><value>true</value></property>
-	  <property name="target">
-	    <ref local="org.sakaiproject.util.api.umiac.UmiacTarget" />
-	  </property>
-	  <property name="interceptorNames">
-	    <list>
-	      <value>customizableTraceInterceptor</value>
-	    </list>
-	  </property>
-	</bean>
-	-->
+  <!--  New in site-mangage in 2.5.
+       Our implmentation is null, but some implimentation is required since we 
+       delete all of site-manage. -->
+  
+  <bean id="org.sakaiproject.sitemanage.api.AffiliatedSectionProvider"
+	class="org.sakaiproject.sitemanage.impl.AffiliatedSectionProviderImpl"
+	init-method="init"
+	destroy-method="destroy"
+	singleton="true">
+  </bean>
 </beans>
+<!-- 
+     This section illustrates how to use Spring AOP to trace calls to our provider.  A custom trace class may be more convenient
+     in the longer run.
+     1) change the id above of the real umiac bean.  In this case we append Target to the name (see target property below).
+     2) configure a provided Spring trace interceptor
+     3) setup a proxy class with the original umiac bean id.
+
+\<\!\-\- configure the Spring custom trace interceptor.  Note that logging level needs to be 
+debug or trace.
+
+<bean id="customizableTraceInterceptor"
+class="org.springframework.aop.interceptor.CustomizableTraceInterceptor" >
+<property name="exitMessage">
+<value>"umiac: $[targetClassShortName].$[methodName]: args: [$[arguments]] return: [$[returnValue]] ms:$[invocationTime]"</value>
+</property>
+</bean>
+
+<!\-\- Proxy the Umiac class directly.  \-\->
+<bean id="org.sakaiproject.util.api.umiac.Umiac"
+class="org.springframework.aop.framework.ProxyFactoryBean">
+<property name="proxyTargetClass"><value>true</value></property>
+<property name="target">
+<ref local="org.sakaiproject.util.api.umiac.UmiacTarget" />
+</property>
+<property name="interceptorNames">
+<list>
+<value>customizableTraceInterceptor</value>
+</list>
+</property>
+</bean>
+-->
+
+<!--This is an alternate configuration.
+    
+    \<bean id="org.sakaiproject.util.api.umiac.UmiacTarget"
+    class="org.sakaiproject.util.impl.umiac.UmiacClientImpl"
+    init-method="init" destroy-method="destroy" singleton="true" />
+
+
+\<bean id="debugInterceptor"
+class="org.springframework.aop.interceptor.DebugInterceptor" />
+
+\<bean id="org.sakaiproject.util.api.umiac.Umiac"
+class="org.springframework.aop.framework.ProxyFactoryBean">
+\<property name="proxyInterfaces">
+\<value>org.org.sakaiproject.util.api.umiac.Umiac\</value>
+\</property>
+\<property name="target">
+\<ref local="org.sakaiproject.util.api.umiac.UmiacTarget" />
+\</property>
+\<property name="interceptorNames">
+\<list>
+\<value>debugInterceptor\</value>
+\</list>
+\</property>
+\</bean>
+-->
