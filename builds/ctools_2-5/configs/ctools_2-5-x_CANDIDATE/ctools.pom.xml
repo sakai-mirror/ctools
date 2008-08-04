@@ -161,7 +161,220 @@ if changes are needed.
 	<module>../discussion</module>
 	<module>../extraction</module>
 	<module>../extraction-umich</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ctools-pilot</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+	  <module>../master</module>
+        <module>../access</module>
+        <module>../alias</module>
+        <module>../announcement</module>
+        <module>../archive</module>
+        <module>../assignment</module>
+        <module>../authz</module>
+	<!-- <module>../blog</module> -->
+        <module>../calendar</module>
+        <module>../chat</module>
+        <module>../citations</module>
+        <module>../cluster</module>
+        <module>../component</module>
+	<module>../content</module>
+	<module>../content-review</module> 
+        <module>../courier</module>
+        <module>../course-management</module>
+        <module>../dav</module>
+        <module>../db</module>
+        <module>../email</module>
+        <module>../entity</module>
+        <module>../entitybroker</module>
+        <module>../event</module>
+        <module>../gradebook</module>
+        <module>../help</module>
+        <module>../jobscheduler</module>
+	<!-- content needs jcr -->
+        <module>../jcr</module> 
+        <module>../jsf</module>
+        <module>../linktool</module>
+        <module>../login</module>
+        <module>../mailarchive</module>
+        <module>../memory</module>
+        <module>../message</module>
+        <module>../metaobj</module>
+        <module>../msgcntr</module>
+	<module>../osp</module> 
+        <module>../podcasts</module>
+        <module>../portal</module>
+        <module>../postem</module>
+        <module>../presence</module>
+        <module>../presentation</module>
+        <module>../privacy</module>
+        <module>../profile</module>
+        <module>../providers</module>
+        <module>../reference</module>
+        <module>../rights</module>
+        <module>../roster</module>
+        <module>../rwiki</module>
+	<!-- <module>../sam</module> -->
+        <module>../samples</module>
+	<module>../search</module> 
+        <module>../sections</module>
+        <module>../site</module>
+	<module>../site-manage</module> 
+        <module>../syllabus</module>
+	<!-- Figure out how to remove -->
+	<module>../test-harness</module> 
+        <module>../textarea</module>
+        <module>../tool</module>
+        <module>../user</module>
+        <module>../util</module>
+        <module>../velocity</module>
+        <module>../web</module>
+        <module>../webservices</module>
+        <module>../mailtool</module>
+        <module>../polls</module> 
+        <module>../usermembership</module>
+	<!-- <module>../sakai-mock</module> -->
+	<!-- Currently required by OSP, figure out how to remove -->
+	<module>../warehouse</module>
+	<!-- <module>../reports</module> -->
+	<!-- <module>../reset-pass</module> -->
 
+	<module>../ctools-apps</module>
+	<module>../ctools-libhelp</module>
+	<module>../ctools-providers</module>
+	<!-- eliminate for the moment, since nothing is required in build itself. -->
+	<module>../ctools-reference</module>
+
+	<module>../gradtools</module>  
+	<!-- ctools-webservices not converted  -->
+	<!-- evaluation not updated with branch  -->
+	<!-- 
+	<module>../ctools-webservices</module>
+	<module>../evaluation</module>
+	-->
+	<module>../config-viewer</module>
+	<!-- contrib -->
+	<module>../itunes</module>
+	<module>../test-center</module>
+	<!-- Currently removed for migration issues
+	<module>../hierarchy</module>
+	-->
+	<module>../melete</module>
+	<module>../discussion</module>
+	<module>../extraction</module>
+	<module>../extraction-umich</module>
+	<module>../ocw2</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ctools-mini</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+	  <module>../master</module>
+        <module>../access</module>
+        <module>../alias</module>
+        <module>../announcement</module>
+        <module>../archive</module>
+        <module>../assignment</module>
+        <module>../authz</module>
+	<!-- <module>../blog</module> -->
+        <module>../calendar</module>
+        <module>../chat</module>
+        <module>../citations</module>
+        <module>../cluster</module>
+        <module>../component</module>
+	<module>../content</module>
+	<module>../content-review</module> 
+        <module>../courier</module>
+        <module>../course-management</module>
+        <module>../dav</module>
+        <module>../db</module>
+        <module>../email</module>
+        <module>../entity</module>
+        <module>../entitybroker</module>
+        <module>../event</module>
+        <module>../gradebook</module>
+        <module>../help</module>
+        <module>../jobscheduler</module>
+	<!-- content needs jcr -->
+        <module>../jcr</module> 
+        <module>../jsf</module>
+        <module>../linktool</module>
+        <module>../login</module>
+        <module>../mailarchive</module>
+        <module>../memory</module>
+        <module>../message</module>
+        <module>../metaobj</module>
+        <module>../msgcntr</module>
+	<module>../osp</module> 
+        <module>../podcasts</module>
+        <module>../portal</module>
+        <module>../postem</module>
+        <module>../presence</module>
+        <module>../presentation</module>
+        <module>../privacy</module>
+        <module>../profile</module>
+        <module>../providers</module>
+        <module>../reference</module>
+        <module>../rights</module>
+        <module>../roster</module>
+        <module>../rwiki</module>
+	<!-- <module>../sam</module> -->
+        <module>../samples</module>
+	<module>../search</module> 
+        <module>../sections</module>
+        <module>../site</module>
+	<module>../site-manage</module> 
+        <module>../syllabus</module>
+	<!-- Figure out how to remove -->
+	<module>../test-harness</module> 
+        <module>../textarea</module>
+        <module>../tool</module>
+        <module>../user</module>
+        <module>../util</module>
+        <module>../velocity</module>
+        <module>../web</module>
+        <module>../webservices</module>
+        <module>../mailtool</module>
+        <module>../polls</module> 
+        <module>../usermembership</module>
+	<!-- <module>../sakai-mock</module> -->
+	<!-- Currently required by OSP, figure out how to remove -->
+	<module>../warehouse</module>
+	<!-- <module>../reports</module> -->
+	<!-- <module>../reset-pass</module> -->
+
+	<module>../ctools-apps</module>
+	<module>../ctools-libhelp</module>
+	<module>../ctools-providers</module>
+	<!-- eliminate for the moment, since nothing is required in build itself. -->
+	<module>../ctools-reference</module>
+
+	<module>../gradtools</module>  
+	<!-- ctools-webservices not converted  -->
+	<!-- evaluation not updated with branch  -->
+	<!-- 
+	<module>../ctools-webservices</module>
+	<module>../evaluation</module>
+	-->
+	<module>../config-viewer</module>
+	<!-- contrib -->
+	<module>../itunes</module>
+	<module>../test-center</module>
+	<!-- Currently removed for migration issues
+	<module>../hierarchy</module>
+	-->
+	<module>../melete</module>
+	<module>../discussion</module>
+	<module>../extraction</module>
+	<module>../extraction-umich</module>
+	<module>../ocw2</module>
       </modules>
     </profile>
   </profiles>
