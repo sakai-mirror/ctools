@@ -41,7 +41,7 @@ $HeadURL$
 
   <!-- change source as required -->
   <target name="editCtools" 
-	  depends="editSrcGlobal,editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editRwikiSrc,updatePomWithCToolsPom,editSnapshot,editPoms" >
+	  depends="editSrcGlobal,editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editOCW2JWS,editRwikiSrc,updatePomWithCToolsPom,editSnapshot,editPoms" >
     <!-- edit the files that need to be modified for ctools -->
   </target>
 
@@ -99,6 +99,17 @@ $HeadURL$
   <target name="editCToolsJWS" unless="ctools.install.skip" >
   </target>
 
+  <!-- copy in the CTools web services -->
+  <target name="editOCW2JWS" unless="ocw2.install.skip" >
+      <echo> Copy the ctools jws files to sakai webservices webapp. </echo>
+      <copy todir="${build.dir}/webservices/axis/src/webapp"
+	  overwrite="true"
+	  flatten="true"
+	  failonerror="false"
+	  >
+	  <fileset dir="${build.dir}/ocw2" includes="**/*.jws" />
+      </copy>
+  </target>
 
   <target name="updatePomWithCToolsPom"
 	  description="Replace default Sakai pom with one customized for CTools." >
