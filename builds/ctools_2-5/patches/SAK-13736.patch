@@ -44,13 +44,15 @@ Update based on SAK-13736
 
 =svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/@49082 msgcntr/
 
-#SAK-14081 -- Wait on this for awhile
+#SAK-14081 -- Wait on this for awhile because of database change.
 == https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/@49421 msgcntr/
 
 #CT-630
 =svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/@49802 msgcntr/
 =svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/@49896 msgcntr/
 
+#CT-637
+=svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/@50000 msgcntr/
 
 --- /dev/null
 +++ SAK-13736.tmp
