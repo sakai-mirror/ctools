@@ -2,6 +2,6 @@
 =svnm= https://source.sakaiproject.org/svn/assignment/trunk@48386 assignment
 
 --- /dev/null
-+++ SAK-7692.patch 
++++ SAK-7692.tmp
 @@ -0,0 +1 @@
 + 

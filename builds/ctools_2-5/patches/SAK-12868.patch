@@ -1,7 +1,8 @@
 Update based on SAK-12868
-=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/@45301 https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/@45300 site-manage/site-manage-tool/tool/src/ 
-=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/@45338 https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/@45337 site-manage/site-manage-tool/tool/src/ 
-=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/@46176 https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/@46175 site-manage/site-manage-tool/tool/src/ 
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/@45301 site-manage/site-manage-tool/tool/src/ 
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/@45338 site-manage/site-manage-tool/tool/src/ 
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/@46176 site-manage/site-manage-tool/tool/src/ 
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/@47588 site-manage/site-manage-tool/tool/src/ 
 
 --- /dev/null
 +++ SAK-12868.tmp

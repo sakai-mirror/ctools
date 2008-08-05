@@ -4,6 +4,6 @@
 
 #Fill in the SAK or something unique, leave it like this if theres no real patch
 --- /dev/null
-+++ CT-596.patch 
++++ CT-596.tmp
 @@ -0,0 +1 @@
 + 

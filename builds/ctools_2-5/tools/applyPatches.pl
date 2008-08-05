@@ -161,7 +161,7 @@ sub cleanTmpFiles($) {
     my $buildDir = shift;
     print "Removing old patch files from $buildDir\n";
     if (-d $buildDir) {
-       unlink(glob("$buildDir/*.patch"));
+       unlink(glob("$buildDir/*.tmp"));
     }   
 }
 

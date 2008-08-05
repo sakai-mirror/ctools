@@ -2,6 +2,6 @@
 =svnm= https://source.sakaiproject.org/svn/reference/trunk/@40104 reference
 
 --- /dev/null
-+++ SAK-12542.patch 
++++ SAK-12542.tmp
 @@ -0,0 +1 @@
 + 

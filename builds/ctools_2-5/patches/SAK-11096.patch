@@ -6,6 +6,6 @@
 
 #Fill in the SAK or something unique, leave it like this if theres no real patch
 --- /dev/null
-+++ SAK-11096.patch 
++++ SAK-11096.tmp
 @@ -0,0 +1 @@
 + 

@@ -1,8 +1,8 @@
 --- /dev/null
-+++ NULL.patch 
++++ NULL.tmp
 @@ -0,0 +1 @@
 +
---- NULL.patch
+--- NULL.tmp
 +++ /dev/null
 @@ -1 +0,0 @@
 -
