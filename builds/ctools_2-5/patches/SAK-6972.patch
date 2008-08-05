@@ -1,0 +1,13 @@
+#SAK 6972 Add Merge functionality to My Workspace Schedule tool
+=svnm= https://source.sakaiproject.org/svn/site/trunk@49344 site
+
+=svnm= https://source.sakaiproject.org/svn/site/trunk@49381 site
+
+#This doesn't merge unless we ignore whitespace
+=svnmxw= https://source.sakaiproject.org/svn/calendar/trunk@49382 calendar
+
+#Fill in the SAK or something unique, leave it like this if theres no real patch
+--- /dev/null
++++ SAK-6972.patch 
+@@ -0,0 +1 @@
++ 

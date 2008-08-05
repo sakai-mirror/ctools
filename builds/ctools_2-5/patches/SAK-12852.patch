@@ -1,0 +1,8 @@
+#SAK-12582
+=svnm= https://source.sakaiproject.org/svn/calendar/trunk@41888 calendar
+
+#Fill in the SAK or something unique, leave it like this if theres no real patch
+--- /dev/null
++++ SAK-12582.patch 
+@@ -0,0 +1 @@
++ 

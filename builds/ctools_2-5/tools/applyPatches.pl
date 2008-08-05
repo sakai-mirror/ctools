@@ -270,7 +270,7 @@ sub applyOneActionFile(%) {
 			$rc = 3;
 		}
 	    }
-	    elsif ($action eq "svnm")  {
+	    elsif ($action eq "svnm" || $action eq "svnmxw")  {
 		print "svn action\n";
 		my ($svnSrc,$srcRev,$svnDest,$destRev,$wCopy);
 		#First form with 5 parameters
@@ -283,6 +283,11 @@ sub applyOneActionFile(%) {
 		my $cmd="";
 		my $svnDebugCmds = "";
 		my $svnopt = "";
+		#If the action is to merge ignoreing whitespace, add this as an option
+		if ($action eq "svnmxw") {
+		    $svnopt = " -x -w ";
+		}
+
 		my $result = "";
 		if ($wCopy && $svnSrc && $srcRev) {
 		    #See if we need to add paths to the source or destination
@@ -294,7 +299,7 @@ sub applyOneActionFile(%) {
 
 		    #If theres no destination then cherrypick it;
 		    if (!$destRev) {
-			$svnopt = "-c $srcRev";
+			$svnopt .= "-c $srcRev";
 			$svnDest = "";
 		    } else {
 			$svnDest = "$svnDest\@$destRev";
