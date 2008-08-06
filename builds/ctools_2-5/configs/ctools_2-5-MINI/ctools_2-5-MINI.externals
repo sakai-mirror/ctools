@@ -19,12 +19,12 @@
 ####   Sakai 2.5.0 modules
  access              -r47910     https://source.sakaiproject.org/svn/access/tags/sakai_2-5-1_rc02
  alias               -r47911     https://source.sakaiproject.org/svn/alias/tags/sakai_2-5-1_rc02
- announcement        -r47912     https://source.sakaiproject.org/svn/announcement/tags/sakai_2-5-1_rc02
+# announcement        -r47912     https://source.sakaiproject.org/svn/announcement/tags/sakai_2-5-1_rc02
 # assignment          -r47914     https://source.sakaiproject.org/svn/assignment/tags/sakai_2-5-1_rc02
  archive             -r47913     https://source.sakaiproject.org/svn/archive/tags/sakai_2-5-1_rc02
  authz               -r47915     https://source.sakaiproject.org/svn/authz/tags/sakai_2-5-1_rc02
 # blog -rHEAD https://source.sakaiproject.org/svn/blog/tags/sakai_2-5-1_rc02
-# calendar            -r47917     https://source.sakaiproject.org/svn/calendar/tags/sakai_2-5-1_rc02
+ calendar            -r47917     https://source.sakaiproject.org/svn/calendar/tags/sakai_2-5-1_rc02
 # chat                -r47918     https://source.sakaiproject.org/svn/chat/tags/sakai_2-5-1_rc02
  cluster             -r47920     https://source.sakaiproject.org/svn/cluster/tags/sakai_2-5-1_rc02
 # citations           -r47919     https://source.sakaiproject.org/svn/citations/tags/sakai_2-5-1_rc02
@@ -42,9 +42,9 @@
  #gradebook           -r47932     https://source.sakaiproject.org/svn/gradebook/tags/sakai_2-5-1_rc02
  help                -r47933     https://source.sakaiproject.org/svn/help/tags/sakai_2-5-1_rc02
  jcr                 -r47934     https://source.sakaiproject.org/svn/jcr/tags/sakai_2-5-1_rc02
-# jobscheduler        -r47935     https://source.sakaiproject.org/svn/jobscheduler/tags/sakai_2-5-1_rc02
+ jobscheduler        -r47935     https://source.sakaiproject.org/svn/jobscheduler/tags/sakai_2-5-1_rc02
  jsf                 -r47936     https://source.sakaiproject.org/svn/jsf/tags/sakai_2-5-1_rc02
-# linktool            -r47937     https://source.sakaiproject.org/svn/linktool/tags/sakai_2-5-1_rc02
+ linktool            -r47937     https://source.sakaiproject.org/svn/linktool/tags/sakai_2-5-1_rc02
  login               -r47938     https://source.sakaiproject.org/svn/login/tags/sakai_2-5-1_rc02
 # mailarchive         -r47939     https://source.sakaiproject.org/svn/mailarchive/tags/sakai_2-5-1_rc02
 # mailtool            -r47940     https://source.sakaiproject.org/svn/mailtool/tags/sakai_2-5-1_rc02
@@ -65,8 +65,8 @@
 # presentation        -r47952     https://source.sakaiproject.org/svn/presentation/tags/sakai_2-5-1_rc02
 # privacy             -r47953     https://source.sakaiproject.org/svn/privacy/tags/sakai_2-5-1_rc02
 # profile             -r47954     https://source.sakaiproject.org/svn/profile/tags/sakai_2-5-1_rc02
-# providers           -r47955     https://source.sakaiproject.org/svn/providers/tags/sakai_2-5-1_rc02
-# reference           -r47956     https://source.sakaiproject.org/svn/reference/tags/sakai_2-5-1_rc02
+providers           -r47955     https://source.sakaiproject.org/svn/providers/tags/sakai_2-5-1_rc02
+reference           -r47956     https://source.sakaiproject.org/svn/reference/tags/sakai_2-5-1_rc02
 # rights              -r47959     https://source.sakaiproject.org/svn/rights/tags/sakai_2-5-1_rc02
 # roster              -r47960     https://source.sakaiproject.org/svn/roster/tags/sakai_2-5-1_rc02
 # rwiki               -r47961     https://source.sakaiproject.org/svn/rwiki/tags/sakai_2-5-1_rc02
@@ -107,7 +107,7 @@
 #  ctools-webservices -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-webservices
 #  ctools-libhelp -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-libhelp
 
- ctools-assembly     -r48355     https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
+ ctools-assembly     -r49999     https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
 
  ctools-apps         -r45502     https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
 # Any providers above 47734 need a newer version of evaluation, hold back for now.
@@ -131,7 +131,7 @@
 # test-center         -r50881     https://source.sakaiproject.org/contrib/muse/test-center/tags/1.1.8-2.5.0
 
 ## Current version is being patched
-# itunes              -r51165     https://source.sakaiproject.org/contrib/umctx/trunk/itunesu-tool/
+itunes              -r51165     https://source.sakaiproject.org/contrib/umctx/trunk/itunesu-tool/
 # config-viewer       -r48120     https://source.sakaiproject.org/contrib/config-viewer/trunk/ 
  #
   ## course evaluation tool
@@ -149,7 +149,7 @@
  #extraction          -r51108 https://source.sakaiproject.org/contrib/reporting/extraction/tags/ctools-2.5.1C
 # extraction-umich    -r51192 https://source.sakaiproject.org/contrib/reporting/extraction-umich/tags/ctools-2.5.1C
 
- #metaobj	     -r49116     https://source.sakaiproject.org/svn/ctools/trunk/metaobj/ 
+metaobj	     -r49116     https://source.sakaiproject.org/svn/ctools/trunk/metaobj/ 
 # osp		     -r49117     https://source.sakaiproject.org/svn/ctools/trunk/osp/
 
 #Important, location of patches, specify a specific revision or leave as PROPERTY which will be <= the candidate property version! :)
