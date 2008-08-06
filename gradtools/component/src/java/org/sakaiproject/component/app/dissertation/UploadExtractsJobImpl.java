@@ -159,9 +159,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		{
 			if(m_logger == null)
 				System.out.println(this + ".execute() couldn't get a logger");
-			if(metric.isInfoEnabled())
-				metric.info(this + ".execute() start");
-			
+
 			init();
 			
 			Session s = SessionManager.getCurrentSession();
@@ -204,8 +202,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		
 			collecting.add(getTime() + " JOB NAME: " + jobName + " - START" + NEWLINE);
 				
-			if(m_logger.isInfoEnabled())
-				m_logger.info(getTime() + " " + jobName + " - START");
+			if(metric.isInfoEnabled())
+				metric.info("METRIC "+ jobName + " - START " + getTime());
 		
 			//validate the String[]'s passed as job detail data
 			if(m_oardRecords != null && m_oardRecords.length > 0)
@@ -218,6 +216,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			if(!vErrors)
 			{
 				collecting.add("There were no validation errors, so the data will be used to update checklist status." + NEWLINE);
+				
+				if(metric.isInfoEnabled())
+					metric.info("METRIC " + jobName + " - There were no validation errors, so the data will be used to update checklist status. " + getTime());
 				
 				//if we have no ids at this point bail out
 				if(!ids.elements().hasMoreElements())
@@ -241,6 +242,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 				collecting.add(getTime() + " JOB NAME: " + jobName + " - data validation errors" + NEWLINE);
 				collecting.add("Because there were validation errors, the data have not be used to update checklist status." + NEWLINE);
 				collecting.add("Please correct the errors and upload the data again." + NEWLINE);
+				
+				if(metric.isInfoEnabled())
+					metric.info("METRIC " + jobName + " - Because there were validation errors, the data have not be used to update checklist status. " + getTime());
 			}
 		}
 		catch(Exception e)
@@ -258,8 +262,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			collecting.add(getTime() + " JOB NAME: " + jobName + " - DONE" + NEWLINE);
 			if(lErrors)
 				collecting.add("Note: There were errors loading data which require attention." + NEWLINE);
-			if(m_logger.isInfoEnabled())
-				m_logger.info(getTime() + " " + jobName + " - DONE");
+			
+			if(metric.isInfoEnabled())
+				metric.info("METRIC " + jobName + " - DONE " + getTime());
 			
 			//clean up lock at the end
 			try
@@ -293,7 +298,7 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 					m_logger.warn(this + ".execute() addAnnouncementMessage " + e);
 			}
 			if(metric.isInfoEnabled())
-				metric.info(this + ".execute() finish");
+				metric.info("METRIC " + jobName + " - execution complete. " + getTime());
 		}
 	}
 	
@@ -428,6 +433,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		String prefix = "";
 		int lineNumber = 0;
 		boolean vErrors = false;
+		
+		if(metric.isInfoEnabled())
+			metric.info("METRIC " + lns.length + " records in the OARD extract file. " + getTime());
 		
 		//iterate though each line in the input file
 		for (int i = 0; i < lns.length; i++)
@@ -697,6 +705,9 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		String prefix = "";
 		int lineNumber = 0;
 		boolean vErrors = false;
+		
+		if(metric.isInfoEnabled())
+			metric.info("METRIC " + lns.length + " records in the MPathways extract file. " + getTime());
 		
 		//for each line in the MPathways extract file
 		for (int i = 0; i < lns.length; i++)
@@ -1281,8 +1292,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 		if(data == null) 
 			throw new IllegalArgumentException("CandidateInfo data sent to dumpData() was null");
 		
-		if(m_logger.isWarnEnabled())
-			m_logger.warn("Metric: " + data.size() + " students in data from Rackham upload at START.");
+		if(metric.isInfoEnabled())
+			metric.info("METRIC " + data.size() + " students in upload. " + getTime());
 		
 		//for each CandidateInfo in data
 		for(int x = 0; x < data.size(); x++)
@@ -1345,8 +1356,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 				}
 				processed++;
 				if(processed % METRIC_INTERVAL == 0) {
-					if(m_logger.isWarnEnabled())
-						m_logger.warn("Metric: " + processed + " students' checklists updated.");
+					if(metric.isInfoEnabled())
+						metric.info("METRIC " + processed + " student checklists updated. " + getTime());
 				}
 			}
 			catch(Exception e)
@@ -1358,8 +1369,8 @@ public class UploadExtractsJobImpl implements UploadExtractsJob
 			
 		}//for each CandidateInfo 
 		
-		if(m_logger.isWarnEnabled())
-			m_logger.warn("Metric: " + processed + " students' checklists updated at END.");
+		if(metric.isInfoEnabled())
+			metric.info("METRIC " + processed + " student checklists updated at the end of processing. " + getTime());
 		
 		return lErrors;
 	}
