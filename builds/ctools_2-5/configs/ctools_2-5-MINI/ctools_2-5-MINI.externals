@@ -1,6 +1,6 @@
 # Definition of modules to be included in a ctools build.
-# $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/configs/ctools_2-5-0_CANDIDATE/ctools_2-5-TRIAL.externals $
-# $Id: ctools_2-5-TRIAL.externals 46530 2008-05-19 16:58:58Z jonespm@umich.edu $
+# $HeadURL$
+# $Id$
 
 # Most of the files will be take from the same release.  By convention
 # anything that departs for this is at the end of the file, so you

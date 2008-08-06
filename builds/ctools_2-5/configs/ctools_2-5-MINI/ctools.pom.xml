@@ -7,9 +7,9 @@ to include a profile for CTools 2.5.
  Need to compare this to the Sakai pom periodically to see 
 if changes are needed. 
 
- $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/configs/ctools_2-5-x_CANDIDATE/ctools.pom.xml $ 
+ $HeadURL$ 
 
- $Id: ctools.pom.xml 49997 2008-08-04 18:50:03Z jonespm@umich.edu $ 
+ $Id$ 
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0">
