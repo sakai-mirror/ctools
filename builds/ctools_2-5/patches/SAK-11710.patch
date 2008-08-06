@@ -8,7 +8,7 @@ Index: user/user-tool-prefs/tool/src/java/org/sakaiproject/user/tool/UserPrefsTo
  		m_stuff.add(new KeyNameValue(CHARON_PREFS, "order", oparts, true));
 -		// TODO tab size is set to 4 by default. i can't set null , not "" as in portal code "" will be number to display on tab
 -		// m_stuff.add(new KeyNameValue(CHARON_PREFS, "tabs", "4", false));
-+		m_stuff.add(new KeyNameValue(CHARON_PREFS, "tabs", "4", false));
++		m_stuff.add(new KeyNameValue(CHARON_PREFS, "tabs", prefTabCount, false));
  
  		// save
  		saveEdit();
