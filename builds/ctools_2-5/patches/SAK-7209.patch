@@ -10,7 +10,7 @@
  
 #These are the actual patches for the SAK-7209
 =svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@40482 site-manage/
-=svnm= https://source.sakaiproject.org/svn/site-manage/web/@40483 web/
+=svnm= https://source.sakaiproject.org/svn/web/trunk/@40483 web/
 
 #Repatching in the reversion to chef_site-addParticipant.vm
 =svnm= https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-addParticipant.vm/@39603 site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-addParticipant.vm

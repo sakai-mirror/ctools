@@ -1,0 +1,8 @@
+#SAK 14075 - FCK editor fix to readd resource search
+=svnm= https://source.sakaiproject.org/svn/reference/trunk@49338 reference
+
+#Fill in the SAK or something unique, leave it like this if theres no real patch
+--- /dev/null
++++ SAK-14075.tmp
+@@ -0,0 +1 @@
++ 
