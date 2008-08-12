@@ -115,7 +115,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
 # ctools-providers    -r49139     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
  ctools-providers    -r47734     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
 # For search server properties
- ctools-reference    -r50508     https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
+ ctools-reference    -r50598     https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
 
  ctools-webservices  -r45685     https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
  gradtools           -r50425     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
@@ -156,8 +156,8 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
 #Important, location of patches, specify a specific revision or leave as PROPERTY which will be <= the candidate property version! :)
  ctools-patches      -rPROPERTY    https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/patches/ 
 
- sakai-portlets	    -r51424	  https://source.sakaiproject.org/contrib/sakai-portlets/trunk/
- sitemaker	    -r51372       https://source.sakaiproject.org/contrib/sakai-portlets/branches/sitemaker/
+ sakai-portlets	    -r51936	  https://source.sakaiproject.org/contrib/sakai-portlets/trunk/
+ sitemaker	    -r51876       https://source.sakaiproject.org/contrib/sakai-portlets/branches/sitemaker/
 
 #
 #end
