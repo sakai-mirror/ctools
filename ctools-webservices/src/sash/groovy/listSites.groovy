@@ -2,16 +2,33 @@
 // $HeadURL$
 // $Id$
 
-def sleepTime=5000;
-def version = "$Id:$";
+// fundamental imports for Sakai
+
 // Get the component manager to allow looking up the required services;
 import org.sakaiproject.component.cover.ComponentManager
+// Allow creating logs
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+private static Log metric = LogFactory.getLog("metrics." + "edu.umich.ctools.listSites.groovy");
+private static Log log = LogFactory.getLog("edu.umich.ctools.listSites.groovy");
+
+log.debug("listSites.groovy debug level log message");
+log.info("listSites.groovy info level log message");
+log.warn("listSites.groovy warn level log message");
+log.error("listSites.groovy error level log message");
+
+metric.debug("listSites.groovy debug level metric message");
+metric.info("listSites.groovy info level metric message");
+metric.warn("listSites.groovy warn level metric message");
+metric.error("listSites.groovy error level metric message");
+
+def sleepTime=0;
 
 // Will need to use the site service.
 import org.sakaiproject.site.api.SiteService
 def siteService = ComponentManager.get("org.sakaiproject.site.api.SiteService");
 
-println version;
 println "sleep time: "+sleepTime;
 
 // keep some statistics
@@ -26,6 +43,9 @@ siteService.getSites(SiteService.SelectionType.NON_USER, ["course","project"], n
   Thread.sleep(sleepTime);
   siteCnt++;
   println  "title: [${site.title}], id: [${site.id}]";
+  log.warn("title: [${site.title}], id: [${site.id}]");
+  metric.warn("title: [${site.title}], id: [${site.id}]");
+  out.flush();
   //  println  "title: [${it.title}], id: [${it.id}]";
 }
 //     {site ->
