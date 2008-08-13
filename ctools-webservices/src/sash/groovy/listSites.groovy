@@ -16,9 +16,10 @@ println "start time: "+start
 
 // for each site print some information
 siteService.getSites(SiteService.SelectionType.NON_USER, ["course","project"], null, null, null,null).each 
-{ 
+{ site ->
   siteCnt++;
-  println  "title: [${it.title}], id: [${it.id}]";
+  println  "title: [${site.title}], id: [${site.id}]";
+  //  println  "title: [${it.title}], id: [${it.id}]";
 }
 //     {site ->
 // 	    println "site: ".site;
