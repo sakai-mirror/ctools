@@ -1,0 +1,165 @@
+#Update based on SAK-7209
+
+#First revert 50594 
+=svnm= https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-5-x/@50593 https://source.sakaiproject.org/svn/site-manage/branches/sakai_2-5-x/@50594 site-manage/
+
+#SAK-12523 dependency for sitesetupgeneric.properties
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@39500 site-manage/
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@39713 site-manage/
+
+#SAK-12524 dependency for chef_site-modifyENW.vm and chef_site-newSiteConfirm.vm??
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@39501 site-manage/
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@39502 site-manage/
+ 
+#These are the actual patches for the SAK-7209
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@40482 site-manage/
+=svnm= https://source.sakaiproject.org/svn/web/trunk/@40483 web/
+
+#Repatching in the reversion to chef_site-addParticipant.vm
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-addParticipant.vm/@39603 site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-addParticipant.vm
+
+#Now try to do the other SAK's 12868, 13254, 12912 13413
+
+#SAK-11377
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@37725 site-manage/
+
+#No JIRA pom modifications
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@38388 site-manage/
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@38499 site-manage/
+
+
+#SAK-12256
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@38786 site-manage/
+
+#SAK-12216
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@38258 site-manage/
+
+#SAK-12536
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@39695 site-manage/
+
+#SAK-12661
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@40089 site-manage/
+
+#SAK-12747
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@40214 site-manage/
+
+#SAK-13132
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@41870 site-manage/
+
+#SAK-12868
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@45301 site-manage/
+
+#SAK-13254
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@45311 site-manage/
+
+#SAK-12868
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@45338 site-manage/
+
+#SAK-12912
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@45469 site-manage/
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@45483 site-manage/
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@45622 site-manage/
+
+#SAK-12981
+=svnmxw= https://source.sakaiproject.org/svn/site-manage/trunk/@41236 site-manage/
+=svnmxw= https://source.sakaiproject.org/svn/site-manage/trunk/@43709 site-manage/
+=svnmxw= https://source.sakaiproject.org/svn/site-manage/trunk/@44991 site-manage/
+
+#SAK-13389
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@45488 site-manage/
+
+#SAK-13390
+=svnmxw= https://source.sakaiproject.org/svn/site-manage/trunk/@45517 site-manage/
+
+#SAK-12868
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@46176 site-manage/
+
+#SAK-4045
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@40491 site-manage/
+
+#SAK-13363
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@45358 site-manage/
+
+#SAK-13001
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@41254 site-manage/
+
+#SAK-12987
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@41228 site-manage/
+
+#SAK-13501
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@46702 site-manage/
+
+#SAK-13413
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@47125 site-manage/
+
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@47186 site-manage/
+
+#SAK-12868
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@47558 site-manage/
+
+#SAK-13501
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@47398 site-manage/
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@48096 site-manage/
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@48287 site-manage/
+
+#SAK-14195
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@50666 site-manage/
+
+--- /dev/null
++++ SAK-7209.tmp
+@@ -0,0 +1 @@
++ 
+
+#Reverted part of SAK-12547 in 39603 that is in 2.5.1, conflicts with 39501, will repatch in.
+Index: site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-addParticipant.vm
+===================================================================
+--- site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-addParticipant.vm	(revision 47968)
++++ site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-addParticipant.vm	(working copy)
+@@ -8,20 +8,17 @@
+ 		<div class="alertMessage">$tlang.getString("gen.alert") $validator.escapeHtml($alertMessage)</div>
+ 		<div class="clear"></div>
+ 	#end
+-	#if ($!isCourseSite)
+-		<div class="instruction">
+-			<h4>$tlang.getString("add.official")</h4>
+-		</div>
+-		<div class="indnt1">
+-			<p class="instruction">
+-				$tlang.getString("add.official1")
+-			</p>
+-			<p class="instruction">
+-				$tlang.getString("add.official.instruction")
+-			</p>
+-		</div>
+-	#end
+-	<p/>
++	<div class="instruction">
++		<h4>$tlang.getString("add.official")</h4>
++	</div>
++	<div class="indnt1">
++		<p class="instruction">
++			$tlang.getString("add.official1")
++		</p>
++		<p class="instruction">
++			$tlang.getString("add.official.instruction")
++		</p>
++	</div>
+ 	<form action="#toolForm("SiteAction")" method="post">
+ 		<p class="instruction">
+ 			<h4>$!officialAccountSectionTitle</h4>
+
+#Need this to patch around SAK-12324 to get in 45517
+Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java
+===================================================================
+--- site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java       (revision 50613)
++++ site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java       (working copy)
+@@ -854,7 +861,8 @@
+	ParameterParser params = data.getParameters();
+	context.put("tlang", rb);
+	context.put("alertMessage", state.getAttribute(STATE_MESSAGE));
+-
++	
++	
+	// If cleanState() has removed SiteInfo, get a new instance into state
+	SiteInfo siteInfo = new SiteInfo();
+	if (state.getAttribute(STATE_SITE_INFO) != null) {

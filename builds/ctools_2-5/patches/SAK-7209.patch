@@ -2,7 +2,7 @@
  
 #SAK-12523 dependency for sitesetupgeneric.properties
 =svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@39500 site-manage/
-=svnm= https://source.sakaiproject.org/svn/site-manage-trunk/@39713 site-manage/
+=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@39713 site-manage/
 
 #SAK-12524 dependency for chef_site-modifyENW.vm and chef_site-newSiteConfirm.vm??
 =svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@39501 site-manage/
