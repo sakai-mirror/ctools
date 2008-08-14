@@ -210,7 +210,7 @@ public class EvalGroupsProviderUnivOfMichImpl implements EvalGroupsProvider {
 							.next();
 					if (entry.getValue().equals(role)) {
 						user = externalLogic.getEvalUserByEid(entry.getKey());
-						userId = user.userId;
+						userId = user.userId; 
 						userIds.add(userId);
 					}
 				}
