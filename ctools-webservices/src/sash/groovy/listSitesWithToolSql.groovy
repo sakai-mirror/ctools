@@ -1,6 +1,8 @@
 // List all sites
-// $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices/src/sash/groovy/listSitesWithTool.groovy $
-// $Id: listSitesWithTool.groovy 50721 2008-08-14 16:54:56Z dlhaines@umich.edu $
+// $HeadURL$
+// $Id$
+
+// ge
 
 // fundamental imports for Sakai
 
