@@ -1,6 +1,6 @@
 // List all sites
-// $HeadURL$
-// $Id$
+// $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices/src/sash/groovy/listSitesWithTool.groovy $
+// $Id: listSitesWithTool.groovy 50721 2008-08-14 16:54:56Z dlhaines@umich.edu $
 
 // fundamental imports for Sakai
 
@@ -116,4 +116,13 @@ public SakaiIMSUser retrieveUser(final String userId, boolean isEmail)
 	}
 */
 
-  // end
+/* Drew suggests this variant of my query.
+-- select distinct * from (select * from (
+-- select SITE_ID from SAKAI_SITE_TOOL
+-- where SITE_ID like '~%'
+-- and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = 'sakai.rsf.evaluation')
+-- order by SITE_ID
+-- ) where rownum < 1000);
+*/
+
+// end
