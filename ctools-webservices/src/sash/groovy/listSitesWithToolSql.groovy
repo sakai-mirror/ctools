@@ -25,6 +25,9 @@ private static Log log = LogFactory.getLog("edu.umich.ctools.listSites.groovy");
 // metric.warn("listSites.groovy warn level metric message");
 // metric.error("listSites.groovy error level metric message");
 
+
+import siteListSql;
+
 def sleepTime=0;
 
 // Will need to use the site service.
@@ -33,26 +36,40 @@ def siteService = ComponentManager.get("org.sakaiproject.site.api.SiteService");
 
 println "sleep time: "+sleepTime;
 
+def toolId = "sakai.rsf.evaluation";
+def maxSitesPerQuery = 10;
+
+def sLS = new siteListSql();
+
+String siteToolAddCandiatesSql = siteListSql.getWorkSitesWithoutToolSql(toolId,maxSitesPerQuery);
+
 // keep some statistics
 def start = System.currentTimeMillis();
 def  siteCnt = 0;
 println "start time: "+start;
-out.flush();
+
+
+def db = ??
+
+  db.eachRow(siteToolAddCandidatesSql) {
+    siteTool ->
+    println siteTool.SITE_ID;
+  }
+
 
 // for each site print some information
-siteService.getSites(SiteService.SelectionType.NON_USER, ["course","project"], null, null, null,null).each 
-{ site ->
-  Thread.sleep(sleepTime);
-  siteCnt++;
-  println  "title: [${site.title}], id: [${site.id}]";
-  log.warn("title: [${site.title}], id: [${site.id}]");
-  metric.warn("title: [${site.title}], id: [${site.id}]");
-  out.flush();
-  //  println  "title: [${it.title}], id: [${it.id}]";
-}
-//     {site ->
-// 	    println "site: ".site;
-//     }
+// siteService.getSites(SiteService.SelectionType.NON_USER, ["course","project"], null, null, null,null).each 
+// { site ->
+//   Thread.sleep(sleepTime);
+//   siteCnt++;
+//   println  "title: [${site.title}], id: [${site.id}]";
+//   log.warn("title: [${site.title}], id: [${site.id}]");
+//   metric.warn("title: [${site.title}], id: [${site.id}]");
+//   //  println  "title: [${it.title}], id: [${it.id}]";
+// }
+// //     {site ->
+// // 	    println "site: ".site;
+// //     }
 
 def stop = System.currentTimeMillis();
 println "end time: " + stop;
