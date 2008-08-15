@@ -1,5 +1,5 @@
-// $HeadURL:$
-// $Id:$
+// $HeadURL$
+// $Id$
 
 // checking comment: works!
 
@@ -18,9 +18,9 @@ def candidateSitesSql = "select * from (select distinct SITE_ID from SAKAI_SITE_
 // conn.execute(candidateSitesSql);
 
   import groovy.sql.Sql;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import javax.sql.DataSource;
+//import java.sql.Connection;
+//import java.sql.DriverManager;
+//import javax.sql.DataSource;
 
 def sql = Sql.newInstance(myURL, user, password,"oracle.jdbc.driver.OracleDriver");
 sql.eachRow(candidateSitesSql) { println it.SITE_ID }
