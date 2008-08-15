@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<registration>
+
+	<tool
+			id="ctools.annotatedurl.enginhonorcode"
+			title="Engineering Honor Code"
+			description="For Engineering courses - to display the Engineering Honor Policy and your particular policy">
+
+		<configuration name="height" value="600px" />
+
+		<configuration name="special" value="annotatedurl" type="final" />
+		<configuration name="reset.button" value="true" type="final" />
+		<configuration name="desp" value="Click the Options item in the toolbar to enter your class specific honor policies here." />
+		<configuration name="TargetPageName" value="Engineering Honor Code" />
+		<configuration name="TargetPageUrl" value="http://www.engin.umich.edu/students/honorcode/" />
+		
+		<category name="course" />
+		<category name="project" />
+
+		<!-- Allow this to be set -->
+		<configuration name="functions.require" /> 
+	</tool>
+
+</registration>
