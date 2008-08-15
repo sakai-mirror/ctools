@@ -4,20 +4,17 @@
 
 	<tool
 			id="sakai.iframe.annotatedurl"
-			title="Engineering Honor Code"
-			description="For Engineering courses - to display the Engineering Honor Policy and
-your particular policy">
+			title="AnnotatedUrl"
+			description="To display Annotated Url">
 
 		<configuration name="height" value="600px" />
 
 		<configuration name="special" value="annotatedurl" type="final" />
 		<configuration name="reset.button" value="true" type="final" />
-		<configuration name="desp" value="Click the Options item in the toolbar to enter your class specific honor policies here." />
-		<configuration name="TargetPageName" value="Engineering Honor Code" />
-		<configuration name="TargetPageUrl" value="http://www.engin.umich.edu/students/honorcode/" />
+		<configuration name="desp" value="Click the Options item in the toolbar to enter your class specific policies here." />
+		<configuration name="TargetPageName" value="Target Page" />
+		<configuration name="TargetPageUrl" value="http://sakaiproject.org/" />
 		
-		<category name="course" />
-		<category name="project" />
       
 		<!-- Allow this to be set -->
 		<configuration name="functions.require" /> 
