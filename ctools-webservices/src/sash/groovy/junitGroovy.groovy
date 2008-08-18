@@ -1,23 +1,37 @@
-// $HeadURL:$
-// $Id:$
+#!/usr/bin/env groovy
+// $HeadURL$
+// $Id$
 
 // Demonstrate simple junit testing with groovy.
 
 // import the class to test
-import testSubClasses
+
+import UpdateSiteWithToolB
 
 // create the test class
-  class SimpleUnitTest extends GroovyTestCase {
+class SimpleUnitTest extends GroovyTestCase {
 
-  def testSql1 = "select distinct * from (select * from ( select SITE_ID from SAKAI_SITE_TOOL  where SITE_ID like '~%'  and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = 'sakai.rsf.evaluation')  order by SITE_ID) where rownum < 10)";
-  def testSql2 = "select distinct * from (select * from ( select SITE_ID from SAKAI_SITE_TOOL  where SITE_ID like '~%'  and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = 'XABC')  order by SITE_ID) where rownum < 17)";
-    void testSimpleA() {
-      def tsc2 = new testSubClasses();
-      assertEquals(testSql2,tsc2.getCandidateSitesSql("XABC",17));
-    }
+  def uSWT;
 
-    void testSimpleB() {
-      def tsc2 = new testSubClasses();
-      assertEquals(testSql1,tsc2.getCandidateSitesSql("sakai.rsf.evaluation",10));
-    }
-  }
+  // create new instance of class with each test.
+
+  void setUp () { 
+    uSWT = new UpdateSiteWithToolB();
+  };
+  
+  void testExcludeSiteCheck() {
+    assertTrue("should find default excluded site",uSWT.excludeSite('a'));
+    assertTrue("should find default excluded site",uSWT.excludeSite('b'));
+    assertFalse("should NOT find in default excluded site",uSWT.excludeSite('c'));
+    // assertFalse("should NOT find in default excluded site",uSWT.excludeSiteC('a'));
+  };
+
+  void testDryRunCheck () {
+    // set property as variable.
+    assertTrue("verify default value",uSWT.isDryRun());
+    uSWT.dryRun = true;
+    assertTrue("should verify dryRunStatus is true",uSWT.isDryRun());
+    uSWT.dryRun = false;
+    assertFalse("should verify dryRunStatus is false",uSWT.isDryRun());
+  };
+}
