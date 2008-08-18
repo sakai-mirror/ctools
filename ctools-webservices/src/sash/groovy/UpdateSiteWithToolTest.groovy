@@ -6,7 +6,7 @@
 
 // import the class to test
 
-import UpdateSiteWithToolB
+import UpdateSiteWithTool
 
 // create the test class
 class SimpleUnitTest extends GroovyTestCase {
@@ -16,7 +16,7 @@ class SimpleUnitTest extends GroovyTestCase {
   // create new instance of class with each test.
 
   void setUp () { 
-    uSWT = new UpdateSiteWithToolB();
+    uSWT = new UpdateSiteWithTool();
   };
   
   void testExcludeSiteCheck() {

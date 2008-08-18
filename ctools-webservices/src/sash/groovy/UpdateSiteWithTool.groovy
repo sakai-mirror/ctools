@@ -9,7 +9,7 @@
 
 import groovy.sql.Sql;
 
-class UpdateSiteWithToolB {
+class UpdateSiteWithTool {
 
   Properties properties  = new Properties();
   FileInputStream props = new FileInputStream("test.properties");
