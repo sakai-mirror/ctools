@@ -1,8 +1,30 @@
+Index: site-manage/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties
+===================================================================
+--- site-manage/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties	(revision 47968)
++++ site-manage/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties	(working copy)
+@@ -272,7 +272,7 @@
+ #AddRem Vm
+ addrem.revising = Revising site tools for
+ addrem.check = Check boxes to add or remove tools from your site.
+-addrem.descrip = Description of the project, recent announcements, discussion, and chat items.
++addrem.descrip = For displaying the site description and recent activity
+ addrem.list.check = Select
+ addrem.list.toolname = Tool
+ addrem.list.description = Tool description
+@@ -512,7 +512,7 @@
+ feat.tools = Tools
+ feat.tools.list.summary = Table listing features for your site. Column 1: checkbox to select. Column 2: feature name. Column 3: feature description.
+ feat.choose = Choose tools to include on your site...
+-feat.forv = For viewing recent announcements, discussion, and chat items.
++feat.forv = For displaying the site description and recent activity
+ feat.reuse = Re-use Material from Other Sites You Own
+ feat.thanks = No, thanks.
+ feat.yesfrom = Yes, from these sites:
 Index: tool/tool-impl/impl/src/bundle/tools.properties
 ===================================================================
 --- tool/tool-impl/impl/src/bundle/tools.properties	(revision 47972)
 +++ tool/tool-impl/impl/src/bundle/tools.properties	(working copy)
-@@ -1,184 +1,195 @@
+@@ -1,184 +1,198 @@
 -#
 -# This file provides English language example of how to over-ride tool titles
 -# and descriptions for another language/locale. In order to translate:
@@ -382,26 +404,6 @@ Index: tool/tool-impl/impl/src/bundle/tools.properties
 +sakai.mneme.description				     = For building and distributing assessments (e.g., quizzes)
 +sakai.tbook.description				     = For displaying textbook information and facilitating used-book exchange
 +sakai.home.description				     = For displaying the site description and recent activity
-\ No newline at end of file
-Index: site-manage/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties
-===================================================================
---- site-manage/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties	(revision 47968)
-+++ site-manage/site-manage-tool/tool/src/bundle/sitesetupgeneric.properties	(working copy)
-@@ -272,7 +272,7 @@
- #AddRem Vm
- addrem.revising = Revising site tools for
- addrem.check = Check boxes to add or remove tools from your site.
--addrem.descrip = Description of the project, recent announcements, discussion, and chat items.
-+addrem.descrip = For displaying the site description and recent activity
- addrem.list.check = Select
- addrem.list.toolname = Tool
- addrem.list.description = Tool description
-@@ -512,7 +512,7 @@
- feat.tools = Tools
- feat.tools.list.summary = Table listing features for your site. Column 1: checkbox to select. Column 2: feature name. Column 3: feature description.
- feat.choose = Choose tools to include on your site...
--feat.forv = For viewing recent announcements, discussion, and chat items.
-+feat.forv = For displaying the site description and recent activity
- feat.reuse = Re-use Material from Other Sites You Own
- feat.thanks = No, thanks.
- feat.yesfrom = Yes, from these sites:
++sams.scores.description				     = For displaying students' SAMS scores (LS&A courses only)
++sakai.iframe.annotated.description		     = For displaying your course honor policy (Engineering courses only)
++
