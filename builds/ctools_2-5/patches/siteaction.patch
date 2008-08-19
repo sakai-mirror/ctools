@@ -87,23 +87,25 @@
 =svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@41228 site-manage/
 
 #SAK-13501
-=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@46702 site-manage/
+=svnnom= https://source.sakaiproject.org/svn/site-manage/trunk/@46702 site-manage/
 
 #SAK-13413
-=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@47125 site-manage/
+=svnnom= https://source.sakaiproject.org/svn/site-manage/trunk/@47125 site-manage/
+=svnnom= https://source.sakaiproject.org/svn/site-manage/trunk/@47186 site-manage/
 
-=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@47186 site-manage/
-
-#SAK-12868
+#SAK-12868 TEMPLATE FUNCTIONALITY
 =svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@47558 site-manage/
 
 #SAK-13501
-=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@47398 site-manage/
-=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@48096 site-manage/
-=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@48287 site-manage/
+=svnnom= https://source.sakaiproject.org/svn/site-manage/trunk/@47398 site-manage/
+=svnnom= https://source.sakaiproject.org/svn/site-manage/trunk/@48096 site-manage/
+=svnnom= https://source.sakaiproject.org/svn/site-manage/trunk/@48287 site-manage/
+
+#SAK-14180
+=svnnom= https://source.sakaiproject.org/svn/site-manage/trunk/@50612 site-manage/
 
 #SAK-14195
-=svnm= https://source.sakaiproject.org/svn/site-manage/trunk/@50666 site-manage/
+=svnnom= https://source.sakaiproject.org/svn/site-manage/trunk/@50666 site-manage/
 
 --- /dev/null
 +++ SAK-7209.tmp
