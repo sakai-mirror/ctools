@@ -148,19 +148,19 @@ if changes are needed.
 	<!-- evaluation not updated with branch  -->
 	<!-- 
 	<module>../ctools-webservices</module>
-	<module>../evaluation</module>
 	-->
+	<module>../evaluation</module>
 	<module>../config-viewer</module>
 	<!-- contrib -->
 	<module>../itunes</module>
 	<module>../test-center</module>
-	<!-- Currently removed for migration issues
 	<module>../hierarchy</module>
-	-->
 	<module>../melete</module>
 	<module>../discussion</module>
 	<module>../extraction</module>
 	<module>../extraction-umich</module>
+        <module>../sakai-portlets</module>
+        <module>../sitemaker</module>
       </modules>
     </profile>
     <profile>
