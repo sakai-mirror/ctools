@@ -20,15 +20,19 @@
     <%@ include file="steps.jspf" %>
 </f:subview>
 
-<c:if test="${audience.wizardAudience}">
-  <sakai:instruction_message value="#{common_msgs.audience_wizard_instructions}"/>
-</c:if>
-<c:if test="${audience.matrixAudience}">
-  <sakai:instruction_message value="#{common_msgs.audience_matrix_instructions}"/>
-</c:if>
-<c:if test="${audience.portfolioAudience}">
-  <sakai:instruction_message value="#{common_msgs.audience_portfolio_instructions}"/>
-</c:if>
+
+<f:subview rendered="#{audience.wizardAudience}" id="wizardInstructs">
+	<sakai:instruction_message value="#{common_msgs.audience_wizard_instructions}"/>
+</f:subview>
+
+<f:subview rendered="#{audience.portfolioAudience}" id="portInstructs">
+	<sakai:instruction_message value="#{common_msgs.audience_portfolio_instructions}"/>
+</f:subview>
+
+<f:subview rendered="#{audience.matrixAudience}" id="matrixInstructs">
+	<sakai:instruction_message value="#{common_msgs.audience_matrix_instructions}"/>
+</f:subview>
+
 
 <sakai:messages/>
 
@@ -78,15 +82,15 @@
                      <h:panelGroup>
                         <ospx:splitarea direction="vertical">
                            <ospx:splitsection valign="top">
-                              <c:if test="${audience.wizardAudience}">
+                           	<f:subview rendered="#{audience.wizardAudience}" id="wizSubView2">
                                     <h:outputFormat value="#{common_msgs.audience_selected_evaluators}"/>
-                              </c:if>
-                              <c:if test="${audience.matrixAudience}">
+                              </f:subview>
+                              <f:subview rendered="#{audience.matrixAudience}" id="matSubView2">
                                     <h:outputFormat value="#{common_msgs.audience_selected_evaluators}"/>
-                              </c:if>
-                              <c:if test="${audience.portfolioAudience}">
+                              </f:subview>
+                              <f:subview rendered="#{audience.portfolioAudience}" id="portSubView2">
                                     <h:outputFormat value="#{common_msgs.audience_selected_audience}"/>
-                              </c:if>
+                              </f:subview>
                            </ospx:splitsection>
                            <ospx:splitsection valign="top">
                               <h:selectManyListbox id="selectedUsers" size="10" value="#{audience.selectedUserArray}"
@@ -105,13 +109,13 @@
                      <f:verbatim></h3></f:verbatim>
                   
                      <f:verbatim><p class='shorttext'></f:verbatim>
-                     <c:if test="${! audience.guestUserEnabled}">
+                     <f:subview rendered="#{!audience.guestUserEnabled}" id="guestSubView">
                         <h:outputLabel value="#{common_msgs.any_user_label}:" for="emails"/>
-                     </c:if>
-                     <c:if test="${audience.guestUserEnabled}">
+                     </f:subview>
+                     <f:subview rendered="#{audience.guestUserEnabled}" id="guestSubView2">
                         <h:outputLabel value="#{common_msgs.email_label}:" for="emails"/>
-                     </c:if>
-                                  
+                     </f:subview>
+                     
                      <h:inputText value="#{audience.searchEmails}" id="emails" size="60"/>
                      <h:outputText value=" "/>
                      <h:commandButton id="add_email_button"
@@ -128,15 +132,15 @@
                      <h:commandLink id="browse_button" action="browse" value="#{common_msgs.browse_members}"
                                     style="white-space:nowrap;"/>
                      <h:outputFormat value = " "/>
-                     <c:if test="${audience.wizardAudience}">
+                     <f:subview id="audSubV1" rendered="#{audience.wizardAudience}">
                         <h:outputFormat value = "#{common_msgs.audience_individual_evaluators}" />
-                     </c:if>
-                     <c:if test="${audience.matrixAudience}">
+                     </f:subview>
+                     <f:subview id="audSubV2" rendered="#{audience.matrixAudience}">
                         <h:outputFormat value = "#{common_msgs.audience_individual_evaluators}" />
-                     </c:if>
-                     <c:if test="${audience.portfolioAudience}">
+                     </f:subview>
+                     <f:subview id="audSubV4" rendered="#{audience.portfolioAudience}">
                         <h:outputFormat value = "#{common_msgs.audience_individual_users}" />
-                     </c:if>
+                     </f:subview>
                      <f:verbatim></p></f:verbatim>
                   </f:subview>
  
@@ -199,15 +203,15 @@
                      <h:panelGroup>
                         <ospx:splitarea direction="vertical">
                            <ospx:splitsection valign="top">
-                              <c:if test="${audience.wizardAudience}">
+                           	  <f:subview id="audSubV12" rendered="#{audience.wizardAudience}">
                                     <h:outputFormat value="#{common_msgs.audience_selected_evaluators}"/>
-                              </c:if>
-                              <c:if test="${audience.matrixAudience}">
+                              </f:subview>
+                              <f:subview id="audSubV14" rendered="#{audience.matrixAudience}">
                                     <h:outputFormat value="#{common_msgs.audience_selected_evaluators}"/>
-                              </c:if>
-                              <c:if test="${audience.portfolioAudience}">
+                              </f:subview>
+                              <f:subview id="audSubV15" rendered="#{audience.portfolioAudience}">
                                     <h:outputFormat value="#{common_msgs.audience_selected_audience}"/>
-                              </c:if>
+                              </f:subview>
                            </ospx:splitsection>
                            <ospx:splitsection valign="top">
                               <h:selectManyListbox id="selectedRoles" size="10" value="#{audience.selectedRoleArray}"
