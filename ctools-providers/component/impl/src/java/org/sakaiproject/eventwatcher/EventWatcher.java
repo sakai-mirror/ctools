@@ -221,10 +221,18 @@ public class EventWatcher implements Observer
 						if (session.getAttribute(FLAG_FROM_MEMBERSHIP_UPDATE) == null)
 						{
 							// update affiliates 1:  remove affiliates for dropped provider
-							removeSubjectAffiliates(realmId, r, providerIdSubjectList);
+							removeSubjectAffiliates(r, r, providerIdSubjectList);
 							
 							// update affiliates 2: add affiliates for added provider
-							addSubjectAffliates(providerIdsList, realmId);
+							addSubjectAffliates(r, providerIdsList);
+							
+							// set the flag to escape event watcher
+							session.setAttribute(FLAG_FROM_MEMBERSHIP_UPDATE, Boolean.TRUE);
+							
+							AuthzGroupService.save(r);
+							
+							// reset flag
+							session.removeAttribute(FLAG_FROM_MEMBERSHIP_UPDATE);
 						}
 						else
 						{
@@ -301,12 +309,12 @@ public class EventWatcher implements Observer
 	}
 
 	/**
-	 * remove subject affiliates after the assoicated provider has been removed
-	 * @param realmId
+	 * remove subject affiliates after the associated provider has been removed
+	 * @param realm
 	 * @param r
 	 * @param providerIdSubjectList
 	 */
-	private void removeSubjectAffiliates(String realmId, AuthzGroup r, List<String> providerIdSubjectList) 
+	private void removeSubjectAffiliates(AuthzGroup realm, AuthzGroup r, List<String> providerIdSubjectList) 
 	{
 		Set<String> affiliates = r.getUsersHasRole(AFFILIATE_ROLE);
 		for (Iterator<String> affiliateIds = affiliates.iterator(); affiliateIds.hasNext();)
@@ -322,16 +330,7 @@ public class EventWatcher implements Observer
 				if (affiliateSubjects.size() != 0 && !providerIdSubjectListClone.removeAll(affiliateSubjects))
 				{
 					// if the list is unchanged, this means none of the associated subject is in the provider, the affiliate needs to be removed
-					if (AuthzGroupService.allowUpdate(realmId))
-					{
-						try
-						{
-							AuthzGroup realmEdit = AuthzGroupService.getAuthzGroup(realmId);
-							realmEdit.removeMember(userId);
-							AuthzGroupService.save(realmEdit);
-						}
-						catch(Exception ignore) {}
-					}
+					realm.removeMember(userId);
 				}
 			}
 			catch(Exception ignore)
@@ -399,10 +398,10 @@ public class EventWatcher implements Observer
 	
 	/**
 	 * add subject affiliate
-	 * @param subject
-	 * @param realmId
-	 */
-	private void addSubjectAffliates(List<String> providerIdsList, String realmId)
+	 * @param realm
+	 * @param providerIdsList
+	 */ 
+	private void addSubjectAffliates(AuthzGroup realm, List<String> providerIdsList)
 	{
 		if (providerIdsList != null)
 		{
@@ -427,23 +426,14 @@ public class EventWatcher implements Observer
 						try
 						{
 							User user = UserDirectoryService.getUserByEid(affiliate);
-							if (AuthzGroupService.allowUpdate(realmId))
+							if (user != null && realm.getUserRole(user.getId()) == null)
 							{
-								try
-								{
-									AuthzGroup realmEdit = AuthzGroupService.getAuthzGroup(realmId);
-									if (realmEdit.getUserRole(user.getId()) == null)
-									{
-										realmEdit.addMember(user.getId(), realmEdit.getRole(AFFILIATE_ROLE).getId(), true, false);
-									}
-									AuthzGroupService.save(realmEdit);
-								}
-								catch(Exception ignore) {}
+								realm.addMember(user.getId(), realm.getRole(AFFILIATE_ROLE).getId(), true, false);
 							}
 						}
 						catch(Exception ignore)
 						{
-							log.warn(this + " cannot find affiliate " + affiliate);
+							log.warn(this + " addSubjectAffiliate cannot find affiliate " + affiliate + ignore.getMessage());
 						}
 						
 					}	// for	
