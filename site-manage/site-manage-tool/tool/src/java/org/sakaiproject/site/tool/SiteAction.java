@@ -72,7 +72,6 @@ import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.content.cover.ContentHostingService;
 import org.sakaiproject.coursemanagement.api.AcademicSession;
 import org.sakaiproject.coursemanagement.api.CourseOffering;
-import org.sakaiproject.coursemanagement.api.CourseSet;
 import org.sakaiproject.coursemanagement.api.Enrollment;
 import org.sakaiproject.coursemanagement.api.EnrollmentSet;
 import org.sakaiproject.coursemanagement.api.Membership;
@@ -7901,11 +7900,11 @@ public class SiteAction extends PagedResourceActionII {
 	private Collection prepareParticipants(String realmId, List providerCourseList) {
 		Map participantsMap = new ConcurrentHashMap();
 		try {
-			AuthzGroup realm = authzGroupService.getAuthzGroup(realmId);
+			AuthzGroup realm = AuthzGroupService.getAuthzGroup(realmId);
 			realm.getProviderGroupId();
 			
 			// iterate through the provider list first
-			for (Iterator<String> i=providerCourseList.iterator(); i.hasNext();)
+			for (Iterator i=providerCourseList.iterator(); i.hasNext();)
 			{
 				String providerCourseEid = (String) i.next();
 				try
@@ -7915,47 +7914,15 @@ public class SiteAction extends PagedResourceActionII {
 					{
 						// in case of Section eid
 						EnrollmentSet enrollmentSet = section.getEnrollmentSet();
-						addParticipantsFromEnrollmentSet(participantsMap, realm, enrollmentSet, section.getTitle());
+						addParticipantsFromEnrollmentSet(participantsMap, realm, providerCourseEid, enrollmentSet, section.getTitle());
 						// add memberships
 						Set memberships = cms.getSectionMemberships(providerCourseEid);
-						if (memberships != null && memberships.size() > 0)
-						{
-							addParticipantsFromMemberships(participantsMap, realm, memberships, section.getTitle());
-						}
-						
-						// now look or the not-included member from CourseOffering object
-						CourseOffering co = cms.getCourseOffering(section.getCourseOfferingEid());
-						if (co != null)
-						{
-							
-							Set<Membership> coMemberships = cms.getCourseOfferingMemberships(section.getCourseOfferingEid());
-							if (coMemberships != null && coMemberships.size() > 0)
-							{
-								addParticipantsFromMemberships(participantsMap, realm, coMemberships, co.getTitle());
-							}
-							
-							// now look or the not-included member from CourseSet object
-							Set<String> cSetEids = co.getCourseSetEids();
-							for(Iterator<String> cSetEidsIterator = cSetEids.iterator(); cSetEidsIterator.hasNext();)
-							{
-								String cSetEid = cSetEidsIterator.next();
-								CourseSet cSet = cms.getCourseSet(cSetEid);
-								if (cSet != null)
-								{
-									Set<Membership> cSetMemberships = cms.getCourseSetMemberships(cSetEid);
-									if (cSetMemberships != null && cSetMemberships.size() > 0)
-									{
-										addParticipantsFromMemberships(participantsMap, realm, cSetMemberships, cSet.getTitle());
-									}
-								}
-							}
-						}
+						addParticipantsFromMemberships(participantsMap, realm, providerCourseEid, memberships, section.getTitle());
 					}
-					
 				}
 				catch (IdNotFoundException e)
 				{
-					M_log.warn("SiteParticipantHelper.prepareParticipants: "+ e.getMessage() + " sectionId=" + providerCourseEid, e);
+					M_log.warn("SiteAction prepareParticipants " + e.getMessage() + " sectionId=" + providerCourseEid);
 				}
 			}
 			
@@ -7998,12 +7965,12 @@ public class SiteAction extends PagedResourceActionII {
 
 	/**
 	 * Add participant from provider-defined membership set
-	 * @param participantsMap
+	 * @param participants
 	 * @param realm
+	 * @param providerCourseEid
 	 * @param memberships
-	 * @param sectionTitle
 	 */
-	private void addParticipantsFromMemberships(Map participantsMap, AuthzGroup realm, Set memberships, String sectionTitle) {
+	private void addParticipantsFromMemberships(Map participantsMap, AuthzGroup realm, String providerCourseEid, Set memberships, String sectionTitle) {
 		if (memberships != null)
 		{
 			for (Iterator mIterator = memberships.iterator();mIterator.hasNext();)
@@ -8021,10 +7988,7 @@ public class SiteAction extends PagedResourceActionII {
 						if (participantsMap.containsKey(userId))
 						{
 							participant = (Participant) participantsMap.get(userId);
-							if (!participant.section.contains(sectionTitle))
-							{
-								participant.section = participant.section.concat(", <br />" + sectionTitle);
-							}
+							participant.section = participant.section.concat(", <br />" + sectionTitle);
 						}
 						else
 						{
@@ -8052,12 +8016,12 @@ public class SiteAction extends PagedResourceActionII {
 
 	/**
 	 * Add participant from provider-defined enrollment set
-	 * @param participantsMap
+	 * @param participants
 	 * @param realm
+	 * @param providerCourseEid
 	 * @param enrollmentSet
-	 * @param sectionTitle
 	 */
-	private void addParticipantsFromEnrollmentSet(Map participantsMap, AuthzGroup realm, EnrollmentSet enrollmentSet, String sectionTitle) {
+	private void addParticipantsFromEnrollmentSet(Map participantsMap, AuthzGroup realm, String providerCourseEid, EnrollmentSet enrollmentSet, String sectionTitle) {
 		if (enrollmentSet != null)
 		{
 			Set enrollments = cms.getEnrollments(enrollmentSet.getEid());
@@ -8080,11 +8044,8 @@ public class SiteAction extends PagedResourceActionII {
 							if (participantsMap.containsKey(userId))
 							{
 								participant = (Participant) participantsMap.get(userId);
-								if (!participant.section.contains(sectionTitle))
-								{
-									participant.section = participant.section.concat(", <br />" + sectionTitle);
-									participant.credits = participant.credits.concat(", <br />" + e.getCredits());
-								}
+								participant.section = participant.section.concat(", <br />" + sectionTitle);
+								participant.credits = participant.credits.concat(", <br />" + e.getCredits());
 							}
 							else
 							{
