@@ -7978,7 +7978,9 @@ public class SiteAction extends PagedResourceActionII {
 						if (participantsMap.containsKey(userId))
 						{
 							participant = (Participant) participantsMap.get(userId);
-							participant.section = participant.section.concat(", <br />" + sectionTitle);
+							if (!participant.getSectionEidList().contains(sectionTitle)) {
+								participant.section = participant.section.concat(", <br />" + sectionTitle);
+							}
 						}
 						else
 						{
@@ -7989,7 +7991,7 @@ public class SiteAction extends PagedResourceActionII {
 							participant.regId = "";
 							participant.removeable = false;
 							participant.role = member.getRole()!=null?member.getRole().getId():"";
-							participant.section = sectionTitle;
+							participant.addSectionEidToList(sectionTitle);
 							participant.uniqname = userId;
 						}
 						
@@ -7998,7 +8000,7 @@ public class SiteAction extends PagedResourceActionII {
 				} catch (UserNotDefinedException exception) {
 					// deal with missing user quietly without throwing a
 					// warning message
-					M_log.warn(exception.getMessage());
+					M_log.warn(exception);
 				}
 			}
 		}
@@ -8034,7 +8036,10 @@ public class SiteAction extends PagedResourceActionII {
 							if (participantsMap.containsKey(userId))
 							{
 								participant = (Participant) participantsMap.get(userId);
-								participant.section = participant.section.concat(", <br />" + sectionTitle);
+								//does this section contain the eid already
+								if (!participant.getSectionEidList().contains(sectionTitle)) {
+									participant.addSectionEidToList(sectionTitle);
+								}
 								participant.credits = participant.credits.concat(", <br />" + e.getCredits());
 							}
 							else
@@ -8046,7 +8051,7 @@ public class SiteAction extends PagedResourceActionII {
 								participant.regId = "";
 								participant.removeable = false;
 								participant.role = member.getRole()!=null?member.getRole().getId():"";
-								participant.section = sectionTitle;
+								participant.addSectionEidToList(sectionTitle);
 								participant.uniqname = userId;
 							}
 							participantsMap.put(userId, participant);
@@ -10615,6 +10620,8 @@ public class SiteAction extends PagedResourceActionII {
 		/** The section */
 		public String section = NULL_STRING;
 
+		private Set sectionEidList;
+		
 		/** The regestration id */
 		public String regId = NULL_STRING;
 
@@ -10647,8 +10654,34 @@ public class SiteAction extends PagedResourceActionII {
 		} // getCredits
 
 		public String getSection() {
-			return section;
+			if (sectionEidList == null)
+				return "";
+			
+			StringBuilder sb = new StringBuilder();
+			Iterator it = sectionEidList.iterator();
+			for (int i = 0; i < sectionEidList.size(); i ++) {
+				String sectionEid = (String)it.next();
+				if (i < 0)
+					sb.append(",<br />");
+				sb.append(sectionEid);
+			}
+					
+			return sb.toString();
 		} // getSection
+		
+		public Set getSectionEidList() {
+			if (sectionEidList == null)
+				sectionEidList = new HashSet();
+			
+			return sectionEidList;
+		}
+		
+		public void addSectionEidToList(String eid) {
+			if (sectionEidList == null)
+				sectionEidList = new HashSet();
+				
+				sectionEidList.add(eid);
+		}
 
 		public String getRegId() {
 			return regId;
