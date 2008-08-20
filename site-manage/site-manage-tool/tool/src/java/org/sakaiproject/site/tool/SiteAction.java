@@ -2856,6 +2856,7 @@ public class SiteAction extends PagedResourceActionII {
 				context.put("backIndex", "36");
 			}
 
+			context.put("authzGroupService", AuthzGroupService.getInstance());
 			return (String) getContext(data).get("template") + TEMPLATE[53];
 		}
 
