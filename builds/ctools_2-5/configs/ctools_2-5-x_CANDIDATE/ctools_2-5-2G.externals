@@ -124,7 +124,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  ctools-libhelp      -r47309     https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
 
  #CTools specific web for now
- web                 -r50763     https://source.sakaiproject.org/svn/ctools/trunk/web/
+ web                 -r51156     https://source.sakaiproject.org/svn/ctools/trunk/web/
 
 ########
 ######## Contrib tools
