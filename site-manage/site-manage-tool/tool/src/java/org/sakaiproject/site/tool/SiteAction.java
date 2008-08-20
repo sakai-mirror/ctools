@@ -56,6 +56,8 @@ import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.PermissionsHelper;
 import org.sakaiproject.authz.api.Role;
+import org.sakaiproject.authz.api.SecurityAdvisor;
+import org.sakaiproject.authz.api.SecurityAdvisor.SecurityAdvice;
 import org.sakaiproject.authz.cover.AuthzGroupService;
 import org.sakaiproject.authz.cover.SecurityService;
 import org.sakaiproject.cheftool.Context;
@@ -70,7 +72,10 @@ import org.sakaiproject.cheftool.menu.MenuEntry;
 import org.sakaiproject.cheftool.menu.MenuImpl;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.component.cover.ServerConfigurationService;
-import org.sakaiproject.content.cover.ContentHostingService;
+import org.sakaiproject.content.api.ContentHostingService;
+import org.sakaiproject.content.api.ContentCollection;
+import org.sakaiproject.content.api.ContentResource;
+import org.sakaiproject.content.api.ContentEntity;
 import org.sakaiproject.coursemanagement.api.AcademicSession;
 import org.sakaiproject.coursemanagement.api.CourseOffering;
 import org.sakaiproject.coursemanagement.api.Enrollment;
@@ -94,6 +99,8 @@ import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.exception.IdUsedException;
 import org.sakaiproject.exception.ImportException;
 import org.sakaiproject.exception.PermissionException;
+import org.sakaiproject.exception.TypeException;
+import org.sakaiproject.exception.ServerOverloadException;
 import org.sakaiproject.id.cover.IdManager;
 import org.sakaiproject.importer.api.ImportDataSource;
 import org.sakaiproject.importer.api.ImportService;
@@ -105,7 +112,8 @@ import org.sakaiproject.site.api.SitePage;
 import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.site.api.SiteService.SortType;
 import org.sakaiproject.site.cover.SiteService;
-//import org.sakaiproject.site.impl.BaseGroup;
+import org.sakaiproject.sitemanage.api.model.*;
+import org.sakaiproject.site.util.SiteSetupQuestionFileParser;
 import org.sakaiproject.sitemanage.api.SectionField;
 import org.sakaiproject.time.api.Time;
 import org.sakaiproject.time.api.TimeBreakdown;
@@ -136,6 +144,8 @@ import org.sakaiproject.util.Validator;
 public class SiteAction extends PagedResourceActionII {
 	/** Our log (commons). */
 	private static Log M_log = LogFactory.getLog(SiteAction.class);
+	
+	private ContentHostingService m_contentHostingService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
 
 	private ImportService importService = org.sakaiproject.importer.cover.ImportService
 			.getInstance();
@@ -161,6 +171,11 @@ public class SiteAction extends PagedResourceActionII {
 
 	private org.sakaiproject.sitemanage.api.UserNotificationProvider userNotificationProvider = (org.sakaiproject.sitemanage.api.UserNotificationProvider) ComponentManager
 	.get(org.sakaiproject.sitemanage.api.UserNotificationProvider.class);
+	
+	private ContentHostingService contentHostingService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+	
+	private static org.sakaiproject.sitemanage.api.model.SiteSetupQuestionService questionService = (org.sakaiproject.sitemanage.api.model.SiteSetupQuestionService) ComponentManager
+	.get(org.sakaiproject.sitemanage.api.model.SiteSetupQuestionService.class);
 	
 	private static final String SITE_MODE_SITESETUP = "sitesetup";
 
@@ -223,7 +238,8 @@ public class SiteAction extends PagedResourceActionII {
 			"-siteInfo-groupedit", // 50
 			"-siteInfo-groupDeleteConfirm", // 51,
 			"",
-			"-findCourse" // 53
+			"-findCourse", // 53
+			"-questions" // 54
 	};
 
 	/** Name of state attribute for Site instance id */
@@ -235,7 +251,7 @@ public class SiteAction extends PagedResourceActionII {
 	/** Name of state attribute for CHEF site type */
 	private static final String STATE_SITE_TYPE = "site-type";
 
-	/** Name of state attribute for poissible site types */
+	/** Name of state attribute for possible site types */
 	private static final String STATE_SITE_TYPES = "site_types";
 
 	private static final String STATE_DEFAULT_SITE_TYPE = "default_site_type";
@@ -582,6 +598,16 @@ public class SiteAction extends PagedResourceActionII {
 	// the string for course site type
 	private static final String STATE_COURSE_SITE_TYPE = "state_course_site_type";
 	
+	private static final String SITE_TEMPLATE_PREFIX = "!template";
+	
+	private static final String STATE_TYPE_SELECTED = "state_type_selected";
+
+	// the template index after exist the question mode
+	private static final String STATE_SITE_SETUP_QUESTION_NEXT_TEMPLATE = "state_site_setup_question_next_template";
+	
+	// the answers to site setup questions
+	private static final String STATE_SITE_SETUP_QUESTION_ANSWER = "state_site_setup_question_answer";
+
 	/**
 	 * Populate the state object, if needed.
 	 */
@@ -751,10 +777,12 @@ public class SiteAction extends PagedResourceActionII {
 		state.removeAttribute(STATE_CM_CURRENT_USERID);
 		state.removeAttribute(STATE_CM_AUTHORIZER_LIST);
 		state.removeAttribute(STATE_CM_AUTHORIZER_SECTIONS);
-		state.removeAttribute(FORM_ADDITIONAL); // don't we need to clena this
+		state.removeAttribute(FORM_ADDITIONAL); // don't we need to clean this
 		// too? -daisyf
 		state.removeAttribute(STATE_TEMPLATE_SITE);
-		
+		state.removeAttribute(STATE_TYPE_SELECTED);
+		state.removeAttribute(STATE_SITE_SETUP_QUESTION_ANSWER);
+
 	} // cleanState
 
 	/**
@@ -1089,12 +1117,11 @@ public class SiteAction extends PagedResourceActionII {
 			context.put("siteTypes", types);
 
 			// put selected/default site type into context
-			if (siteInfo.site_type != null && siteInfo.site_type.length() > 0) {
-				context.put("typeSelected", siteInfo.site_type);
-			} else if (types.size() > 0) {
-				context.put("typeSelected", types.get(0));
-			}
+			String typeSelected = (String) state.getAttribute(STATE_TYPE_SELECTED);
+			context.put("typeSelected", state.getAttribute(STATE_TYPE_SELECTED) != null?state.getAttribute(STATE_TYPE_SELECTED):types.get(0));
+			
 			setTermListForContext(context, state, true); // true => only
+			
 			// upcoming terms
 			setSelectedTermForContext(context, state, STATE_TERM_SELECTED);
 			
@@ -2872,6 +2899,18 @@ public class SiteAction extends PagedResourceActionII {
 			context.put("authzGroupService", AuthzGroupService.getInstance());
 			return (String) getContext(data).get("template") + TEMPLATE[53];
 		}
+		case 54:
+			/*
+			 * build context for chef_site-questions.vm
+			 */
+			SiteTypeQuestions siteTypeQuestions = questionService.getSiteTypeQuestions((String) state.getAttribute(STATE_SITE_TYPE));
+			if (siteTypeQuestions != null)
+			{
+				context.put("questionSet", siteTypeQuestions);
+				context.put("userAnswers", state.getAttribute(STATE_SITE_SETUP_QUESTION_ANSWER));
+			}
+			context.put("continueIndex", state.getAttribute(STATE_SITE_SETUP_QUESTION_NEXT_TEMPLATE));
+			return (String) getContext(data).get("template") + TEMPLATE[54];
 
 		}
 		// should never be reached
@@ -3914,8 +3953,9 @@ public class SiteAction extends PagedResourceActionII {
 		if (type == null) {
 			addAlert(state, rb.getString("java.select") + " ");
 		} else {
+			state.setAttribute(STATE_TYPE_SELECTED, type);
+			setNewSiteType(state, type);
 			if (type.equalsIgnoreCase((String) state.getAttribute(STATE_COURSE_SITE_TYPE))) {
-				setNewSiteType(state, type);
 				User user = UserDirectoryService.getCurrentUser();
 				String currentUserId = user.getEid();
 
@@ -3964,11 +4004,9 @@ public class SiteAction extends PagedResourceActionII {
 					totalSteps = 5;
 				}
 			} else if (type.equals("project")) {
-				setNewSiteType(state, type);
 				totalSteps = 4;
 				state.setAttribute(STATE_TEMPLATE_INDEX, "2");
 			} else if (type.equals(SITE_TYPE_GRADTOOLS_STUDENT)) {
-				setNewSiteType(state, type);
 				// if a GradTools site use pre-defined site info and exclude
 				// from public listing
 				SiteInfo siteInfo = new SiteInfo();
@@ -3987,42 +4025,11 @@ public class SiteAction extends PagedResourceActionII {
 
 				// skip directly to confirm creation of site
 				state.setAttribute(STATE_TEMPLATE_INDEX, "42");
-			} else if (type.equals("template")) {				
-				String templateSiteId = params.getString("selectTemplate");
-				Site templateSite = null;
-				try
-				{
-					templateSite = SiteService.getSite(templateSiteId);
-					// save the template site in state
-					state.setAttribute(STATE_TEMPLATE_SITE, templateSite);
-				     
-					// the new site type is based on the template site
-					setNewSiteType(state, templateSite.getType());
-				}catch (Exception e) {  
-					// should never happened, as the list of templates are generated
-					// from existing sites
-					M_log.warn(this + ".doSite_type" + e.getClass().getName(), e);
-				}
-				
-				// grab site info from template
-				SiteInfo siteInfo = new SiteInfo();
-				if (state.getAttribute(STATE_SITE_INFO) != null) {
-					siteInfo = (SiteInfo) state.getAttribute(STATE_SITE_INFO);
-				}
-				
-				// default site information. copied from the template site
-				siteInfo.description = templateSite.getDescription();
-				siteInfo.short_description = templateSite.getShortDescription();
-				//siteInfo.iconUrl = templateSite.getIconUrl();
-				//siteInfo.include = false;
-				state.setAttribute(STATE_SITE_INFO, siteInfo);
-
-				totalSteps = 3;
-				state.setAttribute(STATE_TEMPLATE_INDEX, "2");
 			} else {
-				setNewSiteType(state, type);
 				state.setAttribute(STATE_TEMPLATE_INDEX, "2");
 			}
+			// get the user selected template
+			getSelectedTemplate(state, params, type);
 		}
 
 		if (state.getAttribute(SITE_CREATE_TOTAL_STEPS) == null) {
@@ -4032,8 +4039,88 @@ public class SiteAction extends PagedResourceActionII {
 		if (state.getAttribute(SITE_CREATE_CURRENT_STEP) == null) {
 			state.setAttribute(SITE_CREATE_CURRENT_STEP, new Integer(1));
 		}
+		
+		redirectToQuestionVM(state, type);
 
 	} // doSite_type
+	
+	/**
+	 * see whether user selected any template
+	 * @param state
+	 * @param params
+	 * @param type
+	 */
+	private void getSelectedTemplate(SessionState state,
+			ParameterParser params, String type) {
+		String templateSiteId = params.getString("selectTemplate" + type);
+		if (templateSiteId != null)
+		{
+			Site templateSite = null;
+			try
+			{
+				templateSite = SiteService.getSite(templateSiteId);
+				// save the template site in state
+				state.setAttribute(STATE_TEMPLATE_SITE, templateSite);
+			     
+				// the new site type is based on the template site
+				setNewSiteType(state, templateSite.getType());
+			}catch (Exception e) {  
+				// should never happened, as the list of templates are generated
+				// from existing sites
+				M_log.warn(this + ".doSite_type" + e.getClass().getName(), e);
+			}
+			
+			// grab site info from template
+			SiteInfo siteInfo = new SiteInfo();
+			if (state.getAttribute(STATE_SITE_INFO) != null) {
+				siteInfo = (SiteInfo) state.getAttribute(STATE_SITE_INFO);
+			}
+			
+			// default site information. copied from the template site
+			siteInfo.description = templateSite.getDescription();
+			siteInfo.short_description = templateSite.getShortDescription();
+			//siteInfo.iconUrl = templateSite.getIconUrl();
+			//siteInfo.include = false;
+			
+			List<String> toolIdsSelected = new Vector<String>();
+			List pageList = templateSite.getPages();
+			if (!((pageList == null) || (pageList.size() == 0))) {
+				for (ListIterator i = pageList.listIterator(); i.hasNext();) {
+					SitePage page = (SitePage) i.next();
+
+					List pageToolList = page.getTools();
+					String toolId = ((ToolConfiguration) pageToolList
+							.get(0)).getTool().getId();
+					toolIdsSelected.add(toolId);
+				}
+			}
+			state.setAttribute(STATE_TOOL_REGISTRATION_SELECTED_LIST, toolIdsSelected);
+			state.setAttribute(STATE_SITE_INFO, siteInfo);
+		}
+	}
+
+	/**
+	 * Depend on the setup question setting, redirect the site setup flow
+	 * @param state
+	 * @param type
+	 */
+	private void redirectToQuestionVM(SessionState state, String type) {
+		// SAK-12912: check whether there is any setup question defined
+		SiteTypeQuestions siteTypeQuestions = questionService.getSiteTypeQuestions(type);
+		if (siteTypeQuestions != null)
+		{
+			List questionList = siteTypeQuestions.getQuestions();
+			if (questionList != null && questionList.size() > 0)
+			{
+				// there is at least one question defined for this type
+				if (state.getAttribute(STATE_MESSAGE) == null)
+				{
+					state.setAttribute(STATE_SITE_SETUP_QUESTION_NEXT_TEMPLATE, state.getAttribute(STATE_TEMPLATE_INDEX));
+					state.setAttribute(STATE_TEMPLATE_INDEX, "54");
+				}
+			}
+		}
+	}
 
 	/**
 	 * Determine whether the selected term is considered of "future term"
@@ -4656,10 +4743,9 @@ public class SiteAction extends PagedResourceActionII {
 	} // readCourseSectionInfo
 
 	/**
-	 * set the site type for new site
 	 * 
+	 * @param state
 	 * @param type
-	 *            The type String
 	 */
 	private void setNewSiteType(SessionState state, String type) {
 		state.setAttribute(STATE_SITE_TYPE, type);
@@ -4914,13 +5000,20 @@ public class SiteAction extends PagedResourceActionII {
 
 			addNewSite(params, state);
 
-			// if create based on template, skip add features
-			if ((Site) state.getAttribute(STATE_TEMPLATE_SITE) == null) {
-				addFeatures(state);
-			}
-
 			Site site = getStateSite(state);
 
+			Site templateSite = (Site) state.getAttribute(STATE_TEMPLATE_SITE);
+			if (templateSite == null) 
+			{
+				// normal site creation: add the features.
+				addFeatures(state, site);
+			}
+			else
+			{
+				// create based on template: skip add features, and copying all the contents from the tools in template site
+				importToolContent(site.getId(), templateSite.getId(), site, true);
+			}
+				
 			// for course sites
 			String siteType = (String) state.getAttribute(STATE_SITE_TYPE);
 			if (siteType != null && siteType.equalsIgnoreCase((String) state.getAttribute(STATE_COURSE_SITE_TYPE))) {
@@ -4942,12 +5035,22 @@ public class SiteAction extends PagedResourceActionII {
 
 			// commit site
 			commitSite(site);
+			
+			// transfer site content from template site
+			if (templateSite != null) 
+			{
+				sendTemplateUseNotification(site, UserDirectoryService.getCurrentUser(), templateSite);					
+			}
 
 			String siteId = (String) state.getAttribute(STATE_SITE_INSTANCE_ID);
 
 			// now that the site exists, we can set the email alias when an
 			// Email Archive tool has been selected
 			setSiteAlias(state, siteId);
+			
+			// save user answers
+			saveSiteSetupQuestionUserAnswers(state, siteId);
+			
 			// TODO: hard coding this frame id is fragile, portal dependent, and
 			// needs to be fixed -ggolden
 			// schedulePeerFrameRefresh("sitenav");
@@ -4993,6 +5096,28 @@ public class SiteAction extends PagedResourceActionII {
 	}
 
 	/**
+	 * save user answers
+	 * @param state
+	 * @param siteId
+	 */
+	private void saveSiteSetupQuestionUserAnswers(SessionState state,
+			String siteId) {
+		// update the database with user answers to SiteSetup questions
+		if (state.getAttribute(STATE_SITE_SETUP_QUESTION_ANSWER) != null)
+		{
+			Set<SiteSetupUserAnswer> userAnswers = (Set<SiteSetupUserAnswer>) state.getAttribute(STATE_SITE_SETUP_QUESTION_ANSWER);
+			for(Iterator<SiteSetupUserAnswer> aIterator = userAnswers.iterator(); aIterator.hasNext();)
+			{
+				SiteSetupUserAnswer userAnswer = aIterator.next();
+				userAnswer.setSiteId(siteId);
+				// save to db
+				questionService.saveSiteSetupUserAnswer(userAnswer);
+			}
+		}
+	}
+
+	/**
+>>>>>>> .merge-right.r45468
 	 * Update course site and related realm based on the roster chosen or requested
 	 * @param state
 	 * @param siteId
@@ -6268,6 +6393,7 @@ public class SiteAction extends PagedResourceActionII {
 	 * 
 	 */
 	private void init(VelocityPortlet portlet, RunData data, SessionState state) {
+
 		state.setAttribute(STATE_ACTION, "SiteAction");
 		setupFormNamesAndConstants(state);
 
@@ -6310,6 +6436,18 @@ public class SiteAction extends PagedResourceActionII {
 				state.setAttribute(STATE_SITE_TYPES, types);
 			} else {
 				state.setAttribute(STATE_SITE_TYPES, new Vector());
+			}
+		}
+		
+		/*<p>
+		 * This is a change related to SAK-12912
+		 * initialize the question list
+		 */
+		if (!questionService.hasAnySiteTypeQuestions())
+		{
+			if (SiteSetupQuestionFileParser.isConfigurationXmlAvailable())
+			{
+				SiteSetupQuestionFileParser.updateConfig();
 			}
 		}
 	} // init
@@ -7179,36 +7317,10 @@ public class SiteAction extends PagedResourceActionII {
 
 								// set title
 								site.setTitle(title);
+								
 								// import tool content
-								List pageList = site.getPages();
-								if (!((pageList == null) || (pageList.size() == 0))) {
-									for (ListIterator i = pageList
-											.listIterator(); i.hasNext();) {
-										SitePage page = (SitePage) i.next();
+								importToolContent(nSiteId, oSiteId, site, false);
 
-										List pageToolList = page.getTools();
-										String toolId = ((ToolConfiguration) pageToolList
-												.get(0)).getTool().getId();
-										if (toolId
-												.equalsIgnoreCase("sakai.resources")) {
-											// handle
-											// resource
-											// tool
-											// specially
-											transferCopyEntities(
-													toolId,
-													ContentHostingService
-															.getSiteCollection(oSiteId),
-													ContentHostingService
-															.getSiteCollection(nSiteId));
-										} else {
-											// other
-											// tools
-											transferCopyEntities(toolId,
-													oSiteId, nSiteId);
-										}
-									}
-								}
 							} catch (Exception e1) {
 								// if goes here, IdService
 								// or SiteService has done
@@ -7460,10 +7572,149 @@ public class SiteAction extends PagedResourceActionII {
 				state.removeAttribute(SORTED_ASC);
 			}
 			break;
+		case 54:
+			if (forward) {
+				
+				// store answers to site setup questions
+				if (getAnswersToSetupQuestions(params, state))
+				{
+					state.setAttribute(STATE_TEMPLATE_INDEX, state.getAttribute(STATE_SITE_SETUP_QUESTION_NEXT_TEMPLATE));
+					state.removeAttribute(STATE_SITE_SETUP_QUESTION_NEXT_TEMPLATE);
+				}
+			}
+			break;
 		}
 
 	}// actionFor Template
+	
+	/**
+	 * 
+	 * @param nSiteId
+	 * @param oSiteId
+	 * @param site
+	 */
+	private void importToolContent(String nSiteId, String oSiteId, Site site, boolean bypassSecurity) {
+		// import tool content
+		
+		if (bypassSecurity)
+		{
+			// importing from template, bypass the permission checking:
+			// temporarily allow the user to read and write from assignments (asn.revise permission)
+	        SecurityService.pushAdvisor(new SecurityAdvisor()
+	            {
+	                public SecurityAdvice isAllowed(String userId, String function, String reference)
+	                {
+	                    return SecurityAdvice.ALLOWED;
+	                }
+	            });
+		}
+				
+		List pageList = site.getPages();
+		if (!((pageList == null) || (pageList.size() == 0))) {
+			for (ListIterator i = pageList
+					.listIterator(); i.hasNext();) {
+				SitePage page = (SitePage) i.next();
 
+				List pageToolList = page.getTools();
+				String toolId = ((ToolConfiguration) pageToolList
+						.get(0)).getTool().getId();
+				if (toolId
+						.equalsIgnoreCase("sakai.resources")) {
+					// handle
+					// resource
+					// tool
+					// specially
+					transferCopyEntities(
+							toolId,
+							m_contentHostingService
+									.getSiteCollection(oSiteId),
+							m_contentHostingService
+									.getSiteCollection(nSiteId));
+				} else {
+					// other
+					// tools
+					transferCopyEntities(toolId,
+							oSiteId, nSiteId);
+				}
+			}
+		}
+		
+		if (bypassSecurity)
+		{
+			SecurityService.clearAdvisors();
+		}
+	}
+	/**
+	 * get user answers to setup questions
+	 * @param params
+	 * @param state
+	 * @return
+	 */
+	protected boolean getAnswersToSetupQuestions(ParameterParser params, SessionState state)
+	{
+		boolean rv = true;
+		String answerString = null;
+		String answerId = null;
+		Set userAnswers = new HashSet();
+		
+		SiteTypeQuestions siteTypeQuestions = questionService.getSiteTypeQuestions((String) state.getAttribute(STATE_SITE_TYPE));
+		if (siteTypeQuestions != null)
+		{
+			List<SiteSetupQuestion> questions = siteTypeQuestions.getQuestions();
+			for (Iterator i = questions.iterator(); i.hasNext();)
+			{
+				SiteSetupQuestion question = (SiteSetupQuestion) i.next();
+				// get the selected answerId
+				answerId = params.get(question.getId());
+				if (question.isRequired() && answerId == null)
+				{
+					rv = false;
+					addAlert(state, rb.getString("sitesetupquestion.alert"));
+				}
+				else if (answerId != null)
+				{
+					SiteSetupQuestionAnswer answer = questionService.getSiteSetupQuestionAnswer(answerId);
+					if (answer != null)
+					{
+						if (answer.getIsFillInBlank())
+						{
+							// need to read the text input instead
+							answerString = params.get("fillInBlank_" + answerId);
+						}
+						
+						SiteSetupUserAnswer uAnswer = questionService.newSiteSetupUserAnswer();
+						uAnswer.setAnswerId(answerId);
+						uAnswer.setAnswerString(answerString);
+						uAnswer.setQuestionId(question.getId());
+						uAnswer.setUserId(SessionManager.getCurrentSessionUserId());
+						//update the state variable
+						userAnswers.add(uAnswer);
+					}
+				}
+			}
+			state.setAttribute(STATE_SITE_SETUP_QUESTION_ANSWER, userAnswers);	
+		}
+		return rv;
+	}
+	
+	/**
+	 * get user answers to setup questions
+	 * @param params
+	 * @return
+	 */
+	protected void saveAnswersToSetupQuestions(SessionState state)
+	{
+		String answerFolderReference = SiteSetupQuestionFileParser.getAnswerFolderReference();
+		try
+		{
+			contentHostingService.addResource(answerFolderReference + "");
+		}
+		catch (Exception e)
+		{
+			M_log.warn(this + e.getMessage());
+		}
+	}
+	
 	/**
 	 * update current step index within the site creation wizard
 	 * 
@@ -8747,13 +8998,11 @@ public class SiteAction extends PagedResourceActionII {
 	 * addFeatures adds features to a new site
 	 * 
 	 */
-	private void addFeatures(SessionState state) {
+	private void addFeatures(SessionState state, Site site) {
 		List toolRegistrationList = (Vector) state.getAttribute(STATE_TOOL_REGISTRATION_LIST);
 		
 		Set multipleToolIdSet = (Set) state.getAttribute(STATE_MULTIPLE_TOOL_ID_SET);
 		Map multipleToolIdTitleMap = state.getAttribute(STATE_MULTIPLE_TOOL_ID_TITLE_MAP) != null? (Map) state.getAttribute(STATE_MULTIPLE_TOOL_ID_TITLE_MAP):new HashMap();
-		
-		Site site = getStateSite(state);
 
 		List pageList = new Vector();
 		int moves = 0;
@@ -8988,10 +9237,11 @@ public class SiteAction extends PagedResourceActionII {
 						String fromSiteId = (String) importSiteIds.get(k);
 						String toSiteId = site.getId();
 
-						String fromSiteCollectionId = ContentHostingService
+						String fromSiteCollectionId = m_contentHostingService
 								.getSiteCollection(fromSiteId);
-						String toSiteCollectionId = ContentHostingService
+						String toSiteCollectionId = m_contentHostingService
 								.getSiteCollection(toSiteId);
+
 						transferCopyEntities(toolId, fromSiteCollectionId,
 								toSiteCollectionId);
 						resourcesImported = true;
@@ -9601,9 +9851,7 @@ public class SiteAction extends PagedResourceActionII {
 		if (state.getAttribute(STATE_MESSAGE) == null) {
 			try {
 				Site site = null;
-				// add current user as the maintainer
-				User currentUser = UserDirectoryService.getCurrentUser();						
-								
+							
 				// if create based on template,
 				Site templateSite = (Site) state.getAttribute(STATE_TEMPLATE_SITE);
 				if (templateSite != null) {
@@ -9611,6 +9859,9 @@ public class SiteAction extends PagedResourceActionII {
 				} else {
 					site = SiteService.addSite(id, siteInfo.site_type);
 				}
+				
+				// add current user as the maintainer
+				site.addMember(UserDirectoryService.getCurrentUser().getId(), site.getMaintainRole(), true, false);
 
 				String title = StringUtil.trimToNull(siteInfo.title);
 				String description = siteInfo.description;
@@ -9638,47 +9889,6 @@ public class SiteAction extends PagedResourceActionII {
 
 				// commit newly added site in order to enable related realm
 				commitSite(site);
-				
-				// transfer site content from template site
-				if (templateSite != null) {
-					transferSiteContent (site, templateSite);
-					
-					// send an email to track who are using the template
-					String from = getSetupRequestEmailAddress();
-				 
-					// send it to the email archive of the template site
-					// TODO: need a better way to get the email archive address
-					//String domain = from.substring(from.indexOf('@'));
-					String templateEmailArchive = templateSite.getId() 
-						+ "@" + ServerConfigurationService.getServerName();
-					String to = templateEmailArchive;
-					String headerTo = templateEmailArchive;
-					String replyTo = templateEmailArchive;
-					String message_subject = templateSite.getId() + ": copied by " + currentUser.getDisplayId ();					
-				
-					if (from != null && templateEmailArchive != null) {
-						StringBuffer buf = new StringBuffer();
-						buf.setLength(0);
-				
-						// email body
-						buf.append("Dear template maintainer,\n\n");
-						buf.append("Congratulations!\n\n");
-						buf.append("The following user just created a new site based on your template.\n\n");
-						buf.append("Template name: " + templateSite.getTitle() + "\n");
-						buf.append("User         : " + currentUser.getDisplayName() + " (" 
-								+ currentUser.getDisplayId () + ")\n");
-						buf.append("Date         : " + new java.util.Date() + "\n");
-						buf.append("New site Id  : " + site.getId() + "\n");
-						buf.append("New site name: " + site.getTitle() + "\n\n");
-						buf.append("Cheers,\n");
-						buf.append("Alliance Team\n");
-						String content = buf.toString();
-						
-						EmailService.send(from, to, message_subject, content, headerTo,
-								replyTo, null);
-					}					
-				}
-				commitSite(site);
 
 			} catch (IdUsedException e) {
 				addAlert(state, rb.getString("java.sitewithid") + " " + id + " " + rb.getString("java.exists"));
@@ -9699,75 +9909,43 @@ public class SiteAction extends PagedResourceActionII {
 		}
 	} // addNewSite
 
-	/**
-	 * 
-	 * @param toSite
-	 * @param fromSite
-	 * @throws IdInvalidException
-	 * @throws IdUsedException
-	 * @throws PermissionException
-	 */
-	private void transferSiteContent(Site toSite, Site fromSite)
-			throws IdInvalidException, IdUsedException, PermissionException {
-		String id = toSite.getId ();
-		String templateSiteId = fromSite.getId();
-	//		// do copy template using archiving method
-	//		org.sakaiproject.archive.api.ArchiveService archiveService = 
-	//			(org.sakaiproject.archive.api.ArchiveService) ComponentManager.get(
-	//					"org.sakaiproject.archive.api.ArchiveService");
-	//		archiveService.archive (templateSiteId);
-	//		archiveService.merge (templateSiteId + "-archive", id, null);
+
+
+	private void sendTemplateUseNotification(Site site, User currentUser,
+			Site templateSite) {
+		// send an email to track who are using the template
+		String from = getSetupRequestEmailAddress();
+ 
+		// send it to the email archive of the template site
+		// TODO: need a better way to get the email archive address
+		//String domain = from.substring(from.indexOf('@'));
+		String templateEmailArchive = templateSite.getId() 
+			+ "@" + ServerConfigurationService.getServerName();
+		String to = templateEmailArchive;
+		String headerTo = templateEmailArchive;
+		String replyTo = templateEmailArchive;
+		String message_subject = templateSite.getId() + ": copied by " + currentUser.getDisplayId ();					
+
+		if (from != null && templateEmailArchive != null) {
+			StringBuffer buf = new StringBuffer();
+			buf.setLength(0);
+
+			// email body
+			buf.append("Dear template maintainer,\n\n");
+			buf.append("Congratulations!\n\n");
+			buf.append("The following user just created a new site based on your template.\n\n");
+			buf.append("Template name: " + templateSite.getTitle() + "\n");
+			buf.append("User         : " + currentUser.getDisplayName() + " (" 
+					+ currentUser.getDisplayId () + ")\n");
+			buf.append("Date         : " + new java.util.Date() + "\n");
+			buf.append("New site Id  : " + site.getId() + "\n");
+			buf.append("New site name: " + site.getTitle() + "\n\n");
+			buf.append("Cheers,\n");
+			buf.append("Alliance Team\n");
+			String content = buf.toString();
 			
-		// a direct transfer if the tool support entity transfer
-		String templateSiteCollectionId = 
-			ContentHostingService.getSiteCollection(templateSiteId);
-		String toSiteCollectionId = 
-			ContentHostingService.getSiteCollection(id);
-	
-		// get a list of tools that support tranfer copy
-		Set importCapableTools = importTools ();
-	//		System.out.println ("Transfer supported tools: " 
-	//				+ Arrays.toString (importCapableTools.toArray()));
-		
-		// get tools used in the template site
-		Set templateTools = new HashSet ();
-		List pageList = fromSite.getPages();
-		if ((pageList != null) && ! pageList.isEmpty()) {
-			for (Object objPage : pageList) {
-				SitePage page = (SitePage) objPage;
-				List pageToolList = page.getTools();
-				
-				if (pageToolList != null) {								
-					for (Object objToolConf : pageToolList) {
-						if (objToolConf != null) {
-							ToolConfiguration toolConf = (ToolConfiguration) objToolConf;
-							templateTools.add((toolConf.getTool().getId()));
-						}
-					}
-				}
-			}
-		}
-		
-	//		System.out.println ("Template tools: " + 
-	//				Arrays.toString (templateTools.toArray()));
-		
-		// transfer resources first. is this necessary?
-		if (templateTools.contains("sakai.resources")) {
-			transferCopyEntities("sakai.resources", templateSiteCollectionId,
-					toSiteCollectionId);		
-			templateTools.remove("sakai.resources");
-		}
-		
-		// commit changes, it might be needed?
-		commitSite (toSite);
-		
-		for (Object objToolId : templateTools) {
-			String toolId = (String) objToolId;
-			// System.out.println ("Transferring " + toolId);
-			
-			// transfer copy if the tool support EntityTransfer
-			transferCopyEntities(toolId, templateSiteId,
-					id);			        
+			EmailService.send(from, to, message_subject, content, headerTo,
+					replyTo, null);
 		}
 	}
 	
@@ -9778,6 +9956,8 @@ public class SiteAction extends PagedResourceActionII {
 	 */
 	private void setTemplateListForContext(Context context, SessionState state)
 	{   
+		Hashtable<String, List<Site>> templateList = new Hashtable<String, List<Site>>();
+		
 		// find all template sites.
 		List templateSites = SiteService.getSites(
 				org.sakaiproject.site.api.SiteService.SelectionType.ANY, 
@@ -9786,18 +9966,24 @@ public class SiteAction extends PagedResourceActionII {
 		
 		for (Iterator itr = templateSites.iterator(); itr.hasNext(); ) {
 			Site site = (Site) itr.next();
-			// convention: template site should use site id "template*"
+			// convention: template site should use site id "!template*"
 			// so, only administrator can create a site with a custom site id
-			if (!site.getId().startsWith("template")) {
-				// remove non-template sites
-				itr.remove();				
-			} else if (!site.isPublished()) {
-				// remove unpublished template
-				itr.remove();				
+			if (site.getId().startsWith(SITE_TEMPLATE_PREFIX)) 
+			{
+				// get the type of template
+				String type = site.getType();
+				// populate the list according to template site type
+				List<Site> subTemplateList = new Vector<Site>();
+				if (templateList.containsKey(type))
+				{
+					subTemplateList = templateList.get(type);
+				}
+				subTemplateList.add(site);
+				templateList.put(type, subTemplateList);
 			}
 		}
 		
-	    context.put("templateList", templateSites);
+	    context.put("templateList", templateList);
 	} // setTemplateListForContext
 	
 	/**
