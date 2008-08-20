@@ -863,7 +863,8 @@ public class SiteAction extends PagedResourceActionII {
 		ParameterParser params = data.getParameters();
 		context.put("tlang", rb);
 		context.put("alertMessage", state.getAttribute(STATE_MESSAGE));
-
+	
+	
 		// If cleanState() has removed SiteInfo, get a new instance into state
 		SiteInfo siteInfo = new SiteInfo();
 		if (state.getAttribute(STATE_SITE_INFO) != null) {
