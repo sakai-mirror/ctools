@@ -1,0 +1,13 @@
+Index: sitemaker/pom.xml
+===================================================================
+--- sitemaker/pom.xml   (revision 51568)
++++ sitemaker/pom.xml   (working copy)
+@@ -9,7 +9,7 @@
+   </parent>
+   <name>Sakai Portlet Project</name>
+   <groupId>org.sakaiproject</groupId>
+-  <artifactId>portlet-base</artifactId>
++  <artifactId>sitemaker-base</artifactId>
+   <packaging>pom</packaging>
+   
+   <scm>
