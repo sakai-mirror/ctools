@@ -105,6 +105,7 @@ import org.sakaiproject.site.api.SitePage;
 import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.site.api.SiteService.SortType;
 import org.sakaiproject.site.cover.SiteService;
+//import org.sakaiproject.site.impl.BaseGroup;
 import org.sakaiproject.sitemanage.api.SectionField;
 import org.sakaiproject.time.api.Time;
 import org.sakaiproject.time.api.TimeBreakdown;
@@ -133,7 +134,7 @@ import org.sakaiproject.util.Validator;
  * </p>
  */
 public class SiteAction extends PagedResourceActionII {
-	/** Our logger. */
+	/** Our log (commons). */
 	private static Log M_log = LogFactory.getLog(SiteAction.class);
 
 	private ImportService importService = org.sakaiproject.importer.cover.ImportService
@@ -401,6 +402,9 @@ public class SiteAction extends PagedResourceActionII {
 
 	/** State attribute for state initialization. */
 	private static final String STATE_INITIALIZED = "site.initialized";
+
+	/** State attribute for state initialization. */
+	private static final String STATE_TEMPLATE_SITE = "site.templateSite";
 
 	/** The action for menu */
 	private static final String STATE_ACTION = "site.action";
@@ -749,7 +753,8 @@ public class SiteAction extends PagedResourceActionII {
 		state.removeAttribute(STATE_CM_AUTHORIZER_SECTIONS);
 		state.removeAttribute(FORM_ADDITIONAL); // don't we need to clena this
 		// too? -daisyf
-
+		state.removeAttribute(STATE_TEMPLATE_SITE);
+		
 	} // cleanState
 
 	/**
@@ -943,6 +948,7 @@ public class SiteAction extends PagedResourceActionII {
 						}
 					} catch (Exception e) {
 						remove = true;
+						M_log.warn(this + "buildContextForTemplate chef_site-list.vm list GradToolsStudent sites", e);
 					}
 				} else {
 					// not support for dissertation sites
@@ -1073,10 +1079,7 @@ public class SiteAction extends PagedResourceActionII {
 							.put("noGradToolsSite",
 									new Boolean(noGradToolsSite));
 				} catch (Exception e) {
-					if (Log.isWarnEnabled()) {
-						M_log.warn("buildContextForTemplate chef_site-type.vm "
-								+ e);
-					}
+					M_log.warn(this + "buildContextForTemplate chef_site-type.vm ", e);
 				}
 			} else {
 				context.put("withDissertation", Boolean.FALSE);
@@ -1094,6 +1097,10 @@ public class SiteAction extends PagedResourceActionII {
 			setTermListForContext(context, state, true); // true => only
 			// upcoming terms
 			setSelectedTermForContext(context, state, STATE_TERM_SELECTED);
+			
+			// template site - Denny
+			setTemplateListForContext(context, state);
+			
 			return (String) getContext(data).get("template") + TEMPLATE[1];
 
 		case 2:
@@ -1413,9 +1420,7 @@ public class SiteAction extends PagedResourceActionII {
 						try {
 							site_title = SiteService.getSite(id).getTitle();
 						} catch (IdUnusedException e) {
-							M_log
-									.warn("SiteAction.doSite_delete_confirmed - IdUnusedException "
-											+ id);
+							M_log.warn(this + "buildContextForTemplate chef_site-siteDeleteConfirm.vm - IdUnusedException " + id, e);
 							addAlert(state, rb.getString("java.sitewith") + " "
 									+ id + " " + rb.getString("java.couldnt")
 									+ " ");
@@ -1425,8 +1430,7 @@ public class SiteAction extends PagedResourceActionII {
 								Site removeSite = SiteService.getSite(id);
 								remove.add(removeSite);
 							} catch (IdUnusedException e) {
-								M_log
-										.warn("SiteAction.buildContextForTemplate chef_site-siteDeleteConfirm.vm: IdUnusedException");
+								M_log.warn(this + ".buildContextForTemplate chef_site-siteDeleteConfirm.vm: IdUnusedException", e);
 							}
 						} else {
 							addAlert(state, site_title + " "
@@ -1802,7 +1806,7 @@ public class SiteAction extends PagedResourceActionII {
 					context.put("isCourseSite", Boolean.FALSE);
 				}
 			} catch (Exception e) {
-				M_log.warn(this + " site info list: " + e.toString());
+				M_log.warn(this + " buildContextForTemplate chef_site-siteInfo-list.vm ", e);
 			}
 
 			roles = getRoles(state);
@@ -2104,7 +2108,13 @@ public class SiteAction extends PagedResourceActionII {
 
 				// new site, go to confirmation page
 				context.put("continue", "10");
-				if (fromENWModifyView(state)) {
+				
+				Site templateSite = (Site) state.getAttribute(STATE_TEMPLATE_SITE);
+				// if create based on template, back to 2
+				if (templateSite != null) 
+				{
+					context.put("back", "2");					
+				} else if (fromENWModifyView(state)) {
 					context.put("back", "26");
 				} else if (state.getAttribute(STATE_IMPORT) != null) {
 					context.put("back", "27");
@@ -2934,6 +2944,7 @@ public class SiteAction extends PagedResourceActionII {
 			// in the properties file, use 1 MB as a default
 			max_file_size_mb = "1";
 			max_bytes = 1024 * 1024;
+			M_log.warn(this + ".doUpload_Mtrl_Frm_File: wrong setting of content.upload.max = " + max_file_size_mb, e);
 		}
 		if (fileFromUpload == null) {
 			// "The user submitted a file to upload but it was too big!"
@@ -3188,7 +3199,7 @@ public class SiteAction extends PagedResourceActionII {
 				}
 				catch (Exception e)
 				{
-					M_log.warn("coursesIntoContext " + e.getMessage() + " sectionId=" + sectionId);
+					M_log.warn(this + ".coursesIntoContext " + e.getMessage() + " sectionId=" + sectionId, e);
 				}
 			}
 			context.put("providedSectionTitle", sectionTitleString);
@@ -3228,7 +3239,7 @@ public class SiteAction extends PagedResourceActionII {
 					}
 					catch (Exception e)
 					{
-						M_log.warn(e.getMessage() + courseEid);
+						M_log.warn(this + ".courseListFromStringIntoContext: cannot find section " + courseEid, e);
 					}
 				}
 				if (soList.size() > 0)
@@ -3348,9 +3359,9 @@ public class SiteAction extends PagedResourceActionII {
 					userWorkspaceSite = SiteService.getSite(SiteService
 							.getUserSiteId(userId));
 				} catch (IdUnusedException e) {
-					M_log.warn("Cannot find user "
+					M_log.warn(this + "sizeResources, template index = 0: Cannot find user "
 							+ SessionManager.getCurrentSessionUserId()
-							+ "'s My Workspace site.");
+							+ "'s My Workspace site.", e);
 				}
 
 				String view = (String) state.getAttribute(STATE_VIEW_SELECTED);
@@ -3482,9 +3493,7 @@ public class SiteAction extends PagedResourceActionII {
 					userWorkspaceSite = SiteService.getSite(SiteService
 							.getUserSiteId(userId));
 				} catch (IdUnusedException e) {
-					M_log.warn("Cannot find user "
-							+ SessionManager.getCurrentSessionUserId()
-							+ "'s My Workspace site.");
+					M_log.warn(this + "readResourcesPage template index = 0 :Cannot find user " + SessionManager.getCurrentSessionUserId() + "'s My Workspace site.", e);
 				}
 				String view = (String) state.getAttribute(STATE_VIEW_SELECTED);
 				if (view != null) {
@@ -3634,22 +3643,9 @@ public class SiteAction extends PagedResourceActionII {
 		cleanState(state);
 
 		List siteTypes = (List) state.getAttribute(STATE_SITE_TYPES);
-		if (siteTypes != null) {
-			if (siteTypes.size() == 1) {
-				String siteType = (String) siteTypes.get(0);
-				if (!siteType.equals(ServerConfigurationService.getString(
-						"courseSiteType", (String) state.getAttribute(STATE_COURSE_SITE_TYPE)))) {
-					// if only one site type is allowed and the type isn't
-					// course type
-					// skip the select site type step
-					setNewSiteType(state, siteType);
-					state.setAttribute(STATE_TEMPLATE_INDEX, "2");
-				} else {
-					state.setAttribute(STATE_TEMPLATE_INDEX, "1");
-				}
-			} else {
-				state.setAttribute(STATE_TEMPLATE_INDEX, "1");
-			}
+		if (siteTypes != null) 
+		{
+			state.setAttribute(STATE_TEMPLATE_INDEX, "1");
 		}
 
 	} // doNew_site
@@ -3697,9 +3693,7 @@ public class SiteAction extends PagedResourceActionII {
 				try {
 					site_title = SiteService.getSite(id).getTitle();
 				} catch (IdUnusedException e) {
-					M_log
-							.warn("SiteAction.doSite_delete_confirmed - IdUnusedException "
-									+ id);
+					M_log.warn(this + ".doSite_delete_confirmed - IdUnusedException " + id, e);
 					addAlert(state, rb.getString("java.sitewith") + " " + id
 							+ " " + rb.getString("java.couldnt") + " ");
 				}
@@ -3710,23 +3704,17 @@ public class SiteAction extends PagedResourceActionII {
 						site_title = site.getTitle();
 						SiteService.removeSite(site);
 					} catch (IdUnusedException e) {
-						M_log
-								.warn("SiteAction.doSite_delete_confirmed - IdUnusedException "
-										+ id);
+						M_log.warn(this +".doSite_delete_confirmed - IdUnusedException " + id, e);
 						addAlert(state, rb.getString("java.sitewith") + " "
 								+ site_title + "(" + id + ") "
 								+ rb.getString("java.couldnt") + " ");
 					} catch (PermissionException e) {
-						M_log
-								.warn("SiteAction.doSite_delete_confirmed -  PermissionException, site "
-										+ site_title + "(" + id + ").");
+						M_log.warn(this + ".doSite_delete_confirmed -  PermissionException, site " + site_title + "(" + id + ").", e);
 						addAlert(state, site_title + " "
 								+ rb.getString("java.dontperm") + " ");
 					}
 				} else {
-					M_log
-							.warn("SiteAction.doSite_delete_confirmed -  allowRemoveSite failed for site "
-									+ id);
+					M_log.warn(this + ".doSite_delete_confirmed -  allowRemoveSite failed for site "+ id);
 					addAlert(state, site_title + " "
 							+ rb.getString("java.dontperm") + " ");
 				}
@@ -3926,9 +3914,8 @@ public class SiteAction extends PagedResourceActionII {
 		if (type == null) {
 			addAlert(state, rb.getString("java.select") + " ");
 		} else {
-			setNewSiteType(state, type);
-
 			if (type.equalsIgnoreCase((String) state.getAttribute(STATE_COURSE_SITE_TYPE))) {
+				setNewSiteType(state, type);
 				User user = UserDirectoryService.getCurrentUser();
 				String currentUserId = user.getEid();
 
@@ -3977,9 +3964,11 @@ public class SiteAction extends PagedResourceActionII {
 					totalSteps = 5;
 				}
 			} else if (type.equals("project")) {
+				setNewSiteType(state, type);
 				totalSteps = 4;
 				state.setAttribute(STATE_TEMPLATE_INDEX, "2");
 			} else if (type.equals(SITE_TYPE_GRADTOOLS_STUDENT)) {
+				setNewSiteType(state, type);
 				// if a GradTools site use pre-defined site info and exclude
 				// from public listing
 				SiteInfo siteInfo = new SiteInfo();
@@ -3998,15 +3987,46 @@ public class SiteAction extends PagedResourceActionII {
 
 				// skip directly to confirm creation of site
 				state.setAttribute(STATE_TEMPLATE_INDEX, "42");
+			} else if (type.equals("template")) {				
+				String templateSiteId = params.getString("selectTemplate");
+				Site templateSite = null;
+				try
+				{
+					templateSite = SiteService.getSite(templateSiteId);
+					// save the template site in state
+					state.setAttribute(STATE_TEMPLATE_SITE, templateSite);
+				     
+					// the new site type is based on the template site
+					setNewSiteType(state, templateSite.getType());
+				}catch (Exception e) {  
+					// should never happened, as the list of templates are generated
+					// from existing sites
+					M_log.warn(this + ".doSite_type" + e.getClass().getName(), e);
+				}
+				
+				// grab site info from template
+				SiteInfo siteInfo = new SiteInfo();
+				if (state.getAttribute(STATE_SITE_INFO) != null) {
+					siteInfo = (SiteInfo) state.getAttribute(STATE_SITE_INFO);
+				}
+				
+				// default site information. copied from the template site
+				siteInfo.description = templateSite.getDescription();
+				siteInfo.short_description = templateSite.getShortDescription();
+				//siteInfo.iconUrl = templateSite.getIconUrl();
+				//siteInfo.include = false;
+				state.setAttribute(STATE_SITE_INFO, siteInfo);
+
+				totalSteps = 3;
+				state.setAttribute(STATE_TEMPLATE_INDEX, "2");
 			} else {
+				setNewSiteType(state, type);
 				state.setAttribute(STATE_TEMPLATE_INDEX, "2");
 			}
 		}
 
 		if (state.getAttribute(SITE_CREATE_TOTAL_STEPS) == null) {
-			state
-					.setAttribute(SITE_CREATE_TOTAL_STEPS, new Integer(
-							totalSteps));
+			state.setAttribute(SITE_CREATE_TOTAL_STEPS, new Integer(totalSteps));
 		}
 
 		if (state.getAttribute(SITE_CREATE_CURRENT_STEP) == null) {
@@ -4109,7 +4129,7 @@ public class SiteAction extends PagedResourceActionII {
 										.getUserByEid(aId);
 								gMemberSet.add(site.getMember(u2.getId()));
 							} catch (UserNotDefinedException ee) {
-								M_log.warn(this + ee.getMessage() + aId);
+								M_log.warn(this + ".doGroup_update: cannot find user " + aId, e);
 							}
 						}
 					}
@@ -4291,8 +4311,8 @@ public class SiteAction extends PagedResourceActionII {
 							((Set) rvGMemberSet).add(member);
 						} catch (UserNotDefinedException e) {
 							// cannot find user
-							M_log.warn(this + rb.getString("user.notdefined")
-									+ member.getUserId());
+							M_log.warn(this + ".doGroup_edit: " + rb.getString("user.notdefined")
+									+ member.getUserId(), e);
 						}
 					}
 					state.setAttribute(STATE_GROUP_MEMBERS, rvGMemberSet);
@@ -4343,8 +4363,10 @@ public class SiteAction extends PagedResourceActionII {
 			SiteService.save(site);
 		} catch (IdUnusedException e) {
 			addAlert(state, rb.getString("editgroup.site.notfound.alert"));
+			M_log.warn(this + ".doGroup_remove_confirmed: Problem of saving site after group removal: site id =" + site.getId(), e);
 		} catch (PermissionException e) {
 			addAlert(state, rb.getString("editgroup.site.permission.alert"));
+			M_log.warn(this + ".doGroup_remove_confirmed: Permission problem of saving site after group removal: site id=" + site.getId(), e);
 		}
 
 		if (state.getAttribute(STATE_MESSAGE) == null) {
@@ -4431,8 +4453,9 @@ public class SiteAction extends PagedResourceActionII {
 						List instructors = new ArrayList(Arrays.asList(uniqname.split(",")));
 						for (Iterator iInstructors = instructors.iterator(); iInstructors.hasNext();)
 						{
+							String eid = StringUtil.trimToZero((String) iInstructors.next());
 							try {
-								UserDirectoryService.getUserByEid(StringUtil.trimToZero((String) iInstructors.next()));
+								UserDirectoryService.getUserByEid(eid);
 							} catch (UserNotDefinedException e) {
 								addAlert(
 										state,
@@ -4442,6 +4465,7 @@ public class SiteAction extends PagedResourceActionII {
 														.getString("officialAccountName")
 												+ " "
 												+ rb.getString("java.validAuthor2"));
+								M_log.warn(this + ".doManual_add_course: cannot find user with eid=" + eid, e);
 							}
 						}
 					}
@@ -4488,6 +4512,12 @@ public class SiteAction extends PagedResourceActionII {
 		if (option.equalsIgnoreCase("continue"))
 		{
 			doContinue(data);
+			// if create based on template, skip the feature selection
+			Site templateSite = (Site) state.getAttribute(STATE_TEMPLATE_SITE);
+			if (templateSite != null) 
+			{
+				state.setAttribute(STATE_TEMPLATE_INDEX, "18");
+			}
 		} else if (option.equalsIgnoreCase("back")) {
 			doBack(data);
 		} else if (option.equalsIgnoreCase("cancel")) {
@@ -4816,6 +4846,12 @@ public class SiteAction extends PagedResourceActionII {
 		String option = data.getParameters().getString("option");
 		if (option.equals("continue")) {
 			doContinue(data);
+			
+			// if create based on template, skip the feature selection
+			Site templateSite = (Site) state.getAttribute(STATE_TEMPLATE_SITE);
+			if (templateSite != null) {
+				state.setAttribute(STATE_TEMPLATE_INDEX, "18");
+			}
 		} else if (option.equals("cancel")) {
 			doCancel_create(data);
 		} else if (option.equals("back")) {
@@ -4878,7 +4914,10 @@ public class SiteAction extends PagedResourceActionII {
 
 			addNewSite(params, state);
 
-			addFeatures(state);
+			// if create based on template, skip add features
+			if ((Site) state.getAttribute(STATE_TEMPLATE_SITE) == null) {
+				addFeatures(state);
+			}
 
 			Site site = getStateSite(state);
 
@@ -4908,22 +4947,7 @@ public class SiteAction extends PagedResourceActionII {
 
 			// now that the site exists, we can set the email alias when an
 			// Email Archive tool has been selected
-			String alias = StringUtil.trimToNull((String) state
-					.getAttribute(STATE_TOOL_EMAIL_ADDRESS));
-			if (alias != null) {
-				String channelReference = mailArchiveChannelReference(siteId);
-				try {
-					AliasService.setAlias(alias, channelReference);
-				} catch (IdUsedException ee) {
-					addAlert(state, rb.getString("java.alias") + " " + alias
-							+ " " + rb.getString("java.exists"));
-				} catch (IdInvalidException ee) {
-					addAlert(state, rb.getString("java.alias") + " " + alias
-							+ " " + rb.getString("java.isinval"));
-				} catch (PermissionException ee) {
-					addAlert(state, rb.getString("java.addalias") + " ");
-				}
-			}
+			setSiteAlias(state, siteId);
 			// TODO: hard coding this frame id is fragile, portal dependent, and
 			// needs to be fixed -ggolden
 			// schedulePeerFrameRefresh("sitenav");
@@ -4939,6 +4963,34 @@ public class SiteAction extends PagedResourceActionII {
 		}
 
 	}// doFinish
+
+
+	/**
+	 * set site mail alias
+	 * @param state
+	 * @param siteId
+	 */
+	private void setSiteAlias(SessionState state, String siteId) {
+		String alias = StringUtil.trimToNull((String) state
+				.getAttribute(STATE_TOOL_EMAIL_ADDRESS));
+		if (alias != null) {
+			String channelReference = mailArchiveChannelReference(siteId);
+			try {
+				AliasService.setAlias(alias, channelReference);
+			} catch (IdUsedException ee) {
+				addAlert(state, rb.getString("java.alias") + " " + alias
+						+ " " + rb.getString("java.exists"));
+				M_log.warn(this + ".setSiteAlias: " + rb.getString("java.alias") + " " + alias + " " + rb.getString("java.exists"), ee);
+			} catch (IdInvalidException ee) {
+				addAlert(state, rb.getString("java.alias") + " " + alias
+						+ " " + rb.getString("java.isinval"));
+				M_log.warn(this + ".setSiteAlias: " + rb.getString("java.alias") + " " + alias + " " + rb.getString("java.isinval"), ee);
+			} catch (PermissionException ee) {
+				addAlert(state, rb.getString("java.addalias") + " ");
+				M_log.warn(this + ".setSiteAlias: " + rb.getString("java.addalias") + ee);
+			}
+		}
+	}
 
 	/**
 	 * Update course site and related realm based on the roster chosen or requested
@@ -4978,7 +5030,7 @@ public class SiteAction extends PagedResourceActionII {
 				realmEdit.setProviderGroupId(providerRealm);
 				AuthzGroupService.save(realmEdit);
 			} catch (GroupNotDefinedException e) {
-				M_log.warn(this + " IdUnusedException, not found, or not an AuthzGroup object");
+				M_log.warn(this + ".updateCourseSiteSections: IdUnusedException, not found, or not an AuthzGroup object", e);
 				addAlert(state, rb.getString("java.realm"));
 			}
 			// catch (AuthzPermissionException e)
@@ -4990,6 +5042,7 @@ public class SiteAction extends PagedResourceActionII {
 			// }
 			catch (Exception e) {
 				addAlert(state, this + rb.getString("java.problem"));
+				M_log.warn(this + ".updateCourseSiteSections: " + rb.getString("java.problem"), e);
 			}
 
 			sendSiteNotification(state, providerCourseList);
@@ -5417,8 +5470,7 @@ public class SiteAction extends PagedResourceActionII {
 			try {
 				userId = UserDirectoryService.getUserEid(userId);
 			} catch (UserNotDefinedException e) {
-				M_log.warn(this + rb.getString("user.notdefined") + " "
-						+ userId);
+				M_log.warn(this + ".sendSiteNotification:" + rb.getString("user.notdefined") + " " + userId, e);
 			}
 
 			// To Support
@@ -5765,20 +5817,8 @@ public class SiteAction extends PagedResourceActionII {
 
 		// now that the site exists, we can set the email alias when an Email
 		// Archive tool has been selected
-		String alias = StringUtil.trimToNull((String) state
-				.getAttribute(STATE_TOOL_EMAIL_ADDRESS));
-		if (alias != null) {
-			String channelReference = mailArchiveChannelReference(id);
-			try {
-				AliasService.setAlias(alias, channelReference);
-			} catch (IdUsedException ee) {
-			} catch (IdInvalidException ee) {
-				addAlert(state, rb.getString("java.alias") + " " + alias + " "
-						+ rb.getString("java.isinval"));
-			} catch (PermissionException ee) {
-				addAlert(state, rb.getString("java.addalias") + " ");
-			}
-		}
+		setSiteAlias(state, id);
+		
 		if (state.getAttribute(STATE_MESSAGE) == null) {
 			// clean state variables
 			state.removeAttribute(STATE_TOOL_REGISTRATION_SELECTED_LIST);
@@ -5962,7 +6002,7 @@ public class SiteAction extends PagedResourceActionII {
 						}
 						catch (Exception e)
 						{
-							M_log.warn(this + e.getMessage() + site.getId());
+							M_log.warn(this + ".doMenu_siteinfo_addClass: " + e.getMessage() + site.getId(), e);
 						}
 						found=true;
 					}
@@ -5980,7 +6020,7 @@ public class SiteAction extends PagedResourceActionII {
 		}
 		catch (Exception e)
 		{
-			M_log.warn(e.getMessage() + termEid);
+			M_log.warn(this + ".doMenu_siteinfo_addClass: " + e.getMessage() + termEid, e);
 		}
 		state.setAttribute(STATE_TEMPLATE_INDEX, "36");
 
@@ -6333,7 +6373,7 @@ public class SiteAction extends PagedResourceActionII {
 			state.setAttribute(STATE_SITE_TYPE, type);
 
 		} catch (IdUnusedException e) {
-			M_log.warn(this + e.toString());
+			M_log.warn(this + ".getReviseSite: " +  e.toString() + " site id = " + siteId, e);
 		}
 
 		// one site has been selected
@@ -6413,8 +6453,7 @@ public class SiteAction extends PagedResourceActionII {
 							selected.uniqname = user.getId();
 							realmEdit.removeMember(user.getId());
 						} catch (UserNotDefinedException e) {
-							M_log.warn(this + " IdUnusedException " + rId
-									+ ". ");
+							M_log.warn(this + ".doUpdate_participant: IdUnusedException " + rId + ". ", e);
 						}
 					}
 				}
@@ -6437,12 +6476,10 @@ public class SiteAction extends PagedResourceActionII {
 				}
 			} catch (GroupNotDefinedException e) {
 				addAlert(state, rb.getString("java.problem2"));
-				M_log.warn(this + "  IdUnusedException " + s.getTitle() + "("
-						+ realmId + "). ");
+				M_log.warn(this + ".doUpdate_participant: IdUnusedException " + s.getTitle() + "(" + realmId + "). ", e);
 			} catch (AuthzPermissionException e) {
 				addAlert(state, rb.getString("java.changeroles"));
-				M_log.warn(this + "  PermissionException " + s.getTitle() + "("
-						+ realmId + "). ");
+				M_log.warn(this + ".doUpdate_participant: PermissionException " + s.getTitle() + "(" + realmId + "). ", e);
 			}
 		}
 
@@ -6490,7 +6527,7 @@ public class SiteAction extends PagedResourceActionII {
 					}
 					catch (Exception ee)
 					{
-						M_log.warn(this + ee.getMessage() + g.getId());
+						M_log.warn(this + ".doUpdate_related_group_participants: " + ee.getMessage() + g.getId(), ee);
 					}
 					
 				}
@@ -6499,7 +6536,7 @@ public class SiteAction extends PagedResourceActionII {
 			}
 			catch (Exception e)
 			{
-				M_log.warn(this + e.getMessage() + s.getId());
+				M_log.warn(this + ".doUpdate_related_group_participants: " + e.getMessage() + s.getId(), e);
 			}
 		}
 	}
@@ -6709,7 +6746,11 @@ public class SiteAction extends PagedResourceActionII {
 					state.setAttribute(STATE_TEMPLATE_INDEX, "2");
 					return;
 				}
+			} else {
+				// removing previously selected template site
+					state.removeAttribute(STATE_TEMPLATE_SITE);				
 			}
+			
 			updateSiteAttributes(state);
 
 			if (state.getAttribute(STATE_MESSAGE) == null) {
@@ -7117,10 +7158,11 @@ public class SiteAction extends PagedResourceActionII {
 						String title = params.getString("title");
 						state.setAttribute(SITE_DUPLICATED_NAME, title);
 
+						String nSiteId = IdManager.createUuid();
 						try {
 							String oSiteId = (String) state
 									.getAttribute(STATE_SITE_INSTANCE_ID);
-							String nSiteId = IdManager.createUuid();
+							
 							Site site = SiteService.addSite(nSiteId,
 									getStateSite(state));
 
@@ -7171,8 +7213,7 @@ public class SiteAction extends PagedResourceActionII {
 								// if goes here, IdService
 								// or SiteService has done
 								// something wrong.
-								M_log.warn(this + "Exception" + e1 + ":"
-										+ nSiteId + "when duplicating site");
+								M_log.warn(this + ".actionForTemplate chef_siteinfo-duplicate: " + e1 + ":" + nSiteId + "when duplicating site", e1);
 							}
 
 							if (site.getType().equals((String) state.getAttribute(STATE_COURSE_SITE_TYPE))) {
@@ -7205,10 +7246,11 @@ public class SiteAction extends PagedResourceActionII {
 										realmEdit.setProviderGroupId(null);
 										AuthzGroupService.save(realmEdit);
 									} catch (GroupNotDefinedException e) {
-										M_log.warn(this + " IdUnusedException, not found, or not an AuthzGroup object");
+										M_log.warn(this + ".actionForTemplate chef_siteinfo-duplicate: IdUnusedException, not found, or not an AuthzGroup object "+ realm, e);
 										addAlert(state, rb.getString("java.realm"));
 									} catch (Exception e) {
 										addAlert(state, this + rb.getString("java.problem"));
+										M_log.warn(this + ".actionForTemplate chef_siteinfo-duplicate: " + rb.getString("java.problem"), e);
 									}
 								}
 							} catch (IdUnusedException e) {
@@ -7226,12 +7268,13 @@ public class SiteAction extends PagedResourceActionII {
 							state.setAttribute(SITE_DUPLICATED, Boolean.TRUE);
 						} catch (IdInvalidException e) {
 							addAlert(state, rb.getString("java.siteinval"));
+							M_log.warn(this + ".actionForTemplate chef_siteinfo-duplicate: " + rb.getString("java.siteinval") + " site id = " + nSiteId, e);
 						} catch (IdUsedException e) {
-							addAlert(state, rb.getString("java.sitebeenused")
-									+ " ");
+							addAlert(state, rb.getString("java.sitebeenused"));
+							M_log.warn(this + ".actionForTemplate chef_siteinfo-duplicate: " + rb.getString("java.sitebeenused") + " site id = " + nSiteId, e);
 						} catch (PermissionException e) {
-							addAlert(state, rb.getString("java.allowcreate")
-									+ " ");
+							addAlert(state, rb.getString("java.allowcreate"));
+							M_log.warn(this + ".actionForTemplate chef_siteinfo-duplicate: " + rb.getString("java.allowcreate") + " site id = " + nSiteId, e);
 						}
 					}
 				}
@@ -7381,7 +7424,7 @@ public class SiteAction extends PagedResourceActionII {
 						}
 						catch (Exception e)
 						{
-							M_log.warn(e.getMessage() + sectionId);
+							M_log.warn( this + e.getMessage() + sectionId, e);
 						}
 					}
 					state.setAttribute(STATE_CM_REQUESTED_SECTIONS, cmRequestedCourseList);
@@ -7404,7 +7447,7 @@ public class SiteAction extends PagedResourceActionII {
 				}
 				catch (Exception e)
 				{
-					M_log.warn(e.getMessage() + site.getId());
+					M_log.warn(this + ".actionForTemplate chef_siteinfo-addCourseConfirm: " +  e.getMessage() + site.getId(), e);
 				}
 				
 				removeAddClassContext(state);
@@ -7486,16 +7529,14 @@ public class SiteAction extends PagedResourceActionII {
 				realmEdit1.setProviderGroupId(NULL_STRING);
 				AuthzGroupService.save(realmEdit1);
 			} catch (GroupNotDefinedException e) {
-				M_log.warn(this + " IdUnusedException, " + site.getTitle()
+				M_log.warn(this + ".updateCourseClasses: IdUnusedException, " + site.getTitle()
 						+ "(" + realmId
-						+ ") not found, or not an AuthzGroup object");
+						+ ") not found, or not an AuthzGroup object", e);
 				addAlert(state, rb.getString("java.cannotedit"));
 				return;
 			} catch (AuthzPermissionException e) {
-				M_log
-						.warn(this
-								+ " PermissionException, user does not have permission to edit AuthzGroup object "
-								+ site.getTitle() + "(" + realmId + "). ");
+				M_log.warn(this + ".updateCourseClasses: PermissionException, user does not have permission to edit AuthzGroup object "
+								+ site.getTitle() + "(" + realmId + "). ", e);
 				addAlert(state, rb.getString("java.notaccess"));
 				return;
 			}
@@ -7511,16 +7552,15 @@ public class SiteAction extends PagedResourceActionII {
 				realmEdit2.setProviderGroupId(externalRealm);
 				AuthzGroupService.save(realmEdit2);
 			} catch (GroupNotDefinedException e) {
-				M_log.warn(this + " IdUnusedException, " + site.getTitle()
+				M_log.warn(this + ".updateCourseClasses: IdUnusedException, " + site.getTitle()
 						+ "(" + realmId
-						+ ") not found, or not an AuthzGroup object");
+						+ ") not found, or not an AuthzGroup object", e);
 				addAlert(state, rb.getString("java.cannotclasses"));
 				return;
 			} catch (AuthzPermissionException e) {
-				M_log
-						.warn(this
-								+ " PermissionException, user does not have permission to edit AuthzGroup object "
-								+ site.getTitle() + "(" + realmId + "). ");
+				M_log.warn(this
+								+ ".updateCourseClasses: PermissionException, user does not have permission to edit AuthzGroup object "
+								+ site.getTitle() + "(" + realmId + "). ", e);
 				addAlert(state, rb.getString("java.notaccess"));
 				return;
 			}
@@ -7555,7 +7595,7 @@ public class SiteAction extends PagedResourceActionII {
 			}
 			catch (Exception e)
 			{
-				M_log.warn(this + ".updateCourseClasses: cannot remove authzgroup : " + group.getReference());
+				M_log.warn(this + ".updateCourseClasses: cannot remove authzgroup : " + group.getReference(), e);
 			}
 		}
 
@@ -7572,7 +7612,7 @@ public class SiteAction extends PagedResourceActionII {
 								(List<SectionObject>) state.getAttribute(STATE_MANUAL_ADD_COURSE_FIELDS), 
 								"manual");
 			} catch (Exception e) {
-				M_log.warn(this + e.toString());
+				M_log.warn(this +".updateCourseClasses:" + e.toString(), e);
 			}
 		}
 		if (notifyClasses != null && notifyClasses.size() > 0) {
@@ -7580,7 +7620,7 @@ public class SiteAction extends PagedResourceActionII {
 				// send out class access confirmation notifications
 				sendSiteNotification(state, notifyClasses);
 			} catch (Exception e) {
-				M_log.warn(this + e.toString());
+				M_log.warn(this + ".updateCourseClasses:" + e.toString(), e);
 			}
 		}
 	} // updateCourseClasses
@@ -7774,15 +7814,15 @@ public class SiteAction extends PagedResourceActionII {
 					SiteService.getSite(id);
 					state.setAttribute(STATE_SITE_INSTANCE_ID, id);
 				} catch (IdUnusedException e) {
-					M_log.warn("SiteAction.commitSite IdUnusedException "
-							+ siteInfo.getTitle() + "(" + id + ") not found");
+					M_log.warn(this + ".updateSiteAttributes: IdUnusedException "
+							+ siteInfo.getTitle() + "(" + id + ") not found", e);
 				}
 			}
 
 			// no permission
 			else {
 				addAlert(state, rb.getString("java.makechanges"));
-				M_log.warn("SiteAction.commitSite PermissionException "
+				M_log.warn(this + ".updateSiteAttributes: PermissionException "
 						+ siteInfo.getTitle() + "(" + id + ")");
 			}
 		}
@@ -7865,7 +7905,7 @@ public class SiteAction extends PagedResourceActionII {
 			AuthzGroup realm = AuthzGroupService.getAuthzGroup(realmId);
 			rv = realm.getProviderGroupId();
 		} catch (GroupNotDefinedException e) {
-			M_log.warn("SiteAction.getExternalRealmId, site realm not found");
+			M_log.warn(this + ".getExternalRealmId: site realm not found", e);
 		}
 		return rv;
 
@@ -7919,7 +7959,7 @@ public class SiteAction extends PagedResourceActionII {
 				}
 				catch (IdNotFoundException e)
 				{
-					M_log.warn("SiteAction prepareParticipants " + e.getMessage() + " sectionId=" + providerCourseEid);
+					M_log.warn(this + ".prepareParticipants: "+ e.getMessage() + " sectionId=" + providerCourseEid, e);
 				}
 			}
 			
@@ -7950,12 +7990,12 @@ public class SiteAction extends PagedResourceActionII {
 				} catch (UserNotDefinedException e) {
 					// deal with missing user quietly without throwing a
 					// warning message
-					M_log.warn(e.getMessage());
+					M_log.warn(this + ".prepareParticipants: "+ e.getMessage(), e);
 				}
 			}
 
 		} catch (GroupNotDefinedException ee) {
-			M_log.warn(this + "  IdUnusedException " + realmId);
+			M_log.warn(this + ".prepareParticipants:  IdUnusedException " + realmId, ee);
 		}
 		return participantsMap.values();
 	}
@@ -8007,7 +8047,7 @@ public class SiteAction extends PagedResourceActionII {
 				} catch (UserNotDefinedException exception) {
 					// deal with missing user quietly without throwing a
 					// warning message
-					M_log.warn(exception);
+					M_log.warn(this + ".addParticipantsFromMemberships: user id = " + m.getUserId(), exception);
 				}
 			}
 		}
@@ -8065,13 +8105,13 @@ public class SiteAction extends PagedResourceActionII {
 							}
 							catch (Exception ee)
 							{
-								M_log.warn(ee.getMessage());
+								M_log.warn(this + ".addParticipantsFromEnrollmentSet: " + ee.getMessage() + " user id = " + userId, ee);
 							}
 						}
 					} catch (UserNotDefinedException exception) {
 						// deal with missing user quietly without throwing a
 						// warning message
-						M_log.warn(exception.getMessage());
+						M_log.warn(this + ".addParticipantsFromEnrollmentSet: " + exception.getMessage() + " user id = " + e.getUserId(), exception);
 					}
 				}
 			}
@@ -8091,7 +8131,7 @@ public class SiteAction extends PagedResourceActionII {
 			roles.addAll(realm.getRoles());
 			Collections.sort(roles);
 		} catch (GroupNotDefinedException e) {
-			M_log.warn("SiteAction.getRoles IdUnusedException " + realmId);
+			M_log.warn( this + ".getRoles: IdUnusedException " + realmId, e);
 		}
 		return roles;
 
@@ -8348,7 +8388,7 @@ public class SiteAction extends PagedResourceActionII {
 					}
 
 				} catch (Exception e) {
-					M_log.warn("SiteAction getRevisedFeatures Exception: " + e.getMessage());
+					M_log.warn(this + ".getRevisedFeatures: " + e.getMessage() + " site id = " + site.getId(), e);
 				}
 			}
 		} // add Home
@@ -8876,7 +8916,7 @@ public class SiteAction extends PagedResourceActionII {
 					}
 
 				} catch (Exception e) {
-					M_log.warn("SiteAction addFeatures Exception:" + e.getMessage());
+					M_log.warn(this + ".addFeatures: " + e.getMessage() + " site id = " + site.getId(), e);
 				}
 
 				state.setAttribute(STATE_TOOL_HOME_SELECTED, Boolean.TRUE);
@@ -8959,7 +8999,7 @@ public class SiteAction extends PagedResourceActionII {
 				}
 			}
 
-			// ijmport other tools then
+			// import other tools then
 			for (int i = 0; i < toolIds.size(); i++) {
 				String toolId = (String) toolIds.get(i);
 				if (!toolId.equalsIgnoreCase("sakai.resources")
@@ -9035,6 +9075,7 @@ public class SiteAction extends PagedResourceActionII {
 			site = SiteService.getSite(siteId);
 		} catch (IdUnusedException e) {
 			addAlert(state, rb.getString("java.specif") + " " + siteId);
+			M_log.warn(this + ".checkAddParticipant: "+ rb.getString("java.specif") + " " + siteId, e);
 		}
 
 		// accept officialAccounts and/or nonOfficialAccount account names
@@ -9108,6 +9149,7 @@ public class SiteAction extends PagedResourceActionII {
 						}
 					} catch (UserNotDefinedException e) {
 						addAlert(state, officialAccount + " " + rb.getString("java.username") + " ");
+						M_log.warn(this + ".checkAddParticipant: " + officialAccount + " " + rb.getString("java.username") + " ", e);
 					}
 				}
 			}
@@ -9352,23 +9394,14 @@ public class SiteAction extends PagedResourceActionII {
 							
 						}
 					} catch (UserIdInvalidException ee) {
-						addAlert(state, nonOfficialAccountLabel + " id " + eId
-								+ " " + rb.getString("java.isinval"));
-						M_log.warn(this
-								+ " UserDirectoryService addUser exception "
-								+ e.getMessage());
+						addAlert(state, nonOfficialAccountLabel + " id " + eId + " " + rb.getString("java.isinval"));
+						M_log.warn(this + ".doAdd_participant: " + nonOfficialAccountLabel + " id " + eId + " " + rb.getString("java.isinval"), ee);
 					} catch (UserAlreadyDefinedException ee) {
-						addAlert(state, "The " + nonOfficialAccountLabel + " "
-								+ eId + " " + rb.getString("java.beenused"));
-						M_log.warn(this
-								+ " UserDirectoryService addUser exception "
-								+ e.getMessage());
+						addAlert(state, "The " + nonOfficialAccountLabel + " " + eId + " " + rb.getString("java.beenused"));
+						M_log.warn(this + ".doAdd_participant: The " + nonOfficialAccountLabel + " " + eId + " " + rb.getString("java.beenused"), ee);
 					} catch (UserPermissionException ee) {
-						addAlert(state, rb.getString("java.haveadd") + " "
-								+ eId);
-						M_log.warn(this
-								+ " UserDirectoryService addUser exception "
-								+ e.getMessage());
+						addAlert(state, rb.getString("java.haveadd") + " " + eId);
+						M_log.warn(this + ".doAdd_participant: " + rb.getString("java.haveadd") + " " + eId, ee);
 					}
 				}
 
@@ -9511,6 +9544,7 @@ public class SiteAction extends PagedResourceActionII {
 						} catch (UserNotDefinedException e) {
 							message.append(eId + " "
 									+ rb.getString("java.account") + " \n");
+							M_log.warn(this  + ".addUsersRealm: " + eId + " "+ rb.getString("java.account"), e);
 						} // try
 					} // for
 
@@ -9518,14 +9552,16 @@ public class SiteAction extends PagedResourceActionII {
 						AuthzGroupService.save(realmEdit);
 					} catch (GroupNotDefinedException ee) {
 						message.append(rb.getString("java.realm") + realmId);
+						M_log.warn(this + ".addUsersRealm: " + rb.getString("java.realm") + realmId, ee);
 					} catch (AuthzPermissionException ee) {
-						message.append(rb.getString("java.permeditsite")
-								+ realmId);
+						message.append(rb.getString("java.permeditsite") + realmId);
+						M_log.warn(this + ".addUsersRealm: " + rb.getString("java.permeditsite") + realmId, ee);
 					}
 				} catch (GroupNotDefinedException eee) {
 					message.append(rb.getString("java.realm") + realmId);
+					M_log.warn(this + ".addUsersRealm: " + rb.getString("java.realm") + realmId, eee);
 				} catch (Exception eee) {
-					M_log.warn("SiteActionaddUsersRealm " + eee.getMessage() + " realmId=" + realmId);
+					M_log.warn(this + ".addUsersRealm: " + eee.getMessage() + " realmId=" + realmId, eee);
 				}
 			}
 		}
@@ -9564,7 +9600,17 @@ public class SiteAction extends PagedResourceActionII {
 		state.setAttribute(STATE_SITE_INFO, siteInfo);
 		if (state.getAttribute(STATE_MESSAGE) == null) {
 			try {
-				Site site = SiteService.addSite(id, siteInfo.site_type);
+				Site site = null;
+				// add current user as the maintainer
+				User currentUser = UserDirectoryService.getCurrentUser();						
+								
+				// if create based on template,
+				Site templateSite = (Site) state.getAttribute(STATE_TEMPLATE_SITE);
+				if (templateSite != null) {
+					site = SiteService.addSite(id, templateSite);
+				} else {
+					site = SiteService.addSite(id, siteInfo.site_type);
+				}
 
 				String title = StringUtil.trimToNull(siteInfo.title);
 				String description = siteInfo.description;
@@ -9592,29 +9638,168 @@ public class SiteAction extends PagedResourceActionII {
 
 				// commit newly added site in order to enable related realm
 				commitSite(site);
+				
+				// transfer site content from template site
+				if (templateSite != null) {
+					transferSiteContent (site, templateSite);
+					
+					// send an email to track who are using the template
+					String from = getSetupRequestEmailAddress();
+				 
+					// send it to the email archive of the template site
+					// TODO: need a better way to get the email archive address
+					//String domain = from.substring(from.indexOf('@'));
+					String templateEmailArchive = templateSite.getId() 
+						+ "@" + ServerConfigurationService.getServerName();
+					String to = templateEmailArchive;
+					String headerTo = templateEmailArchive;
+					String replyTo = templateEmailArchive;
+					String message_subject = templateSite.getId() + ": copied by " + currentUser.getDisplayId ();					
+				
+					if (from != null && templateEmailArchive != null) {
+						StringBuffer buf = new StringBuffer();
+						buf.setLength(0);
+				
+						// email body
+						buf.append("Dear template maintainer,\n\n");
+						buf.append("Congratulations!\n\n");
+						buf.append("The following user just created a new site based on your template.\n\n");
+						buf.append("Template name: " + templateSite.getTitle() + "\n");
+						buf.append("User         : " + currentUser.getDisplayName() + " (" 
+								+ currentUser.getDisplayId () + ")\n");
+						buf.append("Date         : " + new java.util.Date() + "\n");
+						buf.append("New site Id  : " + site.getId() + "\n");
+						buf.append("New site name: " + site.getTitle() + "\n\n");
+						buf.append("Cheers,\n");
+						buf.append("Alliance Team\n");
+						String content = buf.toString();
+						
+						EmailService.send(from, to, message_subject, content, headerTo,
+								replyTo, null);
+					}					
+				}
+				commitSite(site);
 
 			} catch (IdUsedException e) {
-				addAlert(state, rb.getString("java.sitewithid") + " " + id
-						+ " " + rb.getString("java.exists"));
-				state.setAttribute(STATE_TEMPLATE_INDEX, params
-						.getString("template-index"));
+				addAlert(state, rb.getString("java.sitewithid") + " " + id + " " + rb.getString("java.exists"));
+				M_log.warn(this + ".addNewSite: " + rb.getString("java.sitewithid") + " " + id + " " + rb.getString("java.exists"), e);
+				state.setAttribute(STATE_TEMPLATE_INDEX, params.getString("template-index"));
 				return;
 			} catch (IdInvalidException e) {
-				addAlert(state, rb.getString("java.thesiteid") + " " + id + " "
-						+ rb.getString("java.notvalid"));
-				state.setAttribute(STATE_TEMPLATE_INDEX, params
-						.getString("template-index"));
+				addAlert(state, rb.getString("java.thesiteid") + " " + id + " " + rb.getString("java.notvalid"));
+				M_log.warn(this + ".addNewSite: " + rb.getString("java.thesiteid") + " " + id + " " + rb.getString("java.notvalid"), e);
+				state.setAttribute(STATE_TEMPLATE_INDEX, params.getString("template-index"));
 				return;
 			} catch (PermissionException e) {
-				addAlert(state, rb.getString("java.permission") + " " + id
-						+ ".");
-				state.setAttribute(STATE_TEMPLATE_INDEX, params
-						.getString("template-index"));
+				addAlert(state, rb.getString("java.permission") + " " + id + ".");
+				M_log.warn(this + ".addNewSite: " + rb.getString("java.permission") + " " + id + ".", e);
+				state.setAttribute(STATE_TEMPLATE_INDEX, params.getString("template-index"));
 				return;
 			}
 		}
 	} // addNewSite
 
+	/**
+	 * 
+	 * @param toSite
+	 * @param fromSite
+	 * @throws IdInvalidException
+	 * @throws IdUsedException
+	 * @throws PermissionException
+	 */
+	private void transferSiteContent(Site toSite, Site fromSite)
+			throws IdInvalidException, IdUsedException, PermissionException {
+		String id = toSite.getId ();
+		String templateSiteId = fromSite.getId();
+	//		// do copy template using archiving method
+	//		org.sakaiproject.archive.api.ArchiveService archiveService = 
+	//			(org.sakaiproject.archive.api.ArchiveService) ComponentManager.get(
+	//					"org.sakaiproject.archive.api.ArchiveService");
+	//		archiveService.archive (templateSiteId);
+	//		archiveService.merge (templateSiteId + "-archive", id, null);
+			
+		// a direct transfer if the tool support entity transfer
+		String templateSiteCollectionId = 
+			ContentHostingService.getSiteCollection(templateSiteId);
+		String toSiteCollectionId = 
+			ContentHostingService.getSiteCollection(id);
+	
+		// get a list of tools that support tranfer copy
+		Set importCapableTools = importTools ();
+	//		System.out.println ("Transfer supported tools: " 
+	//				+ Arrays.toString (importCapableTools.toArray()));
+		
+		// get tools used in the template site
+		Set templateTools = new HashSet ();
+		List pageList = fromSite.getPages();
+		if ((pageList != null) && ! pageList.isEmpty()) {
+			for (Object objPage : pageList) {
+				SitePage page = (SitePage) objPage;
+				List pageToolList = page.getTools();
+				
+				if (pageToolList != null) {								
+					for (Object objToolConf : pageToolList) {
+						if (objToolConf != null) {
+							ToolConfiguration toolConf = (ToolConfiguration) objToolConf;
+							templateTools.add((toolConf.getTool().getId()));
+						}
+					}
+				}
+			}
+		}
+		
+	//		System.out.println ("Template tools: " + 
+	//				Arrays.toString (templateTools.toArray()));
+		
+		// transfer resources first. is this necessary?
+		if (templateTools.contains("sakai.resources")) {
+			transferCopyEntities("sakai.resources", templateSiteCollectionId,
+					toSiteCollectionId);		
+			templateTools.remove("sakai.resources");
+		}
+		
+		// commit changes, it might be needed?
+		commitSite (toSite);
+		
+		for (Object objToolId : templateTools) {
+			String toolId = (String) objToolId;
+			// System.out.println ("Transferring " + toolId);
+			
+			// transfer copy if the tool support EntityTransfer
+			transferCopyEntities(toolId, templateSiteId,
+					id);			        
+		}
+	}
+	
+	/**
+	 * created based on setTermListForContext - Denny
+	 * @param context
+	 * @param state
+	 */
+	private void setTemplateListForContext(Context context, SessionState state)
+	{   
+		// find all template sites.
+		List templateSites = SiteService.getSites(
+				org.sakaiproject.site.api.SiteService.SelectionType.ANY, 
+				null, null, null,
+				org.sakaiproject.site.api.SiteService.SortType.TITLE_ASC, null); 
+		
+		for (Iterator itr = templateSites.iterator(); itr.hasNext(); ) {
+			Site site = (Site) itr.next();
+			// convention: template site should use site id "template*"
+			// so, only administrator can create a site with a custom site id
+			if (!site.getId().startsWith("template")) {
+				// remove non-template sites
+				itr.remove();				
+			} else if (!site.isPublished()) {
+				// remove unpublished template
+				itr.remove();				
+			}
+		}
+		
+	    context.put("templateList", templateSites);
+	} // setTemplateListForContext
+	
 	/**
 	 * %%% legacy properties, to be cleaned up
 	 * 
@@ -9639,7 +9824,7 @@ public class SiteAction extends PagedResourceActionII {
 
 			state.setAttribute(STATE_SITE_INFO, siteInfo);
 		} catch (Exception e) {
-			M_log.warn("SiteAction.sitePropertiesIntoState " + e.getMessage());
+			M_log.warn(this + ".sitePropertiesIntoState: " + e.getMessage(), e);
 		}
 
 	} // sitePropertiesIntoState
@@ -10919,16 +11104,14 @@ public class SiteAction extends PagedResourceActionII {
 		try {
 			template = SiteService.getSite(SITE_GTS_TEMPLATE);
 		} catch (Exception e) {
-			if (Log.isWarnEnabled())
-				M_log.warn("addGradToolsFeatures template " + e);
+			M_log.warn(this + ".addGradToolsFeatures:" + e.getMessage() + SITE_GTS_TEMPLATE, e);
 		}
 		if (template != null) {
 			// create a new site based on the template
 			try {
 				edit = SiteService.addSite(id, template);
 			} catch (Exception e) {
-				if (Log.isWarnEnabled())
-					M_log.warn("addGradToolsFeatures add/edit site " + e);
+				M_log.warn(this + ".addGradToolsFeatures:" + " add/edit site id=" + id, e);
 			}
 
 			// set the tab, etc.
@@ -10944,8 +11127,7 @@ public class SiteAction extends PagedResourceActionII {
 				try {
 					SiteService.save(edit);
 				} catch (Exception e) {
-					if (Log.isWarnEnabled())
-						M_log.warn("addGradToolsFeartures commitEdit " + e);
+					M_log.warn(this + ".addGradToolsFeatures:" + " commitEdit site id=" + id, e);
 				}
 
 				// now that the site and realm exist, we can set the email alias
@@ -10957,14 +11139,13 @@ public class SiteAction extends PagedResourceActionII {
 				try {
 					AliasService.setAlias(alias, channelReference);
 				} catch (IdUsedException ee) {
-					addAlert(state, rb.getString("java.alias") + " " + alias
-							+ " " + rb.getString("java.exists"));
+					addAlert(state, rb.getString("java.alias") + " " + alias + " " + rb.getString("java.exists"));
+					M_log.warn(this + ".addGradToolsFeatures:" + rb.getString("java.alias") + " " + alias + " " + rb.getString("java.exists"), ee);
 				} catch (IdInvalidException ee) {
-					addAlert(state, rb.getString("java.alias") + " " + alias
-							+ " " + rb.getString("java.isinval"));
+					addAlert(state, rb.getString("java.alias") + " " + alias + " " + rb.getString("java.isinval"));
+					M_log.warn(this + ".addGradToolsFeatures:" + rb.getString("java.alias") + " " + alias + " " + rb.getString("java.isinval"), ee);
 				} catch (PermissionException ee) {
-					M_log.warn(SessionManager.getCurrentSessionUserId()
-							+ " does not have permission to add alias. ");
+					M_log.warn(this + ".addGradToolsFeatures:" + SessionManager.getCurrentSessionUserId() + " does not have permission to add alias. ", ee);
 				}
 			}
 		}
@@ -11054,8 +11235,7 @@ public class SiteAction extends PagedResourceActionII {
 			if (n > 0)
 				has = true;
 		} catch (Exception e) {
-			if (Log.isWarnEnabled())
-				M_log.warn("hasGradToolsStudentSite " + e);
+			M_log.warn(this + ".addGradToolsStudentSite:" + e.getMessage(), e);
 		}
 
 		return has;
@@ -11111,8 +11291,7 @@ public class SiteAction extends PagedResourceActionII {
 								new Vector());
 					}
 				} catch (Throwable t) {
-					M_log.warn(
-							"Error encountered while asking EntityTransfer to transferCopyEntities from: "
+					M_log.warn(this + ".transferCopyEntities: Error encountered while asking EntityTransfer to transferCopyEntities from: "
 									+ fromContext + " to: " + toContext, t);
 				}
 			}
@@ -11258,7 +11437,7 @@ public class SiteAction extends PagedResourceActionII {
 		try {
 			section = cms.getSection(sectionEid);
 		} catch (IdNotFoundException e) {
-			M_log.warn(e.getMessage());
+			M_log.warn(this + ".getCourseOfferingAndSectionMap:" + " cannot find section id=" + sectionEid, e);
 		}
 		if (section != null) {
 			String courseOfferingEid = section.getCourseOfferingEid();
@@ -11309,7 +11488,7 @@ public class SiteAction extends PagedResourceActionII {
 		try {
 			azgTemplate = AuthzGroupService.getAuthzGroup(azgId);
 		} catch (GroupNotDefinedException e) {
-			M_log.warn("Could not find authz group " + azgId);
+			M_log.warn(this + ".getRolesAllowedToAttachSection: Could not find authz group " + azgId, e);
 			return new HashSet();
 		}
 		Set roles = azgTemplate.getRolesIsAllowed("site.upd");
@@ -11942,14 +12121,10 @@ public class SiteAction extends PagedResourceActionII {
 						} 
 						catch (UserNotDefinedException e) 
 						{
-							addAlert(
-									state,
-									rb.getString("java.validAuthor1")
-											+ " "
-											+ ServerConfigurationService
-													.getString("officialAccountName")
-											+ " "
-											+ rb.getString("java.validAuthor2"));
+							addAlert(state, rb.getString("java.validAuthor1") + " " 
+									+ ServerConfigurationService.getString("officialAccountName") + " " + rb.getString("java.validAuthor2"));
+							M_log.warn(this + ".doFind_course:" + rb.getString("java.validAuthor1") + " " 
+									+ ServerConfigurationService.getString("officialAccountName") + " " + rb.getString("java.validAuthor2"), e);
 						}
 					}
 				}
