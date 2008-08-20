@@ -1,0 +1,13 @@
+Index: web/news-tool/tool/src/webapp/tools/sakai.news.xml
+===================================================================
+--- web/news-tool/tool/src/webapp/tools/sakai.news.xml	(revision 51163)
++++ web/news-tool/tool/src/webapp/tools/sakai.news.xml	(working copy)
+@@ -7,7 +7,7 @@
+ 			title="News"
+ 			description="For viewing content from online sources.">
+ 
+-		<configuration name="channel-url" value="http://www.sakaiproject.org/cms/index2.php?option=com_rss&amp;feed=RSS2.0&amp;no_html=1" />
++			<configuration name="channel-url" value="http://www.umich.edu/news/news.xml" />
+ 
+ 		<category name="course" />
+ 		<category name="project" />
