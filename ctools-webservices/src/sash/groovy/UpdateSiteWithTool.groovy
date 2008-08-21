@@ -17,27 +17,38 @@ class UpdateSiteWithTool {
   // sql db connection
   def db;
 
-  // maximum number of batchs to do.
-  def maxBatchSize = 2;
+  // maximum number of sites to retrieve in a single query.
+  def maxBatchSize = 10;
 
   // max batches (Useful if testing and want to break the eternal update loop).
-  def maxBatches = 1;
+  def maxBatches = 2;
 
   //Boolean dryRun = true;
   Boolean dryRun = false;
 
+  def evalNames = ['toolRegistration':'sakai.rsf.evaluation', 'newPageName':'EvalTool page', 'toolName': 'EvalTool Name'];
+  def wikiNames = ['toolRegistration':'sakai.rwiki', 'newPageName':'Wiki Tool page', 'toolName': 'Wiki Tool'];
+
   // which tool are we adding to the site?
+
+  def toolDef  = wikiNames;
+
+
   //  def toolRegistration = "sakai.rsf.evaluation";
   //  // for testing use wiki
-  def toolRegistration = "sakai.rwiki";
+  //  def toolRegistration = "sakai.rwiki";
   // Specify the name of the page given to the page the tool will be on.
-  def newPageName = "EvalTool Page";
+  //  def newPageName = "EvalTool Page";
   // Specify the name of the tool
-  def toolName = "EvalTool Name";
+  //def toolName = "EvalTool Name";
+
+
 
   def properties = [myURL:"jdbc:oracle:thin:@localhost:12439:SAKAIDEV", user:"dlhaines", password:"dlhaines", dbdriver:"oracle.jdbc.driver.OracleDriver"];
 
-  def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize}";
+  //  def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize}";
+
+  def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize}";
 
   // List of sites to ignore, e.g. ~admin
 
@@ -68,7 +79,7 @@ class UpdateSiteWithTool {
   def sitesSkipped = 0;
 
   // How many sites already have the tool?
-  def sitesWithTool = 0;
+  def sitesWithOutTool = 0;
 
   
   /****************************
@@ -80,6 +91,7 @@ class UpdateSiteWithTool {
     settings(args);
     args.each{println it};
     db = getDb();
+    //countSites(db);
     processSites(db);
     summary();
   }
@@ -88,7 +100,7 @@ class UpdateSiteWithTool {
   def settings = {args	->
 		  println "* settings:\n* date: ${ new Date() }";
 		  args.each{println "* arg: ${it}"};
-		  println "* tool registration: [${toolRegistration}]";		  
+		  println "* tool registration: [${toolDef.toolRegistration}]";		  
 		  println "* maxBatchSize: ${maxBatchSize}";
 		  println "* dryRun: ${dryRun}";
 		  println "* candidateSitesSql: ${candidateSitesSql}";
@@ -109,7 +121,7 @@ class UpdateSiteWithTool {
 	def db = Sql.newInstance(properties.myURL, properties.user, 
 				 properties.password,properties.dbdriver);
 
-	print "sites in batch:";
+	println "sites in batch:";
 	db.eachRow(candidateSitesSql) { println "* ${it.SITE_ID}" }
 	return db;
       };
@@ -143,7 +155,7 @@ class UpdateSiteWithTool {
     shouldUpdate = !excludeSite(siteId);
     //    println "sUS: after excludeSite: ${shouldUpdate}";
     if (shouldUpdate) {
-      shouldUpdate =  !toolAlreadyPlaced(siteId,toolRegistration);
+      shouldUpdate =  !toolAlreadyPlaced(siteId,toolDef.toolRegistration);
     }
     else {
       println "ignoring site: ${siteId}";
@@ -161,11 +173,22 @@ class UpdateSiteWithTool {
 		   sitePageEdit.setLayout(0)
 		   def toolConfig = sitePageEdit.addTool()
 		   toolConfig.setTool(toolId, toolManager.getTool(toolId))
-		   toolConfig.setTitle(toolName)
+		   toolConfig.setTitle(toolDef.newPageName)
 		   siteService.save(siteEdit)
   };
 
+  /****************** Control methods *************/
+
+  // allow mocking of sites to test with.
   def testSites = [["SITE_ID":"~c8a87abf-15fe-4d9f-a6af-5c28abd42c8b"]];
+
+  void countSites(Sql db) {
+    def sitesWithTool = 0;
+    db.eachRow(candidateSitesSql) { queryRow ->
+      sitesWithOutTool++;
+    }
+    println "sitesWithOutTool: ${sitesWithOutTool}";
+  }
 
   void processSites(Sql db) {
 
@@ -179,15 +202,14 @@ class UpdateSiteWithTool {
       batchCnt++;
       println "batchCnt: ${batchCnt}";
       rowsProcessedInBatch = 0;
-      //      db.eachRow(candidateSitesSql) { queryRow ->
-      //      ["~c8a87abf-15fe-4d9f-a6af-5c28abd42c8b"].each {queryRow ->
-      testSites.each {queryRow ->
+      db.eachRow(candidateSitesSql) { queryRow ->
+      // testSites.each {queryRow -> // for mocking
 	println "queryRow candidate: [${queryRow.SITE_ID}]";
 	rowsProcessedInBatch++;
 	if (siteEligibleForUpdate((String)queryRow.SITE_ID)) {
 	  println "processing site: ${queryRow.SITE_ID}";
 	  if (!isDryRun()) {
-	    placeTool(queryRow.SITE_ID,toolRegistration,newPageName);
+	    placeTool(queryRow.SITE_ID,toolDef.toolRegistration,toolDef.newPageName);
 	    totalSitesUpdated++;
 	  }
 	}
