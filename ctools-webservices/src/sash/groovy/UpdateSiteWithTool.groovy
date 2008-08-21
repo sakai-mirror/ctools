@@ -12,7 +12,21 @@ import groovy.sql.Sql;
 import org.sakaiproject.component.cover.ComponentManager
 import org.sakaiproject.site.api.SiteService;
 
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+/*
+*/
+
 class UpdateSiteWithTool {
+
+private static Log metric = LogFactory.getLog("metrics." + "edu.umich.ctools.UpdateSitesWithTool");
+private static Log log = LogFactory.getLog("edu.umich.ctools.UpdateSitesWithTool");
+
+
+  // control tracing
+  def verbose = 1;
 
   // sql db connection
   def db;
@@ -87,9 +101,29 @@ class UpdateSiteWithTool {
   ****************************/
 
   def  main(String[] args) {
-    println "********** UpdateSiteWithTool *************";
-    settings(args);
-    args.each{println it};
+
+
+log.debug("UpdateSitesWIthTool.groovy debug level log message");
+log.info("UpdateSitesWIthTool.groovy info level log message");
+log.warn("UpdateSitesWIthTool.groovy warn level log message");
+log.error("UpdateSitesWIthTool.groovy error level log message");
+
+metric.debug("UpdateSitesWIthTool.groovy debug level metric message");
+metric.info("UpdateSitesWIthTool.groovy info level metric message");
+metric.warn("UpdateSitesWIthTool.groovy warn level metric message");
+metric.error("UpdateSitesWIthTool.groovy error level metric message");
+
+
+//    log.WARN("********** UpdateSiteWithTool *************");
+    log.warn("********** UpdateSiteWithTool *************");
+    //    log.ERROR("********** UpdateSiteWithTool *************");
+    log.error("********** UpdateSiteWithTool *************");
+
+    if (verbose) {
+      println "********** UpdateSiteWithTool *************";
+      settings(args);
+      args.each{println it};
+    }
     db = getDb();
     //countSites(db);
     processSites(db);
@@ -97,6 +131,7 @@ class UpdateSiteWithTool {
   }
 
 
+  // summarize the settings for the run.
   def settings = {args	->
 		  println "* settings:\n* date: ${ new Date() }";
 		  args.each{println "* arg: ${it}"};
@@ -113,6 +148,12 @@ class UpdateSiteWithTool {
       println "number of batches: ${batchCnt}";
       println "number of candidate sites: ${rowsProcessedInBatch}";
       println "sites skipped: ${sitesSkipped}";
+
+      /*
+      metric.WARN("number of batches: ${batchCnt}");
+      metric.WARN("number of candidate sites: ${rowsProcessedInBatch}");
+      metric.WARN("sites skipped: ${sitesSkipped}");
+      */
       // println "total sites updated: ${totalSitesUpdated}";
     };
 
@@ -121,8 +162,10 @@ class UpdateSiteWithTool {
 	def db = Sql.newInstance(properties.myURL, properties.user, 
 				 properties.password,properties.dbdriver);
 
-	println "sites in batch:";
-	db.eachRow(candidateSitesSql) { println "* ${it.SITE_ID}" }
+	if (verbose) {
+	  println "sites in batch:";
+	  db.eachRow(candidateSitesSql) { println "* ${it.SITE_ID}" }
+	}
 	return db;
       };
 
@@ -158,7 +201,7 @@ class UpdateSiteWithTool {
       shouldUpdate =  !toolAlreadyPlaced(siteId,toolDef.toolRegistration);
     }
     else {
-      println "ignoring site: ${siteId}";
+      if (verbose) {println "ignoring site: ${siteId}"};
     }
 
     return shouldUpdate;
@@ -166,7 +209,7 @@ class UpdateSiteWithTool {
 
   // add the tool to the site.
   def placeTool = {siteId, toolId, pageName ->
-		   println "* about to add ${toolId} to page: ${pageName} on site {$siteId}";
+		   if (verbose) {println "* about to add ${toolId} to page: ${pageName} on site {$siteId}"};
 		   def siteEdit = siteService.getSite(siteId)
 		   def sitePageEdit = siteEdit.addPage()
 		   sitePageEdit.setTitle(pageName)
@@ -197,17 +240,19 @@ class UpdateSiteWithTool {
 
     // bootstrap / halt flag
     def moreSitesToProcess = 1;
+    //    log.debug("in processSites");
 
     while(moreSitesToProcess && (batchCnt < maxBatches))  {
       batchCnt++;
-      println "batchCnt: ${batchCnt}";
+      if (verbose) {println "batchCnt: ${batchCnt}"};
       rowsProcessedInBatch = 0;
       db.eachRow(candidateSitesSql) { queryRow ->
+	//	log.debug("processing site: ${queryRow.SITE_ID}");
       // testSites.each {queryRow -> // for mocking
-	println "queryRow candidate: [${queryRow.SITE_ID}]";
+	if (verbose) {println "queryRow candidate: [${queryRow.SITE_ID}]"};
 	rowsProcessedInBatch++;
 	if (siteEligibleForUpdate((String)queryRow.SITE_ID)) {
-	  println "processing site: ${queryRow.SITE_ID}";
+	  if (verbose) {println "processing site: ${queryRow.SITE_ID}"};
 	  if (!isDryRun()) {
 	    placeTool(queryRow.SITE_ID,toolDef.toolRegistration,toolDef.newPageName);
 	    totalSitesUpdated++;
@@ -216,18 +261,13 @@ class UpdateSiteWithTool {
 	if (!siteEligibleForUpdate(queryRow.SITE_ID)) {
 	  sitesSkipped++;
 	}
-	println "* totalSitesUpdated: ${totalSitesUpdated}";
+	if (verbose) {println "* totalSitesUpdated: ${totalSitesUpdated}"};
 	/*
-	  if (siteEligibleForUpdate(siteId)) {
-
-	  totalSitesUpdated++;
-	  }
-	  else {
-	  sitesSkipped++;
-	  }
+	  metric.debug("* totalSitesUpdated: ${totalSitesUpdated}");
 	*/
       }
-      println "rowsProcessedInBatch: ${rowsProcessedInBatch}";
+      if (verbose) {println "rowsProcessedInBatch: ${rowsProcessedInBatch}"};
+      // metric.debug("rowsProcessedInBatch: ${rowsProcessedInBatch}");
       if (batchCnt > maxBatches) {
 	rowsProcessedInBatch = 0;
       }
