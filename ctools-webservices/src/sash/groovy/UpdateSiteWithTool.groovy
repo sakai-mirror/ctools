@@ -8,100 +8,155 @@
 // code to add tool to sites returned from an sql query.
 
 import groovy.sql.Sql;
+import org.sakaiproject.component.cover.ComponentManager
+import org.sakaiproject.site.api.SiteService;
 
 class UpdateSiteWithTool {
 
-  Properties properties  = new Properties();
-  FileInputStream props = new FileInputStream("test.properties");
-  //  properties.load(props);
-  //  props.close();
+  // sql db connection
+  def db;
 
-  /* print all the properties read in.
-     properties.each {
-     println it;
-     }
-  */
+  // maximum number of batchs to do.
+  def maxBatchSize = 5;
 
-  /*
-    properties should be:
-    db url, user, pw, driver
-    tool to add (and to filter out from candidates)
-    page name
-    tool name
-    dryRun (if true then no updates)
-    number of rows per batch
-    someday maybe ignore sites also.
-  */
+  // which tool to look for?
+  def toolRegistration = "sakai.rsf.evaluation";
+
+  def properties = [myURL:"jdbc:oracle:thin:@localhost:12439:SAKAIDEV", user:"dlhaines", password:"dlhaines", dbdriver:"oracle.jdbc.driver.OracleDriver"];
 
   Boolean dryRun = true;
 
-  def candidateSitesSql = "select * from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = 'sakai.rsf.evaluation') order by SITE_ID) where rownum < 3"
+  def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = '${toolRegistration}') order by SITE_ID) where rownum <= ${maxBatchSize}"
+  //  def candidateSitesSql = "select * from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = '${toolRegistration}') order by SITE_ID) where rownum <= ${maxBatchSize}"
+    //  def candidateSitesSql = "select * from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = 'sakai.rsf.evaluation') order by SITE_ID) where rownum <= ${maxBatchSize}"
 
-    // Get list of sites to ignore
-    // may want to read from properties file.  Will probably need to split a blank separated line 
-    // to get a list of properties
+    // List of sites to ignore, e.g. ~admin
 
-    def ignoreSites = [ 'a', 'b'];
+    def ignoreSites = [ 'a', 'b', '~admin'];
 
-  // println ignoreSites['z'];  fails
-  // println ignoreSites.any('z');fails
+  // How many sites already have the tool placed in it?
+  def sitesWithExistingTool = 0;
 
-  // example of finding particular values in a list.
-  // Not efficient for long lists.
-  //println ignoreSites.find { it == 'a' }
-  //println ignoreSites.find {it == 'z'}
+  // How many batches have been processed in this run?
+  def batchCnt = 0;
 
-  // ignoreSites.each { println it};
+  // how much was processed in this batch?
+  def rowsProcessedInBatch = 0;
+
+  // final number of updated sites.
+  def totalSitesUpdated = 0;
+
+  // How many sites were ignored?
+  def sitesSkipped = 0;
+
+  // How many sites already have the tool?
+  def sitesWithTool = 0;
+
+  // max batches (Useful if testing and want to break the eternal update loop).
+  def maxBatches = 10;
+
+  // get the required Sakai services
+  def siteService = ComponentManager.get("org.sakaiproject.site.api.SiteService");
+  def toolManager = ComponentManager.get("org.sakaiproject.tool.api.ToolManager");
+  def sqlService = ComponentManager.get("org.sakaiproject.db.api.SqlService");
+  
+  /****************************
+   Main method of script
+  ****************************/
+
+  def  main(String[] args) {
+    println "HOWDY";
+    settings(args);
+    // args.each{println it};
+    db = getDb();
+    println "db ${db}";
+    processSites(db);
+    summary();
+  }
 
 
+  def settings = {args	->
 
-  // closure to open connection to db.
-  def getDb = {
-    def db = Sql.newInstance(properties.myURL, properties.user, 
-			     properties.password,properties.dbdriver);
+		  println "settings:\ndate: ${ new Date() }";
 
-    db.eachRow(candidateSitesSql) { println it.SITE_ID }
-    return db;
-  };
+		  args.each{println "arg: ${it}"};
+    
+
+		  println "* tool registration: [${toolRegistration}]";		  
+		  println "* maxBatchSize: ${maxBatchSize}";
+		  println "* dryRun: ${dryRun}";
+		  println "* candidateSitesSql: ${candidateSitesSql}";
+		  println "* ignoreSites: ${ignoreSites}";
+		  println "* sitesSkipped: ${sitesSkipped}";
+  }
+
+  // print a summary of processing
+    def summary = {
+      println "number of batches: ${batchCnt}";
+      println "number of candidate sites: ${rowsProcessedInBatch}";
+      println "sites skipped: ${sitesSkipped}";
+      // println "total sites updated: ${totalSitesUpdated}";
+    }
+
+    // Method to open connection to db.
+      Sql getDb() {
+	println "about to setup db";
+	println "site query: [$candidateSitesSql}";
+	def db = Sql.newInstance(properties.myURL, properties.user, 
+				 properties.password,properties.dbdriver);
+
+	db.eachRow(candidateSitesSql) { println it.SITE_ID }
+	return db;
+      };
 
   // closure to check if the site already contains the tool
-  def toolAlreadyPlaced = { site, toolId ->
-			    site.getToolForCommonId(toolId) != null
+  def toolAlreadyPlaced = { siteId, toolId ->
+			    def siteEdit = siteService.getSite(siteId) // siteId?
+			    //			    if (siteId.getToolForCommonId(toolId) != null) {
+			    if (siteEdit.getToolForCommonId(toolId) != null) {
+			      sitesWithExistingTool++;
+			      return true;
+			    }
+			    return false;
+			    
   };
 
   // closure to see if the site should be ignored
 
-  // works if find the site
-  //  Boolean excludeSite(String site)  {
-  //    ignoreSites.find {it == site}
-  //  };
-
-  Boolean excludeSite(String site)  {
-    (ignoreSites.find {it == site} ? true : false);
+  Boolean excludeSite(String siteId)  {
+    println "eS: siteId: {$siteId}"; 
+    return (ignoreSites.find {println "ignore: [${it}] [${siteId}]";it == siteId} ? true : false);
   };
 
-  //   def excludeSiteC = {site ->
-  // 		      if (ignoreSites.find {it == site}) {
-  // 			return true;
-  // 		      }
-  // 		      return false;
-  //   };
-
-  def isDryRun = { 
+  // Will we allow any updates?
+  Boolean isDryRun() { 
     return dryRun;
   };
 
   // closure to take a site and decide if if it should be updated.
-  def shouldUpdateSite = { site ->
-			   ! (   isDryRun()
-				 || excludeSite(site)
-				 || toolAlreadyPlaced(site,toolId)
-				 )
+  //  def shouldUpdateSite = { site ->
+  Boolean shouldUpdateSite(String siteId) { 
+    
+    //    println "sUS: siteId: ${siteId}";
+    Boolean shouldUpdate = true;
+    shouldUpdate = !excludeSite(siteId);
+    //    println "sUS: after excludeSite: ${shouldUpdate}";
+    if (shouldUpdate) {
+      shouldUpdate =  !toolAlreadyPlaced(siteId,toolRegistration);
+    }
+    println "sUS: before return: ${shouldUpdate} for site: ${siteId}";
+    
+    return shouldUpdate;
+    //    return (! (   
+    //	       excludeSite(site)
+    //	       || toolAlreadyPlaced(site,toolId)
+    //		  ));
   };
 
   // add the tool to the site.
-  def placeTool = {site, toolId, pageName ->
-		   siteEdit = siteService.getSite(site.id)
+  //  def placeTool = {site, toolId, pageName ->
+  def placeTool = {siteId, toolId, pageName ->
+		   siteEdit = siteService.getSite(site.id) // siteId?
 		   sitePageEdit = siteEdit.addPage()
 		   sitePageEdit.setTitle(pageName)
 		   sitePageEdit.setLayout(0)
@@ -111,26 +166,53 @@ class UpdateSiteWithTool {
 		   siteService.save(siteEdit)
   };
 
-  def processSites =  {
+  void processSites(Sql db) {
 
     //  loop over lists of some candidate sites to ensure all sites are processed
     // then loop over each list to process each site.
-    moreSitesToProcess = 1;
-    totalSitesUpdated = 0;
-    sitesSkipped = 0;
-    while(moreRowsToProcess)  {
+
+    // bootstrap / halt flag
+    def moreSitesToProcess = 1;
+    //    def totalSitesUpdated = 0;
+
+
+    while(moreSitesToProcess && (batchCnt < maxBatches))  {
+      batchCnt++;
+      println "batchCnt: ${batchCnt}";
       rowsProcessedInBatch = 0;
-      db.eachRow(candiateSitesSql) { siteId ->
-	if (shouldUpdateSite(siteId)) {
-	  placeTool(siteId,toolId,pageName);
+      db.eachRow(candidateSitesSql) { queryRow ->
+	println "queryRow site id: [${queryRow.SITE_ID}]";
+	rowsProcessedInBatch++;
+	if (shouldUpdateSite((String)queryRow.SITE_ID)) {
+	  println "processing site: ${queryRow}";
+	  if (!isDryRun()) {
+	    placeTool(queryRow.SITE_ID,toolId,pageName);
+	    totalSitesUpdated++;
+	  }
+	}
+	if (!shouldUpdateSite(queryRow.SITE_ID)) {
+	  sitesSkipped++;
+	}
+	println "totalSitesUpdated: ${totalSitesUpdated}";
+	println "${rowsProcessedInBatch}";
+	/*
+	  if (shouldUpdateSite(siteId)) {
+
 	  totalSitesUpdated++;
-	}
-	else {
-	  elseSitesSkipped++;
-	}
+	  }
+	  else {
+	  sitesSkipped++;
+	  }
+	*/
       }
-      moreRowsToProcess = (rowsProcessedInBatch > 0);
+      if (batchCnt > maxBatches) {
+	rowsProcessedInBatch = 0;
+      }
+      println "rowsProcessedInBatch: ${rowsProcessedInBatch}";
+      moreSitesToProcess = (rowsProcessedInBatch > 0);
     }
+    //    println "totalSitesUpdated: ${totalSitesUpdated}";
   };
 }
 // end
+
