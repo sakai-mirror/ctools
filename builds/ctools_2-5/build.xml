@@ -12,7 +12,6 @@
   <!-- First import -->
   <import file="${scripts.dir}/import-contrib.xml" />
 
-
   <property name="configs.dir" value="${basedir}/configs" />
 
   <!-- Somethings are shared by every build -->
@@ -63,8 +62,15 @@
 	  <contains string="${patchtype}" substring="local" />
       </and>
   </condition>
-  <echo>Pulling patches from: ${patches.dir}</echo>
-  <property name="patches.dir" value="${work.dir}/build/ctools-patches" />
+
+  <if>  
+      <not>
+	  <isset property="artifacts.dir"/>
+      </not>
+  <then>
+      <echo>Pulling patches from: ${patches.dir}</echo>
+  </then>
+  </if>
 
   <property name="artifacts.dir" value="${basedir}/artifacts/${sakai.tag}.${type}" />
 
