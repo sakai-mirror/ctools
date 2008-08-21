@@ -17,13 +17,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /*
-*/
+ */
 
 class UpdateSiteWithTool {
 
-private static Log metric = LogFactory.getLog("metrics." + "edu.umich.ctools.UpdateSitesWithTool");
-private static Log log = LogFactory.getLog("edu.umich.ctools.UpdateSitesWithTool");
-
+  private static Log metric = LogFactory.getLog("metrics." + "edu.umich.ctools.UpdateSitesWithTool");
+  private static Log log = LogFactory.getLog("edu.umich.ctools.UpdateSitesWithTool");
 
   // control tracing
   def verbose = 1;
@@ -47,27 +46,13 @@ private static Log log = LogFactory.getLog("edu.umich.ctools.UpdateSitesWithTool
 
   def toolDef  = wikiNames;
 
-
-  //  def toolRegistration = "sakai.rsf.evaluation";
-  //  // for testing use wiki
-  //  def toolRegistration = "sakai.rwiki";
-  // Specify the name of the page given to the page the tool will be on.
-  //  def newPageName = "EvalTool Page";
-  // Specify the name of the tool
-  //def toolName = "EvalTool Name";
-
-
-
   def properties = [myURL:"jdbc:oracle:thin:@localhost:12439:SAKAIDEV", user:"dlhaines", password:"dlhaines", dbdriver:"oracle.jdbc.driver.OracleDriver"];
-
-  //  def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize}";
 
   def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize}";
 
   // List of sites to ignore, e.g. ~admin
 
   def ignoreSites = [ '~admin'];
-
 
   // get the required Sakai services
   def siteService = ComponentManager.get("org.sakaiproject.site.api.SiteService");
@@ -86,6 +71,9 @@ private static Log log = LogFactory.getLog("edu.umich.ctools.UpdateSitesWithTool
   // how much was processed in this batch?
   def rowsProcessedInBatch = 0;
 
+  // How many were actually added?
+  def sitesAddedInBatch = 0;
+
   // final number of updated sites.
   def totalSitesUpdated = 0;
 
@@ -102,25 +90,9 @@ private static Log log = LogFactory.getLog("edu.umich.ctools.UpdateSitesWithTool
 
   def  main(String[] args) {
 
-
-log.debug("UpdateSitesWIthTool.groovy debug level log message");
-log.info("UpdateSitesWIthTool.groovy info level log message");
-log.warn("UpdateSitesWIthTool.groovy warn level log message");
-log.error("UpdateSitesWIthTool.groovy error level log message");
-
-metric.debug("UpdateSitesWIthTool.groovy debug level metric message");
-metric.info("UpdateSitesWIthTool.groovy info level metric message");
-metric.warn("UpdateSitesWIthTool.groovy warn level metric message");
-metric.error("UpdateSitesWIthTool.groovy error level metric message");
-
-
-//    log.WARN("********** UpdateSiteWithTool *************");
-    log.warn("********** UpdateSiteWithTool *************");
-    //    log.ERROR("********** UpdateSiteWithTool *************");
-    log.error("********** UpdateSiteWithTool *************");
+    log.info("********** UpdateSiteWithTool *************");
 
     if (verbose) {
-      println "********** UpdateSiteWithTool *************";
       settings(args);
       args.each{println it};
     }
@@ -133,45 +105,36 @@ metric.error("UpdateSitesWIthTool.groovy error level metric message");
 
   // summarize the settings for the run.
   def settings = {args	->
-		  println "* settings:\n* date: ${ new Date() }";
-		  args.each{println "* arg: ${it}"};
-		  println "* tool registration: [${toolDef.toolRegistration}]";		  
-		  println "* maxBatchSize: ${maxBatchSize}";
-		  println "* dryRun: ${dryRun}";
-		  println "* candidateSitesSql: ${candidateSitesSql}";
-		  println "* ignoreSites: ${ignoreSites}";
-		  println "* sitesSkipped: ${sitesSkipped}";
+		  log.info("* settings:");
+		  args.each{log.info("* arg: ${it}")};
+		  log.info("* tool registration: [${toolDef.toolRegistration}]");		  
+		  log.info("* maxBatchSize: ${maxBatchSize}");
+		  log.info("* dryRun: ${dryRun}");
+		  log.info("* candidateSitesSql: ${candidateSitesSql}");
+		  log.info("* ignoreSites: ${ignoreSites}");
+		  log.info("* sitesSkipped: ${sitesSkipped}");
   }
 
   // print a summary of processing
     def summary = {
-      println "number of batches: ${batchCnt}";
-      println "number of candidate sites: ${rowsProcessedInBatch}";
-      println "sites skipped: ${sitesSkipped}";
-
-      /*
-      metric.WARN("number of batches: ${batchCnt}");
-      metric.WARN("number of candidate sites: ${rowsProcessedInBatch}");
-      metric.WARN("sites skipped: ${sitesSkipped}");
-      */
-      // println "total sites updated: ${totalSitesUpdated}";
+      metric.info("number of batches: ${batchCnt}");
+      metric.info("number of candidate sites: ${rowsProcessedInBatch}");
+      metric.info("sites skipped: ${sitesSkipped}");
     };
 
-    // Method to open connection to db.
-      Sql getDb() {
-	def db = Sql.newInstance(properties.myURL, properties.user, 
-				 properties.password,properties.dbdriver);
+  // Method to open connection to db.
+  Sql getDb() {
+    def db = Sql.newInstance(properties.myURL, properties.user, 
+			     properties.password,properties.dbdriver);
 
-	if (verbose) {
-	  println "sites in batch:";
-	  db.eachRow(candidateSitesSql) { println "* ${it.SITE_ID}" }
-	}
-	return db;
-      };
+    log.debug("sites in batch:");
+    db.eachRow(candidateSitesSql) { log.debug("* ${it.SITE_ID}") };
+    return db;
+  };
 
   // closure to check if the site already contains the tool
   def toolAlreadyPlaced = { siteId, toolId ->
-			    def siteEdit = siteService.getSite(siteId)
+			    def siteEdit = siteService.getSite(siteId);
 			    if (siteEdit.getToolForCommonId(toolId) != null) {
 			      sitesWithExistingTool++;
 			      return true;
@@ -201,36 +164,35 @@ metric.error("UpdateSitesWIthTool.groovy error level metric message");
       shouldUpdate =  !toolAlreadyPlaced(siteId,toolDef.toolRegistration);
     }
     else {
-      if (verbose) {println "ignoring site: ${siteId}"};
-    }
-
+      log.debug("ignoring site: ${siteId}")
+    };
     return shouldUpdate;
   };
 
   // add the tool to the site.
   def placeTool = {siteId, toolId, pageName ->
-		   if (verbose) {println "* about to add ${toolId} to page: ${pageName} on site {$siteId}"};
-		   def siteEdit = siteService.getSite(siteId)
-		   def sitePageEdit = siteEdit.addPage()
-		   sitePageEdit.setTitle(pageName)
-		   sitePageEdit.setLayout(0)
-		   def toolConfig = sitePageEdit.addTool()
-		   toolConfig.setTool(toolId, toolManager.getTool(toolId))
-		   toolConfig.setTitle(toolDef.newPageName)
-		   siteService.save(siteEdit)
+		   log.debug("* about to add ${toolId} to page: ${pageName} on site {$siteId}");
+		   def siteEdit = siteService.getSite(siteId);
+		   def sitePageEdit = siteEdit.addPage();
+		   sitePageEdit.setTitle(pageName);
+		   sitePageEdit.setLayout(0);
+		   def toolConfig = sitePageEdit.addTool();
+		   toolConfig.setTool(toolId, toolManager.getTool(toolId));
+		   toolConfig.setTitle(toolDef.newPageName);
+		   siteService.save(siteEdit);
   };
 
   /****************** Control methods *************/
 
-  // allow mocking of sites to test with.
-  def testSites = [["SITE_ID":"~c8a87abf-15fe-4d9f-a6af-5c28abd42c8b"]];
+  // allow mocking of sites to test with.  This can be used instead of the db variable.
+  //def testSites = [["SITE_ID":"~c8a87abf-15fe-4d9f-a6af-5c28abd42c8b"]];
 
   void countSites(Sql db) {
     def sitesWithTool = 0;
     db.eachRow(candidateSitesSql) { queryRow ->
       sitesWithOutTool++;
     }
-    println "sitesWithOutTool: ${sitesWithOutTool}";
+    log.debug("sitesWithOutTool: ${sitesWithOutTool}");
   }
 
   void processSites(Sql db) {
@@ -240,41 +202,44 @@ metric.error("UpdateSitesWIthTool.groovy error level metric message");
 
     // bootstrap / halt flag
     def moreSitesToProcess = 1;
-    //    log.debug("in processSites");
+    log.debug("in processSites");
+
+    def updatedSite = false;
 
     while(moreSitesToProcess && (batchCnt < maxBatches))  {
       batchCnt++;
-      if (verbose) {println "batchCnt: ${batchCnt}"};
+      log.debug("batchCnt: ${batchCnt}");
       rowsProcessedInBatch = 0;
+      sitesAddedInBatch = 0;
       db.eachRow(candidateSitesSql) { queryRow ->
-	//	log.debug("processing site: ${queryRow.SITE_ID}");
-      // testSites.each {queryRow -> // for mocking
-	if (verbose) {println "queryRow candidate: [${queryRow.SITE_ID}]"};
+	updatedSite = false;
+	log.debug("processing site: ${queryRow.SITE_ID}");
+	// testSites.each {queryRow -> // for mocking
+	log.debug("queryRow candidate: [${queryRow.SITE_ID}]");
 	rowsProcessedInBatch++;
+
 	if (siteEligibleForUpdate((String)queryRow.SITE_ID)) {
-	  if (verbose) {println "processing site: ${queryRow.SITE_ID}"};
+	  log.debug("processing site: ${queryRow.SITE_ID}");
 	  if (!isDryRun()) {
 	    placeTool(queryRow.SITE_ID,toolDef.toolRegistration,toolDef.newPageName);
+	    updatedSite = true;
+	    sitesAddedInBatch++;
 	    totalSitesUpdated++;
 	  }
 	}
-	if (!siteEligibleForUpdate(queryRow.SITE_ID)) {
+	if (!updatedSite) {
 	  sitesSkipped++;
 	}
-	if (verbose) {println "* totalSitesUpdated: ${totalSitesUpdated}"};
-	/*
-	  metric.debug("* totalSitesUpdated: ${totalSitesUpdated}");
-	*/
+	metric.debug("* totalSitesUpdated: ${totalSitesUpdated}");
       }
-      if (verbose) {println "rowsProcessedInBatch: ${rowsProcessedInBatch}"};
-      // metric.debug("rowsProcessedInBatch: ${rowsProcessedInBatch}");
+      metric.debug("rowsProcessedInBatch: ${rowsProcessedInBatch}");
+      metric.debug("sitesAddedInBatch: ${sitesAddedInBatch}");
       if (batchCnt > maxBatches) {
-	rowsProcessedInBatch = 0;
+	sitesAddedInBatch = 0;
       }
 
-      moreSitesToProcess = (rowsProcessedInBatch > 0);
+      moreSitesToProcess = (sitesAddedInBatch > 0);
     }
   };
 }
 // end
-
