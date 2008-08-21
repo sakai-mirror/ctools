@@ -1,5 +1,5 @@
-// $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices/src/sash/groovy/testDbSql.groovy $
-// $Id: testDbSql.groovy 50826 2008-08-17 19:17:33Z dlhaines@umich.edu $
+// $HeadURL$
+// $Id$
 
 // Much of this code is based on code from dmccallum.
 // I've added code to do batches and provide summary statistics.
