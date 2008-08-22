@@ -40,6 +40,7 @@ import org.sakaiproject.entity.cover.EntityManager;
 import org.sakaiproject.util.ResourceLoader;
 
 import java.util.*;
+import java.net.URI;
 
 public class XmlControllerBase {
    protected final Log logger = LogFactory.getLog(getClass());
@@ -291,7 +292,8 @@ public class XmlControllerBase {
          }
       }
       else if (currentBean.get(fieldName) != null) {
-         attachmentRefs.add(convertToRef(currentBean.get(fieldName).toString()));
+         URI value = (URI) currentBean.get(fieldName);
+         attachmentRefs.add(convertToRef(value.getSchemeSpecificPart()));
       }
 
       session.put(FilePickerHelper.FILE_PICKER_TITLE_TEXT, title);
@@ -325,7 +327,7 @@ public class XmlControllerBase {
                currentBean.put(fieldName, ids.get(0));
             }
             else {
-               currentBean.put(fieldName, "");
+               currentBean.put(fieldName, null);
             }
          }
       }
