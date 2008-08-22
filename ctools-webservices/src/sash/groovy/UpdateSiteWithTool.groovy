@@ -1,10 +1,38 @@
 // $HeadURL$
 // $Id$
 
-// Much of this code is based on code from dmccallum.
-// I've added code to do batches and provide summary statistics.
+// Groovy script, run through sash,
 
-// checkin comment:
+// Much of this code is based on code from dmccallum.
+// I've added code to get the sites via sql, do batches, and provide summary statistics.
+
+/*
+  made incremental and check to be sure not on include extra instances.
+ */
+
+/* TTD
+  - add summary stats.
+  - read from properties file?
+  - get db connection from Sakai?
+  - add testing via mocks
+ */
+
+/*
+  benchmark / stats
+  - take a comment
+  - record start and end.
+  - record the successful events (and unsuccessful?)
+  - print a summary 
+
+  s1 = new stats("comment")
+  s1.start(); // start recording stats
+  s1.stop();  // stop recording stats.
+  s1.markEvent(); note that event occurred
+  s1.summary() // returns a summary string start end elapsed, avg
+
+  // s1.resetLap() // start a new lap for recording a subset.
+  ?? s1.lap() produce a summary for a subset of the whole duration
+ */
 
 // code to add tool to sites returned from an sql query.
 
