@@ -5124,8 +5124,6 @@ public class SiteAction extends PagedResourceActionII {
 			try {
 				AliasService.setAlias(alias, channelReference);
 			} catch (IdUsedException ee) {
-				addAlert(state, rb.getString("java.alias") + " " + alias
-						+ " " + rb.getString("java.exists"));
 				M_log.warn(this + ".setSiteAlias: " + rb.getString("java.alias") + " " + alias + " " + rb.getString("java.exists"), ee);
 			} catch (IdInvalidException ee) {
 				addAlert(state, rb.getString("java.alias") + " " + alias
