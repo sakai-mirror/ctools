@@ -78,7 +78,7 @@
  site                -r47967     https://source.sakaiproject.org/svn/site/tags/sakai_2-5-2
 # site-manage         -r47968     https://source.sakaiproject.org/svn/site-manage/tags/sakai_2-5-2
 # Using our feature packed site manage
- site-manage         -r51150     https://source.sakaiproject.org/svn/ctools/trunk/site-manage/
+ site-manage         -r51279     https://source.sakaiproject.org/svn/ctools/trunk/site-manage/
  syllabus            -r47969     https://source.sakaiproject.org/svn/syllabus/tags/sakai_2-5-2
  test-harness        -r47970     https://source.sakaiproject.org/svn/test-harness/tags/sakai_2-5-2
  textarea            -r47971     https://source.sakaiproject.org/svn/textarea/tags/sakai_2-5-2
@@ -117,14 +117,14 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  ctools-providers    -r51123     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
 # ctools-providers    -r47734     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
 # For search server properties
- ctools-reference    -r51196     https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
+ ctools-reference    -r51263     https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
 
  ctools-webservices  -r45685     https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
  gradtools           -r50425     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
  ctools-libhelp      -r47309     https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
 
  #CTools specific web for now
- web                 -r51156     https://source.sakaiproject.org/svn/ctools/trunk/web/
+ web                 -r51276     https://source.sakaiproject.org/svn/ctools/trunk/web/
 
 ########
 ######## Contrib tools
@@ -152,7 +152,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  extraction          -r51108 https://source.sakaiproject.org/contrib/reporting/extraction/tags/ctools-2.5.1C
  extraction-umich    -r51192 https://source.sakaiproject.org/contrib/reporting/extraction-umich/tags/ctools-2.5.1C
 
- metaobj	     -r49694     https://source.sakaiproject.org/svn/ctools/trunk/metaobj/ 
+ metaobj	     -r51278     https://source.sakaiproject.org/svn/ctools/trunk/metaobj/ 
  osp		     -r51014     https://source.sakaiproject.org/svn/ctools/trunk/osp/
 
 #Important, location of patches, specify a specific revision or leave as PROPERTY which will be <= the candidate property version! :)
