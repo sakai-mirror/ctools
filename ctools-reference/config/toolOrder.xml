@@ -57,6 +57,7 @@ $Id$
     <tool id = "sakai.messagecenter" />
     <tool id = "sakai.news" />
     <tool id = "sakai.iframe" />
+    <tool id = "sakai.sitemaker.168" />
     <tool id = "ctools.reserves" />
     <tool id = "sakai.sections" />
     <tool id = "sakai.site.roster" />
@@ -119,6 +120,7 @@ $Id$
     <tool id = "sakai.messagecenter" />
     <tool id = "sakai.news" />
     <tool id = "sakai.iframe" />
+    <tool id = "sakai.sitemaker.168" />
     <tool id = "ctools.reserves" />
     <tool id = "sakai.sections" />
     <tool id = "sakai.site.roster" />
@@ -182,6 +184,7 @@ $Id$
     <tool id = "sakai.messagecenter" />
     <tool id = "sakai.news" />
     <tool id = "sakai.iframe" />
+    <tool id = "sakai.sitemaker.168" />
     <tool id = "ctools.reserves" />
     <tool id = "sakai.sections" />
     <tool id = "sakai.site.roster" />
@@ -213,6 +216,7 @@ $Id$
     <tool id="sakai.mailbox" />
     <tool id="sakai.news" />
     <tool id="sakai.iframe" />
+    <tool id="sakai.sitemaker.168" />
     <tool id="sakai.siteinfo" required = "true" />
     <tool id="sakai.search" />
     <tool id="ctools.gradToolsHelp" required = "true" />
@@ -235,6 +239,7 @@ $Id$
     <tool id="sakai.messages" />
     <tool id="sakai.mailtool" />
     <tool id="sakai.iframe" />
+    <tool id="sakai.sitemaker.168" />
     <tool id="ctools.dissertation.upload" />
     <tool id="sakai.siteinfo" required = "true" />
     <tool id="sakai.search" />
@@ -258,6 +263,7 @@ $Id$
     <tool id="sakai.messages" />
     <tool id="sakai.mailtool" />
     <tool id="sakai.iframe" />
+    <tool id="sakai.sitemaker.168" />
     <tool id="sakai.siteinfo" required = "true" />
     <tool id="sakai.search" />
     <tool id="ctools.gradToolsHelp" required = "true" />
