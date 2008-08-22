@@ -44,6 +44,7 @@ $Id$
     <tool id = "sakai.mneme" />
     <tool id = "sakai.poll" />
     <tool id = "sakai.gradebook.tool" />
+    <tool id = "sams.scores" />
     <tool id = "sakai.postem" />
     <tool id = "sakai.dropbox" />
     <tool id = "sakai.chat" />
@@ -59,6 +60,7 @@ $Id$
     <tool id = "ctools.reserves" />
     <tool id = "sakai.sections" />
     <tool id = "sakai.site.roster" />
+    <tool id = "ctools.annotatedurl.enginhonorcode" />
     <tool id = "sakai.siteinfo" required = "true" />
     <tool id = "sakai.search" />
     <tool id = "sakai.contact.support" />
@@ -104,6 +106,7 @@ $Id$
     <tool id = "sakai.mneme" />
     <tool id = "sakai.poll" />
     <tool id = "sakai.gradebook.tool" />
+    <tool id = "sams.scores" />
     <tool id = "sakai.postem" />
     <tool id = "sakai.dropbox" />
     <tool id = "sakai.chat" />
@@ -119,6 +122,7 @@ $Id$
     <tool id = "ctools.reserves" />
     <tool id = "sakai.sections" />
     <tool id = "sakai.site.roster" />
+    <tool id = "ctools.annotatedurl.enginhonorcode" />
     <tool id = "sakai.siteinfo" required = "true" />
     <tool id = "sakai.site.roster" />
     <tool id = "sakai.search" />
@@ -165,6 +169,7 @@ $Id$
     <tool id = "sakai.mneme" />
     <tool id = "sakai.poll" />
     <tool id = "sakai.gradebook.tool" />
+    <tool id = "sams.scores" />
     <tool id = "sakai.postem" />
     <tool id = "sakai.dropbox" />
     <tool id = "sakai.chat" />
@@ -180,6 +185,7 @@ $Id$
     <tool id = "ctools.reserves" />
     <tool id = "sakai.sections" />
     <tool id = "sakai.site.roster" />
+    <tool id = "ctools.annotatedurl.enginhonorcode" />
     <tool id = "sakai.siteinfo" required = "true" />
     <tool id = "sakai.site.roster" />
     <tool id = "sakai.search" />
