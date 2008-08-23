@@ -16,10 +16,9 @@
   s1.stopTime();   // return the stop time
   s1.markEvent(); note that event occurred
   s1.eventCnt();  // how many events have there been?
-  s1.summary() // returns a summary string start end elapsed, avg
+  s1.summaryNums(); returns list of elapsed MS, num events, and events / MS.
+  s1.summary() // returns a summary string elapsed, num events, avg
 
-  // s1.resetLap() // start a new lap for recording a subset.
-  ?? s1.lap() produce a summary for a subset of the whole duration
  */
 
 
