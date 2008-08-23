@@ -1,6 +1,6 @@
 
-// $HeadURL:$
-// $Id:$
+// $HeadURL$
+// $Id$
 
 /*
   benchmark / stats
@@ -30,8 +30,8 @@ class Stopwatch {
   String comment = "default comment";
 
   // start and stop time stamps.
-  def startMS;
-  def stopMS;
+  def startMS = 0;
+  def stopMS = 0;
   def eventCnt = 0;
   
   // initialize the stopwatch and return the start time in MS
@@ -61,9 +61,23 @@ class Stopwatch {
     return eventCnt;
   }
 
+  // compute the summary values
+  def summaryNums() {
+    def elapsed = stopMS-startMS;
+    def rate = 0;
+    if (elapsed) {
+      rate = eventCnt / elapsed;
+    }
+    else {
+      rate = "NAN";
+    }
+    [elapsed,eventCnt,rate];
+  }
+
   // give a summary 
   def summary() {
-    
+    def summary = summaryNums();
+    "elapsed: ${summary[0]} events: ${summary[1]} events per MS: ${summary[2]}";
   }
   
 }
