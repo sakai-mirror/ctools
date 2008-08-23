@@ -1,5 +1,7 @@
 #!/usr/bin/env groovy
 
+// unit tests for the Stopwatch groovy class.
+
 // $HeadURL$
 // $Id$
 
@@ -10,26 +12,29 @@ class StopwatchTest extends GroovyTestCase {
   // set to 1 if want to see some timing results.
   def verbose = 0;
 
+  // default test comment
+  def dtc = "default test comment";
+
   /* Setup */
   def sw;
   void setUp() {
-    sw = new Stopwatch();
+    sw = new Stopwatch(comment : dtc);
   }
 
-
-  /* contructor tests */
+  /* ********* contructor tests */
   void testDefaultConstructor() {
-    assert sw.comment == "default comment";
+    def newsw = new Stopwatch();
+    assert newsw.comment == "default comment";
   }
 
-  void testStringConstructor() {
+  void testConstructorWithCommentString() {
     def String nc = "NEWCOMMENT";
     // note use of named parameters in constructor.
     def newsw = new Stopwatch(comment : nc);
     assert newsw.comment == nc;
   }
 
-  /* sanity check start and stop */
+  /* ************* sanity check start and stop */
   void testStart() {
     def st = sw.start();
     //sanity check that the time is in the right ball park.
@@ -52,7 +57,7 @@ class StopwatchTest extends GroovyTestCase {
     assert st == sw.stopTime();
   }
 
-  void testStoDiff0() {
+  void testStopDiff0() {
     sw.start();
     sw.stop();
     assert sw.startTime() <= sw.stopTime();
@@ -65,47 +70,50 @@ class StopwatchTest extends GroovyTestCase {
     assert sw.startTime() <= sw.stopTime() - 5;
   }
 
-  // Is event counting accurate?
+  /* *****************  Is event counting accurate? */
 
-   void checkEventsN(n) {
-     def numEvents = n;
-     def startTime = sw.start();
-     (1..n).each{sw.markEvent();}
-     def stopTime = sw.stop();
-     assert sw.eventCnt() == n;
-   }
+  void checkEventsN(n) {
+    def numEvents = n;
+    def startTime = sw.start();
+    (1..n).each{sw.markEvent();}
+    def stopTime = sw.stop();
+    assert sw.eventCnt() == n;
+  }
 
   void doEventN(n) {
-     def numEvents = n;
-     def startTime = sw.start();
-     (1..n).each{sw.markEvent();}
-     def stopTime = sw.stop();
+    def numEvents = n;
+    def startTime = sw.start();
+    (1..n).each{sw.markEvent();}
+    def stopTime = sw.stop();
   }
 
   void testEvents0() {
-     def startTime = sw.start();
-     def stopTime = sw.stop();
-     assert sw.eventCnt() == 0;
-   }
+    def startTime = sw.start();
+    def stopTime = sw.stop();
+    assert sw.eventCnt() == 0;
+  }
 
-   void testEvents1() {
-     checkEventsN(1);
-   }
-   void testEvents5() {
-     checkEventsN(5);
-   }
-   void testEvents17() {
-     checkEventsN(17);
-   }
+  void testEvents1() {
+    checkEventsN(1);
+  }
+  void testEvents5() {
+    checkEventsN(5);
+  }
+  void testEvents17() {
+    checkEventsN(17);
+  }
 
-  // Summary output
+  /* *********** is the output summary as expected? */
+  /* Also can provid some timing so can see what the resolution of
+     the Stopwatch is on this platform.  Set verbose to 1 (see above).
+  */
 
   void testSummaryNull() {
     assert "elapsed: 0 events: 0 events per MS: NAN" == sw.summary();
   }
 
   void testSummaryNullToString() {
-    assert "elapsed: 0 events: 0 events per MS: NAN" == sw.toString();
+    assert dtc+" elapsed: 0 events: 0 events per MS: NAN" == sw.toString();
   }
 
   // these tests should be in separate methods so that the sw gets set new each time.
@@ -121,43 +129,43 @@ class StopwatchTest extends GroovyTestCase {
     checkEventSummary(2);
   }
 
-   void testSummary10() {
-     checkEventSummary(10);
-   }
+  void testSummary10() {
+    checkEventSummary(10);
+  }
 
-   void testSummary100() {
-     checkEventSummary(100);
-   }
+  void testSummary100() {
+    checkEventSummary(100);
+  }
 
-   void testSummary1000() {
-     checkEventSummary(1000);
-   }
+  void testSummary1000() {
+    checkEventSummary(1000);
+  }
 
-   void testSummary10000() {
-     checkEventSummary(10000);
-   }
+  void testSummary10000() {
+    checkEventSummary(10000);
+  }
 
-   void testSummary100000() {
-     checkEventSummary(100000);
-   }
+  void testSummary100000() {
+    checkEventSummary(100000);
+  }
 
-   void testSummary1000000() {
-     checkEventSummary(1000000);
-   }
+  void testSummary1000000() {
+    checkEventSummary(1000000);
+  }
 
   def checkEventSummary(n) {
-     def startTime = sw.start();
-     sleep(1);
-     if (n>0) {(1..n).each{sw.markEvent();}};     
-     def stopTime = sw.stop();
-     def summary = sw.summaryNums();
-     if (verbose) {println "${n} ${summary}";};
-     // elapsed time is not negative
-     assert summary[0] >= 0;
-     // number of events is right
-     assert summary[1] == n;
-     // the rate is less than the time if there were any events.
-     assert summary[1] == 0 || summary[1] >= summary[2];
+    def startTime = sw.start();
+    sleep(1);
+    if (n>0) {(1..n).each{sw.markEvent();}};     
+    def stopTime = sw.stop();
+    def summary = sw.summaryNums();
+    if (verbose) {println "${n} ${summary}";};
+    // elapsed time is not negative
+    assert summary[0] >= 0;
+    // number of events is right
+    assert summary[1] == n;
+    // the rate is less than the number of events if there were any events.
+    assert summary[1] == 0 || summary[1] >= summary[2];
   }
 
 }

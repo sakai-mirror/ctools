@@ -9,7 +9,7 @@
   - record the successful events (and unsuccessful?)
   - print a summary 
 
-  s1 = new stats("comment")
+  s1 = new Stopwatch("comment")
   s1.start(); // start recording stats
   s1.stop();  // stop recording stats.
   s1.startTime();  // return the start time
@@ -18,10 +18,8 @@
   s1.eventCnt();  // how many events have there been?
   s1.summaryNums(); returns list of elapsed MS, num events, and events / MS.
   s1.summary() // returns a summary string elapsed, num events, avg
-
+  s1.toString() // provide a default summary naming the stopwatch and giving elapsed time, num events and event rate.
  */
-
-
 
 class Stopwatch {
   
@@ -79,7 +77,7 @@ class Stopwatch {
     "elapsed: ${summary[0]} events: ${summary[1]} events per MS: ${summary[2]}";
   }
   
-  def toString() {
+  def String toString() {
     "${comment} "+summary();
   }
 }
