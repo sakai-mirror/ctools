@@ -9,6 +9,9 @@
   - record the successful events (and unsuccessful?)
   - print a summary 
 
+  ?? Should there be a "lap" or "sofar" method that gives result without
+  having to call stop?  It uses the current time as the temporary stop value.
+
   s1 = new Stopwatch("comment")
   s1.start(); // start recording stats
   s1.stop();  // stop recording stats.
@@ -60,13 +63,17 @@ class Stopwatch {
 
   // compute the summary values
   def summaryNums() {
-    def elapsed = stopMS-startMS;
-    def rate = 0;
+    // if the watch hasn't been stopped give an interim value based on 
+    // the current time.
+    def useStartMS = (startMS ? startMS : System.currentTimeMillis());
+    def useStopMS = (stopMS ? stopMS : System.currentTimeMillis());
+    def elapsed = useStopMS-useStartMS;
+    Float rate = 0;
     if (elapsed) {
       rate = eventCnt / elapsed;
     }
     else {
-      rate = "NAN";
+      rate = -1;
     }
     [elapsed,eventCnt,rate];
   }
@@ -74,7 +81,10 @@ class Stopwatch {
   // give a summary 
   def summary() {
     def summary = summaryNums();
-    "elapsed: ${summary[0]} events: ${summary[1]} events per MS: ${summary[2]}";
+    // format the rate
+    Float tmp = summary[2];
+    def formatted = sprintf("%4.2f",tmp);
+    "elapsed: ${summary[0]} events: ${summary[1]} events per MS: ${formatted}";
   }
   
   def String toString() {

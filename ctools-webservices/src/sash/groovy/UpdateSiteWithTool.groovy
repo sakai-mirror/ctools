@@ -131,6 +131,18 @@ class UpdateSiteWithTool {
   }
 
 
+  // Method to open connection to db.
+  Sql getDb() {
+    def db = Sql.newInstance(properties.myURL, properties.user, 
+			     properties.password,properties.dbdriver);
+
+    log.debug("sites in batch:");
+    db.eachRow(candidateSitesSql) { log.debug("* ${it.SITE_ID}") };
+    return db;
+  };
+
+  /* ************* context unaware ************** */
+
   // summarize the settings for the run.
   def settings = {args	->
 		  log.info("* settings:");
@@ -150,15 +162,6 @@ class UpdateSiteWithTool {
       metric.info("sites skipped: ${sitesSkipped}");
     };
 
-  // Method to open connection to db.
-  Sql getDb() {
-    def db = Sql.newInstance(properties.myURL, properties.user, 
-			     properties.password,properties.dbdriver);
-
-    log.debug("sites in batch:");
-    db.eachRow(candidateSitesSql) { log.debug("* ${it.SITE_ID}") };
-    return db;
-  };
 
   // closure to check if the site already contains the tool
   def toolAlreadyPlaced = { siteId, toolId ->
@@ -234,16 +237,23 @@ class UpdateSiteWithTool {
 
     def updatedSite = false;
 
+    def swAll = new Stopwatch("AddTool ${toolDef.toolRegistration} summary");
+    swAll.start();
+    
     while(moreSitesToProcess && (batchCnt < maxBatches))  {
       batchCnt++;
       log.debug("batchCnt: ${batchCnt}");
       rowsProcessedInBatch = 0;
       sitesAddedInBatch = 0;
+      def swBatch = new Stopwatch("AddTool ${toolDef.toolRegistration} batch summary");
+      swBatch.start();
       db.eachRow(candidateSitesSql) { queryRow ->
 	updatedSite = false;
 	log.debug("processing site: ${queryRow.SITE_ID}");
 	// testSites.each {queryRow -> // for mocking
 	log.debug("queryRow candidate: [${queryRow.SITE_ID}]");
+	swBatch.markEvent();
+	swAll.markEvent();
 	rowsProcessedInBatch++;
 
 	if (siteEligibleForUpdate((String)queryRow.SITE_ID)) {
@@ -265,9 +275,12 @@ class UpdateSiteWithTool {
       if (batchCnt > maxBatches) {
 	sitesAddedInBatch = 0;
       }
-
+      swBatch.stop();
+      metric.warn(swBatch.toString());
       moreSitesToProcess = (sitesAddedInBatch > 0);
     }
+    swAll.stop();
+    metric.warn(swAll.toString());
   };
 }
 // end

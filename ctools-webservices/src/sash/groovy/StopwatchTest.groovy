@@ -5,6 +5,9 @@
 // $HeadURL$
 // $Id$
 
+// This runs the tests in real time using real System ms.  Could mock that for 
+// more accurate testing.
+
 import Stopwatch;
 
 class StopwatchTest extends GroovyTestCase {
@@ -109,11 +112,11 @@ class StopwatchTest extends GroovyTestCase {
   */
 
   void testSummaryNull() {
-    assert "elapsed: 0 events: 0 events per MS: NAN" == sw.summary();
+    assert "elapsed: 0 events: 0 events per MS: -1.00" == sw.summary();
   }
 
   void testSummaryNullToString() {
-    assert dtc+" elapsed: 0 events: 0 events per MS: NAN" == sw.toString();
+    assert dtc+" elapsed: 0 events: 0 events per MS: -1.00" == sw.toString();
   }
 
   // these tests should be in separate methods so that the sw gets set new each time.
@@ -166,6 +169,25 @@ class StopwatchTest extends GroovyTestCase {
     assert summary[1] == n;
     // the rate is less than the number of events if there were any events.
     assert summary[1] == 0 || summary[1] >= summary[2];
+  }
+
+  /* ask for summary before stop
+   */
+
+  void testSummaryBeforeStop() {
+    def n = 300;
+    def startTime = sw.start();
+    sleep(1);
+    if (n>0) {(1..n).each{sw.markEvent();}};     
+    def summary = sw.summaryNums();
+    if (verbose) {println "${n} ${summary}";};
+    // elapsed time is not negative
+    assert summary[0] >= 0;
+    // number of events is right
+    assert summary[1] == n;
+    // the rate is less than the number of events if there were any events.
+    assert summary[1] == 0 || summary[1] >= summary[2];
+    if (n>0) {(1..n).each{sw.markEvent();}};     
   }
 
 }
