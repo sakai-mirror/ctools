@@ -104,6 +104,10 @@ class StopwatchTest extends GroovyTestCase {
     assert "elapsed: 0 events: 0 events per MS: NAN" == sw.summary();
   }
 
+  void testSummaryNullToString() {
+    assert "elapsed: 0 events: 0 events per MS: NAN" == sw.toString();
+  }
+
   // these tests should be in separate methods so that the sw gets set new each time.
   void testSummary0() {
     checkEventSummary(0);

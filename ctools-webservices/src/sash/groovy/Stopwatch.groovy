@@ -79,4 +79,7 @@ class Stopwatch {
     "elapsed: ${summary[0]} events: ${summary[1]} events per MS: ${summary[2]}";
   }
   
+  def toString() {
+    "${comment} "+summary();
+  }
 }
