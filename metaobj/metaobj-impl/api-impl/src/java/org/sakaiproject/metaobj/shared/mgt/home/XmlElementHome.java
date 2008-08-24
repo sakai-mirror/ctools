@@ -189,6 +189,10 @@ public class XmlElementHome implements StructuredArtifactHomeInterface, Initiali
    public StructuredArtifact load(ContentResource resource) {
       return null;
    }
+   
+   public StructuredArtifact load(ContentResource resource, Id artifactId) {
+	   return null;
+   }
 
    protected Artifact load(String id) throws PersistenceException {
       File objectFile = new File(homeDirectory, id);

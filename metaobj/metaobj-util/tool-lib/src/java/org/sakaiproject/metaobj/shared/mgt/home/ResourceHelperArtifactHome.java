@@ -132,6 +132,10 @@ public class ResourceHelperArtifactHome implements StructuredArtifactHomeInterfa
    public SchemaNode getSchema() {
       return getParentHome().getSchema();
    }
+   
+   public StructuredArtifact load(ContentResource resource, Id artifactId) {
+	   return getParentHome().load(resource, artifactId);
+   }
 
    public StructuredArtifact load(ContentResource resource) {
       return getParentHome().load(resource);

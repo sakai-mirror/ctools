@@ -86,13 +86,17 @@ public class FileArtifactFinder implements ArtifactFinder {
 
       return returned;
    }
+   
+   protected Artifact createArtifact(ContentResource resource, Id artifactId) {
+	   Agent resourceOwner = getAgentManager().getAgent(resource.getProperties().getProperty(ResourceProperties.PROP_CREATOR));
+	   ContentResourceArtifact resourceArtifact = new ContentResourceArtifact(resource, artifactId, resourceOwner);
+	   resourceArtifact.setHome(getContentResourceHome());
+	   return resourceArtifact;
+   }
 
    protected Artifact createArtifact(ContentResource resource) {
-      Agent resourceOwner = getAgentManager().getAgent(resource.getProperties().getProperty(ResourceProperties.PROP_CREATOR));
-      Id resourceId = getIdManager().getId(getContentHostingService().getUuid(resource.getId()));
-      ContentResourceArtifact resourceArtifact = new ContentResourceArtifact(resource, resourceId, resourceOwner);
-      resourceArtifact.setHome(getContentResourceHome());
-      return resourceArtifact;
+	   Id artifactId = getIdManager().getId(getContentHostingService().getUuid(resource.getId()));	   
+	   return createArtifact(resource, artifactId);
    }
 
    public Collection findByOwner(Id owner) {
@@ -116,7 +120,7 @@ public class FileArtifactFinder implements ArtifactFinder {
 
       try {
          ContentResource resource = getContentHostingService().getResource(resourceId);
-         Artifact returned = createArtifact(resource);
+         Artifact returned = createArtifact(resource, artifactId);
          return returned;
       }
       catch (PermissionException e) {

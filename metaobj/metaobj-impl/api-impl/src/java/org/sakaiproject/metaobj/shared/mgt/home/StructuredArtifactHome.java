@@ -62,8 +62,7 @@ import org.springframework.context.ApplicationContextAware;
  * To change this template use File | Settings | File Templates.
  */
 public class StructuredArtifactHome extends XmlElementHome
-      implements StructuredArtifactHomeInterface, WorksiteAware,
-      ApplicationContextAware, Comparable, StreamableObjectHome {
+      implements WorksiteAware, ApplicationContextAware, Comparable, StreamableObjectHome {
 
    protected final static org.apache.commons.logging.Log logger =
          org.apache.commons.logging.LogFactory.getLog(StructuredArtifactHome.class);
@@ -120,12 +119,11 @@ public class StructuredArtifactHome extends XmlElementHome
 
       return object;
    }
-
-   public StructuredArtifact load(ContentResource resource) {
+   
+   public StructuredArtifact load(ContentResource resource, Id artifactId) {
       try {
          Agent resourceOwner = getAgentManager().getAgent(
             resource.getProperties().getProperty(ResourceProperties.PROP_CREATOR));
-         Id resourceId = getIdManager().getId(ContentHostingService.getUuid(resource.getId()));
 
          SAXBuilder builder = new SAXBuilder();
          Document doc = builder.build(resource.streamContent());
@@ -134,7 +132,7 @@ public class StructuredArtifactHome extends XmlElementHome
             new StructuredArtifact(doc.getRootElement(), getSchema().getChild(getRootNode()));
 
          xmlObject.setBaseResource(resource);
-         xmlObject.setId(resourceId);
+         xmlObject.setId(artifactId);
          xmlObject.setDisplayName(
             (String) resource.getProperties().get(
                resource.getProperties().getNamePropDisplayName()));
@@ -146,6 +144,11 @@ public class StructuredArtifactHome extends XmlElementHome
       catch (Exception e) {
          throw new PersistenceException(e, "", null, null);
       }
+   }
+   
+   public StructuredArtifact load(ContentResource resource) {
+	   Id artifactId = getIdManager().getId(ContentHostingService.getUuid(resource.getId()));
+	   return load(resource, artifactId);
    }
 
    private AgentManager getAgentManager() {

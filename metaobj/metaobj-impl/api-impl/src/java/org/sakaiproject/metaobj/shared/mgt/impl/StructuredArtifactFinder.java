@@ -40,6 +40,10 @@ public class StructuredArtifactFinder extends WrappedStructuredArtifactFinder {
 
    private HomeFactory homeFactory;
 
+   protected Artifact createArtifact(ContentResource resource, Id artifactId) {
+	   return createArtifact(resource);
+   }
+   
    protected Artifact createArtifact(ContentResource resource) {
       String formType = (String) resource.getProperties().get(
          resource.getProperties().getNamePropStructObjType());
