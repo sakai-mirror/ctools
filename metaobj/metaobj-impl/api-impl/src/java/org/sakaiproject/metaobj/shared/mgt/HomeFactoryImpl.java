@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.metaobj.shared.model.Id;
 import org.sakaiproject.metaobj.utils.xml.SchemaFactory;
+import org.sakaiproject.thread_local.cover.ThreadLocalManager;
 
 /**
  * Created by IntelliJ IDEA.
@@ -54,11 +55,16 @@ public class HomeFactoryImpl implements HomeFactory {
    }
 
    public ReadableObjectHome getHome(String objectType) {
+	   ReadableObjectHome cachedHome = (ReadableObjectHome) ThreadLocalManager.get("HomeFactory.getHome@" + objectType);
+	   if (cachedHome != null)
+		   return cachedHome;
 
       for (Iterator i = homeFactories.iterator(); i.hasNext();) {
          HomeFactory testFactory = (HomeFactory) i.next();
          if (testFactory.handlesType(objectType)) {
-            return testFactory.getHome(objectType);
+            ReadableObjectHome home = testFactory.getHome(objectType);
+            ThreadLocalManager.set("HomeFactory.getHome@" + objectType, home);
+            return home;
          }
       }
 
