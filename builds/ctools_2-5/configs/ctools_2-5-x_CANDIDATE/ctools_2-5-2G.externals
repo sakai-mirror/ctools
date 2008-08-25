@@ -149,8 +149,8 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  discussion          -r50392     https://source.sakaiproject.org/contrib/deprecated/discussion/trunk/
 
  #Locally maintained osp until 2.6
- extraction          -r51108 https://source.sakaiproject.org/contrib/reporting/extraction/tags/ctools-2.5.1C
- extraction-umich    -r51192 https://source.sakaiproject.org/contrib/reporting/extraction-umich/tags/ctools-2.5.1C
+ extraction          -51107 https://source.sakaiproject.org/contrib/reporting/extraction/branches/ctools-fall/
+ extraction-umich    -r52376 https://source.sakaiproject.org/contrib/reporting/extraction-umich/branches/ctools-fa08/
 
  metaobj	     -r51278     https://source.sakaiproject.org/svn/ctools/trunk/metaobj/ 
  osp		     -r51014     https://source.sakaiproject.org/svn/ctools/trunk/osp/
