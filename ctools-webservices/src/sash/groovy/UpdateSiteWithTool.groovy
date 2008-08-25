@@ -33,39 +33,19 @@ class Driver {
 
   def main(String[] args) {
 
+    // def cmd = "count";
+    def cmd = "process";
+
     //    log.info("********** UpdateSiteWithTool *************");
-    println "********** UpdateSiteWithTool Driver *************";
+    //    log.info("cmd: ${cmd}");
 
-    //    args.each{println ": args ${it}"};
-
-    def cmd = "count";
     def USWT = new UpdateSiteWithTool();
-
     USWT.perform(cmd);
-
-//     def verbose = 1;
-//     if (verbose) {
-//       //      settings(args);
-//       args.each{println it};
-//     }
-
-//     //db = getDb();
-//     if (args[1] == 'count') {
-//       //      countSites(db);
-//     };
-//     if (args[1] == 'process') {
-//       //      processSites(db);
-//     }
-//     if (args[1] == 'help') {
-//       println "${args[0]}: arg is count (the number of remaining sites to process) or process (start processing the sites).";
-//     }
-//     // summary();
   }
-
 }
 
-// $HeadURL$
-// $Id$
+// Stopwatch is copied from the Stopwatch.groovy file and current sash
+// doesn't pick up other files.
 
 /*
   benchmark / stats
@@ -151,7 +131,7 @@ class Stopwatch {
     def summary = summaryNums();
     // format the rate
     Float tmp = summary[2];
-    def formatted = sprintf("%4.2f",tmp);
+    def formatted = sprintf("%4.3f",tmp);
     "elapsed: ${summary[0]} events: ${summary[1]} events_per_MS: ${formatted}";
   }
   
@@ -175,23 +155,27 @@ class UpdateSiteWithTool {
   def db;
 
   // maximum number of sites to retrieve in a single query.
-  def maxBatchSize = 10;
+  def maxBatchSize = 2;
 
   // max batches (Useful if testing and want to break the eternal update loop).
-  def maxBatches = 2;
+  def maxBatches = 10;
 
   //Boolean dryRun = true;
   Boolean dryRun = false;
 
-  def evalNames = ['toolRegistration':'sakai.rsf.evaluation', 'newPageName':'EvalTool page', 'toolName': 'EvalTool Name'];
+  def evalNames = ['toolRegistration':'sakai.rsf.evaluation', 'newPageName':"Teaching Questionnaires", 'toolName': "Teaching Questionnaires"];
   def wikiNames = ['toolRegistration':'sakai.rwiki', 'newPageName':'Wiki Tool page', 'toolName': 'Wiki Tool'];
-  def dropboxNames = ['toolRegistration':'sakai.dropbox.xml', 'newPageName':'dropbox', 'toolName': 'dropbox'];
+  def dropboxNames = ['toolRegistration':'sakai.dropbox', 'newPageName':'dropbox', 'toolName': 'dropbox'];
+  def pollNames = ['toolRegistration':'sakai.poll', 'newPageName':'Poll Page(added by script)', 'toolName': 'Poll tool (added by script)'];
+  def discussionNames = ['toolRegistration':'sakai.discussion', 'newPageName':'Discussion Page(added by script)', 'toolName': 'Discussion tool (added by script)'];
 
 
   // which tool are we adding to the site?
 
   //  def toolDef  = wikiNames;
-  def toolDef  = dropboxNames;
+  // def toolDef  = dropboxNames;
+  def toolDef  = pollNames;
+  // def toolDef  = discussionNames;
 
   def properties = [myURL:"jdbc:oracle:thin:@localhost:12439:SAKAIDEV", user:"dlhaines", password:"dlhaines", dbdriver:"oracle.jdbc.driver.OracleDriver"];
 
@@ -234,39 +218,33 @@ class UpdateSiteWithTool {
 
   
   /****************************
-   Main method of script
+   Dispatch method.
   ****************************/
 
-  //  def  mainXXX(String[] args) {
-  //  def  perform(String[] args) {
   def  perform(String cmd) {
 
 
     def foundCmd = 0;
     log.info("********** UpdateSiteWithTool *************");
-
-    //    args.each{println it};
-
     log.info("cmd: ${cmd}");
-    settings(cmd);
 
     if (verbose) {
-      //      settings(args);
-      // args.each{println it};
+      settings(cmd);
     }
     db = getDb();
-    //    println args[0];
+
     if (cmd == 'count') {
       foundCmd = 1;
       countSites(db);
     };
+
     if (cmd == 'process') {
       foundCmd = 1;
       processSites(db);
     }
-//     if (cmd == 'help' || (!foundCmd)) {
-//       //println ": arg is count (the number of remaining sites to process) or process (start processing the sites).";
-//     }
+ //     if (cmd == 'help' || (!foundCmd)) {
+ //       //println ": arg is count (the number of remaining sites to process) or process (start processing the sites).";
+ //     }
     summary();
   }
 
@@ -355,32 +333,32 @@ class UpdateSiteWithTool {
 
   /****************** Control methods *************/
 
-  // allow mocking of sites to test with.  This can be used instead of the db variable.
+  // For testing can create a list to use instead of the db result to
+  // allow mocking of sites.  This can be used instead of the db variable.
   //def testSites = [["SITE_ID":"~c8a87abf-15fe-4d9f-a6af-5c28abd42c8b"]];
 
   void countSites(Sql db) {
 
-    log.warn("sitesWithOutTool");
+    log.warn("countSites start");
     def siteCount = 0;
+    def sw = new Stopwatch(comment:"count query:");
+    sw.start();
+    //* only getting 1 row back, the count.
     db.eachRow(countCandidateSitesSql) { queryRow ->
-      println "count: ${queryRow[0]}";
-      siteCount++;
+      sw.markEvent();
+      //      println "count: ${queryRow[0]}";
+      //      log.warn("siteCount: ${siteCount}");
+      log.warn("siteCount: ${queryRow[0]} (including special sites ignored later)");
     }
-    log.warn("siteCount: ${siteCount}");
-  }
-
-  void countSitesOld(Sql db) {
-    def sitesWithTool = 0;
-    db.eachRow(candidateSitesSql) { queryRow ->
-      sitesWithOutTool++;
-    }
-    log.debug("sitesWithOutTool: ${sitesWithOutTool}");
+    sw.stop();
+    log.warn(sw.toString());
   }
 
   void processSites(Sql db) {
 
-    //  loop over lists of some candidate sites to ensure all sites are processed
-    // then loop over each list to process each site.
+    // Gets a limited size list of sites to process from sql and 
+    // processes those in a batch.  It loops running that query until 
+    // there is a batch that contains no eligable sites.
 
     // bootstrap / halt flag
     def moreSitesToProcess = 1;
@@ -388,7 +366,7 @@ class UpdateSiteWithTool {
 
     def updatedSite = false;
 
-    def swAll = new Stopwatch("AddTool ${toolDef.toolRegistration} summary");
+    def swAll = new Stopwatch(comment:"AddTool ${toolDef.toolRegistration} summary");
     swAll.start();
     
     while(moreSitesToProcess && (batchCnt < maxBatches))  {
@@ -396,12 +374,12 @@ class UpdateSiteWithTool {
       log.debug("batchCnt: ${batchCnt}");
       rowsProcessedInBatch = 0;
       sitesAddedInBatch = 0;
-      def swBatch = new Stopwatch("AddTool ${toolDef.toolRegistration} batch summary");
+      def swBatch = new Stopwatch(comment:"AddTool ${toolDef.toolRegistration} batch summary");
       swBatch.start();
       db.eachRow(candidateSitesSql) { queryRow ->
 	updatedSite = false;
 	log.debug("processing site: ${queryRow.SITE_ID}");
-	// testSites.each {queryRow -> // for mocking
+	// testSites.each {queryRow -> // this line could be used for mocking
 	log.debug("queryRow candidate: [${queryRow.SITE_ID}]");
 	swBatch.markEvent();
 	swAll.markEvent();
