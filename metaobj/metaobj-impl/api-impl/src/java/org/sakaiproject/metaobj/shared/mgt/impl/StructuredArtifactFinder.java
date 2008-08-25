@@ -28,6 +28,7 @@ import org.sakaiproject.content.api.ContentResource;
 import org.sakaiproject.metaobj.shared.mgt.HomeFactory;
 import org.sakaiproject.metaobj.shared.mgt.home.StructuredArtifactHomeInterface;
 import org.sakaiproject.metaobj.shared.model.Artifact;
+import org.sakaiproject.metaobj.shared.model.Id;
 
 /**
  * Created by IntelliJ IDEA.
