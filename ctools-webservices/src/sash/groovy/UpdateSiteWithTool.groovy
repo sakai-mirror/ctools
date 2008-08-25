@@ -7,13 +7,11 @@
 // I've added code to get the sites via sql, do batches, and provide summary statistics.
 
 /* TTD
-   - add summary stats.
-   - read from properties file? (need to modify sash to do that)
-   - get db connection from Sakai? (good idea)
    - add testing via mocks 
 */
 
 // run a couple of upfront queries to see how many sites will be updated.
+// count eligible sites, forget those with friend accounts.
 
 /*
   See Stopwatch.groovy for description of timing.
@@ -181,13 +179,16 @@ class UpdateSiteWithTool {
 
   //  def properties = [myURL:"jdbc:oracle:thin:@localhost:12439:SAKAIDEV", user:"dlhaines", password:"dlhaines", dbdriver:"oracle.jdbc.driver.OracleDriver"];
 
+  // something like this sql might be better: select count(site_id) from sakai_site where type = 'myworkspace' and site_id like '~%'
+
+  // want this sql to be interative: return a limited candidate list until there aren't any.
   def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize}";
 
   def countCandidateSitesSql = "select count(distinct SITE_ID) from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration})";
 
   // List of sites to ignore, e.g. ~admin
 
-  def ignoreSites = [ '~admin'];
+  def ignoreSites = [ '~admin','!user'];
 
   // get the required Sakai services
   def siteService = ComponentManager.get("org.sakaiproject.site.api.SiteService");
@@ -218,7 +219,6 @@ class UpdateSiteWithTool {
   // How many sites already have the tool?
   def sitesWithOutTool = 0;
 
-  
   // db connection.  It is visible so that it can be referenced in a finally block
   def dbConnection;
 
@@ -227,7 +227,6 @@ class UpdateSiteWithTool {
   ****************************/
 
   def  perform(String cmd) {
-
 
     def foundCmd = 0;
     log.info("********** UpdateSiteWithTool *************");
@@ -263,13 +262,8 @@ class UpdateSiteWithTool {
     
   }
 
-  
-
   // Method to open connection to db.
   Sql getDbViaConnection(connection) {
-    //    def db = Sql.newInstance(properties.myURL, properties.user, 
-    //			     properties.password,properties.dbdriver);
-    //    dbConnection = sqlService.borrowConnection();
     def db = new Sql(connection);
     assert db != null;
 
