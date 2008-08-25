@@ -12,6 +12,9 @@
   ?? Should there be a "lap" or "sofar" method that gives result without
   having to call stop?  It uses the current time as the temporary stop value.
 
+  Constructor should have a 1 MS sleep to avoid problems with very fast 
+  elapsed times.
+
   s1 = new Stopwatch("comment")
   s1.start(); // start recording stats
   s1.stop();  // stop recording stats.
@@ -84,7 +87,7 @@ class Stopwatch {
     // format the rate
     Float tmp = summary[2];
     def formatted = sprintf("%4.2f",tmp);
-    "elapsed: ${summary[0]} events: ${summary[1]} events per MS: ${formatted}";
+    "elapsed: ${summary[0]} events: ${summary[1]} events_per_MS: ${formatted}";
   }
   
   def String toString() {
