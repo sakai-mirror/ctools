@@ -13,6 +13,8 @@
    - add testing via mocks 
 */
 
+// run a couple of upfront queries to see how many sites will be updated.
+
 /*
   See Stopwatch.groovy for description of timing.
 */
@@ -70,7 +72,7 @@ class Driver {
   s1.summaryNums(); returns list of elapsed MS, num events, and events / MS.
   s1.summary() // returns a summary string elapsed, num events, avg
   s1.toString() // provide a default summary naming the stopwatch and giving elapsed time, num events and event rate.
- */
+*/
 
 class Stopwatch {
   
@@ -173,11 +175,11 @@ class UpdateSiteWithTool {
   // which tool are we adding to the site?
 
   //  def toolDef  = wikiNames;
-  // def toolDef  = dropboxNames;
-  def toolDef  = pollNames;
+  //  def toolDef  = dropboxNames;
+  // def toolDef  = pollNames;
   // def toolDef  = discussionNames;
 
-  def properties = [myURL:"jdbc:oracle:thin:@localhost:12439:SAKAIDEV", user:"dlhaines", password:"dlhaines", dbdriver:"oracle.jdbc.driver.OracleDriver"];
+  //  def properties = [myURL:"jdbc:oracle:thin:@localhost:12439:SAKAIDEV", user:"dlhaines", password:"dlhaines", dbdriver:"oracle.jdbc.driver.OracleDriver"];
 
   def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize}";
 
@@ -217,6 +219,9 @@ class UpdateSiteWithTool {
   def sitesWithOutTool = 0;
 
   
+  // db connection.  It is visible so that it can be referenced in a finally block
+  def dbConnection;
+
   /****************************
    Dispatch method.
   ****************************/
@@ -231,33 +236,56 @@ class UpdateSiteWithTool {
     if (verbose) {
       settings(cmd);
     }
-    db = getDb();
 
-    if (cmd == 'count') {
-      foundCmd = 1;
-      countSites(db);
-    };
+    try {
+      //    db = getDb();
+      dbConnection = sqlService.borrowConnection();
+      assert dbConnection != null;
+      db = getDbViaConnection(dbConnection);
 
-    if (cmd == 'process') {
-      foundCmd = 1;
-      processSites(db);
+      if (cmd == 'count') {
+	foundCmd = 1;
+	countSites(db);
+      };
+
+      if (cmd == 'process') {
+	foundCmd = 1;
+	processSites(db);
+      }
+      //     if (cmd == 'help' || (!foundCmd)) {
+      //       //println ": arg is count (the number of remaining sites to process) or process (start processing the sites).";
+      //     }
+      summary();
     }
- //     if (cmd == 'help' || (!foundCmd)) {
- //       //println ": arg is count (the number of remaining sites to process) or process (start processing the sites).";
- //     }
-    summary();
+    finally {
+      sqlService.returnConnection(dbConnection);
+    }
+    
   }
 
+  
 
   // Method to open connection to db.
-  Sql getDb() {
-    def db = Sql.newInstance(properties.myURL, properties.user, 
-			     properties.password,properties.dbdriver);
+  Sql getDbViaConnection(connection) {
+    //    def db = Sql.newInstance(properties.myURL, properties.user, 
+    //			     properties.password,properties.dbdriver);
+    //    dbConnection = sqlService.borrowConnection();
+    def db = new Sql(connection);
+    assert db != null;
 
-    log.debug("sites in batch:");
+    log.debug("sites in batch (via connection):");
     db.eachRow(candidateSitesSql) { log.debug("* ${it.SITE_ID}") };
     return db;
   };
+
+  //   Sql getDbDirect() {
+  //     def db = Sql.newInstance(properties.myURL, properties.user, 
+  // 			     properties.password,properties.dbdriver);
+
+  //     log.debug("sites in batch:");
+  //     db.eachRow(candidateSitesSql) { log.debug("* ${it.SITE_ID}") };
+  //     return db;
+  //   };
 
   /* ************* context unaware ************** */
 
