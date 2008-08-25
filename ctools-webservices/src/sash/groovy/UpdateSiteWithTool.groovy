@@ -363,7 +363,7 @@ class UpdateSiteWithTool {
     log.warn("sitesWithOutTool");
     def siteCount = 0;
     db.eachRow(countCandidateSitesSql) { queryRow ->
-      println queryRow;
+      println "count: ${queryRow[0]}";
       siteCount++;
     }
     log.warn("siteCount: ${siteCount}");
