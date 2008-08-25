@@ -20,5 +20,5 @@ groovy /group/1250fe63-f2f9-4f53-ae69-41f6a28217e0/hello.groovy
 The blog entry at http://unicon.net/node/969 is very helpful.
 
 Per Steve Githens on 2008/08/13 the output of a groovy script will
-only be done when the script is finished, so that you can't get
+only be done when the script is finished, hence you can't get
 progress tracking in the terminal.
