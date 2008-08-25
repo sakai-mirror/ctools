@@ -6,33 +6,16 @@
 // Much of this code is based on code from dmccallum.
 // I've added code to get the sites via sql, do batches, and provide summary statistics.
 
-/*
-  made incremental and check to be sure not on include extra instances.
- */
-
 /* TTD
-  - add summary stats.
-  - read from properties file?
-  - get db connection from Sakai?
-  - add testing via mocks
- */
+   - add summary stats.
+   - read from properties file? (need to modify sash to do that)
+   - get db connection from Sakai? (good idea)
+   - add testing via mocks 
+*/
 
 /*
-  benchmark / stats
-  - take a comment
-  - record start and end.
-  - record the successful events (and unsuccessful?)
-  - print a summary 
-
-  s1 = new stats("comment")
-  s1.start(); // start recording stats
-  s1.stop();  // stop recording stats.
-  s1.markEvent(); note that event occurred
-  s1.summary() // returns a summary string start end elapsed, avg
-
-  // s1.resetLap() // start a new lap for recording a subset.
-  ?? s1.lap() produce a summary for a subset of the whole duration
- */
+  See Stopwatch.groovy for description of timing.
+*/
 
 // code to add tool to sites returned from an sql query.
 
@@ -43,6 +26,139 @@ import org.sakaiproject.site.api.SiteService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+//println  "howdy from USWT";
+
+class Driver {
+
+  def main(String[] args) {
+
+    //    log.info("********** UpdateSiteWithTool *************");
+    println "********** UpdateSiteWithTool Driver *************";
+
+    //    args.each{println ": args ${it}"};
+
+    def cmd = "count";
+    def USWT = new UpdateSiteWithTool();
+
+    USWT.perform(cmd);
+
+//     def verbose = 1;
+//     if (verbose) {
+//       //      settings(args);
+//       args.each{println it};
+//     }
+
+//     //db = getDb();
+//     if (args[1] == 'count') {
+//       //      countSites(db);
+//     };
+//     if (args[1] == 'process') {
+//       //      processSites(db);
+//     }
+//     if (args[1] == 'help') {
+//       println "${args[0]}: arg is count (the number of remaining sites to process) or process (start processing the sites).";
+//     }
+//     // summary();
+  }
+
+}
+
+// $HeadURL$
+// $Id$
+
+/*
+  benchmark / stats
+  - take a comment
+  - record start and end.
+  - record the successful events (and unsuccessful?)
+  - print a summary 
+
+  ?? Should there be a "lap" or "sofar" method that gives result without
+  having to call stop?  It uses the current time as the temporary stop value.
+
+  Constructor should have a 1 MS sleep to avoid problems with very fast 
+  elapsed times.
+
+  s1 = new Stopwatch("comment")
+  s1.start(); // start recording stats
+  s1.stop();  // stop recording stats.
+  s1.startTime();  // return the start time
+  s1.stopTime();   // return the stop time
+  s1.markEvent(); note that event occurred
+  s1.eventCnt();  // how many events have there been?
+  s1.summaryNums(); returns list of elapsed MS, num events, and events / MS.
+  s1.summary() // returns a summary string elapsed, num events, avg
+  s1.toString() // provide a default summary naming the stopwatch and giving elapsed time, num events and event rate.
+ */
+
+class Stopwatch {
+  
+  // default comment
+  String comment = "default comment";
+
+  // start and stop time stamps.
+  def startMS = 0;
+  def stopMS = 0;
+  def eventCnt = 0;
+  
+  // initialize the stopwatch and return the start time in MS
+  def start() {
+    startMS = System.currentTimeMillis();
+  }
+
+  def startTime() {
+    return startMS;
+  }
+
+  // stop the timing and return the stop time in MS.
+  def stop() {
+    stopMS = System.currentTimeMillis();
+  }
+
+  def stopTime() {
+    return stopMS;
+  }
+
+  // handle events
+  def markEvent() {
+    eventCnt++;
+  }
+
+  def eventCnt() {
+    return eventCnt;
+  }
+
+  // compute the summary values
+  def summaryNums() {
+    // if the watch hasn't been stopped give an interim value based on 
+    // the current time.
+    def useStartMS = (startMS ? startMS : System.currentTimeMillis());
+    def useStopMS = (stopMS ? stopMS : System.currentTimeMillis());
+    def elapsed = useStopMS-useStartMS;
+    Float rate = 0;
+    if (elapsed) {
+      rate = eventCnt / elapsed;
+    }
+    else {
+      rate = -1;
+    }
+    [elapsed,eventCnt,rate];
+  }
+
+  // give a summary 
+  def summary() {
+    def summary = summaryNums();
+    // format the rate
+    Float tmp = summary[2];
+    def formatted = sprintf("%4.2f",tmp);
+    "elapsed: ${summary[0]} events: ${summary[1]} events_per_MS: ${formatted}";
+  }
+  
+  def String toString() {
+    "${comment} "+summary();
+  }
+}
 
 /*
  */
@@ -69,14 +185,19 @@ class UpdateSiteWithTool {
 
   def evalNames = ['toolRegistration':'sakai.rsf.evaluation', 'newPageName':'EvalTool page', 'toolName': 'EvalTool Name'];
   def wikiNames = ['toolRegistration':'sakai.rwiki', 'newPageName':'Wiki Tool page', 'toolName': 'Wiki Tool'];
+  def dropboxNames = ['toolRegistration':'sakai.dropbox.xml', 'newPageName':'dropbox', 'toolName': 'dropbox'];
+
 
   // which tool are we adding to the site?
 
-  def toolDef  = wikiNames;
+  //  def toolDef  = wikiNames;
+  def toolDef  = dropboxNames;
 
   def properties = [myURL:"jdbc:oracle:thin:@localhost:12439:SAKAIDEV", user:"dlhaines", password:"dlhaines", dbdriver:"oracle.jdbc.driver.OracleDriver"];
 
   def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize}";
+
+  def countCandidateSitesSql = "select count(distinct SITE_ID) from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration})";
 
   // List of sites to ignore, e.g. ~admin
 
@@ -116,17 +237,36 @@ class UpdateSiteWithTool {
    Main method of script
   ****************************/
 
-  def  main(String[] args) {
+  //  def  mainXXX(String[] args) {
+  //  def  perform(String[] args) {
+  def  perform(String cmd) {
 
+
+    def foundCmd = 0;
     log.info("********** UpdateSiteWithTool *************");
 
+    //    args.each{println it};
+
+    log.info("cmd: ${cmd}");
+    settings(cmd);
+
     if (verbose) {
-      settings(args);
-      args.each{println it};
+      //      settings(args);
+      // args.each{println it};
     }
     db = getDb();
-    //countSites(db);
-    processSites(db);
+    //    println args[0];
+    if (cmd == 'count') {
+      foundCmd = 1;
+      countSites(db);
+    };
+    if (cmd == 'process') {
+      foundCmd = 1;
+      processSites(db);
+    }
+//     if (cmd == 'help' || (!foundCmd)) {
+//       //println ": arg is count (the number of remaining sites to process) or process (start processing the sites).";
+//     }
     summary();
   }
 
@@ -146,7 +286,7 @@ class UpdateSiteWithTool {
   // summarize the settings for the run.
   def settings = {args	->
 		  log.info("* settings:");
-		  args.each{log.info("* arg: ${it}")};
+		  //		  args.each{log.info("* arg: ${it}")};
 		  log.info("* tool registration: [${toolDef.toolRegistration}]");		  
 		  log.info("* maxBatchSize: ${maxBatchSize}");
 		  log.info("* dryRun: ${dryRun}");
@@ -219,6 +359,17 @@ class UpdateSiteWithTool {
   //def testSites = [["SITE_ID":"~c8a87abf-15fe-4d9f-a6af-5c28abd42c8b"]];
 
   void countSites(Sql db) {
+
+    log.warn("sitesWithOutTool");
+    def siteCount = 0;
+    db.eachRow(countCandidateSitesSql) { queryRow ->
+      println queryRow;
+      siteCount++;
+    }
+    log.warn("siteCount: ${siteCount}");
+  }
+
+  void countSitesOld(Sql db) {
     def sitesWithTool = 0;
     db.eachRow(candidateSitesSql) { queryRow ->
       sitesWithOutTool++;
