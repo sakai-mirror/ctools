@@ -1,0 +1,96 @@
+Index: site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java
+===================================================================
+--- site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(revision 51150)
++++ site-manage/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java	(working copy)
+@@ -8957,10 +8958,29 @@
+ 
+ 				if (toolId.equals(HOME_TOOL_ID)) {
+ 					homeSelected = true;
+-				} else if (isMultipleInstancesAllowed(findOriginalToolId(state, toolId))) 
++				} 
++				//If a user is adding the Email archive tool handle that differently for now
++				//Later allow tools to specify special configurations somehow 
++				else if (toolId.equals("sakai.mailbox")) {
++				    // get the email alias when an Email Archive tool
++				    // has been selected
++				    String channelReference = mailArchiveChannelReference((String) state
++					    .getAttribute(STATE_SITE_INSTANCE_ID));
++				    List aliases = AliasService.getAliases(
++					    channelReference, 1, 1);
++				    if (aliases.size() > 0) {
++					state.setAttribute(STATE_TOOL_EMAIL_ADDRESS,
++						((Alias) aliases.get(0)).getId());
++				    }
++				    if (!existTools.contains(toolId)) {
++					goToToolConfigPage = true;
++				    }
++				}
++
++				else if (isMultipleInstancesAllowed(findOriginalToolId(state, toolId)) ) 
+ 				{
+-					// if user is adding either EmailArchive tool, News tool
+-					// or Web Content tool, go to the Customize page for the
++					// if user is adding either a tool configured for multiple tools
++					// , go to the Customize page for the
+ 					// tool
+ 					if (!existTools.contains(toolId)) {
+ 						goToToolConfigPage = true;
+@@ -8968,21 +8988,9 @@
+ 						multipleToolIdTitleMap.put(toolId, ToolManager.getTool(toolId).getTitle());
+ 					}
+ 
+-					if (toolId.equals("sakai.mailbox")) {
+-						// get the email alias when an Email Archive tool
+-						// has been selected
+-						String channelReference = mailArchiveChannelReference((String) state
+-								.getAttribute(STATE_SITE_INSTANCE_ID));
+-						List aliases = AliasService.getAliases(
+-								channelReference, 1, 1);
+-						if (aliases.size() > 0) {
+-							state.setAttribute(STATE_TOOL_EMAIL_ADDRESS,
+-									((Alias) aliases.get(0)).getId());
+-						}
+-					}
++
+ 				}
+-				idsSelected.add(toolId);
+-
++			idsSelected.add(toolId);
+ 			}
+ 
+ 			state.setAttribute(STATE_TOOL_HOME_SELECTED, new Boolean(
+@@ -10511,16 +10519,7 @@
+ 			if (id.equalsIgnoreCase(HOME_TOOL_ID)) {
+ 				has_home = true;
+ 			}
+-			else if (findOriginalToolId(state, id) != null)
+-			{
+-				String title = StringUtil.trimToNull(params
+-						.getString("title_" + id));
+-				if (title != null) 
+-				{
+-					// save the titles entered
+-					multipleToolIdTitleMap.put(id, title);
+-				}
+-			} else if (id.equalsIgnoreCase("sakai.mailbox")) {
++			 else if (id.equalsIgnoreCase("sakai.mailbox")) {
+ 				// if Email archive tool is selected, check the email alias
+ 				emailId = StringUtil.trimToNull(params.getString("emailId"));
+ 				if (verifyData) {
+@@ -10555,6 +10554,16 @@
+ 					}
+ 				}
+ 			}
++	else if (findOriginalToolId(state, id) != null)
++			{
++				String title = StringUtil.trimToNull(params
++						.getString("title_" + id));
++				if (title != null) 
++				{
++					// save the titles entered
++					multipleToolIdTitleMap.put(id, title);
++				}
++			}
+ 		}
+ 		// update the state objects
+ 		state.setAttribute(STATE_MULTIPLE_TOOL_ID_TITLE_MAP, multipleToolIdTitleMap);
