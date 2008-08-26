@@ -1,8 +1,9 @@
 Update based on SAK-13736
 
-=copy= SAK-13736/msgcntr.css,msgcntr/messageforums-app/src/webapp/css/msgcntr.css
-
 =svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/messageforums-app/src/webapp/images/@47427 https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/messageforums-app/src/webapp/images/@47426 msgcntr/messageforums-app/src/webapp/images/
+
+#Copy from svn instead of the file system
+=svnc= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/messageforums-app/src/webapp/css/@47427 msgcntr/messageforums-app/src/webapp
 
 #JSF fix
 =svnm= https://source.sakaiproject.org/svn//jsf/trunk/widgets/src/META-INF/@42476 jsf/widgets/src/META-INF/

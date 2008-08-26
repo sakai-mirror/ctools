@@ -270,12 +270,12 @@ sub applyOneActionFile(%) {
 			$rc = 3;
 		}
 	    }
-	    elsif ($action eq "svnm" || $action eq "svnmxw")  {
+	    elsif ($action eq "svnm" || $action eq "svnmxw" || $action eq "svnc")  {
 		print "svn action\n";
 		my ($svnSrc,$srcRev,$svnDest,$destRev,$wCopy);
 		#First form with 5 parameters
 		($svnSrc,$srcRev,$svnDest,$destRev,$wCopy) = $target =~ m/(.*?)\@(.*?)\s+(.*?)\@(.*?)\s+(.*)$/;
-		#Second Form with 3 parameters (cherry pick)
+		#Second Form with 3 parameters (cherry pick or copy)
 		if (!$wCopy) {
 		    ($svnSrc,$srcRev,$wCopy) = $target =~ m/(.*?)\@(.*?)\s+(.*)$/;
 		}
@@ -283,9 +283,22 @@ sub applyOneActionFile(%) {
 		my $cmd="";
 		my $svnDebugCmds = "";
 		my $svnopt = "";
+		my $svncmd = "";
 		#If the action is to merge ignoreing whitespace, add this as an option
 		if ($action eq "svnmxw") {
-		    $svnopt = " -x -w ";
+		    $svncmd = "merge -x -w ";
+		    #Merge takes -c option
+		    $svnopt = "-c ";
+		}
+		elsif ($action eq "svnm") {
+		    $svncmd = "merge ";
+		    $svnopt = "-c ";
+		}
+
+		elsif ($action eq "svnc") {
+		    $svncmd = "copy ";		    
+		    #Copy takes -r option
+		    $svnopt = "-r ";
 		}
 
 		my $result = "";
@@ -299,11 +312,14 @@ sub applyOneActionFile(%) {
 
 		    #If theres no destination then cherrypick it;
 		    if (!$destRev) {
-			$svnopt .= "-c $srcRev";
+			#Append the revision to the option
+			$svnopt .= " $srcRev";
 			$svnDest = "";
 		    } else {
 			$svnDest = "$svnDest\@$destRev";
 			$svnSrc  = "$svnSrc\@$srcRev";
+			#Clear the options
+			$svnopt = "";
 		    }
 
 		    if ($dryrun == 1) {
@@ -311,7 +327,7 @@ sub applyOneActionFile(%) {
 		    }
 
 		    if ($svnopt || $svnDest) {
-			$cmd = "svn merge $svnDebugCmds $svnopt $svnDest $svnSrc $wCopy";
+			$cmd = "svn $svncmd $svnDebugCmds $svnopt $svnDest $svnSrc $wCopy";
 			print "Running $cmd\n";
 			($rc,$result) = runShellCmdGetResult($cmd);
 			$log.=$result;
