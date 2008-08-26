@@ -5730,7 +5730,7 @@ public class SiteAction extends PagedResourceActionII {
 			removeAddParticipantContext(state);
 
 			params = data.getParameters();
-			state.setAttribute(STATE_TEMPLATE_INDEX, "1");
+			state.setAttribute(STATE_TEMPLATE_INDEX, "12");
 		} else if (currentIndex.equals("6")) {
 			state.removeAttribute(STATE_REMOVEABLE_USER_LIST);
 		} else if (currentIndex.equals("9")) {
