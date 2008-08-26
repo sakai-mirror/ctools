@@ -1,51 +1,57 @@
 // $HeadURL$
 // $Id$
 
-// Groovy script, run through sash,
+// Groovy script, run through sash, to add tools to "My Worksite" sites which do not 
+// already include the tool.  It can also count the number of sites that need to have
+// the tool added.
+
+// The query is "incremental".  It will return a limited number of sites that 
+// should have the tool added.  It can run in a loop until it returns no 
+// more eligible sites.  That means we don't have to manage a list of what sites to 
+// add the tool to, and we don't have to worry about data getting out of date.  It is 
+// harmless to run the script even when no sites are eligible.
+// (Assuming that the query doesn't seriously impact the db.)
 
 // Much of this code is based on code from dmccallum.
 // I've added code to get the sites via sql, do batches, and provide summary statistics.
 
 /* TTD
+   - tighten query to exclude users with EID that contain a '@' (no friend accounts)
    - add testing via mocks 
+   - figure out how to really read in command line arguments.
 */
 
-// run a couple of upfront queries to see how many sites will be updated.
-// count eligible sites, forget those with friend accounts.
-
-/*
-  See Stopwatch.groovy for description of timing.
-*/
-
-// code to add tool to sites returned from an sql query.
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import groovy.sql.Sql;
 import org.sakaiproject.component.cover.ComponentManager
 import org.sakaiproject.site.api.SiteService;
 
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-//println  "howdy from USWT";
+// Class to be called to start processing.  It is tiny and separate from
+// the main processing classes to make testing easier.
 
 class Driver {
 
   def main(String[] args) {
 
+    // would be good to read the desired action from
+    // the command line.
+
     // def cmd = "count";
     def cmd = "process";
-
-    //    log.info("********** UpdateSiteWithTool *************");
-    //    log.info("cmd: ${cmd}");
 
     def USWT = new UpdateSiteWithTool();
     USWT.perform(cmd);
   }
 }
 
-// Stopwatch is copied from the Stopwatch.groovy file and current sash
-// doesn't pick up other files.
+/* *************** Stopwatch ************* */
+
+// Stopwatch is a class that will compute elapsed time (and count events if desired).
+
+// The Stopwatch code is copied from the Stopwatch.groovy file and explicitly
+// included here since the current sash implementation doesn't pick up other files.
 
 /*
   benchmark / stats
@@ -57,8 +63,11 @@ class Driver {
   ?? Should there be a "lap" or "sofar" method that gives result without
   having to call stop?  It uses the current time as the temporary stop value.
 
-  Constructor should have a 1 MS sleep to avoid problems with very fast 
+  TTD 
+  - Constructor should have a 1 MS sleep to avoid problems with very fast 
   elapsed times.
+  - Should have explicit constructor that takes a string since it is too easy 
+    to forget to pass in the comment as named argument.
 
   s1 = new Stopwatch("comment")
   s1.start(); // start recording stats
@@ -111,8 +120,8 @@ class Stopwatch {
 
   // compute the summary values
   def summaryNums() {
-    // if the watch hasn't been stopped give an interim value based on 
-    // the current time.
+    // if the watch hasn't been started / stopped use an interim value based on 
+    // the current time.  This allow computing the results so far.
     def useStartMS = (startMS ? startMS : System.currentTimeMillis());
     def useStopMS = (stopMS ? stopMS : System.currentTimeMillis());
     def elapsed = useStopMS-useStartMS;
@@ -123,10 +132,11 @@ class Stopwatch {
     else {
       rate = -1;
     }
+    // return a list of the important numbers.
     [elapsed,eventCnt,rate];
   }
 
-  // give a summary 
+  // return a printable summary
   def summary() {
     def summary = summaryNums();
     // format the rate
@@ -135,18 +145,25 @@ class Stopwatch {
     "elapsed: ${summary[0]} events: ${summary[1]} events_per_MS: ${formatted}";
   }
   
+  // provide a useful default summary string.
   def String toString() {
     "${comment} "+summary();
   }
 }
 
 /*
+  This class will use a query that returns a list of sites that need to have a tool added to them.
+  Currently the query and tool are hard coded but this could easily be generalized with a bit more time.
  */
 
 class UpdateSiteWithTool {
 
-  private static Log metric = LogFactory.getLog("metrics." + "edu.umich.ctools.UpdateSitesWithTool");
+  // Create 2 loggers.  The first is the normal Sakai log.  The second
+  // is used just for recording performance metrics.  The loggers could be configured
+  // to send these to a separate log file.
+
   private static Log log = LogFactory.getLog("edu.umich.ctools.UpdateSitesWithTool");
+  private static Log metric = LogFactory.getLog("metrics." + "edu.umich.ctools.UpdateSitesWithTool");
 
   // control tracing
   def verbose = 1;
@@ -155,14 +172,18 @@ class UpdateSiteWithTool {
   def db;
 
   // maximum number of sites to retrieve in a single query.
+  // It should be fairly large for production.
   def maxBatchSize = 2;
 
-  // max batches (Useful if testing and want to break the eternal update loop).
+  // Limit on the number of batches of sites to process.  This is useful
+  // mostly for dry run testing, where the query will return the same sites over
+  // and over again as they are not updated.
   def maxBatches = 10;
 
-  //Boolean dryRun = true;
+  //  Do / don't actually do the update.
   Boolean dryRun = false;
 
+  // Define the tool to be added along with the desired page name and tool name.
   def evalNames = ['toolRegistration':'sakai.rsf.evaluation', 'newPageName':"Teaching Questionnaires", 'toolName': "Teaching Questionnaires"];
   def wikiNames = ['toolRegistration':'sakai.rwiki', 'newPageName':'Wiki Tool page', 'toolName': 'Wiki Tool'];
   def dropboxNames = ['toolRegistration':'sakai.dropbox', 'newPageName':'dropbox', 'toolName': 'dropbox'];
@@ -170,27 +191,22 @@ class UpdateSiteWithTool {
   def discussionNames = ['toolRegistration':'sakai.discussion', 'newPageName':'Discussion Page(added by script)', 'toolName': 'Discussion tool (added by script)'];
 
 
-  // which tool are we adding to the site?
-
-  //  def toolDef  = wikiNames;
-  //  def toolDef  = dropboxNames;
-  // def toolDef  = pollNames;
-  // def toolDef  = discussionNames;
-
-  //  def properties = [myURL:"jdbc:oracle:thin:@localhost:12439:SAKAIDEV", user:"dlhaines", password:"dlhaines", dbdriver:"oracle.jdbc.driver.OracleDriver"];
-
-  // something like this sql might be better: select count(site_id) from sakai_site where type = 'myworkspace' and site_id like '~%'
-
-  // want this sql to be interative: return a limited candidate list until there aren't any.
-  def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize}";
-
-  def countCandidateSitesSql = "select count(distinct SITE_ID) from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration})";
+  // Specify which tool configuration infomation to use.
+  def toolDef = evalNames;
 
   // List of sites to ignore, e.g. ~admin
 
   def ignoreSites = [ '~admin','!user'];
 
-  // get the required Sakai services
+  // Sql to return a list of candidate sites to be updated. (These sites are candidates since some might be returned
+  // that will be excluded based on list of exception sites.)
+
+  def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize}";
+
+  // Sql to count the total number of candidate sites.
+  def countCandidateSitesSql = "select count(distinct SITE_ID) from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration})";
+
+  // Get the required Sakai services.  Avoid using covers if at all possible.
   def siteService = ComponentManager.get("org.sakaiproject.site.api.SiteService");
   def toolManager = ComponentManager.get("org.sakaiproject.tool.api.ToolManager");
   def sqlService = ComponentManager.get("org.sakaiproject.db.api.SqlService");
@@ -219,11 +235,15 @@ class UpdateSiteWithTool {
   // How many sites already have the tool?
   def sitesWithOutTool = 0;
 
-  // db connection.  It is visible so that it can be referenced in a finally block
+  /* *** internal variables *** */
+  
+  // The db connection obtained from Sakai.  This is kept explictly visible so that it can be returned to Sakai 
+  // in a finally block
   def dbConnection;
 
   /****************************
-   Dispatch method.
+   Dispatch method.  
+   Get the db connection and invoke the desired processing.
   ****************************/
 
   def  perform(String cmd) {
@@ -237,7 +257,7 @@ class UpdateSiteWithTool {
     }
 
     try {
-      //    db = getDb();
+
       dbConnection = sqlService.borrowConnection();
       assert dbConnection != null;
       db = getDbViaConnection(dbConnection);
@@ -251,6 +271,7 @@ class UpdateSiteWithTool {
 	foundCmd = 1;
 	processSites(db);
       }
+      // This should be added back in when the command line processing is figured out.
       //     if (cmd == 'help' || (!foundCmd)) {
       //       //println ": arg is count (the number of remaining sites to process) or process (start processing the sites).";
       //     }
@@ -262,28 +283,24 @@ class UpdateSiteWithTool {
     
   }
 
-  // Method to open connection to db.
+  // Method to open connection to db given that a connection
+  // has been obtained (probably from Sakai).
+  // A direct connection could be opened explicitly using
+  // Sql.newInstance(<lots of connection information>), but that should NOT
+  // be used in a real Sakai instance.
+
   Sql getDbViaConnection(connection) {
     def db = new Sql(connection);
-    assert db != null;
+    assert db != null; 
 
     log.debug("sites in batch (via connection):");
     db.eachRow(candidateSitesSql) { log.debug("* ${it.SITE_ID}") };
     return db;
   };
 
-  //   Sql getDbDirect() {
-  //     def db = Sql.newInstance(properties.myURL, properties.user, 
-  // 			     properties.password,properties.dbdriver);
-
-  //     log.debug("sites in batch:");
-  //     db.eachRow(candidateSitesSql) { log.debug("* ${it.SITE_ID}") };
-  //     return db;
-  //   };
-
-  /* ************* context unaware ************** */
-
-  // summarize the settings for the run.
+  
+  /* ******** utility ********* */
+  // Closure that will dump the settings for the run.
   def settings = {args	->
 		  log.info("* settings:");
 		  //		  args.each{log.info("* arg: ${it}")};
@@ -295,7 +312,7 @@ class UpdateSiteWithTool {
 		  log.info("* sitesSkipped: ${sitesSkipped}");
   }
 
-  // print a summary of processing
+  // Log a summary of processing.
     def summary = {
       metric.info("number of batches: ${batchCnt}");
       metric.info("number of candidate sites: ${rowsProcessedInBatch}");
@@ -303,7 +320,8 @@ class UpdateSiteWithTool {
     };
 
 
-  // closure to check if the site already contains the tool
+  // closure to check if a site already contains the tool. 
+
   def toolAlreadyPlaced = { siteId, toolId ->
 			    def siteEdit = siteService.getSite(siteId);
 			    if (siteEdit.getToolForCommonId(toolId) != null) {
@@ -314,13 +332,14 @@ class UpdateSiteWithTool {
 			    
   };
 
-  // Method to see if the specific site should be excluded.
+  // Method to see if the specific site should be excluded based on
+  // exception list.
 
   Boolean excludeSite(String siteId)  {
     return (ignoreSites.find {it == siteId} ? true : false);
   };
 
-  // Will we allow any updates?
+  // Provide a method to prevent any updates.
   Boolean isDryRun() { 
     return dryRun;
   };
@@ -329,8 +348,9 @@ class UpdateSiteWithTool {
   Boolean siteEligibleForUpdate(String siteId) { 
     
     Boolean shouldUpdate = true;
+    // on exception list?
     shouldUpdate = !excludeSite(siteId);
-    //    println "sUS: after excludeSite: ${shouldUpdate}";
+    // already contains the tool?
     if (shouldUpdate) {
       shouldUpdate =  !toolAlreadyPlaced(siteId,toolDef.toolRegistration);
     }
@@ -355,10 +375,16 @@ class UpdateSiteWithTool {
 
   /****************** Control methods *************/
 
-  // For testing can create a list to use instead of the db result to
-  // allow mocking of sites.  This can be used instead of the db variable.
+  // Testing note:  
+  // Groovy is flexible enough that for testing you can just create an 
+  // explicit list of sites to consider instead of using a db call to allow
+  // mocking of the db results. The list can be used instead of the 
+  // db variable.
   //def testSites = [["SITE_ID":"~c8a87abf-15fe-4d9f-a6af-5c28abd42c8b"]];
 
+  // Method to count all eligible sites.
+  // Time this query so that have some idea if it 
+  // is really slow.
   void countSites(Sql db) {
 
     log.warn("countSites start");
@@ -368,19 +394,15 @@ class UpdateSiteWithTool {
     //* only getting 1 row back, the count.
     db.eachRow(countCandidateSitesSql) { queryRow ->
       sw.markEvent();
-      //      println "count: ${queryRow[0]}";
-      //      log.warn("siteCount: ${siteCount}");
       log.warn("siteCount: ${queryRow[0]} (including special sites ignored later)");
     }
     sw.stop();
     log.warn(sw.toString());
   }
 
-  void processSites(Sql db) {
+  // Process the list of eligable sites.
 
-    // Gets a limited size list of sites to process from sql and 
-    // processes those in a batch.  It loops running that query until 
-    // there is a batch that contains no eligable sites.
+  void processSites(Sql db) {
 
     // bootstrap / halt flag
     def moreSitesToProcess = 1;
@@ -390,7 +412,9 @@ class UpdateSiteWithTool {
 
     def swAll = new Stopwatch(comment:"AddTool ${toolDef.toolRegistration} summary");
     swAll.start();
-    
+
+    // while there are more sites to process and haven't 
+    // exceeded the processing limit.
     while(moreSitesToProcess && (batchCnt < maxBatches))  {
       batchCnt++;
       log.debug("batchCnt: ${batchCnt}");
@@ -398,11 +422,13 @@ class UpdateSiteWithTool {
       sitesAddedInBatch = 0;
       def swBatch = new Stopwatch(comment:"AddTool ${toolDef.toolRegistration} batch summary");
       swBatch.start();
+      // run the candidate sql query and process each resulting site.
       db.eachRow(candidateSitesSql) { queryRow ->
 	updatedSite = false;
 	log.debug("processing site: ${queryRow.SITE_ID}");
-	// testSites.each {queryRow -> // this line could be used for mocking
+	// testSites.each {queryRow -> // this line could be used for mocking.  See testing note above.
 	log.debug("queryRow candidate: [${queryRow.SITE_ID}]");
+	// mark that have found a candidate site both for the batch and for the whole run.
 	swBatch.markEvent();
 	swAll.markEvent();
 	rowsProcessedInBatch++;
@@ -427,10 +453,12 @@ class UpdateSiteWithTool {
 	sitesAddedInBatch = 0;
       }
       swBatch.stop();
+      // Record the performance of this batch.
       metric.warn(swBatch.toString());
       moreSitesToProcess = (sitesAddedInBatch > 0);
     }
     swAll.stop();
+    // Record the performance of the whole run.
     metric.warn(swAll.toString());
   };
 }
