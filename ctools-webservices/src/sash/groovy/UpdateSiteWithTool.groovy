@@ -67,7 +67,7 @@ class Driver {
   - Constructor should have a 1 MS sleep to avoid problems with very fast 
   elapsed times.
   - Should have explicit constructor that takes a string since it is too easy 
-    to forget to pass in the comment as named argument.
+  to forget to pass in the comment as named argument.
 
   s1 = new Stopwatch("comment")
   s1.start(); // start recording stats
@@ -154,13 +154,15 @@ class Stopwatch {
 /*
   This class will use a query that returns a list of sites that need to have a tool added to them.
   Currently the query and tool are hard coded but this could easily be generalized with a bit more time.
- */
+*/
 
 class UpdateSiteWithTool {
 
   // Create 2 loggers.  The first is the normal Sakai log.  The second
   // is used just for recording performance metrics.  The loggers could be configured
-  // to send these to a separate log file.
+  // to send these to a separate log file.  Since we are repurposing the log file
+  // the logging methods are the normal error, warn, info, debug levels.   This 
+  // uses warn as the level to use to print summary information.
 
   private static Log log = LogFactory.getLog("edu.umich.ctools.UpdateSitesWithTool");
   private static Log metric = LogFactory.getLog("metrics." + "edu.umich.ctools.UpdateSitesWithTool");
