@@ -1,0 +1,11 @@
+--- site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-modifyENW.vm.14180	2008-08-26 14:37:56.000000000 -0400
++++ site-manage/site-manage-tool/tool/src/webapp/vm/sitesetup/chef_site-modifyENW.vm	2008-08-26 14:38:50.000000000 -0400
+@@ -66,7 +66,7 @@
+ 							#set($originToolId=$tId)
+ 						#end
+ 					#end
+-						#if(!$toolExist)
++						#if($originToolId)
+ 							<input type="hidden" name="selectedTools" value="$toolId" />
+ 							#set($tool = $!toolManager.getTool($originToolId))
+ 							#if ($!tool)
