@@ -13,4 +13,7 @@ DEPLOYED=$HOME/deploy
 TAR_NAME=sash-0.1.1
 tar -z -f $TAR_NAME.tgz -C $DEPLOYED -c .
 
+# To extract sash use:
+# tar -z -f <tar+name>.*z -C <directory containing the webapps directory> -x
+
 #end

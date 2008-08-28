@@ -198,12 +198,13 @@ class UpdateSiteWithTool {
 
   // List of sites to ignore, e.g. ~admin
 
-  def ignoreSites = [ '~admin','!user'];
+  // Per John Leasia, ignore these sites.
+  def ignoreSites = [  '~admin','!user','!user.friend','!user.guest','!user.uniqname','!user.liteguest','~'];
 
   // Sql to return a list of candidate sites to be updated. (These sites are candidates since some might be returned
   // that will be excluded based on list of exception sites.)
 
-  def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize}";
+  def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize};"
 
   // Sql to count the total number of candidate sites.
   def countCandidateSitesSql = "select count(distinct SITE_ID) from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration})";
