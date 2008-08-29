@@ -38,7 +38,7 @@ class Driver {
     // would be good to read the desired action from
     // the command line.
 
-    // def cmd = "count";
+    //def cmd = "count";
     def cmd = "process";
 
     def USWT = new UpdateSiteWithTool();
@@ -207,7 +207,7 @@ class UpdateSiteWithTool {
   // Sql to return a list of candidate sites to be updated. (These sites are candidates since some might be returned
   // that will be excluded based on list of exception sites.)
 
-  def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize};"
+  def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration}) order by SITE_ID) where rownum <= ${maxBatchSize}";
 
   // Sql to count the total number of candidate sites.
   def countCandidateSitesSql = "select count(distinct SITE_ID) from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${toolDef.toolRegistration})";
@@ -300,7 +300,7 @@ class UpdateSiteWithTool {
     assert db != null; 
 
     log.debug("sites in batch (via connection):");
-    db.eachRow(candidateSitesSql) { log.debug("* ${it.SITE_ID}") };
+    //  db.eachRow(countCandidateSitesSql) { log.debug("* ${it.SITE_ID}") };
     return db;
   };
 
