@@ -173,6 +173,7 @@ class UpdateSiteWithTool {
   // sql db connection
   def db;
 
+  /****************** Important variables, likely to be adjusted *************/
   // maximum number of sites to retrieve in a single query.
   // It should be fairly large for production.
   def maxBatchSize = 2;
@@ -180,7 +181,9 @@ class UpdateSiteWithTool {
   // Limit on the number of batches of sites to process.  This is useful
   // mostly for dry run testing, where the query will return the same sites over
   // and over again as they are not updated.
-  def maxBatches = 10;
+  def maxBatches = 5;
+
+  /**************************************************************************/
 
   //  Do / don't actually do the update.
   Boolean dryRun = false;
@@ -437,7 +440,7 @@ class UpdateSiteWithTool {
 	rowsProcessedInBatch++;
 
 	if (siteEligibleForUpdate((String)queryRow.SITE_ID)) {
-	  log.debug("processing site: ${queryRow.SITE_ID}");
+	  log.info("processing site: ${queryRow.SITE_ID}");
 	  if (!isDryRun()) {
 	    placeTool(queryRow.SITE_ID,toolDef.toolRegistration,toolDef.newPageName);
 	    updatedSite = true;
@@ -450,8 +453,8 @@ class UpdateSiteWithTool {
 	}
 	metric.debug("* totalSitesUpdated: ${totalSitesUpdated}");
       }
-      metric.debug("rowsProcessedInBatch: ${rowsProcessedInBatch}");
-      metric.debug("sitesAddedInBatch: ${sitesAddedInBatch}");
+      metric.info("rowsProcessedInBatch: ${rowsProcessedInBatch}");
+      metric.info("sitesAddedInBatch: ${sitesAddedInBatch}");
       if (batchCnt > maxBatches) {
 	sitesAddedInBatch = 0;
       }
