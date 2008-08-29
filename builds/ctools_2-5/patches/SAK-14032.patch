@@ -1,0 +1,9 @@
+#SAK-14032  ResourceLoader.getLocale( userId ) does not default to system locale 
+=svnm= https://source.sakaiproject.org/svn/util/trunk@49106 util
+=svnm= https://source.sakaiproject.org/svn/util/trunk@49108 util
+
+#Fill in the SAK or something unique, leave it like this if theres no real patch
+--- /dev/null
++++ SAK-14032.tmp
+@@ -0,0 +1 @@
++ 
