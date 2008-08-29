@@ -25,8 +25,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import groovy.sql.Sql;
+
+
 import org.sakaiproject.component.cover.ComponentManager
 import org.sakaiproject.site.api.SiteService;
+import org.sakaiproject.tool.api.SessionManager;
 
 // Class to be called to start processing.  It is tiny and separate from
 // the main processing classes to make testing easier.
@@ -171,17 +174,20 @@ class UpdateSiteWithTool {
   def verbose = 1;
 
   // sql db connection
-  def db;
+  //  def db;
 
   /****************** Important variables, likely to be adjusted *************/
+
   // maximum number of sites to retrieve in a single query.
   // It should be fairly large for production.
-  def maxBatchSize = 2;
+  // def maxBatchSize = 10;
+  def maxBatchSize = 1000;
 
   // Limit on the number of batches of sites to process.  This is useful
   // mostly for dry run testing, where the query will return the same sites over
   // and over again as they are not updated.
-  def maxBatches = 5;
+  // def maxBatches = 10;
+  def maxBatches = 1;
 
   /**************************************************************************/
 
@@ -216,6 +222,7 @@ class UpdateSiteWithTool {
   def siteService = ComponentManager.get("org.sakaiproject.site.api.SiteService");
   def toolManager = ComponentManager.get("org.sakaiproject.tool.api.ToolManager");
   def sqlService = ComponentManager.get("org.sakaiproject.db.api.SqlService");
+  def sessionManager = ComponentManager.get("org.sakaiproject.tool.api.SessionManager");
 
   /* ****************************** */
 
@@ -245,7 +252,10 @@ class UpdateSiteWithTool {
   
   // The db connection obtained from Sakai.  This is kept explictly visible so that it can be returned to Sakai 
   // in a finally block
-  def dbConnection;
+  //  def dbSql;
+  def dbConnection; // The sakai connection
+  def dbSql; // the Groovy sql object
+  Boolean originalAutoCommit;
 
   /****************************
    Dispatch method.  
@@ -264,18 +274,19 @@ class UpdateSiteWithTool {
 
     try {
 
-      dbConnection = sqlService.borrowConnection();
-      assert dbConnection != null;
-      db = getDbViaConnection(dbConnection);
+      dbSql = getDbConnection();
+      //      dbConnection = sqlService.borrowConnection();
+      // assert dbConnection != null;
+      //      db = getDbViaConnection(dbConnection);
 
       if (cmd == 'count') {
 	foundCmd = 1;
-	countSites(db);
+	countSites(dbSql);
       };
 
       if (cmd == 'process') {
 	foundCmd = 1;
-	processSites(db);
+	processSites(dbSql);
       }
       // This should be added back in when the command line processing is figured out.
       //     if (cmd == 'help' || (!foundCmd)) {
@@ -284,9 +295,27 @@ class UpdateSiteWithTool {
       summary();
     }
     finally {
-      sqlService.returnConnection(dbConnection);
+      releaseDbConnection();
     }
     
+  }
+
+  def getDbConnection() {
+    dbConnection = sqlService.borrowConnection();
+    assert dbConnection != null;
+    originalAutoCommit = dbConnection.getAutoCommit();
+    log.debug("original auto commit: " + originalAutoCommit);
+    dbConnection.setAutoCommit(false);
+    //    def db = new Sql(dbConnection);
+    dbSql = new Sql(dbConnection);
+    assert dbSql != null; 
+    return dbSql;
+  }
+
+  def releaseDbConnection() {
+    //    dbSql.getConnection().autoCommit = originalAutoCommit;
+    dbConnection.autoCommit = originalAutoCommit;
+    sqlService.returnConnection(dbConnection);
   }
 
   // Method to open connection to db given that a connection
@@ -414,6 +443,9 @@ class UpdateSiteWithTool {
     def moreSitesToProcess = 1;
     log.debug("in processSites");
 
+    def currentSession = sessionManager.getCurrentSession();
+    log.warn("currentSession: "+currentSession);
+
     def updatedSite = false;
 
     def swAll = new Stopwatch(comment:"AddTool ${toolDef.toolRegistration} summary");
@@ -422,6 +454,7 @@ class UpdateSiteWithTool {
     // while there are more sites to process and haven't 
     // exceeded the processing limit.
     while(moreSitesToProcess && (batchCnt < maxBatches))  {
+      currentSession.setActive();
       batchCnt++;
       log.debug("batchCnt: ${batchCnt}");
       rowsProcessedInBatch = 0;
@@ -458,6 +491,7 @@ class UpdateSiteWithTool {
       if (batchCnt > maxBatches) {
 	sitesAddedInBatch = 0;
       }
+      db.commit();
       swBatch.stop();
       // Record the performance of this batch.
       metric.warn(swBatch.toString());
