@@ -4,7 +4,7 @@
   <parent>
     <artifactId>sakai-ctools-providers-base</artifactId>
     <groupId>org.sakaiproject</groupId>
-    <version>SNAPSHOT</version>
+    <version>M2</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   

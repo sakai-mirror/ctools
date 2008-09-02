@@ -87,6 +87,8 @@
 			init-method="init">
 		<property name="logic"
 			ref="org.sakaiproject.tbook.logic.TextbookLogic" />
+		<property name="externalLogic" 
+			ref="org.sakaiproject.tbook.logic.ExternalLogic" />
 		<property name="umiacClient" 
 			ref="org.sakaiproject.util.api.umiac.UmiacClient" />
 	</bean>
