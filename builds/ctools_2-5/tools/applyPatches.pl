@@ -288,11 +288,11 @@ sub applyOneActionFile(%) {
 		if ($action eq "svnmxw") {
 		    $svncmd = "merge -x -w ";
 		    #Merge takes -c option
-		    $svnopt = "-c ";
+#		    $svnopt = "-c ";
 		}
 		elsif ($action eq "svnm") {
 		    $svncmd = "merge ";
-		    $svnopt = "-c ";
+#		    $svnopt = "-c ";
 		}
 
 		elsif ($action eq "svnc") {
@@ -311,10 +311,17 @@ sub applyOneActionFile(%) {
 		    else {$wCopy=$args{'builddir'}."/".$wCopy;}
 
 		    #If theres no destination then cherrypick it;
+		    #Cherry pick no has to do it the long way because a bug where 
+		    #If the path is removed in later versions it breaks!
+		    #Rewritten to be like the full form
 		    if (!$destRev) {
+			#Dest is Src - 1
+			$destRev = $srcRev-1;
 			#Append the revision to the option
-			$svnopt .= " $srcRev";
-			$svnDest = "";
+			$svnDest = "$svnSrc\@$srcRev";
+			$svnSrc  = "$svnSrc\@$destRev";
+#			$svnopt .= " $srcRev";
+			$svnopt = ""; 
 		    } else {
 			$svnDest = "$svnDest\@$destRev";
 			$svnSrc  = "$svnSrc\@$srcRev";
@@ -338,6 +345,7 @@ sub applyOneActionFile(%) {
 			my $line;
 			foreach $line (split(/\n/,$result)) {
 			    #Indicates a conflict in the merge :(
+			    #Check for more errors here
 			    if ($line =~ /^C(.*)/) {
 				    print "Conflict on: $1\n";
 				    $rc = 5;
