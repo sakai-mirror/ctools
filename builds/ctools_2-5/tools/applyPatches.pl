@@ -279,11 +279,18 @@ sub applyOneActionFile(%) {
 		if (!$wCopy) {
 		    ($svnSrc,$srcRev,$wCopy) = $target =~ m/(.*?)\@(.*?)\s+(.*)$/;
 		}
+		if ($destRev) {
+		    chomp($destRev);
+		}
 
+		if ($srcRev) {
+		    chomp($srcRev);
+		}
 		my $cmd="";
 		my $svnDebugCmds = "";
 		my $svnopt = "";
 		my $svncmd = "";
+		my ($cmdSrc,$cmdDest);
 		#If the action is to merge ignoreing whitespace, add this as an option
 		if ($action eq "svnmxw") {
 		    $svncmd = "merge -x -w ";
@@ -318,13 +325,13 @@ sub applyOneActionFile(%) {
 			#Dest is Src - 1
 			$destRev = $srcRev-1;
 			#Append the revision to the option
-			$svnDest = "$svnSrc\@$srcRev";
-			$svnSrc  = "$svnSrc\@$destRev";
+			$cmdSrc = "$svnSrc\@$srcRev";
+			$cmdDest  = "$svnSrc\@$destRev";
 #			$svnopt .= " $srcRev";
 			$svnopt = ""; 
 		    } else {
-			$svnDest = "$svnDest\@$destRev";
-			$svnSrc  = "$svnSrc\@$srcRev";
+			$cmdDest = "$svnDest\@$destRev";
+			$cmdSrc  = "$svnSrc\@$srcRev";
 			#Clear the options
 			$svnopt = "";
 		    }
@@ -333,8 +340,8 @@ sub applyOneActionFile(%) {
 			 $svnDebugCmds = " --dry-run ";
 		    }
 
-		    if ($svnopt || $svnDest) {
-			$cmd = "svn $svncmd $svnDebugCmds $svnopt $svnDest $svnSrc $wCopy";
+		    if ($svnopt || $cmdDest) {
+			$cmd = "svn $svncmd $svnDebugCmds $svnopt $cmdDest $cmdSrc $wCopy";
 			print "Running $cmd\n";
 			($rc,$result) = runShellCmdGetResult($cmd);
 			$log.=$result;
