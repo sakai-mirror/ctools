@@ -199,7 +199,7 @@ class UpdateSiteWithTool {
 
   // starting hour and minute
   def startHour = 10;
-  def startMin = 45;
+  def startMin = 55;
   def startDay = Calendar.WEDNESDAY;
   // def startDay = Calendar.THURSDAY;
 
