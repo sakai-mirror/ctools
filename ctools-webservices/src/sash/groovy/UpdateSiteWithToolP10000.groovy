@@ -38,6 +38,8 @@ class Driver {
 
   def main(String[] args) {
 
+    //    log.warn("******** start driver **********");
+    println "******** start driver **********";
     // would be good to read the desired action from
     // the command line.
 
@@ -53,7 +55,7 @@ class Driver {
 
 // Stopwatch is a class that will compute elapsed time (and count events if desired).
 
-// The Stopwatch code is copied from the Stopwatch.groovy file and explicitly
+// It is explicitly 
 // included here since the current sash implementation doesn't pick up other files.
 
 /*
@@ -180,15 +182,24 @@ class UpdateSiteWithTool {
 
   // maximum number of sites to retrieve in a single query.
   // It should be fairly large for production.
-  // def maxBatchSize = 10;
-  //  def maxBatchSize = 1000;
-  def maxBatchSize = 100;
+  def maxBatchSize = 1000;
+  // def maxBatchSize = 100;
+  // def maxBatchSize = 1000;
+
 
   // Limit on the number of batches of sites to process.  This is useful
   // mostly for dry run testing, where the query will return the same sites over
   // and over again as they are not updated.
   // def maxBatches = 10;
-  def maxBatches = 1;
+  def maxBatches = 10;
+
+  // starting hour and minute
+  def startHour = 2;
+  def startMin = 5;
+  def startDay = Calendar.WEDNESDAY;
+
+  // how long to sleep between time checks;
+  def sleepMinutes = 10 * 60;
 
   /**************************************************************************/
 
@@ -287,6 +298,10 @@ class UpdateSiteWithTool {
 
       if (cmd == 'process') {
 	foundCmd = 1;
+	// waitUntil(2,10); 	// wait until 2 am
+	log.info("processing will wait until ${startDay} ${startHour} ${startMin}");
+	waitUntil(startDay,startHour,startMin);
+	log.info("processing started");
 	processSites(dbSql);
       }
       // This should be added back in when the command line processing is figured out.
@@ -436,6 +451,32 @@ class UpdateSiteWithTool {
     log.warn(sw.toString());
   }
 
+  // method to allow gross scheduling of additions.
+  def waitUntil(waitDay,waitHour,waitMin) {
+    log.warn("wait for: day: ${waitDay} waitHour: ${waitHour} waitMin: ${waitMin}");
+    log.warn("sleep interval: ${sleepMinutes}");
+    def cnt = 50;
+    while (cnt-- > 0) {
+      // while(true) {
+      def now = Calendar.getInstance();
+      now.setTime(new Date());
+      def day = now.get(Calendar.DAY_OF_WEEK);
+      def hour = now.get(Calendar.HOUR_OF_DAY);
+      def minute = now.get(Calendar.MINUTE);
+
+      log.warn("current: day: ${day} hour: ${hour} min: ${minute}");
+
+      if (waitDay == day && waitHour <= hour && waitMin <= minute) {
+	//if (waitHour <= hour && waitMin <= minute) {
+	log.warn("found start time");
+	return;
+      }
+      //print ".";
+      //log.warn("not sleeping!");
+      sleep sleepMinutes * 1000;
+    }
+  }
+
   // Process the list of eligable sites.
 
   void processSites(Sql db) {
@@ -474,7 +515,7 @@ class UpdateSiteWithTool {
 	rowsProcessedInBatch++;
 
 	if (siteEligibleForUpdate((String)queryRow.SITE_ID)) {
-	  log.info("processing site: ${queryRow.SITE_ID}");
+	  log.warn("processing site: ${queryRow.SITE_ID}");
 	  if (!isDryRun()) {
 	    placeTool(queryRow.SITE_ID,toolDef.toolRegistration,toolDef.newPageName);
 	    updatedSite = true;
