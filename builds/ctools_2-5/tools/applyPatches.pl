@@ -273,16 +273,16 @@ sub applyOneActionFile(%) {
 	    elsif ($action eq "svnm" || $action eq "svnmxw" || $action eq "svnc")  {
 		print "svn action\n";
 		my ($svnSrc,$srcRev,$svnDest,$destRev,$wCopy);
-		#First form with 5 parameters
+		#First form try to pick off 5 parameters
 		($svnSrc,$srcRev,$svnDest,$destRev,$wCopy) = $target =~ m/(.*?)\@(.*?)\s+(.*?)\@(.*?)\s+(.*)$/;
-		#Second Form with 3 parameters (cherry pick or copy)
+		#Second form if first form fails with 3 parameters (cherry pick or copy)
 		if (!$wCopy) {
 		    ($svnSrc,$srcRev,$wCopy) = $target =~ m/(.*?)\@(.*?)\s+(.*)$/;
 		}
+
 		if ($destRev) {
 		    chomp($destRev);
 		}
-
 		if ($srcRev) {
 		    chomp($srcRev);
 		}
@@ -295,17 +295,17 @@ sub applyOneActionFile(%) {
 		if ($action eq "svnmxw") {
 		    $svncmd = "merge -x -w ";
 		    #Merge takes -c option
-#		    $svnopt = "-c ";
+#		    $svnopt = "-c $srcRev";
 		}
 		elsif ($action eq "svnm") {
 		    $svncmd = "merge ";
-#		    $svnopt = "-c ";
+#		    $svnopt = "-c $srcRev";
 		}
 
 		elsif ($action eq "svnc") {
 		    $svncmd = "copy ";		    
 		    #Copy takes -r option
-		    $svnopt = "-r ";
+		    $svnopt = "-r $srcRev";
 		}
 
 		my $result = "";
@@ -321,17 +321,21 @@ sub applyOneActionFile(%) {
 		    #Cherry pick no has to do it the long way because a bug where 
 		    #If the path is removed in later versions it breaks!
 		    #Rewritten to be like the full form
-		    if (!$destRev) {
-			#Dest is Src - 1
-			$destRev = $srcRev-1;
-			#Append the revision to the option
-			$cmdSrc = "$svnSrc\@$srcRev";
-			$cmdDest  = "$svnSrc\@$destRev";
-#			$svnopt .= " $srcRev";
-			$svnopt = ""; 
-		    } else {
-			$cmdDest = "$svnDest\@$destRev";
+		    #For the copy case we just want the source
+		    if ($action eq "svnc") {
+			$cmdSrc = "$svnSrc";
+		    }
+		    else {
+			#3 parameter case
+			if (!$destRev) {
+			    #Dest is the last revision N-1
+			    $destRev = $srcRev-1;
+			    $svnDest = $svnSrc;
+			    #Append the revision to the paths
+			}
+			#Do this for both 3 and 5 parameter
 			$cmdSrc  = "$svnSrc\@$srcRev";
+			$cmdDest = "$svnDest\@$destRev";
 			#Clear the options
 			$svnopt = "";
 		    }
