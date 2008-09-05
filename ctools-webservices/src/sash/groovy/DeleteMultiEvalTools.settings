@@ -1,6 +1,8 @@
 // $HeadURL: https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices/src/sash/groovy/UpdateSiteWithTool_V2.groovy $
 // $Id: UpdateSiteWithTool_V2.groovy 51751 2008-09-03 15:59:50Z dlhaines@umich.edu $
 
+// This will control a run of the script to remove pages from my workspace which
+// have multiple evalutation tools.
 
 static class RunSettings {
 
@@ -11,17 +13,17 @@ static class RunSettings {
   /****************** Important variables, likely to be adjusted *************/
 
   // what kind of processing to do.
-  // static String cmd = 'count';
+  //  static String cmd = 'count';
   static String cmd = 'process';
 
   // maximum number of sites to retrieve in a single query.
   // It should be fairly large for production.
-  static def maxBatchSize = 2000;
+  static def maxBatchSize = 1000;
 
   // Limit on the number of batches of sites to process.  This is useful
   // mostly for dry run testing, where the query will return the same sites over
   // and over again as they are not updated.
-  static def maxBatches = 10;
+  static def maxBatches = 5;
 
   // starting hour and minute
   static def startHour = 13
@@ -37,8 +39,7 @@ static class RunSettings {
   static def startCnt = 500;  
 
   // how long to sleep between time checks;
-  //  static def sleepSeconds = 10 * 60;
-  static def sleepSeconds = 1 * 60;
+  static def sleepSeconds = 5 * 60;
 
   //  Do / don't actually do the update.
   //static Boolean dryRun = true;
@@ -54,25 +55,15 @@ static class RunSettings {
   // Specify which tool configuration infomation to use.
   static def toolDef = evalNames;
 
-  // List of sites to ignore, e.g. ~admin
-
   // Per John Leasia, ignore these sites.
   static def ignoreSites = [  '~admin','!user','!user.friend','!user.guest','!user.uniqname','!user.liteguest','~'];
 
-  // Sql to return a list of candidate sites to be updated. (These sites are candidates since some might be returned
+  // Sql to return a list of candidate site / pages to be updated. (This is not a final list since some might be returned
   // that will be excluded based on list of exception sites.)
-
-  //  static def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${RunSettings.toolDef.toolRegistration}) order by SITE_ID) where rownum <= ${RunSettings.maxBatchSize}";
-
-  //  static def candidateDupToolSitePageSql = "select SITE_ID, PAGE_ID from SAKAI_SITE_TOOL where PAGE_ID in (select PAGE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%' and REGISTRATION = ${RunSettings.toolDef.toolRegistration} group by PAGE_ID HAVING count(*) > 1)";
 
   static def candidateDupToolSitePageSql = "select SITE_ID, PAGE_ID from (select SITE_ID,PAGE_ID from SAKAI_SITE_TOOL where PAGE_ID in (select DISTINCT PAGE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%' and REGISTRATION = '${RunSettings.toolDef.toolRegistration}' group by PAGE_ID HAVING count(*) > 1) group by SITE_ID, PAGE_ID) where rownum <= ${RunSettings.maxBatchSize}";
 
   // Sql to count the total number of candidate sites.
-  //  static def countCandidateSitesSql = "select count(distinct SITE_ID) from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${RunSettings.toolDef.toolRegistration})";
-
-  //  static def countDupToolSites = "select count(*) from SAKAI_SITE_TOOL where PAGE_ID in (select PAGE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%' and REGISTRATION = '${RunSettings.toolDef.toolRegistration}' group by PAGE_ID HAVING count(*) > 1)";
-
 
   static def countDupToolSitesSql = "select count(*) from (select SITE_ID,PAGE_ID from SAKAI_SITE_TOOL where PAGE_ID in (select DISTINCT PAGE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%' and REGISTRATION = '${RunSettings.toolDef.toolRegistration}' group by PAGE_ID HAVING count(*) > 1) group by SITE_ID, PAGE_ID)";
 }
