@@ -324,6 +324,7 @@ sub applyOneActionFile(%) {
 		    #For the copy case we just want the source
 		    if ($action eq "svnc") {
 			$cmdSrc = "$svnSrc";
+			$cmdDest = "";
 		    }
 		    else {
 			#3 parameter case
