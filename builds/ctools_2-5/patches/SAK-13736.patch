@@ -1,13 +1,5 @@
 Update based on SAK-13736
 
-#Because of a change made in revision 37475 (SAK-12073) it messes up the whitespace.
-=svnmxw= https://source.sakaiproject.org/svn/msgcntr/trunk/@38119 msgcntr/
-
-#This would 'not' patch, taken care of as part of the diff.
-== https://source.sakaiproject.org/svn/msgcntr/trunk/@38136 msgcntr/
-
-=svnm= https://source.sakaiproject.org/svn/msgcntr/trunk/@39087 msgcntr/
-
 =svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/messageforums-app/src/webapp/images/@47427 https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/messageforums-app/src/webapp/images/@47426 msgcntr/messageforums-app/src/webapp/images/
 
 #Copy from svn instead of the file system
@@ -51,8 +43,6 @@ Update based on SAK-13736
 
 =svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/@48388 msgcntr/
 
-=svnm= https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/@49082 msgcntr/
-
 #SAK-14081 -- Wait on this for awhile because of database change.
 == https://source.sakaiproject.org/svn/msgcntr/branches/SAK-13736/@49421 msgcntr/
 
@@ -67,42 +57,6 @@ Update based on SAK-13736
 +++ SAK-13736.tmp
 @@ -0,0 +1 @@
 + 
-Adding whitespace back to PrivateMessagesTool so patch completes
-Index: msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java
-===================================================================
---- msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java     (revision 47945)
-+++ msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java     (working copy)
-@@ -159,6 +159,8 @@
-   public static final String MESSAGE_STATISTICS_PG="pvtMsgStatistics";
-   public static final String MESSAGE_HOME_PG="pvtMsgHpView";
-   public static final String MESSAGE_REPLY_PG="pvtMsgReply";
-+
-+
-   //SAKAI-1050
-   public static final String MESSAGE_FORWARD_PG="pvtMsgForward";
-
-Index: msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java
-===================================================================
---- msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java
-+++ msgcntr/messageforums-app/src/java/org/sakaiproject/tool/messageforums/PrivateMessagesTool.java
-@@ -1913,7 +1913,7 @@
-     
-     PrivateMessage pMsg= constructMessage() ;
-     
--    if((SET_AS_YES).equals(getComposeSendAsPvtMsg()))
-+    if(!getBooleanEmailOut())
-     {
-       prtMsgManager.sendPrivateMessage(pMsg, getRecipients(), false); 
-     }
-@@ -2853,7 +2853,7 @@
-    // MembershipItem itemTmp2 = (MembershipItem) courseMemberMap.get(currentMessage.getCreatedBy());
- 
-     
--    if((SET_AS_YES).equals(getComposeSendAsPvtMsg()))
-+    if(!getBooleanEmailOut())
-     {
-	
-       prtMsgManager.sendPrivateMessage(rrepMsg, returnSet, false);//getRecipients()  replyalllist
 Index: msgcntr/messageforums-api/src/bundle/org/sakaiproject/api/app/messagecenter/bundle/Messages.properties
 ===================================================================
 --- msgcntr/messageforums-api/src/bundle/org/sakaiproject/api/app/messagecenter/bundle/Messages.properties	(revision 46869)
@@ -874,12 +828,12 @@ Index: msgcntr/messageforums-app/src/webapp/jsp/pvtMsgReply.jsp
 -		    			  <f:selectItem itemValue="no" itemLabel="#{msgs.pvt_send_as_email}"/>
 -    			    </h:selectOneRadio>
 -				</h:panelGroup>
-+			 <h:panelGroup styleClass="shorttext" rendered= "#{PrivateMessagesTool.dispSendEmailOut}">
++			 <h:panelGroup styleClass="shorttext" rendered= "false">
 +					<h:outputLabel><h:outputText value="#{msgs.pvt_send_cc}"/></h:outputLabel>
 +			  </h:panelGroup>
 +			   
 +			  
-+			  <h:panelGroup styleClass="checkbox" style="white-space: nowrap;" rendered= "#{PrivateMessagesTool.dispSendEmailOut}">
++			  <h:panelGroup styleClass="checkbox" style="white-space: nowrap;" rendered= "false">
 +			  <h:selectBooleanCheckbox value="#{PrivateMessagesTool.booleanEmailOut}" id="send_email_out" >
 +			  </h:selectBooleanCheckbox>
 +		   <h:outputLabel for="send_email_out"><h:outputText value="#{msgs.pvt_send_as_email}"/></h:outputLabel>
