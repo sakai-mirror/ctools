@@ -139,13 +139,13 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  #
   ## course evaluation tool
   ## The trunk builds but the umich branch is currently missing some files for mvn2
- evaluation          -r52385     https://source.sakaiproject.org/contrib/evaluation/branches/CT-623
+ evaluation          -r52722     https://source.sakaiproject.org/contrib/evaluation/branches/CT-623
  #Melete
  melete              -r50986     https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-5_sak-2-5-0
 
  # we really should not pull from trunk to production, but we were not given any choice for these
  # in the evaluation project.
- hierarchy           -r48884     https://source.sakaiproject.org/contrib/caret/hierarchy/tags/1.1.1/ 
+ hierarchy           -r49535     https://source.sakaiproject.org/contrib/caret/hierarchy/tags/1.2.0/ 
  discussion          -r50392     https://source.sakaiproject.org/contrib/deprecated/discussion/trunk/
 
  #Locally maintained osp until 2.6
@@ -158,7 +158,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
 #Important, location of patches, specify a specific revision or leave as PROPERTY which will be <= the candidate property version! :)
  ctools-patches      -rPROPERTY    https://source.sakaiproject.org/svn/ctools/trunk/builds/ctools_2-5/patches/ 
 
- sakai-portlets	    -r51936	  https://source.sakaiproject.org/contrib/sakai-portlets/trunk/
+ sakai-portlets	    -r52745	  https://source.sakaiproject.org/contrib/sakai-portlets/tags/release-0.1/
  sitemaker	    -r51876       https://source.sakaiproject.org/contrib/sakai-portlets/branches/sitemaker/
 
 #
