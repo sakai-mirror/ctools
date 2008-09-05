@@ -4,8 +4,6 @@
 
 static class RunSettings {
 
-  // type of processing to use.
-  static String cmd = 'count';
 
   // control tracing
   static def verbose = 1;
@@ -13,7 +11,8 @@ static class RunSettings {
   /****************** Important variables, likely to be adjusted *************/
 
   // what kind of processing to do.
-  //  static def cmd = "process";
+  // static String cmd = 'count';
+  static String cmd = 'process';
 
   // maximum number of sites to retrieve in a single query.
   // It should be fairly large for production.
@@ -25,10 +24,11 @@ static class RunSettings {
   static def maxBatches = 10;
 
   // starting hour and minute
-  static def startHour = 0;
-  static def startMin = 30;
+  static def startHour = 13
+    static def startMin = 05;
   //def startDay = Calendar.WEDNESDAY;
-  static def startDay = Calendar.THURSDAY;
+  //  static def startDay = Calendar.THURSDAY;
+  static def startDay = Calendar.FRIDAY;
 
   // limit the number of times will check in the wait routine. 
   // This prevents waiting forever, but means the job will start regardless when the 
@@ -37,10 +37,12 @@ static class RunSettings {
   static def startCnt = 500;  
 
   // how long to sleep between time checks;
-  static def sleepSeconds = 10 * 60;
+  //  static def sleepSeconds = 10 * 60;
+  static def sleepSeconds = 1 * 60;
 
   //  Do / don't actually do the update.
-  static Boolean dryRun = true;
+  //static Boolean dryRun = true;
+  static Boolean dryRun = false;
 
   // Define the tool to be added along with the desired page name and tool name.
   static def evalNames = ['toolRegistration':'sakai.rsf.evaluation', 'newPageName':"Teaching Questionnaires", 'toolName': "Teaching Questionnaires"];
@@ -62,7 +64,9 @@ static class RunSettings {
 
   //  static def candidateSitesSql = "select SITE_ID from (select distinct SITE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${RunSettings.toolDef.toolRegistration}) order by SITE_ID) where rownum <= ${RunSettings.maxBatchSize}";
 
-  static def candidateDupToolSitePageSql = "select SITE_ID, PAGE_ID from SAKAI_SITE_TOOL where PAGE_ID in (select PAGE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%' and REGISTRATION = ${RunSettings.toolDef.toolRegistration} group by PAGE_ID HAVING count(*) > 1)";
+  //  static def candidateDupToolSitePageSql = "select SITE_ID, PAGE_ID from SAKAI_SITE_TOOL where PAGE_ID in (select PAGE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%' and REGISTRATION = ${RunSettings.toolDef.toolRegistration} group by PAGE_ID HAVING count(*) > 1)";
+
+  static def candidateDupToolSitePageSql = "select SITE_ID, PAGE_ID from (select SITE_ID,PAGE_ID from SAKAI_SITE_TOOL where PAGE_ID in (select DISTINCT PAGE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%' and REGISTRATION = '${RunSettings.toolDef.toolRegistration}' group by PAGE_ID HAVING count(*) > 1) group by SITE_ID, PAGE_ID) where rownum <= ${RunSettings.maxBatchSize}";
 
   // Sql to count the total number of candidate sites.
   //  static def countCandidateSitesSql = "select count(distinct SITE_ID) from SAKAI_SITE_TOOL where SITE_ID like '~%'and SITE_ID not in (select SITE_ID from SAKAI_SITE_TOOL where REGISTRATION = ${RunSettings.toolDef.toolRegistration})";
@@ -70,5 +74,5 @@ static class RunSettings {
   //  static def countDupToolSites = "select count(*) from SAKAI_SITE_TOOL where PAGE_ID in (select PAGE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%' and REGISTRATION = '${RunSettings.toolDef.toolRegistration}' group by PAGE_ID HAVING count(*) > 1)";
 
 
-  static def countDupToolSites = "select count(*) from (select SITE_ID,PAGE_ID from SAKAI_SITE_TOOL where PAGE_ID in (select DISTINCT PAGE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%' and REGISTRATION = '${RunSettings.toolDef.toolRegistration}' group by PAGE_ID HAVING count(*) > 1) group by SITE_ID, PAGE_ID)";
+  static def countDupToolSitesSql = "select count(*) from (select SITE_ID,PAGE_ID from SAKAI_SITE_TOOL where PAGE_ID in (select DISTINCT PAGE_ID from SAKAI_SITE_TOOL where SITE_ID like '~%' and REGISTRATION = '${RunSettings.toolDef.toolRegistration}' group by PAGE_ID HAVING count(*) > 1) group by SITE_ID, PAGE_ID)";
 }

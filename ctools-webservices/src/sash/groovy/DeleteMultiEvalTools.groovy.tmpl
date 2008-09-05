@@ -77,7 +77,7 @@ class DeleteMultiEvalTools {
   def batchCnt = 0;
 
   // How many were actually added?
-  def sitesAddedInBatch = 0;
+  def sitesUpdateedInBatch = 0;
 
   // final number of updated sites.
   def totalSitesUpdated = 0;
@@ -118,7 +118,7 @@ class DeleteMultiEvalTools {
 
       if (cmd == 'count') {
 	foundCmd = 1;
-	countSites(dbSql,RunSettings.countDupToolSites);
+	countSites(dbSql,RunSettings.countDupToolSitesSql);
       };
 
       if (cmd == 'process') {
@@ -127,7 +127,7 @@ class DeleteMultiEvalTools {
 	log.info("processing will wait until ${RunSettings.startDay} ${RunSettings.startHour} ${RunSettings.startMin}");
 	waitUntil(RunSettings.startDay,RunSettings.startHour,RunSettings.startMin,RunSettings.startCnt);
 	log.info("processing started");
-	processSites(dbSql,RunSettings.candidateDupToolSitePageSql);
+	processPages(dbSql,RunSettings.candidateDupToolSitePageSql);
       }
       // This should be added back in when the command line processing is figured out.
       //     if (cmd == 'help' || (!foundCmd)) {
@@ -251,7 +251,7 @@ class DeleteMultiEvalTools {
   // remove a page from a site.
   def removePageFromSiteUsingPageId(String siteId, String pageId) {
 
-    log.info("remove site: ${siteId} page: ${pageId}");
+    log.info("removesite/page: site: ${siteId} page: ${pageId}");
     try {
       Site siteEdit = siteService.getSite(siteId);
       SitePage page = siteEdit.getPage(pageId);
@@ -261,7 +261,7 @@ class DeleteMultiEvalTools {
     catch (Exception e) {
       log.error("error deleting page from site",e);
     }
-    log.info("remove of ${pageId} was successful");
+    log.info("removal of ${pageId} was successful");
   }
 
   // add the tool to the site.
@@ -356,8 +356,8 @@ class DeleteMultiEvalTools {
       batchCnt++;
       log.debug("batchCnt: ${batchCnt}");
       rowsProcessedInBatch = 0;
-      sitesAddedInBatch = 0;
-      def swBatch = new Stopwatch(comment:"AddTool ${RunSettings.toolDef.toolRegistration} batch summary");
+      sitesUpdateedInBatch = 0;
+      def swBatch = new Stopwatch(comment:"DeletePage: ${RunSettings.toolDef.toolRegistration} batch summary");
       swBatch.start();
       // run the candidate sql query and process each resulting site.
       db.eachRow(processSql) { queryRow ->
@@ -371,12 +371,12 @@ class DeleteMultiEvalTools {
 	rowsProcessedInBatch++;
 
 	// if (siteEligibleForUpdate((String)queryRow.SITE_ID)) {
-	if (pageEligibleForUpdate((String)queryRow.SITE_ID,(String)queryRow.PAGE_ID)) {
-	  log.warn("processing site: ${queryRow.SITE_ID}, ${queryRow.PAGE_ID}");
+	if (pageEligibleForDelete((String)queryRow.SITE_ID,(String)queryRow.PAGE_ID)) {
+	  log.warn("deletable site/page: ${queryRow.SITE_ID}, ${queryRow.PAGE_ID}");
 	  if (!isDryRun()) {
-	    
+	    removePageFromSiteUsingPageId(queryRow.SITE_ID, queryRow.PAGE_ID);
 	    updatedSite = true;
-	    sitesAddedInBatch++;
+	    sitesUpdateedInBatch++;
 	    totalSitesUpdated++;
 	  }
 	}
@@ -386,15 +386,15 @@ class DeleteMultiEvalTools {
 	metric.debug("* totalSitesUpdated: ${totalSitesUpdated}");
       }
       metric.info("rowsProcessedInBatch: ${rowsProcessedInBatch}");
-      metric.info("sitesAddedInBatch: ${sitesAddedInBatch}");
+      metric.info("sitesUpdateedInBatch: ${sitesUpdateedInBatch}");
       if (batchCnt > RunSettings.maxBatches) {
-	sitesAddedInBatch = 0;
+	sitesUpdateedInBatch = 0;
       }
       db.commit();
       swBatch.stop();
       // Record the performance of this batch.
       metric.warn(swBatch.toString());
-      moreSitesToProcess = (sitesAddedInBatch > 0);
+      moreSitesToProcess = (sitesUpdateedInBatch > 0);
     }
     swAll.stop();
     // Record the performance of the whole run.
