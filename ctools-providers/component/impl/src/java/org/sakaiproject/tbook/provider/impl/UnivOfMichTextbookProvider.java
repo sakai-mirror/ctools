@@ -232,20 +232,20 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 			{
 				// ignore
 			}
-			String title = subject + "-" + catalog_nbr + " " + class_section;
+			course.setTitle(subject + " " + catalog_nbr + " " + class_section);
 			try
 			{
 				String class_title = jsonObject.getString("class_title");
 				if(class_title != null && ! class_title.trim().equals(""))
 				{
-					title += " - " + class_title;
+					course.setDescription(class_title);
 				}
 			}
 			catch(Exception e)
 			{
 				// ignore
 			}
-			course.setTitle(title );
+			
 			try
 			{
 				String has_books = jsonObject.getString("has_books");
@@ -382,62 +382,62 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 					if(item_type != null && item_type.trim().toLowerCase().equals("book"))
 					{
 						String isbn = item.getString("isbn");
+						newItem = new CourseBook();
+						CourseBook newBook = (CourseBook) newItem;
+
 						List<Book> bookmatches = logic.getBooks(isbn);
 						if(bookmatches == null || bookmatches.isEmpty())
 						{
 							// need to log this as an invalid book?
 							logger.warn("Could not find book (ISBN: " + isbn + ") for course: ");
-							continue;
+							newBook.setIsbn(isbn);
 						}
 						else
 						{
-							newItem = new CourseBook();
-							CourseBook newBook = (CourseBook) newItem;
-							
 							Book book = bookmatches.get(0);
 							newBook.setIsbn(book.getIsbn());
-							
-							boolean reserve_requested = false;
-							try
-							{
-								reserve_requested = item.getBoolean("on_reserve");
-							}
-							catch(Exception e)
-							{
-								// ignore -- let reserve_requested remain false
-							}
-							newBook.setLibraryReserveRequested(reserve_requested);
-							
-							String preferredBookseller = null;
-							try
-							{
-								preferredBookseller = item.getString("preferred_vendor");
-								if(preferredBookseller == null || preferredBookseller.trim().equals("") || preferredBookseller.trim().toLowerCase().equals("null"))
-								{
-									preferredBookseller = null;
-								}
-							}
-							catch(Exception e)
-							{
-								// ignore -- let preferredBookseller remain null
-							}
-							newBook.setPreferredBookseller(preferredBookseller);
-							
-							BigDecimal retailPrice = null;
-							String val = null;
-							try
-							{
-								val = item.getString("msrp");
-								retailPrice = new BigDecimal(val);
-							}
-							catch(Exception e)
-							{
-								// ignore -- let price remain null
-								logger.debug("Problem reading price: " + val + " --> " + e);
-							}
-							newBook.setRetailPrice(retailPrice);
-							//course.addBook(book, item_comment, status, late_use, reserve_requested, preferredBookseller, retailPrice);
 						}
+						
+						boolean reserve_requested = false;
+						try
+						{
+							reserve_requested = item.getBoolean("on_reserve");
+						}
+						catch(Exception e)
+						{
+							// ignore -- let reserve_requested remain false
+						}
+						newBook.setLibraryReserveRequested(reserve_requested);
+						
+						String preferredBookseller = null;
+						try
+						{
+							preferredBookseller = item.getString("preferred_vendor");
+							if(preferredBookseller == null || preferredBookseller.trim().equals("") || preferredBookseller.trim().toLowerCase().equals("null"))
+							{
+								preferredBookseller = null;
+							}
+						}
+						catch(Exception e)
+						{
+							// ignore -- let preferredBookseller remain null
+						}
+						newBook.setPreferredBookseller(preferredBookseller);
+						
+						BigDecimal retailPrice = null;
+						String val = null;
+						try
+						{
+							val = item.getString("msrp");
+							retailPrice = new BigDecimal(val);
+						}
+						catch(Exception e)
+						{
+							// ignore -- let price remain null
+							logger.debug("Problem reading price: " + val + " --> " + e);
+						}
+						newBook.setRetailPrice(retailPrice);
+						//course.addBook(book, item_comment, status, late_use, reserve_requested, preferredBookseller, retailPrice);
 					}
 					else
 					{
