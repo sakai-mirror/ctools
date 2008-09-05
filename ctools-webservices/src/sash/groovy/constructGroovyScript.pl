@@ -1,13 +1,16 @@
-#!/usr/bin/env perl -n
-# $HeadURL:$
-# $Id:$
+#!/usr/bin/env perl 
+# $HeadURL$
+# $Id$
+
+#$verbose = 1;
 
 print "// groovy script from template on ".`date`;
 while(<>) {
   $includeFile = undef();
+  print "line: [$_]" if ($verbose);
   chomp;
   $line = $_;
-  if ($line =~ m/^\s*include:\s*(.+)/) {
+  if ($line =~ m/^\s*include:\s*([^;]+);?/) {
     $includeFile = $1;
   }
   includeFile($includeFile) if ($includeFile);

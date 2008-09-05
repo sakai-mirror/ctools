@@ -1,6 +1,9 @@
+/* *************** Stopwatch ************* */
 
-// $HeadURL$
-// $Id$
+// Stopwatch is a class that will compute elapsed time (and count events if desired).
+
+// It is explicitly 
+// included here since the current sash implementation doesn't pick up other files.
 
 /*
   benchmark / stats
@@ -12,8 +15,11 @@
   ?? Should there be a "lap" or "sofar" method that gives result without
   having to call stop?  It uses the current time as the temporary stop value.
 
-  Constructor should have a 1 MS sleep to avoid problems with very fast 
+  TTD 
+  - Constructor should have a 1 MS sleep to avoid problems with very fast 
   elapsed times.
+  - Should have explicit constructor that takes a string since it is too easy 
+  to forget to pass in the comment as named argument.
 
   s1 = new Stopwatch("comment")
   s1.start(); // start recording stats
@@ -25,7 +31,7 @@
   s1.summaryNums(); returns list of elapsed MS, num events, and events / MS.
   s1.summary() // returns a summary string elapsed, num events, avg
   s1.toString() // provide a default summary naming the stopwatch and giving elapsed time, num events and event rate.
- */
+*/
 
 class Stopwatch {
   
@@ -66,8 +72,8 @@ class Stopwatch {
 
   // compute the summary values
   def summaryNums() {
-    // if the watch hasn't been stopped give an interim value based on 
-    // the current time.
+    // if the watch hasn't been started / stopped use an interim value based on 
+    // the current time.  This allow computing the results so far.
     def useStartMS = (startMS ? startMS : System.currentTimeMillis());
     def useStopMS = (stopMS ? stopMS : System.currentTimeMillis());
     def elapsed = useStopMS-useStartMS;
@@ -78,19 +84,22 @@ class Stopwatch {
     else {
       rate = -1;
     }
+    // return a list of the important numbers.
     [elapsed,eventCnt,rate];
   }
 
-  // give a summary 
+  // return a printable summary
   def summary() {
     def summary = summaryNums();
     // format the rate
     Float tmp = summary[2];
-    def formatted = sprintf("%4.2f",tmp);
+    def formatted = sprintf("%4.3f",tmp);
     "elapsed: ${summary[0]} events: ${summary[1]} events_per_MS: ${formatted}";
   }
   
+  // provide a useful default summary string.
   def String toString() {
     "${comment} "+summary();
   }
 }
+
