@@ -40,8 +40,9 @@ $HeadURL$
 
 
   <!-- change source as required -->
+  <!-- Edit the snapshots last -->
   <target name="editCtools" 
-	  depends="editSrcGlobal,editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editOCW2JWS,editRwikiSrc,updatePomWithCToolsPom,editSnapshot,editPoms" >
+	  depends="editSrcGlobal,editGradTools,editDefaultTools,editGrades,editLinktool,editCToolsJWS,editOCW2JWS,editRwikiSrc,updatePomWithCToolsPom,editPoms,editSnapshot" >
     <!-- edit the files that need to be modified for ctools -->
   </target>
 
@@ -186,10 +187,17 @@ $HeadURL$
 	  <param name="toolname" value="providers"/>
           <param name="modulename" value="component"/>
       </antcall>
+      <!--
       <antcall target="doRegexpPoms">
 	  <param name="toolname" value="course-management"/>
 	  <param name="modulename" value="cm-impl/hibernate-pack"/>
       </antcall>
+      -->
+
+      <!-- Need to fix sakai-portlets by uncompressing a tar file -->
+      <untar src="${work.dir}/build/sakai-portlets/poms-for-2-5-x.tar"
+	     dest="${work.dir}/build/sakai-portlets" overwrite="true" />
+
   </target>
 
   <!-- Remove select beans from a tool -->
