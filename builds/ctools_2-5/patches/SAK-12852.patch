@@ -1,8 +1,22 @@
 #SAK-12582
 =svnm= https://source.sakaiproject.org/svn/calendar/trunk@41888 calendar
 
-#Fill in the SAK or something unique, leave it like this if theres no real patch
+=svnm= https://source.sakaiproject.org/svn/calendar/trunk@42154 calendar
+
 --- /dev/null
 +++ SAK-12582.tmp
 @@ -0,0 +1 @@
 + 
+#Needs this import from some other patch.
+Index: calendar/calendar-tool/tool/src/java/org/sakaiproject/calendar/tool/CalendarAction.java
+===================================================================
+--- calendar/calendar-tool/tool/src/java/org/sakaiproject/calendar/tool/CalendarAction.java   (revision 47917)
++++ calendar/calendar-tool/tool/src/java/org/sakaiproject/calendar/tool/CalendarAction.java   (working copy)
+@@ -32,6 +32,7 @@
+ import java.util.LinkedHashMap;
+ import java.util.List;
+ import java.util.Map;
++import java.util.Properties;
+ import java.util.Set;
+ import java.util.TimeZone;
+ import java.util.Vector;
