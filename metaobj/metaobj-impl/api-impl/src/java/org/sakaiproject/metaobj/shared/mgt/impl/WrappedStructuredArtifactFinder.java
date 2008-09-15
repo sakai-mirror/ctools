@@ -24,6 +24,7 @@ package org.sakaiproject.metaobj.shared.mgt.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,7 +56,8 @@ public class WrappedStructuredArtifactFinder  extends FileArtifactFinder {
    private static Log log = LogFactory.getLog(WrappedStructuredArtifactFinder.class);
 
    public Collection findByOwnerAndType(Id owner, String type) {
-      Collection<ContentResource> artifacts = findArtifacts(type);
+      Set<String> userCollectionIds = (Set<String>) getContentHostingService().getCollectionMap().keySet();
+      Collection<ContentResource> artifacts = findArtifacts(type, userCollectionIds);
       ArrayList<ContentResourceArtifact> returned = new ArrayList<ContentResourceArtifact>();
 
       if (owner == null)
@@ -146,45 +148,30 @@ public class WrappedStructuredArtifactFinder  extends FileArtifactFinder {
 	 *             StructuredArtifactFinder
 	 * @param type
 	 *            The Form type to retrieve; may be null to get all types
+	 * @param collectionIds
+	 *            A set of collection IDs; if a resource does not belong to one of these, it will be
+	 *            filtered before checking access; may be null to skip pre-filtering based on collection
 	 * @return A filtered collection of ContentResource objects for readable Forms of the specific type
 	 */
 	@Deprecated
-	protected Collection<ContentResource> findArtifacts(String type) {
+	protected Collection<ContentResource> findArtifacts(String type, Set<String> collectionIds) {
 		//FIXME: Document exactly why WrappedStructuredArtifactFinder.findByType() returns null
 		//TODO: Refactor Wrapped vs. Structured
+		MetaobjFormFilter filter = new MetaobjFormFilter(type, collectionIds);
 		ArrayList<ContentResource> artifacts = new ArrayList<ContentResource>();
+		
 		int page = 0;
-		Collection<ContentResource> rawResources = getContentHostingService()
-				.getResourcesOfType(ResourceType.TYPE_METAOBJ, getFinderPageSize(), page);
-		while (rawResources != null && rawResources.size() > 0) {
-			artifacts.addAll(filterArtifacts(rawResources, type));
+		Collection<ContentResource> rawResources = getContentHostingService().getResourcesOfType(
+				ResourceType.TYPE_METAOBJ, filter, getFinderPageSize(), page);
+		
+		while (rawResources != null) {
+			artifacts.addAll(rawResources);
 			page++;
 			rawResources = getContentHostingService().getResourcesOfType(
-					ResourceType.TYPE_METAOBJ, getFinderPageSize(), page);
+					ResourceType.TYPE_METAOBJ, filter, getFinderPageSize(), page);
 		}
+		
 		return artifacts;
 	}
    
-   /**
-	 * Filter a collection of artifacts down to a specific Structured Object/Form type, in place.
-	 * 
-	 * @param artifacts
-	 *            The Collection<ContentResource> to filter - should contain only resources for Forms
-	 * @param type
-	 *            The Form type filter on; may be null to get all Form types
-	 * @return The original collection of artifacts, with non-matching Forms
-	 *         removed
-	 */
-	protected Collection<ContentResource> filterArtifacts(Collection<ContentResource> artifacts, String type) {
-		for (Iterator<ContentResource> i = artifacts.iterator(); i.hasNext();) {
-			ContentResource resource = i.next();
-			String currentType = resource.getProperties().getProperty(ResourceProperties.PROP_STRUCTOBJ_TYPE);
-			if (currentType == null)
-				log.warn("Unexpected null form type on resource: " + resource.getReference());
-		   
-			if (type != null && !type.equals(currentType))
-				i.remove();
-		}
-		return artifacts;
-	}
 }

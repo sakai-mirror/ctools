@@ -65,7 +65,7 @@ public class StructuredArtifactFinder extends WrappedStructuredArtifactFinder {
 
    public Collection findByType(String type) {
 	   ArrayList<Artifact> artifacts = new ArrayList<Artifact>();
-	   for (ContentResource resource : findArtifacts(type))
+	   for (ContentResource resource : findArtifacts(type, null))
 		   artifacts.add(createArtifact(resource));
 	   return artifacts;
    }
