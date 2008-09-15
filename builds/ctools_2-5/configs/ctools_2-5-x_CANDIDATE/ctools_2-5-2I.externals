@@ -78,7 +78,7 @@
  site                -r47967     https://source.sakaiproject.org/svn/site/tags/sakai_2-5-2
 # site-manage         -r47968     https://source.sakaiproject.org/svn/site-manage/tags/sakai_2-5-2
 # Using our feature packed site manage
- site-manage         -r52247     https://source.sakaiproject.org/svn/ctools/trunk/site-manage/
+ site-manage         -r52251     https://source.sakaiproject.org/svn/ctools/trunk/site-manage/
  syllabus            -r47969     https://source.sakaiproject.org/svn/syllabus/tags/sakai_2-5-2
  test-harness        -r47970     https://source.sakaiproject.org/svn/test-harness/tags/sakai_2-5-2
  textarea            -r47971     https://source.sakaiproject.org/svn/textarea/tags/sakai_2-5-2
