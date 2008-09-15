@@ -1,0 +1,124 @@
+Index: content/content-api/api/src/java/org/sakaiproject/content/api/ContentHostingService.java
+===================================================================
+--- content/content-api/api/src/java/org/sakaiproject/content/api/ContentHostingService.java	(revision 47922)
++++ content/content-api/api/src/java/org/sakaiproject/content/api/ContentHostingService.java	(working copy)
+@@ -1675,6 +1675,8 @@
+ 	 * @return
+ 	 * @see org.sakaiproject.content.api.MAX_PAGE_SIZE
+ 	 */
++	public Collection<ContentResource> getResourcesOfType(String resourceType, ContentResourceFilter filter, int pageSize, int page);
++
+ 	public Collection<ContentResource> getResourcesOfType(String resourceType, int pageSize, int page);
+ 
+ }
+Index: content/content-api/api/src/java/org/sakaiproject/content/cover/ContentHostingService.java
+===================================================================
+--- content/content-api/api/src/java/org/sakaiproject/content/cover/ContentHostingService.java	(revision 47922)
++++ content/content-api/api/src/java/org/sakaiproject/content/cover/ContentHostingService.java	(working copy)
+@@ -25,6 +25,7 @@
+ 
+ import org.sakaiproject.component.cover.ComponentManager;
+ import org.sakaiproject.content.api.ContentResource;
++import org.sakaiproject.content.api.ContentResourceFilter;
+ import org.sakaiproject.exception.PermissionException;
+ import org.sakaiproject.exception.TypeException;
+ 
+@@ -1085,6 +1086,14 @@
+ 	 * @param page
+ 	 * @return
+ 	 */
++	public static Collection<ContentResource> getResourcesOfType(String resourceType, ContentResourceFilter filter, int pageSize, int page)
++	{
++    	org.sakaiproject.content.api.ContentHostingService service = getInstance();
++		if (service == null) return null;
++		
++		return service.getResourcesOfType(resourceType, filter, pageSize, page);
++	}
++
+ 	public static Collection<ContentResource> getResourcesOfType(String resourceType, int pageSize, int page)
+ 	{
+     	org.sakaiproject.content.api.ContentHostingService service = getInstance();
+Index: content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java
+===================================================================
+--- content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java	(revision 47922)
++++ content/content-impl/impl/src/java/org/sakaiproject/content/impl/DbContentService.java	(working copy)
+@@ -53,6 +53,7 @@
+ import org.sakaiproject.content.api.ContentCollectionEdit;
+ import org.sakaiproject.content.api.ContentResource;
+ import org.sakaiproject.content.api.ContentResourceEdit;
++import org.sakaiproject.content.api.ContentResourceFilter;
+ import org.sakaiproject.content.api.LockManager;
+ import org.sakaiproject.content.impl.BaseContentService.BaseResourceEdit;
+ import org.sakaiproject.db.api.SqlReader;
+@@ -3192,7 +3193,7 @@
+ 	 * @return
+ 	 * @see org.sakaiproject.content.api.MAX_PAGE_SIZE
+ 	 */
+-	public Collection<ContentResource> getResourcesOfType(String resourceType, int pageSize, int page) 
++	public Collection<ContentResource> getResourcesOfType(String resourceType, ContentResourceFilter filter, int pageSize, int page) 
+ 	{
+ 		Collection<ContentResource> results = null;
+ 		
+@@ -3215,15 +3216,25 @@
+ 				{
+ 					continue;
+ 				}
+-				if(unlockCheck(AUTH_RESOURCE_READ, resource.getId()))
++				
++				ThreadLocalManager.set("findResource@" + resource.getId(), resource);
++				if (filter != null && !filter.allowView(resource))
+ 				{
++					continue;
++				}
++								
++				if (unlockCheck(AUTH_RESOURCE_READ, resource.getId()))
++				{
+ 					results.add(resource);
+-					ThreadLocalManager.set("findResource@" + resource.getId(), resource);
+-				}
++				}				
+ 			}
+ 		}
+ 		
+ 		return results;
+ 	}
+ 	
++	public Collection<ContentResource> getResourcesOfType(String resourceType, int pageSize, int page) {
++		return getResourcesOfType(resourceType, null, pageSize, page);
++	}
++	
+ }
+Index: content/contentmultiplex-impl/impl/src/java/org/sakaiproject/content/multiplex/ContentHostingMultiplexService.java
+===================================================================
+--- content/contentmultiplex-impl/impl/src/java/org/sakaiproject/content/multiplex/ContentHostingMultiplexService.java	(revision 47922)
++++ content/contentmultiplex-impl/impl/src/java/org/sakaiproject/content/multiplex/ContentHostingMultiplexService.java	(working copy)
+@@ -33,6 +33,7 @@
+ import org.sakaiproject.content.api.ContentHostingService;
+ import org.sakaiproject.content.api.ContentResource;
+ import org.sakaiproject.content.api.ContentResourceEdit;
++import org.sakaiproject.content.api.ContentResourceFilter;
+ import org.sakaiproject.entity.api.Entity;
+ import org.sakaiproject.entity.api.HttpAccess;
+ import org.sakaiproject.entity.api.Reference;
+@@ -2093,6 +2094,21 @@
+ 		}
+ 	}
+ 
++	/*
++	 * (non-Javadoc)
++	 * @see org.sakaiproject.content.api.ContentHostingService#getResourcesOfType(java.lang.String, org.sakaiproject.content.api.ContentResourceFilter, int, int)
++	 */
++	public Collection<ContentResource> getResourcesOfType(String resourceType, ContentResourceFilter filter, int pageSize, int page) {
++		try
++		{
++			return getService().getResourcesOfType(resourceType, filter, pageSize, page);
++		}
++		finally
++		{
++			popThreadBoundService();
++		}
++	}
++
+ 	/* (non-Javadoc)
+ 	 * @see org.sakaiproject.content.api.ContentHostingService#getResourcesOfType(java.lang.String, int, int)
+ 	 */
