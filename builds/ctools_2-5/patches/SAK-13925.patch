@@ -1,0 +1,10 @@
+#SAK-13925
+#Security fix 
+=svnm= https://source.sakaiproject.org/svn/chat/branches/sakai_2-5-x@51940 chat
+=svnm= https://source.sakaiproject.org/svn/mailarchive/branches/sakai_2-5-x@51940 mailarchive 
+=svnm= https://source.sakaiproject.org/svn/util/branches/sakai_2-5-x@51940 util 
+
+--- /dev/null
++++ SAK-13925.tmp
+@@ -0,0 +1 @@
++ 
