@@ -81,8 +81,31 @@ createConfig - add dependencies to customize which instances have properties fil
 
   <!-- move to util script -->
   <target name="bundleConfig">
+     <!-- Need to format the propertiesfiles to fit the exclude format of
+		**/filename, . . .
+     -->
+     <!-- Get everything but the first item -->
+     <propertyregex property="excludefiles.local"
+         input="${propertiesfiles.global}"
+      regexp=",\W*(.*?)"
+      replace=",**/\1"
+      global="true"
+      />
+
+      <!-- Get the first item -->
+      <propertyregex property="excludefiles.local"
+         input="${excludefiles.local}"
+      regexp="^\W*(.*?)"
+      replace="**/\1"
+      override="true"
+      />
+
+
+      <!-- Exclude any files from the global properties, these were merged into sakai.properties
+       -->
+       <echo>excludefiles.local = ${excludefiles.local}</echo>
     <tar basedir="${instances.dir}" destfile="${image.dest.dir}/instanceProperties.${sakai.tag}.tar" 
-	 longfile="gnu" compression="none" />
+	longfile="gnu" compression="none" excludes="${excludefiles.local}" />
   </target>
 
   <target name="createConfig" 
