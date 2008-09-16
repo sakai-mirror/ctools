@@ -117,7 +117,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  ctools-providers    -r51232     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
 # ctools-providers    -r47734     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
 # For search server properties
- ctools-reference    -r52246     https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
+ ctools-reference    -r52280     https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
 
  ctools-webservices  -r45685     https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
  gradtools           -r50425     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
@@ -139,7 +139,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  #
   ## course evaluation tool
   ## The trunk builds but the umich branch is currently missing some files for mvn2
- evaluation          -r52722     https://source.sakaiproject.org/contrib/evaluation/branches/CT-623
+ evaluation          -r53129     https://source.sakaiproject.org/contrib/evaluation/branches/CT-623
  #Melete
  melete              -r50986     https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-5_sak-2-5-0
 
