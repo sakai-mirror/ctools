@@ -139,7 +139,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  #
   ## course evaluation tool
   ## The trunk builds but the umich branch is currently missing some files for mvn2
- evaluation          -r53129     https://source.sakaiproject.org/contrib/evaluation/branches/CT-623
+ evaluation          -r53142     https://source.sakaiproject.org/contrib/evaluation/branches/CT-623
  #Melete
  melete              -r50986     https://source.sakaiproject.org/contrib/foothill/melete/tags/melete_2-5_sak-2-5-0
 
