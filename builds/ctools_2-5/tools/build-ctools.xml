@@ -187,12 +187,11 @@ $HeadURL$
 	  <param name="toolname" value="providers"/>
           <param name="modulename" value="component"/>
       </antcall>
-      <!--
+      <!-- Need to leave this in for now until we override -->
       <antcall target="doRegexpPoms">
 	  <param name="toolname" value="course-management"/>
 	  <param name="modulename" value="cm-impl/hibernate-pack"/>
       </antcall>
-      -->
 
       <!-- Need to fix sakai-portlets by uncompressing a tar file -->
       <untar src="${work.dir}/build/sakai-portlets/poms-for-2-5-x.tar"
