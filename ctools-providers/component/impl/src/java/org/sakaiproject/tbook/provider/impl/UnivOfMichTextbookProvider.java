@@ -481,7 +481,7 @@ public class UnivOfMichTextbookProvider implements TextbookProvider
 					}
 				}
 			}
-			course.setComment(course_comment);
+			course.setComments(course_comment);
 		}
 		catch(JSONException e)
 		{
