@@ -4978,12 +4978,6 @@ public class SiteAction extends PagedResourceActionII {
 		String option = data.getParameters().getString("option");
 		if (option.equals("continue")) {
 			doContinue(data);
-			
-			// if create based on template, skip the feature selection
-			Site templateSite = (Site) state.getAttribute(STATE_TEMPLATE_SITE);
-			if (templateSite != null) {
-				state.setAttribute(STATE_TEMPLATE_INDEX, "18");
-			}
 		} else if (option.equals("cancel")) {
 			doCancel_create(data);
 		} else if (option.equals("back")) {
@@ -7713,7 +7707,7 @@ public class SiteAction extends PagedResourceActionII {
 		String rv = "";
 		
 		String accessUrl = ServerConfigurationService.getAccessUrl();
-		if (siteAttribute.indexOf(oSiteId) != -1 && accessUrl != null)
+		if (siteAttribute!= null && siteAttribute.indexOf(oSiteId) != -1 && accessUrl != null)
 		{
 			// stripe out the access url, get the relative form of "url"
 			Reference ref = EntityManager.newReference(siteAttribute.replaceAll(accessUrl, ""));
@@ -7782,29 +7776,32 @@ public class SiteAction extends PagedResourceActionII {
 				SitePage page = (SitePage) i.next();
 
 				List pageToolList = page.getTools();
-				Tool tool = ((ToolConfiguration) pageToolList.get(0)).getTool();
-				String toolId = tool != null?tool.getId():"";
-				if (toolId.equalsIgnoreCase("sakai.resources")) {
-					// handle
-					// resource
-					// tool
-					// specially
-					transferCopyEntities(
-							toolId,
-							m_contentHostingService
-									.getSiteCollection(oSiteId),
-							m_contentHostingService
-									.getSiteCollection(nSiteId));
-				} else if (toolId.equalsIgnoreCase(SITE_INFORMATION_TOOL)) {
-					// handle Home tool specially, need to update the site infomration display url if needed
-					String newSiteInfoUrl = transferSiteResource(oSiteId, nSiteId, site.getInfoUrl());
-					site.setInfoUrl(newSiteInfoUrl);
-				}
-				else {
-					// other
-					// tools
-					transferCopyEntities(toolId,
-							oSiteId, nSiteId);
+				if (!(pageToolList == null || pageToolList.size() == 0))
+				{
+					Tool tool = ((ToolConfiguration) pageToolList.get(0)).getTool();
+					String toolId = tool != null?tool.getId():"";
+					if (toolId.equalsIgnoreCase("sakai.resources")) {
+						// handle
+						// resource
+						// tool
+						// specially
+						transferCopyEntities(
+								toolId,
+								m_contentHostingService
+										.getSiteCollection(oSiteId),
+								m_contentHostingService
+										.getSiteCollection(nSiteId));
+					} else if (toolId.equalsIgnoreCase(SITE_INFORMATION_TOOL)) {
+						// handle Home tool specially, need to update the site infomration display url if needed
+						String newSiteInfoUrl = transferSiteResource(oSiteId, nSiteId, site.getInfoUrl());
+						site.setInfoUrl(newSiteInfoUrl);
+					}
+					else {
+						// other
+						// tools
+						transferCopyEntities(toolId,
+								oSiteId, nSiteId);
+					}
 				}
 			}
 		}
@@ -8276,7 +8273,7 @@ public class SiteAction extends PagedResourceActionII {
 		}
 		if (params.getString("iconUrl") != null) {
 			siteInfo.iconUrl = params.getString("iconUrl");
-		} else {
+		} else if (params.getString("skin") != null) {
 			siteInfo.iconUrl = params.getString("skin");
 		}
 		if (params.getString("joinerRole") != null) {
@@ -10184,10 +10181,8 @@ public class SiteAction extends PagedResourceActionII {
 		Hashtable<String, List<Site>> templateList = new Hashtable<String, List<Site>>();
 		
 		// find all template sites.
-		String[] siteTemplates = null;
-		if (ServerConfigurationService.getString("site.templates") != null) {
-			siteTemplates = StringUtil.split(ServerConfigurationService.getString("site.templates"), ",");
-		}
+		// need to have a default OOTB template site definition to faciliate testing without changing the sakai.properties file.
+		String[] siteTemplates = siteTemplates = StringUtil.split(ServerConfigurationService.getString("site.templates", "template"), ",");
 		
 		for (String siteTemplateId:siteTemplates) {
 			try
