@@ -78,7 +78,7 @@
  site                -r47967     https://source.sakaiproject.org/svn/site/tags/sakai_2-5-2
 # site-manage         -r47968     https://source.sakaiproject.org/svn/site-manage/tags/sakai_2-5-2
 # Using our feature packed site manage
- site-manage         -r52559     https://source.sakaiproject.org/svn/ctools/trunk/site-manage/
+ site-manage         -r5255e     https://source.sakaiproject.org/svn/ctools/trunk/site-manage/
  syllabus            -r47969     https://source.sakaiproject.org/svn/syllabus/tags/sakai_2-5-2
  test-harness        -r47970     https://source.sakaiproject.org/svn/test-harness/tags/sakai_2-5-2
  textarea            -r47971     https://source.sakaiproject.org/svn/textarea/tags/sakai_2-5-2
@@ -117,7 +117,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  ctools-providers    -r51232     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
 # ctools-providers    -r47734     https://source.sakaiproject.org/svn/ctools/trunk/ctools-providers
 # For search server properties
- ctools-reference    -r52280     https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
+ ctools-reference    -r52611     https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
 
  ctools-webservices  -r45685     https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
  gradtools           -r50425     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
