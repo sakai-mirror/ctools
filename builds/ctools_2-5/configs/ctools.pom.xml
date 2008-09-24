@@ -57,6 +57,13 @@ if changes are needed.
         <module>../ctools-assembly</module>
       </modules>
     </profile>
+    <!-- added for the textbook tool preliminary build -->
+    <profile>
+      <id>tbook</id>
+      <modules>
+        <module>../tbook</module>
+      </modules>
+    </profile>
       <profile>
       <id>ctools</id>
       <activation>
