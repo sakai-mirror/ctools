@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
 # Script to test manual builds of ctools
-# $HeadURL:
-# $Id: 
+# $HeadURL:$
+# $Id:$
 # TODO: Modularize this file, it's starting to get out of control
 #
 #http://www.perl.com/doc/FAQs/FAQ/oldfaq-html/Q5.15.html
@@ -22,6 +22,14 @@ use lib "$Bin/lib";
 use Config::Properties;
 use Getopt::Std;
 
+my $helpDoc = <<ENDHELP;
+usage: $0 [-hcdg]
+-h print this help message
+-c do a clean build checking out source without asking
+-d build the pre-existing local source without asking
+-g don't use local patch directory. By default the build will look there so that local patches can be tested.
+ENDHELP
+
 #Define which type to build, this might be prompted later
 my $typevar = "prod";
 #Define the default properties file to look for
@@ -37,7 +45,13 @@ $ENV{'MAVEN_OPTS'} = "-Xms256m -Xmx512m";
 #A major.minor version somewhere in the text as the first number with a decimal.
 my ($cleanin, %opts, $patchtype);
 
-getopts('cdg',\%opts);
+getopts('cdgh',\%opts);
+
+if ($opts{'h'}) {
+  print $helpDoc;
+  exit 0;
+}
+
 
 #Accept clean from ARGV to make this a completely automated process.
 if ($opts{'c'}) {
