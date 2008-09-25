@@ -1,8 +1,8 @@
 <project name="ctoolsBuild2" basedir="." default="buildCToolsImage" >
 
   <!--
-  $Id: build.xml 5796 2006-02-06 19:03:57Z dlhaines@umich.edu $
-  $HeadURL: https://source.sakaiproject.org/svn/branches/ctools-winter-06/tools/build.xml $
+  $Id$
+  $HeadURL$
   -->
 
   <!-- 
