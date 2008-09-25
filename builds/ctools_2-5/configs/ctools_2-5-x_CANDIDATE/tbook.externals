@@ -162,5 +162,7 @@ reports             -r47957     https://source.sakaiproject.org/svn/reports/tags
  sakai-portlets	    -r51936	  https://source.sakaiproject.org/contrib/sakai-portlets/trunk/
  sitemaker	    -r51876       https://source.sakaiproject.org/contrib/sakai-portlets/branches/sitemaker/
 
+ tbook 		    -r53383 	  https://source.sakaiproject.org/contrib/textbook/tbook/tags/tbook-0.8RC2
+
 #
 #end
