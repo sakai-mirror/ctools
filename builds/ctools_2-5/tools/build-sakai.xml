@@ -36,8 +36,8 @@
       <arg value="${logs.dir}/source.log" />
       <arg value="${svnCmd}" />
       <arg value="${CANDIDATE.revision}" />
+      <arg value="${build.activate-profiles}" />
       <arg value="${user.dir}/${build.externals.file}" />
-
     </exec>
   </target>
 

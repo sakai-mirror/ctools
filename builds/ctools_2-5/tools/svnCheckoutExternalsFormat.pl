@@ -12,12 +12,13 @@ use strict;
 
 my ($trace) = 0;
 my (%lines);
-my ($module,$revision,$path,$svnOptions);
+my ($module,$revision,$path,$svnOptions,$moduleprofile);
 my ($log) = `date`;
 my ($startTime,$endTime);
 my ($svncmd) = "checkout";
 my ($destinationDir);
 my ($propertyrevision);
+my ($buildprofile);
 
 my ($logFileName) = "./svnCheckout.log";
 
@@ -43,6 +44,9 @@ if (@ARGV > 0) {
   $propertyrevision = shift;
 }
 
+if (@ARGV > 0) {
+  $buildprofile = shift;
+}
 
 print "logFileName: [$logFileName]  svncmd: [$svncmd]\n" if ($trace);
 
@@ -66,7 +70,8 @@ sub getSrcViaExternalsFile {
     next if (/^\s*$/);
 
     # modify so can use the HEAD revision also
-    ($module,$revision,$path,$dummy,$svnOptions) = m/\s*(\S+)\s+-r(HEAD|PROPERTY|\d+)\s+([^|]*)\s*(\|\s*(.+))*$/;
+    #A plus is required to activate the profile but don't capture it, and it's not required.
+    ($moduleprofile,$module,$revision,$path,$dummy,$svnOptions) = m/(?:\+([\w|,]*))?\s*(\S+)\s+-r(HEAD|PROPERTY|\d+)\s+([^|]*)\s*(\|\s*(.+))*$/;
     next unless ($module);
     #If they want the revision from the property file, set it!
     if ($revision eq "PROPERTY") {
@@ -79,7 +84,7 @@ sub getSrcViaExternalsFile {
     $lines{CONTRIB}++ if (m|/contrib/|);
     $lines{BRANCH}++ if (m|/branches/|);
 
-    print "module: [$module] revision: [$revision] path: [$path] svnOptions: [$svnOptions]\n" if ($trace);
+    print "activeprofiles: [$moduleprofile] module: [$module] revision: [$revision] path: [$path] svnOptions: [$svnOptions]\n" if ($trace);
 
     my $cmd = makeSvnCmd($module,$revision,$path,$svnOptions);
 
@@ -88,15 +93,26 @@ sub getSrcViaExternalsFile {
     # Execute the svn command.
     # Capture the error output along with the standard output
     # This may only work with a *ix type OS.
-    my $result = `$cmd 2>&1`;
-    my $rc = $?;
+    my $matched=0;
+    
+    #If this profile is one of the active ones or a blank one (defaults to any)
+    #Allow for multiple module profiles separated by commas
+    for(split(/,/,$moduleprofile)) {$matched = 1 if ($buildprofile =~ /\b$_\b/)}
 
-    chomp $result;
-    print "rc: [$rc] result: [$result]\n" if ($trace);
-    $log .= "$cmd result: \n[$result]\n";
-    if ($rc) {
-      print "svn cmd [$cmd] failed with rc: [$rc] result: [$result]\n";
-      return $rc;
+    if (!$moduleprofile || $matched) {
+	my $result = `$cmd 2>&1`;
+	my $rc = $?;
+
+	chomp $result;
+	print "rc: [$rc] result: [$result]\n" if ($trace);
+	$log .= "$cmd result: \n[$result]\n";
+	if ($rc) {
+	  print "svn cmd [$cmd] failed with rc: [$rc] result: [$result]\n";
+	  return $rc;
+	}
+    }
+    else {
+	print "Skipping $module, $moduleprofile not in build profile\n" if ($trace);
     }
   }
 }
