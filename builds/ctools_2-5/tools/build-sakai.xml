@@ -194,6 +194,7 @@
       <arg value="-Dgradebook.grades.config.sourcefile=${gradebook.grades.config.sourcefile}"/>
       <arg value="-Dtiny_mce.name.src=${tiny_mce.name.src}"/>
       <arg value="-Dbuild.activate-profiles=${build.activate-profiles}"/>
+      <arg value="-Dnoclean=${noclean}"/>
       <!-- <arg value="-X" /> -->
       <!--  sometimes need to avoid this with a new build, but usually speeds things up. -->
       <!-- <arg value="-o" />   -->
@@ -201,7 +202,6 @@
       <!-- <arg value="pack-demo" /> -->
 
       <arg value="clean" />
-
       <arg value="install" />
 
       <!--
@@ -231,6 +231,7 @@
       <arg value="-Dgradebook.grades.config.sourcefile=${gradebook.grades.config.sourcefile}"/>
       <arg value="-Dtiny_mce.name.src=${tiny_mce.name.src}"/>
       <arg value="-Dnoclean=${noclean}"/>
+      <arg value="-Dbuild.activate-profiles=${build.activate-profiles}"/>
       <!-- <arg value="-X" /> -->
       <!--  sometimes need to avoid this with a new build, but usually speeds things up. -->
       <!-- <arg value="-o" />   -->

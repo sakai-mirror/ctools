@@ -51,6 +51,14 @@ if changes are needed.
 	<url>http://ctools.umich.edu/</url>
     </organization>
     <profiles>
+	<!-- Need to leave this to build by default! -->
+	<profile>
+	  <id>ctools-assembly</id>
+	  <modules>
+	    <module>../ctools-assembly</module>
+	  </modules>
+	</profile>
+
 	<!-- added for the textbook tool preliminary build -->
 	<profile>
 	    <id>tbook</id>
@@ -139,7 +147,6 @@ if changes are needed.
 		<module>../sitemaker</module>
 	    </modules>
 	</profile>
-
 	<profile>
 	    <id>ctools</id>
 	    <modules>
@@ -147,7 +154,6 @@ if changes are needed.
 		<module>../ctools-libhelp</module>
 		<module>../ctools-providers</module>
 		<module>../ctools-reference</module>
-		<module>../ctools-assembly</module>
 		<!-- ctools-webservices not converted  -->
 		<!-- 
 		<module>../ctools-webservices</module>
