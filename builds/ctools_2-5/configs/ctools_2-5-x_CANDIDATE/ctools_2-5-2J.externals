@@ -91,7 +91,7 @@
 +core	webservices         -r47979     https://source.sakaiproject.org/svn/webservices/tags/sakai_2-5-2
 
 +osp	warehouse           -r47977     https://source.sakaiproject.org/svn/warehouse/tags/sakai_2-5-2
-+extras	reports             -r47957     https://source.sakaiproject.org/svn/reports/tags/sakai_2-5-2
++extras,osp	reports             -r47957     https://source.sakaiproject.org/svn/reports/tags/sakai_2-5-2
 
 ########
 ######## DEVIANT BRANCHES

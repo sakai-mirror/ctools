@@ -47,7 +47,7 @@
 		  <isset property="buildsvn.info.entry.commit(revision)"/>
 	      </not>
 	      <then>
-		  <property name="CANDIDATE.revision" value="UNKNOWN"/>
+		  <property name="CANDIDATE.revision" value="HEAD"/>
 	      </then>
 	      <else>
 		  <property name="CANDIDATE.revision" value="${buildsvn.info.entry.commit(revision)}"/>

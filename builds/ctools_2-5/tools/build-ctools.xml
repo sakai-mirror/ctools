@@ -58,13 +58,6 @@ $HeadURL$
     <removeFromBuild deleteDir="osp/reports/components" />
     <removeFromBuild deleteDir="osp/reports/tool" />
     -->
-
-    <!-- CTools has its own SectionFields impl, so can delete the default one -->
-    <echo>verify site-manage impl</echo>
-    <!-- 
-    <removeFromBuild deleteDir="site-manage/site-manage-impl" />
-    -->
-
   </target>
 
   <!-- add hook to make global changes, e.g. make change allocation of new boolean values to use valueOf -->
@@ -102,14 +95,25 @@ $HeadURL$
 
   <!-- copy in the CTools web services -->
   <target name="editOCW2JWS" unless="ocw2.install.skip" >
-      <echo> Copy the ctools jws files to sakai webservices webapp. </echo>
-      <copy todir="${build.dir}/webservices/axis/src/webapp"
-	  overwrite="true"
-	  flatten="true"
-	  failonerror="false"
-	  >
-	  <fileset dir="${build.dir}/ocw2" includes="**/*.jws" />
-      </copy>
+      <available file="${build.dir}/ocw2" property="EXISTS.ocw2"/>
+
+      <if> 
+	  <equals arg1="${EXISTS.ocw2}" arg2="true"/>
+	  <then>
+              <echo> Copy the ctools jws files to sakai webservices webapp. </echo>
+	      <!-- Made this fail because I put a check to see it ocw exists -->
+	      <copy todir="${build.dir}/webservices/axis/src/webapp"
+		  overwrite="true"
+		  flatten="true"
+		  failonerror="true"
+		  >
+		  <fileset dir="${build.dir}/ocw2" includes="**/*.jws" />
+	      </copy>
+	  </then>
+	  <else>
+              <echo> OCW2 does not exist in the project. </echo>
+	  </else>
+      </if>
   </target>
 
   <target name="updatePomWithCToolsPom"
