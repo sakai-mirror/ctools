@@ -194,8 +194,15 @@ $HeadURL$
       </antcall>
 
       <!-- Need to fix sakai-portlets by uncompressing a tar file -->
-      <untar src="${work.dir}/build/sakai-portlets/poms-for-2-5-x.tar"
-	     dest="${work.dir}/build/sakai-portlets" overwrite="true" />
+      <available file="${work.dir}/build/sakai-portlets" property="EXISTS.sakai-portlets"/>
+
+      <if>
+	  <equals arg1="${EXISTS.sakai-portlets}" arg2="true"/>
+	  <then>
+	      <untar src="${work.dir}/build/sakai-portlets/poms-for-2-5-x.tar"
+		  dest="${work.dir}/build/sakai-portlets" overwrite="true" />
+	  </then>
+      </if>
 
   </target>
 
