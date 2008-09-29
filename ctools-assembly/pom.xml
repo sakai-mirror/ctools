@@ -71,6 +71,13 @@
 	  <condition property="tiny_mce.name.src" value="tiny_mce-3.0.3.war">
 	    <not><isset property="tiny_mce.name.src" /></not>
 	  </condition>
+	  <condition property="skipTests" value="true">
+	    <not><isset property="skipTests" /></not>
+	  </condition>
+          <condition property="doClean" value="true">
+	    <not><isset property="doClean" /></not>
+	  </condition>
+
 	  <condition property="tiny_mce.name.dest" value="tiny_mce.war">
 	    <not><isset property="tiny_mce.name.dest" /></not>
 	  </condition>
@@ -216,12 +223,17 @@
 		<echo>message=Pre-compile changes ended at ${timestamp.preend}</echo> 
 		<!-- ===================== compile Sakai/CTools ============== -->
 		<!-- build Sakai and assemble an image into ctools-assembly.  Should the profile be a variable? -->
-		<echo>Executing cd ${src.dir}/ctools-build;mvn  -P ${build.activate-profiles} -Dmaven.tomcat.home=${basedir}/target/pack -Dmaven.test.skip=true clean install sakai:deploy</echo> 
+		<echo>Executing cd ${src.dir}/ctools-build;mvn  -P ${build.activate-profiles} -Dmaven.tomcat.home=${basedir}/target/pack -Dmaven.test.skip=${skipTests} clean install sakai:deploy</echo> 
 		<exec dir="${src.dir}/ctools-build" executable="mvn" failonerror="true" >
 		    <arg value="-P ${build.activate-profiles}" />
 		  <arg value="-Dmaven.tomcat.home=${basedir}/target/pack"/>
-		  <arg value="-Dmaven.test.skip=true"/>
-		  <arg value="clean"/>
+		  <arg value="-Dmaven.test.skip=${skipTests}"/>
+		  <if> 
+		      <equals arg1=="${doClean}" arg2="true"/>
+		      <then>
+			  <arg value="clean"/>
+		      </then>
+		  </if>
 		  <arg value="install"/>
 		  <arg value="sakai:deploy"/>
 		</exec>                       
