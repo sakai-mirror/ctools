@@ -145,7 +145,7 @@
 
  # we really should not pull from trunk to production, but we were not given any choice for these
  # in the evaluation project.
-+evaluation hierarchy           -r49535     https://source.sakaiproject.org/contrib/caret/hierarchy/tags/1.2.0/ 
++evaluation hierarchy           -r51648     https://source.sakaiproject.org/contrib/caret/hierarchy/tags/1.2.1/ 
 +extras	    discussion          -r50392     https://source.sakaiproject.org/contrib/deprecated/discussion/trunk/
 
  #Locally maintained osp until 2.6
