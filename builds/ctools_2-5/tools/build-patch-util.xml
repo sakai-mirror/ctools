@@ -41,9 +41,20 @@
      applying patches [${patchFileNames}]
      ********************************************************** 
     </echo>
+    <!-- Check to see if the user wants to stop if the patches fail, defaults in most cases to true -->
+    <if>
+	<equals arg1="${stopIfPatchesFail}" arg2="false"/>
+	<then>
+	    <property name="failOnError" value="false"/>
+	</then>
+	<else>
+	    <property name="failOnError" value="true"/>
+	</else>
+    </if>
+
     <exec executable="perl"
 	  dir="${build.dir}"
-	  failonerror="true"
+	  failonerror="${failOnError}"
 	  append="true">
       <arg value="${scripts.dir}/applyPatches.pl" />
       <arg value="${logs.dir}/${ant.project.name}.patches.log" />

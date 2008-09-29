@@ -112,7 +112,7 @@ sub getSrcViaExternalsFile {
 	}
     }
     else {
-	print "Skipping $module, $moduleprofile not in build profile\n" if ($trace);
+	print "(Skipping $module, $moduleprofile not in build profile)\n";
     }
   }
 }
