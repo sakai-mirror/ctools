@@ -176,7 +176,7 @@
     <!-- Backup the changed sources -->
 
       <exec executable="/bin/bash"
-           failonerror="true"
+           failonerror="false"
            output="${logs.dir}/${ant.project.name}.patches.log"
            append="true" >
        <arg value="-c" />

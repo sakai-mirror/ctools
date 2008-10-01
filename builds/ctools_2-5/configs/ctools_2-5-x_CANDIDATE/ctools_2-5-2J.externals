@@ -110,7 +110,7 @@
 #  ctools-webservices -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-webservices
 #  ctools-libhelp -rHEAD https://source.sakaiproject.org/svn/ctools/tags/ctools_2-4/ctools-libhelp
 
-+ctools ctools-assembly     -r49999     https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
++ctools ctools-assembly     -r52992     https://source.sakaiproject.org/svn/ctools/trunk/ctools-assembly
 
 +ctools ctools-apps         -r45502     https://source.sakaiproject.org/svn/ctools/trunk/ctools-apps
 # Any providers above 47734 need a newer version of evaluation, hold back for now.
@@ -120,7 +120,7 @@
 +ctools ctools-reference    -r52664     https://source.sakaiproject.org/svn/ctools/trunk/ctools-reference
 
 +ctools ctools-webservices  -r45685     https://source.sakaiproject.org/svn/ctools/trunk/ctools-webservices
-+ctools gradtools           -r50425     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
++extras gradtools           -r50425     https://source.sakaiproject.org/svn/ctools/trunk/gradtools
 +ctools ctools-libhelp      -r47309     https://source.sakaiproject.org/svn/ctools/trunk/ctools-libhelp
 
  #CTools specific web for now

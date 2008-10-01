@@ -176,8 +176,45 @@
   
   <property name="maven_name" value="mvn" />
 
-  <target name="compileSakai.clean" unless="noclean">
-    <exec executable="${maven_name}"
+  <target name="makeBuildOptions">
+	<!-- Create the buildOptions parameter which currently includes clean and skip tests -->
+        <!-- Cruise Control can't skip the tests or not clean-->
+	<!-- This shouldn't return a value with any leading or trailing space -->
+	<!-- The option with -D needs to be in single quotes -->
+	<var name="buildOptions" value=""/>
+	<if> 
+	    <isset property="cctimestamp"/>
+	    <then>
+		<var name="buildOptions" value="clean"/>
+		<var name="buildOptions" value="${buildOptions} '-Dmaven.test.skip=true'"/>
+	    </then>
+	    <else>
+		<if> 
+		    <not>
+			<isset property="noclean" />
+		    </not>
+		    <then>
+			<var name="buildOptions" value="clean"/>
+		    </then> 
+		</if>   
+		<if> 
+		    <equals arg1="${skipTests}" arg2="true"/>
+		    <then>
+			<var name="buildOptions" value="${buildOptions} '-Dmaven.test.skip=true'"/>
+		    </then> 
+		    <else>
+			<var name="buildOptions" value="${buildOptions} '-Dmaven.test.skip=false'"/>
+		    </else> 
+		</if>
+	    </else>
+	</if>   
+  </target>
+
+  <target name="compileSakai.clean" unless="noclean" depends="makeBuildOptions">
+
+      <echo>buildOptions set to ${buildOptions}</echo>
+
+      <exec executable="${maven_name}"
 	dir="${build.dir}/ctools-build"
 	  failonerror="true"
 	  searchpath="true"
@@ -194,7 +231,7 @@
       <arg value="-Dgradebook.grades.config.sourcefile=${gradebook.grades.config.sourcefile}"/>
       <arg value="-Dtiny_mce.name.src=${tiny_mce.name.src}"/>
       <arg value="-Dbuild.activate-profiles=${build.activate-profiles}"/>
-      <arg value="-Dnoclean=${noclean}"/>
+      <arg value="-DbuildOptions=${buildOptions}"/>
       <!-- <arg value="-X" /> -->
       <!--  sometimes need to avoid this with a new build, but usually speeds things up. -->
       <!-- <arg value="-o" />   -->
@@ -213,12 +250,13 @@
     </exec>
   </target>
 
-  <target name="compileSakai.noclean" if="noclean">
+  <target name="compileSakai.noclean" if="noclean" depends="makeBuildOptions">
     <exec executable="${maven_name}"
     	  dir="${build.dir}/ctools-build"
 	  failonerror="true"
 	  searchpath="true"
 	  >
+
       <env key="MAVEN_OPTS" value="-Djava.net.preferIPv4Stack=true -Xmx768m" />
 
       <!-- use this profile -->
@@ -230,8 +268,9 @@
       <arg value="-Dmaven.junit.fork=true" />
       <arg value="-Dgradebook.grades.config.sourcefile=${gradebook.grades.config.sourcefile}"/>
       <arg value="-Dtiny_mce.name.src=${tiny_mce.name.src}"/>
-      <arg value="-Dnoclean=${noclean}"/>
       <arg value="-Dbuild.activate-profiles=${build.activate-profiles}"/>
+
+      <arg value="-DbuildOptions=${buildOptions}"/>
       <!-- <arg value="-X" /> -->
       <!--  sometimes need to avoid this with a new build, but usually speeds things up. -->
       <!-- <arg value="-o" />   -->

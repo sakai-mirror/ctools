@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
 # Script to test manual builds of ctools
-# $HeadURL:$
-# $Id:$
+# $HeadURL$
+# $Id$
 # TODO: Modularize this file, it's starting to get out of control
 #
 #http://www.perl.com/doc/FAQs/FAQ/oldfaq-html/Q5.15.html
@@ -43,9 +43,9 @@ $ENV{'MAVEN_OPTS'} = "-Xms256m -Xmx512m";
 #Find the minimum and maximum versions that this will work on
 #To add a new required software to this list follow the format, the cmd must return at least
 #A major.minor version somewhere in the text as the first number with a decimal.
-my ($cleanin, %opts, $patchtype);
+my ($cleanin, %opts, $patchtype, $skiptests);
 
-getopts('cdgh',\%opts);
+getopts('cdghs',\%opts);
 
 if ($opts{'h'}) {
   print $helpDoc;
@@ -62,6 +62,9 @@ if ($opts{'d'}) {
     $cleanin ='n';
 }
 
+if ($opts{'s'}) {
+    $skiptests ='y';
+}
 #By default this build will pick up local patch changes 
 if ($opts{'g'}) {
     $patchtype ='';
@@ -258,6 +261,17 @@ if (!$cleanin) {
     until ($cleanin eq "n" || $cleanin eq "y");	    # Redo while wrong input
 }
 
+#Prompt if they want to skip tests.
+if (!$skiptests) {
+    do
+    {
+	print "Do you want to skip tests? [y/n]";	# Ask for input
+	$skiptests = <STDIN>;	# Get input
+	chop $skiptests;	    # Chop off newline
+    }
+    until ($skiptests eq "n" || $skiptests eq "y");	    # Redo while wrong input
+}
+
 #Get a log file started for further analysis
 my $nowstring = strftime "%m-%d-%y_%H-%M-%S", localtime;
 
@@ -278,9 +292,16 @@ else {
     $cleanvar = "-Dclean=clean";
 }
 
+if ($skiptests eq "n") {
+    $skiptests = "-DskipTests=false";
+}
+else {
+    $skiptests = "-DskipTests=true";
+}
+
 #Change directory to the builds directory
 chdir($builddir);
-my $cmd = "ant -s build.xml -Dpatchtype=$patchtype -Dtype=$typevar -DtargetJdk=1.5 $cleanvar 2>&1";
+my $cmd = "ant -s build.xml -Dpatchtype=$patchtype -Dtype=$typevar $skiptests -DtargetJdk=1.5 $cleanvar 2>&1";
 system $cmd; 
 
 0;
