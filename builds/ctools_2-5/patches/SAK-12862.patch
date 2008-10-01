@@ -1,0 +1,13 @@
+Index: search/search-impl/impl/src/test/org/sakaiproject/search/indexer/impl/test/MergeUpdateOperationTest.java
+===================================================================
+--- search/search-impl/impl/src/test/org/sakaiproject/search/indexer/impl/test/MergeUpdateOperationTest.java	(revision 45342)
++++ search/search-impl/impl/src/test/org/sakaiproject/search/indexer/impl/test/MergeUpdateOperationTest.java	(working copy)
+@@ -281,6 +281,8 @@
+ 
+ 		assertEquals("There were errors validating the index, check log ", 0,tds.checkIndexContents(items,indexSearcher));
+ 
++		indexSearcher.close();
++		
+ 		log.info("==PASSED========================== " + this.getClass().getName()
+ 				+ ".testRunOnce");
+ 
