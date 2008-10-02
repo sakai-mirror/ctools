@@ -53,8 +53,16 @@ This should have nothing specific to a particular build type.
   <!-- There may be multiple targets to support multiple different build types. -->
   <!-- ========================= -->
 
-  <target name="buildCToolsImage" depends="prepare,getSource,revertSrc,applyPatches3,editSource,compileSakai.clean,compileSakai.noclean,buildImage,buildConfig,printBuildInfo"
+  <target name="buildCToolsImage" depends="prepare,getSource,revertSrc,applyPatches3,editSource,compileSakai,buildImage,buildConfig,printBuildInfo"
 	  description="Build a ctools image based on the properties files specified.">
+
+	  <!-- Build was successful clean up build directory if running on cc-->
+	  <if>
+	      <isset property="cctimestamp"/>
+	      <then>
+		  <antcall target="deleteBuildDirs"/>
+	      </then>
+	  </if>
     <echo> built ctools release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
   </target>
 

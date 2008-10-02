@@ -64,8 +64,7 @@
   <target name="prepareBuildDirs"
 	  description="clean all the directories needed for a build." >
     <echo> build ${type} release based on configuration file: ${config-file} with version.service: ${version.service} and version.sakai: ${version.sakai}.</echo>
-    <antcall target="deleteBuildDirs.noclean" />
-    <antcall target="deleteBuildDirs.clean" />
+    <antcall target="deleteBuildDirs" />
     <mkdir dir="${work.dir}" />
     <mkdir dir="${artifacts.dir}" />
     <mkdir dir="${build.dir}" />
@@ -84,22 +83,27 @@
     
   </target>
 
-  <target name="deleteBuildDirs.noclean" if="noclean">
-	<echo>Not cleaning work directories</echo>
-  </target>
+  <target name="deleteBuildDirs">
+      <if>
+	  <isset property="noclean"/>
+	  <then>
+	      <echo>Not cleaning work directories</echo>
 
+	  </then>
+	  <else>
+	      <echo>Cleaning work directories</echo>
+	      <delete dir="${work.dir}" />
+	      <delete dir="${artifacts.dir}" />
+	      <delete dir="${build.dir}" />
+	      <delete dir="${image.dir}" />
+	      <delete dir="${instances.dir}" />
+	      <!--
+	      <delete dir="${logs.dir}" />
+	      <delete dir="${install.test.dir}" />
+	      -->
 
-  <target name="deleteBuildDirs.clean" unless="noclean">
-	<echo>Cleaning work directories</echo>
-        <delete dir="${work.dir}" />
-	<delete dir="${artifacts.dir}" />
-	<delete dir="${build.dir}" />
-	<delete dir="${image.dir}" />
-	<delete dir="${instances.dir}" />
-    <!--
-    <delete dir="${logs.dir}" />
-    <delete dir="${install.test.dir}" />
-    -->
+	  </else>
+      </if>
   </target>
 
   <target name="editMaster">

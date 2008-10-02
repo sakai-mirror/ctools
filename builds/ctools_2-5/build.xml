@@ -65,7 +65,19 @@
   <!-- Include the ctools build -->
   <property file="${user.dir}/${ctoolsBuildFileName}" />  
   <!-- group the build directories. -->
-  <property name="work.dir" value="${basedir}/work/${sakai.tag}/work.${type}" /> 
+
+  <!-- Cruise Control builds in the tmp directory -->
+  <if>
+      <isset property="cctimestamp"/>
+      <then>
+	  <property name="work.dir" value="/tmp/work/${sakai.tag}/work.${type}" /> 
+
+      </then>
+      <else>
+	  <property name="work.dir" value="${basedir}/work/${sakai.tag}/work.${type}" /> 
+      </else>
+  </if>
+
   <!-- Change to version control patches -->
   <!-- If the patchtype is set, don't -->
   <condition property="patches.dir" value="${basedir}/patches" else="${work.dir}/build/ctools-patches" >

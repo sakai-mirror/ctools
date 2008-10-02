@@ -210,7 +210,7 @@
 	</if>   
   </target>
 
-  <target name="compileSakai.clean" unless="noclean" depends="makeBuildOptions">
+  <target name="compileSakai" depends="makeBuildOptions">
 
       <echo>buildOptions set to ${buildOptions}</echo>
 
@@ -238,7 +238,6 @@
 
       <!-- <arg value="pack-demo" /> -->
 
-      <arg value="clean" />
       <arg value="install" />
 
       <!--
@@ -248,44 +247,8 @@
       <arg value="pack-src" /> 
       -->
     </exec>
-  </target>
-
-  <target name="compileSakai.noclean" if="noclean" depends="makeBuildOptions">
-    <exec executable="${maven_name}"
-    	  dir="${build.dir}/ctools-build"
-	  failonerror="true"
-	  searchpath="true"
-	  >
-
-      <env key="MAVEN_OPTS" value="-Djava.net.preferIPv4Stack=true -Xmx768m" />
-
-      <!-- use this profile -->
-      <!-- <arg value="-P ctools" /> --> <!-- does a build with new ctools profile -->
-      <!-- <arg value="-P pack-demo" /> --> <!-- creates an install artifact -->
-      <arg value="-P ctools-assembly" />
-      <arg value="-e" /> 
-      <!-- Pass parameters to the next phase of the build -->
-      <arg value="-Dmaven.junit.fork=true" />
-      <arg value="-Dgradebook.grades.config.sourcefile=${gradebook.grades.config.sourcefile}"/>
-      <arg value="-Dtiny_mce.name.src=${tiny_mce.name.src}"/>
-      <arg value="-Dbuild.activate-profiles=${build.activate-profiles}"/>
-
-      <arg value="-DbuildOptions=${buildOptions}"/>
-      <!-- <arg value="-X" /> -->
-      <!--  sometimes need to avoid this with a new build, but usually speeds things up. -->
-      <!-- <arg value="-o" />   -->
-
-      <!-- <arg value="pack-demo" /> -->
-
-      <arg value="install" />
-
-      <!--
-      <arg value="sakai:clean" />
-      <arg value="sakai:build" />
-      <arg value="sakai:deploy-zip" />
-      <arg value="pack-src" /> 
-      -->
-    </exec>
+    <!-- Set the property that we've installed this -->
+    <property name="compileSakai.install" value="true"/>
   </target>
 
 
