@@ -67,16 +67,9 @@
   <!-- group the build directories. -->
 
   <!-- Cruise Control builds in the tmp directory -->
-  <if>
+  <condition property="work.dir" value="/tmp/work/${sakai.tag}/work.${type}" else="${basedir}/work/${sakai.tag}/work.${type}"> 
       <isset property="cctimestamp"/>
-      <then>
-	  <property name="work.dir" value="/tmp/work/${sakai.tag}/work.${type}" /> 
-
-      </then>
-      <else>
-	  <property name="work.dir" value="${basedir}/work/${sakai.tag}/work.${type}" /> 
-      </else>
-  </if>
+  </condition>
 
   <!-- Change to version control patches -->
   <!-- If the patchtype is set, don't -->
