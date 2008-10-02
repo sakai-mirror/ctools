@@ -186,7 +186,7 @@
 	    <isset property="cctimestamp"/>
 	    <then>
 		<var name="buildOptions" value="clean"/>
-		<var name="buildOptions" value="${buildOptions} '-Dmaven.test.skip=true'"/>
+		<var name="buildOptions" value="${buildOptions} '-Dmaven.test.skip=false'"/>
 	    </then>
 	    <else>
 		<if> 
