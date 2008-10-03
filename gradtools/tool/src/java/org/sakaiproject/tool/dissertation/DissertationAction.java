@@ -29,7 +29,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
 import java.util.Vector;
 
 import org.sakaiproject.api.app.dissertation.CandidateInfo;
@@ -6039,7 +6038,7 @@ public class DissertationAction
 	
 	/**
 	* Access the alphabetical candidate chooser letter for this student. 
-	* @param chefid – The user's id.
+	* @param chefid The user's id.
 	* @return The alphabetical candidate chooser letter, A-Z, or "".
 	*/
 	public String getSortLetter(String chefId)
@@ -6125,12 +6124,8 @@ public class DissertationAction
 		{
 			if(dissertationService.allowUpdateCandidatePath(path.getReference()))
 			{
-				String keyString = null;
-				String statusRef = null;
-				StepStatusEdit statusEdit = null;
 				Dissertation parentDissertation = null;
 				CandidatePathEdit pathEdit = null;
-				boolean hasPrerequisites = false;
 
 				//Note: changing site context changes step status references
 				String oldPathRef = (String)path.getReference();
@@ -6148,23 +6143,31 @@ public class DissertationAction
 					}
 				}
 				catch(Exception e) {
-					addAlert(state, alertMessage + "there was a problem accessing a parent checklist: " + e.toString());
+					reportException(state, e, "there was a problem accessing a parent checklist");
 					return null;
 				}
 				if(parentDissertation == null)
 				{
 					//bail out because there is no dissertation on which to base path
-					addAlert(state, alertMessage + "parent checklist is null");
+					reportException(state, null, "parent checklist is null");
 					return null;
 				}
-				//add path
+				//add a new path to the system
 				try {
 					pathEdit = dissertationService.addCandidatePath(parentDissertation, (String)state.getAttribute(STATE_CURRENT_SITE));
 					setCandidatePathAttributes(state, path, pathEdit);
 				}
 				catch(Exception e) {
-					addAlert(state, alertMessage + "there was a problem adding your checklist to the system: " + e.toString());
-					dissertationService.cancelEdit(pathEdit);
+					reportException(state, e, "there was a problem adding your checklist to the system");
+					//CT-492 dissertationService.cancelEdit(pathEdit);
+					try {
+						// remove the new path from system since its creation is unfinished
+						if(pathEdit != null)
+							dissertationService.removeCandidatePath(pathEdit);
+					}
+					catch (PermissionException p) {
+						reportException(state, p, "there was a problem cleaning up a new but malformed checklist with path id '" + path.getId() + "' ");
+					}
 					return null;
 				}
 				//add step status
@@ -6172,8 +6175,7 @@ public class DissertationAction
 					Hashtable orderedStatus = path.getOrderedStatus();
 					Hashtable newOrderedStatus = new Hashtable();
 					String prereqOrder = null;
-					String newStatusRef = null;		
-					List statusPrereqs = null;	
+					String newStatusRef = null;			
 					Vector prereqs = new Vector();
 					//for each ordered status
 					for (int i = 1; i < orderedStatus.size()+1; i++)
@@ -6185,40 +6187,56 @@ public class DissertationAction
 					dissertationService.commitEdit(pathEdit);
 				}
 				catch(Exception e) {
-					dissertationService.cancelEdit(pathEdit);
-					addAlert(state, alertMessage + "there was a problem adding step statuses: " + e.toString());
+					//CT-492 dissertationService.cancelEdit(pathEdit);
+					reportException(state, e, "there was a problem adding step statuses to the new checklist");
+					try {
+						// remove the new path from system since its creation is unfinished
+						dissertationService.removeCandidatePath(pathEdit);
+					}
+					catch (PermissionException p) {
+						reportException(state, p, "there was a problem cleaning up a new but malformed checklist with path id '" + path.getId() + "' ");
+					}
 					return null;
 				}
-				//remove path created during upload
+				// now that the student has a path remove the path created during upload
 				CandidatePathEdit oldPathEdit = null;
 				try {
 					removeUploadPath(oldPathRef);
 				}
 				catch(Exception e) {
-					addAlert(state, alertMessage + "could not remove checklist created during upload: " + e.toString());
+					reportException(state, e, "could not remove checklist created during upload");
 				}
 			}//allowUpdateCandidatePath
 			else
 			{
-				addAlert(state, alertMessage + "you do not have permission to create a student checklist");
+				reportException(state, null, "you do not have permission to create a student checklist");
 				return null;
 			}
-			//return new path
+			//return a newly-created student path
 			try
 			{
 				updatedPath = (CandidatePath)dissertationService.getCandidatePathForCandidate(((User)state.getAttribute(STATE_USER)).getId());
 			}
 			catch(MultipleObjectsException m) {
-				addAlert(state, alertMessage + m.toString());
+				reportException(state, m, "more than one checklist exists, which indicates a problem");
 			}
 			catch (Exception e)
 			{
-				addAlert(state, alertMessage + "there was a problem accessing your student checklist: " + e.toString());
+				reportException(state, e, "there was a problem accessing your student checklist");
 			}
 		}
 		return updatedPath;
 		
 	}//updateCandidatePathSiteId
+
+	private void reportException(SessionState state, Exception e, String msg) {
+		if (e != null) {
+			msg = msg + ": " + e.toString();
+		}
+		addAlert(state, alertMessage + msg);
+		if(Log.isWarnEnabled())
+			Log.warn("chef", this + ": " + msg);
+	}
 
 	private String addStepStatus(SessionState state, Hashtable orderedStatus,
 			Hashtable newOrderedStatus, String newStatusRef, Vector prereqs,
